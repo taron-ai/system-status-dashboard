@@ -1,0 +1,75 @@
+<html>
+<head>
+<title>{{title}}</title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" /> 
+
+<link type="text/css" href="/html/css/ssd-theme/jquery-ui-1.9.1.custom.css" rel="stylesheet" />
+<link type="text/css" href="/html/css/jquery.ui.timepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="/html/js/jquery-1.8.2.js"></script>
+<script type="text/javascript" src="/html/js/jquery-ui-1.9.1.custom.min.js"></script>
+<script type="text/javascript" src="/html/js/jquery-ui-1.9.1.custom.js"></script>
+<script type="text/javascript" src="/html/js/jquery.ui.timepicker.js"></script>
+
+<link rel="StyleSheet" href="/html/css/ssd.css" type="text/css">
+</head>
+<body>
+
+{% if nav %}
+<div id="nav">
+ <nav id="nav">
+  <ul id="navigation">
+   <li><a href="/" class="first">DASHBOARD</a></li>
+   {% if report_incident %}
+   <li><a href="/report">REPORT INCIDENT</a></li>
+   {% endif %}
+   {% if contacts %}
+   <li><a href="#">CONTACTS &raquo;</a>
+    <ul>
+     <li><a class="sub" href="/escalation">Escalation</a></li>
+    </ul>
+   </li>
+   {% endif %}
+   <li><a href="#">SEARCH &raquo;</a>
+    <ul>
+     <li><a class="sub" href="/search">Incidents</a></li>
+     {% if report_incident %}
+     <li><a class="sub" href="/rsearch">Incident Reports</a></li>
+     {% endif %}
+    </ul>
+   </li>
+   <li><a href="#">ADMIN &raquo;</a>
+    <ul>
+     {% if user.is_authenticated %}
+     <li><a class="sub" href="/admin">Application Administration</a></li>
+     <li><a class="sub" href="/create">Create Incident</a></li>
+     <li><a class="sub" href="/admin/logout">Logout ({{user.username}})</a></li>
+     {% else %}
+     <li><a class="sub" href="/admin">Login</a></li>
+     {% endif %}
+    </ul>
+   </li>
+  </ul>
+ </nav>
+</div>
+{% endif %}
+
+<center>
+<br>
+
+{% if logo %}
+<img src="{{logo}}">
+{% else %}
+<br>
+{% endif %}
+<table>
+ <tr>
+  <td align="center">
+   {% block content %}
+   {% endblock %}
+  </td>
+ </tr>
+</table>
+
+</center>
+</body>
+</html>

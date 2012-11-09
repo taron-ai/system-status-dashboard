@@ -1,4 +1,6 @@
-# the superuser after syncdb, add the next two lines (they can be removed later, if desired)
+# The following two lines are required if an error occurs when creating the Django admin
+# account after running syncdb for the first time.  If the error occurs, delete the database
+# uncomment these two lines and run syncdb again.  You may comment these out after, if desired
 import os
 os.environ['LANG'] = 'en_US.UTF-8'
 

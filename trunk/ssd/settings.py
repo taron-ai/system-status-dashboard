@@ -1,5 +1,3 @@
-# Load the install path
-INSTALL_PATH = '/usr/local/projects/ssd'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -107,7 +105,6 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '%s/app/templates' % (INSTALL_PATH)
 )
 
 INSTALLED_APPS = (
@@ -157,5 +154,5 @@ LOGGING = {
 APP_VERSION = '1.0'
 
 # Load custom data
-execfile('%s/local/local_settings.py' % (INSTALL_PATH))
+execfile('/usr/local/projects/ssd/local/local_settings.py')
 

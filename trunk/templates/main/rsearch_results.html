@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+{% block content %}
+
+<table class="top">
+
+ <tr>
+  <td style="text-align: left;">
+   <p class="title">Search Results</p>
+  </td>
+ </tr>
+
+ <tr>
+  <td height="25">
+   <hr>
+  </td>
+ </tr>
+
+ {% if results %}
+
+ <tr>
+  <td>
+   <table class="standard">
+    <tr>
+     <th>ID</th>
+     <th>Date Submitted</th>
+     <th>Submitted By</th>
+     <th>Email</th>
+     <th>Description</th>
+     <th>Additional Information</th>
+    </tr>
+
+    {% for row in results %}
+    <tr>
+     <td>{{row.id}}</a></td>
+     <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
+     <td>{{row.name}}</td>
+     <td>{{row.email}}</td>
+     <td style="width:250;">{{row.description}}</td>
+     <td style="width:250;">{{row.additional}}</td>
+    </tr>
+    {% endfor %}
+   </table>
+  </td>
+ </tr>
+
+ <tr>
+  <td>* All times are in {{TIME_ZONE}}</td>
+ </tr>
+
+ {% else %}
+ <tr>
+  <td>No search results were returned</td>
+ </tr>
+ {% endif %}
+
+</table>
+
+{% endblock %}

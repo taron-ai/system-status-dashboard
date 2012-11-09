@@ -1,3 +1,6 @@
+# the superuser after syncdb, add the next two lines (they can be removed later, if desired)
+import os
+os.environ['LANG'] = 'en_US.UTF-8'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -7,6 +10,18 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
+# Database information
+DATABASES = {
+    'default': {
+        'ENGINE'  : '',
+        'NAME'    : '',         
+        'USER'    : '',       
+        'PASSWORD': '', 
+        'HOST'    : '',
+        'PORT'    : '',         
+    }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -107,6 +122,10 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+# Make this unique, and don't share it with anybody.
+# Used to provide cryptographic signing.
+SECRET_KEY = ''
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -150,9 +169,41 @@ LOGGING = {
     }
 }
 
-# Set the App Version
+
+#### SSD SPECIFIC CONFIGURATION ####
+
+# Show the NAV Header
+NAV = True
+
+# Set to the full URL of the desired logo
+# LOGO = ''
+
+# If set to True, the 'Report Incident' tab will appear in the nav.
+# If you have this set to true, you should also show the NAV header
+# If this is not set to True, the view also will not work and will 
+# give the user an error
+REPORT_INCIDENT = True
+
+# If set to True, the 'Contacts' tab will appear in the NAV header
+# You will need to complete the contacts template with your specific information
+# If this is not set to True, the view also will not work and will 
+# give the user an error
+CONTACTS = True
+
+# Email Notifications:
+# * If set to True, then email notifications will be enabled
+#   for incident creation (by admins) and incident reports (by users)
+#
+# * If set to True, ensure that you have properly set the email options
+#   in the application configuration
+#
+# * If set to False and 'Broadcast Email' is selected during incident
+#  creation or a user reports an incident, no email will be sent.
+NOTIFY = True
+
+# App Version
 APP_VERSION = '1.0'
 
-# Load custom data
-execfile('/usr/local/projects/ssd/local/local_settings.py')
-
+# Load custom data - must point to your local_settings.py file and
+# may not be a relative path.
+execfile('<<ENTER FULL PATH TO local_settings.py HERE>>')

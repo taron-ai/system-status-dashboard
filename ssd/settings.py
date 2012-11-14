@@ -1,8 +1,8 @@
 # The following two lines are required if an error occurs when creating the Django admin
 # account after running syncdb for the first time.  If the error occurs, delete the database
 # uncomment these two lines and run syncdb again.  You may comment these out after, if desired
-import os
-os.environ['LANG'] = 'en_US.UTF-8'
+#import os
+#os.environ['LANG'] = 'en_US.UTF-8'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -208,4 +208,5 @@ APP_VERSION = '1.0'
 
 # Load custom data - must point to your local_settings.py file and
 # may not be a relative path.
-execfile('<<ENTER FULL PATH TO local_settings.py HERE>>')
+#execfile('<<ENTER FULL PATH TO local_settings.py HERE>>')
+execfile('/usr/local/projects/ssd/local/local_settings.py')

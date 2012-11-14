@@ -28,7 +28,9 @@ application = get_wsgi_application()
 # from helloworld.wsgi import HelloWorldApplication
 # application = HelloWorldApplication(application)
 
-# Add the SSD project app path to the path
-path = '/<<ENTER FULL PATH>>/app'
+# Add the SSD project app path to the system path
+# This is the directory that contains manage.py and the top 
+# level ssd directory
+path = '/<<ENTER FULL PATH>>'
 if path not in sys.path:
     sys.path.append(path)

@@ -208,5 +208,4 @@ APP_VERSION = '1.0'
 
 # Load custom data - must point to your local_settings.py file and
 # may not be a relative path.
-#execfile('<<ENTER FULL PATH TO local_settings.py HERE>>')
-execfile('/usr/local/projects/ssd/local/local_settings.py')
+#execfile('<<ENTER FULL PATH>>')

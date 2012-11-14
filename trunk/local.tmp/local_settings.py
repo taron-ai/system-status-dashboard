@@ -33,6 +33,9 @@ TEMPLATE_DIRS = (
 
 ### Optional ###
 
+# The following are already set in the project settings.py configuration
+# file but may be overridden here
+
 #NAV = True
 #REPORT_INCIDENT = True
 #CONTACTS = True

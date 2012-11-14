@@ -26,7 +26,7 @@ DATABASES = {
 }
 SECRET_KEY = '<<ENTER SECRET KEY>>'
 TEMPLATE_DIRS = (
-    '<<ENTER FULL PATH>>'
+    '<<ENTER FULL PATH>>/templates'
 )
 
 

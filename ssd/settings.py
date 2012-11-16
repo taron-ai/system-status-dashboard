@@ -4,7 +4,7 @@
 #import os
 #os.environ['LANG'] = 'en_US.UTF-8'
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

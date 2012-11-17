@@ -40,5 +40,6 @@ TEMPLATE_DIRS = (
 #REPORT_INCIDENT = True
 #CONTACTS = True
 #NOTIFY = True
-#TIME_ZONE = 'America/Chicago'
+#TIME_ZONE = ''
 #LOGO = ''
+#SSD_URL = ''

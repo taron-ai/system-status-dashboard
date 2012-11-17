@@ -67,7 +67,7 @@ class email:
             return e
         return 'success'
 
-    def send(self,id,host,set_timezone,new):
+    def send(self,id,ssd_url,set_timezone,new):
         """
         Send an email
         If there is an error, the user will not be notified but this will log to Apache error log
@@ -104,9 +104,6 @@ class email:
         else:
             greeting = Config.objects.filter(config_name='greeting_update').values('config_value')
 
-        # Create the status dashboard link
-        link = 'http://%s' % (host)
-
         # Activate the timezone so the template can use it during rendering
         # This should actually be available in the template as variable TIME_ZONE
         # but its not so manually pass in the timezone
@@ -118,7 +115,7 @@ class email:
                      'greeting':greeting,
                      'services':services,
                      'updates':updates,
-                     'link':link,
+                     'link':ssd_url,
                      'timezone':set_timezone
                     })
 

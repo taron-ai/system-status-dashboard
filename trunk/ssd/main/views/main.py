@@ -207,9 +207,9 @@ def index(request):
 
     # The forward and back buttons will be -7 (back) and +7 (forward)
     backward = (ref - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-    backward_link = 'http://%s/?ref=%s' % (request.META['HTTP_HOST'],backward)
+    backward_link = '/?ref=%s' % (backward)
     forward = (ref + datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-    forward_link = 'http://%s/?ref=%s' % (request.META['HTTP_HOST'],forward)
+    forward_link = '/?ref=%s' % (forward)
 
     # See if we have any open incidents
     # Any open incidents will turn the service red on the
@@ -402,7 +402,7 @@ def update(request):
         if 'email' in request.POST and 'id' in request.POST and request.POST['detail'] == '':
             if re.match(r'^\d+$', request.POST['id']):
                 email = notify.email()
-                email.send(request.POST['id'],request.META['HTTP_HOST'],set_timezone,False)
+                email.send(request.POST['id'],settings.SSD_URL,set_timezone,False)
 
                 # Redirect to the home page
                 return HttpResponseRedirect('/')
@@ -460,7 +460,7 @@ def update(request):
 
             # If an email update is being requested, send it
             email = notify.email()
-            email.send(request.POST['id'],request.META['HTTP_HOST'],set_timezone,False)
+            email.send(request.POST['id'],settings.SSD_URL,set_timezone,False)
 
             # All done so redirect to the incident detail page so
             # the new data can be seen.
@@ -607,7 +607,7 @@ def create(request):
             # about this issue if requested
             if 'email' in request.POST:
                 email = notify.email()
-                email.send(incident_id[0]['id'],request.META['HTTP_HOST'],set_timezone,True)
+                email.send(incident_id[0]['id'],settings.SSD_URL,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # incident

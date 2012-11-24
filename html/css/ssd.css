@@ -197,28 +197,28 @@ table.tiny_no_border td {
 
 /* Date input */
 input.input_date {
-   width:100;
+   width:100px;
    height:30px;
    margin: 0px; 
 }
 
 /* Contact input */
 input.input_contact {
-   width:350;
+   width:350px;
    height:30px;
    margin: 0px; 
 }
 
 /* Search input */
 input.input_search {
-   width:350;
+   width:350px;
    height:30px;
    margin: 0px;
 }
 
 /* Jump to input */
 input.jump_to {
-   width:100;
+   width:100px;
    height:22px;
    margin: 0px;
    padding: 2px;
@@ -228,20 +228,20 @@ input.jump_to {
 
 /* Author textarea */
 textarea.textarea_incident {
-   width:450;
-   height:300;
+   width:450px;
+   height:300px;
 }
 
 /* Report Incident Textarea */
 textarea.textarea_detail_1 {
-   width:490;
-   height:70;
+   width:490px;
+   height:70px;
 }
 
 /* Report Incident Textarea */
 textarea.textarea_detail_2 {
-   width:490;
-   height:300;
+   width:490px;
+   height:300px;
 }
 
 /* JQuery UI components */
@@ -384,6 +384,6 @@ ul, menu, dir {
 
 /* Wrapper Div */
 div.wrapper {
-   width:1000;
+   width:1000px;
 }
 

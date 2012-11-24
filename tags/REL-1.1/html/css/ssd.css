@@ -1,0 +1,389 @@
+/*
+
+Copyright 2012 - Tom Alessi
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+
+CSS3 Menu ideas were inspired from Madalin Tudose: 
+http://www.ourtuts.com/create-a-drop-down-navigation-menu-with-html5-and-css3/
+
+*/
+ 
+
+a {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   text-decoration: none
+}
+
+p {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   font-size:14px;
+}
+
+p.title {
+   font-size:24px;
+}
+
+/* No blue borders on image links */
+img {
+   border-style: none;
+}
+
+/* Help Div */
+div.help {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   padding:4px;
+   font-size:13px;
+   color:#3f3f3f;
+   border:1px solid red;
+   -webkit-border-radius:3px;
+   -moz-border-radius:3px;
+   border-radius:3px
+   -webkit-box-shadow: inset 0 1px 1px
+   transition: border linear .2s,box-shadow linear .2s;
+   background-color:#FFFFE0;
+   text-align:left;
+   width:700px;
+}
+
+/* Help Div Report Incident */
+div.help-report {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   padding:4px;
+   font-size:13px;
+   color:#3f3f3f;
+   border:1px solid red;
+   -webkit-border-radius:3px;
+   -moz-border-radius:3px;
+   border-radius:3px
+   -webkit-box-shadow: inset 0 1px 1px
+   transition: border linear .2s,box-shadow linear .2s;
+   background-color:#FFFFE0;
+   text-align:left;
+   width:550px;
+}
+
+/* Alert Div */
+div.maintenance {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   padding:4px;
+   font-size:16px;
+   border:1px solid red;
+   -webkit-border-radius:3px;
+   -moz-border-radius:3px;
+   border-radius:3px
+   -webkit-box-shadow: inset 0 1px 1px
+   transition: border linear .2s,box-shadow linear .2s;
+   background-color:#FFFFE0;
+   text-align:left;
+   width:750px;
+}
+
+/* Error Text */
+p.error {
+   font-size:14px;
+   font-weight:bold;
+   color:red;
+   margin: 0;
+   padding: 0;
+}
+
+
+/* Top Level Table - just font type/size */
+table.top td {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   font-size:12px;
+   text-align:left;
+   color:black;
+}
+
+
+/* Standard Table Center Aligned */
+table.standard {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   border-collapse:collapse;
+}
+table.standard th {
+   font-size:14px;
+   border:1px solid #b0c5d0;
+   padding:10px 10px 10px 10px;
+   background-color:#C8DAE4;
+   text-align:center;
+   color:black;
+   font-weight:bold;
+}
+table.standard td {
+   font-size:14px;
+   border:1px solid #b0c5d0;
+   padding:10px 10px 10px 10px;
+   color:black;
+   text-align:left;
+}
+
+
+/* Standard Input settings */
+input, textarea, select {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   display:inline-block;
+   padding:4px;
+   margin-bottom:9px;
+   font-size:14px;
+   color:#3f3f3f;
+   border:1px solid #CCCCCC;
+   -webkit-border-radius:3px;
+   -moz-border-radius:3px;
+   border-radius:3px
+   -webkit-box-shadow: inset 0 1px 1px
+   transition: border linear .2s,box-shadow linear .2s;
+}
+
+select.timezone {
+   margin: 0px; 
+   padding: 2px;
+   font-size:12px;
+}
+
+select.search {
+   padding: 8px;
+}
+
+
+/* Tiny table with outside border only */
+table.tiny_outside_border {
+   border: 1px solid #CCCCCC;
+}
+table.tiny_outside_border td {
+   font-size:0.8em;
+   border-style:none;
+   padding:3px 3px 3px 3px;
+   text-align:left;
+   color:black;
+}
+
+/* Tiny table with no border */
+table.tiny_no_border {
+   font-family:Tahoma, Arial, Helvetica, sans-serif;
+   border-collapse:collapse;
+}
+table.tiny_no_border th {
+   font-size:0.8em;
+   border-style:none;
+   padding-top:5px;
+   padding-bottom:4px;
+   background-color:#83B0EC;
+   text-align:center;
+   color:black;
+}
+table.tiny_no_border td {
+   font-size:0.8em;
+   border-style:none;
+   padding:3px 7px 2px 7px;
+   text-align:center;
+   color:black;
+}
+
+
+/* Date input */
+input.input_date {
+   width:100;
+   height:30px;
+   margin: 0px; 
+}
+
+/* Contact input */
+input.input_contact {
+   width:350;
+   height:30px;
+   margin: 0px; 
+}
+
+/* Search input */
+input.input_search {
+   width:350;
+   height:30px;
+   margin: 0px;
+}
+
+/* Jump to input */
+input.jump_to {
+   width:100;
+   height:22px;
+   margin: 0px;
+   padding: 2px;
+   font-size:12px;
+}
+
+
+/* Author textarea */
+textarea.textarea_incident {
+   width:450;
+   height:300;
+}
+
+/* Report Incident Textarea */
+textarea.textarea_detail_1 {
+   width:490;
+   height:70;
+}
+
+/* Report Incident Textarea */
+textarea.textarea_detail_2 {
+   width:490;
+   height:300;
+}
+
+/* JQuery UI components */
+div.ui-datepicker, .ui-datepicker td{
+ font-size:12px;
+}
+
+ol, ul {
+	list-style: none; }
+
+/* Main Styles */	
+	
+div#nav-wrapper {
+   top: 0;
+   width: 100%;
+   height: 44px;
+   margin: 0 auto;
+   background: rgb(200,218,228);
+   font:12px/20px Tahoma, Arial, Helvetica, sans-serif;
+}
+
+nav#nav {
+   position:relative;
+   margin:0 auto;
+   width: 660px;
+}
+
+ul#navigation {
+   margin:0px auto;
+   position:relative;
+   float:left;
+   border-left:1px solid #C8DAE4;
+   border-right:1px solid #C8DAE4;
+}
+
+ul#navigation li {
+   display:inline;
+   font-size:11px;
+   font-weight:bold;
+   margin:0;
+   padding:0;
+   float:left;
+   position:relative;
+   border-top:1px solid #C8DAE4;
+   border-bottom:1px solid #C8DAE4;
+}
+
+ul#navigation li a {
+   padding:10px 25px;
+   color:#616161;
+   text-shadow:1px 1px 0px #fff;
+   text-decoration:none;
+   display:inline-block;
+   border-right:1px solid #fff;
+   border-left:1px solid #C2C2C2;
+   border-top:1px solid #fff;
+   background: #f5f5f5;
+   -webkit-transition:color 0.2s linear, background 0.2s linear;	
+   -moz-transition:color 0.2s linear, background 0.2s linear;	
+   -o-transition:color 0.2s linear, background 0.2s linear;	
+   transition:color 0.2s linear, background 0.2s linear;	
+}
+
+ul#navigation li a:hover {
+   background:#f8f8f8;
+   color:#282828;
+}
+
+ul#navigation li:hover > a {
+   background:#fff;
+}
+
+ul#navigation li:hover > ul {
+   visibility:visible;
+   opacity:1;
+}
+
+ul#navigation ul, ul#navigation ul li ul {
+   list-style: none;
+   margin: 0;
+   padding: 0;    
+   visibility:hidden;
+   position: absolute;
+   z-index: 99999;
+   width:180px;
+   background:#f8f8f8;
+   box-shadow:1px 1px 3px #ccc;
+   opacity:0;
+   -webkit-transition:opacity 0.2s linear, visibility 0.2s linear; 
+   -moz-transition:opacity 0.2s linear, visibility 0.2s linear; 
+   -o-transition:opacity 0.2s linear, visibility 0.2s linear; 
+   transition:opacity 0.2s linear, visibility 0.2s linear; 	
+}
+
+ul#navigation ul {
+   top: 43px;
+   left: 1px;
+}
+
+ul#navigation ul li ul {
+   top: 0;
+   left: 181px;
+}
+
+ul#navigation ul li {
+   clear:both;
+   width:100%;
+   border:0 none;
+   border-bottom:1px solid #c9c9c9;
+}
+
+ul#navigation ul li a {
+   background:none;
+   padding:7px 15px;
+   color:#616161;
+   text-shadow:1px 1px 0px #fff;
+   text-decoration:none;
+   display:inline-block;
+   border:0 none;
+   float:left;
+   clear:both;
+   width:150px;
+}
+
+ul#navigation li a.first {
+   border-left: 0 none;
+}
+
+ul#navigation li a.last {
+   border-right: 0 none;
+}
+
+ul#navigation li a.sub {
+   text-align:left;
+}
+
+ul, menu, dir {
+   -webkit-padding-start: 0px;
+}
+
+/* Wrapper Div */
+div.wrapper {
+   width:1000;
+}
+

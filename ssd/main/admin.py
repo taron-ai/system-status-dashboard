@@ -28,11 +28,14 @@ from ssd.main.models import Service
 from ssd.main.models import Incident
 from ssd.main.models import Incident_Update
 from ssd.main.models import Service_Issue
+from ssd.main.forms import ConfigAdminForm
 from django.contrib import admin
 
 
 class ConfigAdmin(admin.ModelAdmin):
     """Configuration parameters administration"""
+
+    form = ConfigAdminForm
 
     fieldsets = [
        ('Configuration Option',{'fields':['config_name','config_value']})

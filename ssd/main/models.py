@@ -55,7 +55,7 @@ class Incident(models.Model):
 
     # Represent the objects as unicode
     def __unicode__(self):
-        return u'%s' % (self.date)
+        return u'%s,%s' % (self.date,self.detail)
 
 
 class Incident_Update(models.Model):

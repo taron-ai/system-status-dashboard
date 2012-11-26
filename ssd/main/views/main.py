@@ -659,11 +659,15 @@ def escalation(request):
         if not settings.CONTACTS == True:
             return return_error(request,'Your system administrator has disabled this functionality')
 
+    # Obtain the escalation message
+    escalation = Config.objects.filter(config_name='escalation').values('config_value')
+
     # Print the page
     return render_to_response(
        'main/escalation.html',
        {
-          'title':'SSD Escalation Path'
+          'title':'SSD Escalation Path',
+          'escalation':escalation
        },
        context_instance=RequestContext(request)
     )

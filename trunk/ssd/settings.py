@@ -213,4 +213,4 @@ SSD_URL = ''
 
 # Load custom data - must point to your local_settings.py file and
 # may not be a relative path.
-#execfile('<<ENTER FULL PATH>>')
+#execfile('<< ENTER PATH HERE >>')

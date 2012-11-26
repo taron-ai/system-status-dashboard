@@ -24,4 +24,5 @@ INSERT INTO `main_config` VALUES ('7', 'maintenance', 'none');
 INSERT INTO `main_config` VALUES ('9', 'page_to', '<enter pager email address>');
 INSERT INTO `main_config` VALUES ('10', 'message_success', 'Your message has been successfully processed.  Our Engineers will be in touch.');
 INSERT INTO `main_config` VALUES ('11', 'message_error', 'There was an error processing your message.  Please contact your system administrator.');
+INSERT INTO `main_config` VALUES ('12', 'escalation', 'THERE IS CURRENTLY NO ESCALATION PATH DEFINED.');
 

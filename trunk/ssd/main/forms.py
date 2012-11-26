@@ -25,6 +25,7 @@
 
 import re
 from django import forms
+from ssd.main.models import Config
 
 
 ### FIELDS ###
@@ -243,3 +244,14 @@ class SearchForm(forms.Form):
 
     date_from = DateField()
     date_to = DateField()
+
+class ConfigAdminForm(forms.ModelForm):
+    """DJango form for creating a textarea to make it easier
+       to create/edit the configs
+
+    """
+
+    config_value = forms.CharField(widget=forms.Textarea)
+    class Meta:
+        model = Config
+

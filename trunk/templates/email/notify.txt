@@ -24,4 +24,4 @@ The following services have been impacted by this incident:
 
 
 * All times are in {{timezone}}
-You may visit the application status dashboard at any time for current information on the status of all services: {{link}}
+You may visit the System Status Dashboard at any time for current information on the status of all services: {{link}}

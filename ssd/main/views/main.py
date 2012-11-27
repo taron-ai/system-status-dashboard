@@ -459,8 +459,9 @@ def update(request):
                 Incident.objects.filter(id=id).update(closed=incident_time)
 
             # If an email update is being requested, send it
-            email = notify.email()
-            email.send(request.POST['id'],settings.SSD_URL,set_timezone,False)
+            if 'email' in request.POST:
+                email = notify.email()
+                email.send(request.POST['id'],settings.SSD_URL,set_timezone,False)
 
             # All done so redirect to the incident detail page so
             # the new data can be seen.

@@ -204,7 +204,7 @@ CONTACTS = True
 NOTIFY = True
 
 # App Version
-APP_VERSION = '1.0.2'
+APP_VERSION = '1.0.3'
 
 # SSD Url
 # This URL will appear on any links back to SSD 

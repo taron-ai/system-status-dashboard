@@ -84,7 +84,7 @@ def search(request):
                                                                'incident_id',
                                                                'incident__closed',
                                                                'incident__detail'
-                                                              ).distinct().order_by('incident__date')
+                                                              ).distinct().order_by('-incident__date')
             # Search for open/closed incidents
             else:
                 results = Service_Issue.objects.filter(incident__closed__isnull=status,
@@ -94,7 +94,7 @@ def search(request):
                                                                'incident_id',
                                                                'incident__closed',
                                                                'incident__detail'
-                                                              ).distinct().order_by('incident__date')
+                                                              ).distinct().order_by('-incident__date')
 
             # Activate the timezone so the template can use it during rendering
             jtz.activate(set_timezone)
@@ -172,7 +172,7 @@ def rsearch(request):
                                                                                'email',
                                                                                'description',
                                                                                'additional'
-                                                                              ).order_by('id')
+                                                                              ).order_by('-id')
 
             # Activate the timezone so the template can use it during rendering
             jtz.activate(set_timezone)
@@ -199,6 +199,32 @@ def rsearch(request):
        {
           'title':'SSD Incident Report Search',
           'form':form
+       },
+       context_instance=RequestContext(request)
+    )
+
+
+def rsearch_recent(request):
+    """Recent Incident Report Search View
+
+    Allow a user to search through the most recent user reported incidents using specific search
+    criteria
+
+    """
+
+    results = Report.objects.values('id',
+                                    'date',
+                                    'name',
+                                    'email',
+                                    'description',
+                                    'additional'
+                                   ).order_by('-id')[:5]
+
+    return render_to_response(
+       'main/rsearch_results.html',
+       {
+          'title':'SSD Incident Report Results',
+          'results':results
        },
        context_instance=RequestContext(request)
     )

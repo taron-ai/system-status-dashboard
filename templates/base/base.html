@@ -34,9 +34,10 @@
    {% endif %}
    <li><a href="#">SEARCH &raquo;</a>
     <ul>
-     <li><a class="sub" href="/search">Incidents</a></li>
+     <li><a class="sub" href="/search" title="Search incidents by date and/or text">Incidents</a></li>
      {% if report_incident %}
-     <li><a class="sub" href="/rsearch">Incident Reports</a></li>
+     <li><a class="sub" href="/rsearch" title="Search incident reports by date and/or text">Incident Reports</a></li>
+     <li><a class="sub" href="/rsearch_recent" title="Display the most recent 5 incident reports">Recent Incident Reports</a></li>
      {% endif %}
     </ul>
    </li>

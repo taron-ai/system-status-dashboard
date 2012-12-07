@@ -27,6 +27,7 @@
      <th>Email</th>
      <th>Description</th>
      <th>Additional Information</th>
+     <th>Screenshots</th>
     </tr>
 
     {% for row in results %}
@@ -37,6 +38,10 @@
      <td>{{row.email}}</td>
      <td style="width:250;">{{row.description}}</td>
      <td style="width:250;">{{row.additional}}</td>
+     <td>
+      {% if row.screenshot1 %}<a href="/uploads/{{row.screenshot1}}">view</a>{% endif %}
+      {% if row.screenshot2 %}<a href="/uploads/{{row.screenshot2}}">view</a>{% endif %}
+     </td>
     </tr>
     {% endfor %}
    </table>

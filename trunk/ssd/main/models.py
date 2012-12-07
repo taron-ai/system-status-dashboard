@@ -23,6 +23,9 @@
 
 
 from django.db import models
+import os
+import time
+import uuid
 
 
 class Config(models.Model):
@@ -80,12 +83,29 @@ class Service_Issue(models.Model):
     def __unicode__(self):
         return u'%s %s' % (self.service_name,self.incident)
 
-
 class Report(models.Model):
     """User reported issues"""
+
+    def _upload_to(instance, filename):
+        """Rename uploaded images to a random (standard) name"""
+
+        # Setup the file path to be unique so we don't fill up directories
+        file_path = time.strftime('%Y/%m/%d')
+
+        # Create a unique filename
+        #instance.uuid = uuid.uuid4().hex
+        file_name = uuid.uuid4().hex
+
+        # Save the original extension, if its there
+        extension = os.path.splitext(filename)[1]
+
+        # Return the path and file
+        return 'screenshots/%s/%s%s' % (file_path,file_name,extension)
 
     date = models.DateTimeField(null=False,blank=False)
     name = models.CharField(null=False,blank=False,max_length=50);
     email = models.CharField(null=False,blank=False,max_length=50);
     description = models.CharField(null=False,blank=False,max_length=160);
     additional = models.CharField(blank=True,max_length=1000);
+    screenshot1 = models.ImageField(upload_to=_upload_to)
+    screenshot2 = models.ImageField(upload_to=_upload_to)

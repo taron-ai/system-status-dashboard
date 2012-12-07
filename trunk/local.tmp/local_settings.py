@@ -43,3 +43,4 @@ TEMPLATE_DIRS = (
 #TIME_ZONE = ''
 #LOGO = ''
 #SSD_URL = ''
+#MEDIA_ROOT = ''

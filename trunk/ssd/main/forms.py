@@ -25,11 +25,20 @@
 
 import re
 from django import forms
+from django.conf import settings
 from ssd.main.models import Config
 
 
-### FIELDS ###
+### VALIDATORS ###
 
+def file_size(value):
+    """Ensure file size is below maximum allowed"""
+
+    if value.size > settings.MAX_FILE_SIZE * 1024 * 1024:
+        raise forms.ValidationError('File too large - please reduce the size of the upload to below %s MB' % settings.MAX_FILE_SIZE)
+
+
+### FIELDS ###
 
 class IdField(forms.Field):
     """A numeric ID field
@@ -137,22 +146,6 @@ class NameField(forms.Field):
             raise forms.ValidationError('Invalid characters entered')
 
 
-class EmailField(forms.Field):
-    """Generic textfield for a user's email address
-
-       Requirements:
-          - Must not be empty
-          - Must contain only alpha-numeric and '@.-'
-
-    """
-
-    def validate(self, value):
-        if value is None or value == '':
-            raise forms.ValidationError('No data entered')
-        if not re.match(r'^[0-9a-zA-Z@\.\-]+$', value):
-            raise forms.ValidationError('Invalid characters entered')
-
-
 class DescriptionField(forms.Field):
     """Generic textarea for the incident description
 
@@ -208,6 +201,7 @@ class AddIncidentForm(forms.Form):
     detail = DetailField()
     service = MultipleServiceField()
 
+
 class UpdateIncidentForm(forms.Form):
     """Form for updating an existing incident"""
 
@@ -217,23 +211,29 @@ class UpdateIncidentForm(forms.Form):
     id = IdField()
     service = MultipleServiceField()
 
+
 class UpdateTZForm(forms.Form):
     """Form for setting or updating the timezone"""
 
     timezone = TZField()
+
 
 class JumpToForm(forms.Form):
     """Form for setting the calendar view date"""
 
     jump_to = DateField()
 
+
 class ReportIncidentForm(forms.Form):
     """Form for reporting an incident (by a user)"""
 
     name = NameField()
-    email = EmailField()
+    email = forms.EmailField()
     description = DescriptionField()
     additional = AdditionalDescriptionField()
+    screenshot1 = forms.ImageField(required=False,validators=[file_size])
+    screenshot2 = forms.ImageField(required=False,validators=[file_size])
+
 
 class SearchForm(forms.Form):
     """Form for searching through incidents
@@ -245,8 +245,9 @@ class SearchForm(forms.Form):
     date_from = DateField()
     date_to = DateField()
 
+
 class ConfigAdminForm(forms.ModelForm):
-    """DJango form for creating a textarea to make it easier
+    """DJango form for creating a larger textarea to make it easier
        to create/edit the configs
 
     """

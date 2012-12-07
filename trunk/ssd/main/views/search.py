@@ -171,7 +171,9 @@ def rsearch(request):
                                                                                'name',
                                                                                'email',
                                                                                'description',
-                                                                               'additional'
+                                                                               'additional',
+                                                                               'screenshot1',
+                                                                               'screenshot2'
                                                                               ).order_by('-id')
 
             # Activate the timezone so the template can use it during rendering
@@ -217,7 +219,9 @@ def rsearch_recent(request):
                                     'name',
                                     'email',
                                     'description',
-                                    'additional'
+                                    'additional',
+                                    'screenshot1',
+                                    'screenshot2'
                                    ).order_by('-id')[:5]
 
     return render_to_response(

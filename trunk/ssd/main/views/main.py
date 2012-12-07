@@ -84,7 +84,7 @@ def report(request):
     # action, otherwise print the index page
     if request.method == 'POST':
         # Check the form elements
-        form = ReportIncidentForm(request.POST)
+        form = ReportIncidentForm(request.POST, request.FILES)
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -100,7 +100,24 @@ def report(request):
             report_time = pytz.timezone(settings.TIME_ZONE).localize(report_time)
 
             # Save the data
-            Report(date=report_time,name=name,email=email,description=description,additional=additional).save()
+            if 'screenshot1' in request.FILES:
+                screenshot1 = request.FILES['screenshot1']
+            else:
+                screenshot1 = ''
+
+            if 'screenshot2' in request.FILES:
+                screenshot2 = request.FILES['screenshot2']
+            else:
+                screenshot2 = ''
+
+            Report(date=report_time,
+                   name=name,
+                   email=email,
+                   description=description,
+                   additional=additional,
+                   screenshot1=screenshot1,
+                   screenshot2=screenshot2,
+                  ).save()
 
             # If notifications are turned on, report the issue to the pager 
             # and save the return value for the confirmation page
@@ -132,7 +149,7 @@ def report(request):
 
     # Ok, its a GET so create a blank form
     else:
-        form = AddIncidentForm()
+        form = ReportIncidentForm()
 
     # Print the page
     # On a POST, the form will give back error values for printing in the template

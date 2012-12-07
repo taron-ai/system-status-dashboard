@@ -1,0 +1,27 @@
+Dear {{company.0.config_value}}, {{greeting.0.config_value}}
+
+Incident Status: {% if detail.0.closed %}CLOSED({{detail.0.closed}}){% else %}OPEN{% endif %}
+
+The following services have been impacted by this incident:
+{% if services %}
+ {% for row in services %}
+ - {{row.service_name_id__service_name}}
+ {% endfor %}
+{% else %}
+ - NO SERVICES DEFINED
+{% endif %}
+
+{{detail.0.date|date:"Y-m-d H:i:s"}}
+{{detail.0.detail}}
+
+
+{% if updates %}
+ {% for row in updates %}
+   {{row.date|date:"Y-m-d H:i:s"}}
+   {{row.detail}}
+ {% endfor %}
+{% endif %}
+
+
+* All times are in {{timezone}}
+You may visit the System Status Dashboard at any time for current information on the status of all services: {{link}}

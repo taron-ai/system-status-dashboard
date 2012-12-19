@@ -44,3 +44,4 @@ TEMPLATE_DIRS = (
 #LOGO = ''
 #SSD_URL = ''
 #MEDIA_ROOT = ''
+#MAX_FILE_SIZE = ''

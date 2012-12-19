@@ -100,6 +100,7 @@ def report(request):
             report_time = pytz.timezone(settings.TIME_ZONE).localize(report_time)
 
             # Save the data
+
             if 'screenshot1' in request.FILES:
                 screenshot1 = request.FILES['screenshot1']
             else:
@@ -147,7 +148,7 @@ def report(request):
                 context_instance=RequestContext(request)
              )
 
-    # Ok, its a GET so create a blank form
+    # Ok, its a GET or an invalid form so create a blank form
     else:
         form = ReportIncidentForm()
 

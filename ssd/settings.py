@@ -4,7 +4,7 @@
 import os
 os.environ['LANG'] = 'en_US.UTF-8'
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -135,6 +135,9 @@ INSTALLED_APPS = (
 
 #### SSD SPECIFIC CONFIGURATION ####
 
+# All of these settings should be changed in local_settings.py and
+# not here, otherwise they'll be overridden if an upgrade is performed
+
 # Maximum uploaded file size (in MB)
 MAX_FILE_SIZE = 1
 
@@ -146,7 +149,7 @@ NAV = True
 
 # If set to True, the 'Report Incident' tab will appear in the nav.
 # If you have this set to true, you should also show the NAV header
-# If this is not set to True, the view also will not work and will 
+# If this is not set to True, the view will not work and will 
 # give the user an error
 REPORT_INCIDENT = True
 
@@ -175,6 +178,6 @@ APP_VERSION = '1.0.5'
 # (e.g. links in email communication sent from SSD)
 SSD_URL = ''
 
-# Load custom settings - must point to your local_settings.py file and
+# Load custom settings - must point to the local_settings.py file and
 # may not be a relative path.
-execfile('/opt/ssd-local/local_settings.py')
+execfile('$__local_dir__$')

@@ -177,4 +177,4 @@ SSD_URL = ''
 
 # Load custom settings - must point to your local_settings.py file and
 # may not be a relative path.
-execfile('$__local_dir__%/ssd-local/local_settings.py')
+execfile('$__local_dir__$/ssd-local/local_settings.py')

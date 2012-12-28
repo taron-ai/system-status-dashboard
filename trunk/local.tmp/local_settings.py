@@ -18,17 +18,15 @@ DATABASES = {
     'default': {
         'ENGINE'   : 'django.db.backends.mysql',
         'NAME'     : 'ssd',
-        'USER'     : '<<ENTER DATABASE USER NAME>>',       
-        'PASSWORD' : '<<ENTER DATABASE USER PASSWORD>>', 
-        'HOST'     : '', # Leave blank if the database is on the local host
-        'PORT'     : '', # Leave blank if the default mysql port is being used        
+        'USER'     : '$__db_user__$',    
+        'PASSWORD' : '$__db_pass__$', 
+        'HOST'     : '$__db_host__$', 
     }
 }
-SECRET_KEY = '<<ENTER SECRET KEY>>'
-TEMPLATE_DIRS = (
-    '<<ENTER FULL PATH>>/templates'
+SECRET_KEY = '$__secret_key__$'
+TEMPLATE_DIRS = ( 
+    '$__app_dir__$/templates'
 )
-
 
 
 ### Optional ###

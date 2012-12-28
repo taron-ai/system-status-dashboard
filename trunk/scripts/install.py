@@ -146,9 +146,9 @@ def apache_symlink(dst_local,web_conf):
     # If the symlink is already there, remove it
     try:
         if os.path.exists('%s/wsgi.conf' % web_conf):
-            if os.path.islink('%s/wsgi.conf' % web_conf):
-                print '%s/wsgi.conf symlink exists, removing and recreating it' % dst_local
-                os.unlink('%s/wsgi.conf' % web_conf)
+            #if os.path.islink('%s/wsgi.conf' % web_conf):
+            print '%s/wsgi.conf symlink exists, removing and recreating it' % dst_local
+            os.unlink('%s/wsgi.conf' % web_conf)
         os.symlink('%s/wsgi.conf' % dst_local,'%s/wsgi.conf' % web_conf)
     except Exception, e:
         terminate(e)

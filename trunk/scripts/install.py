@@ -58,7 +58,7 @@ def customize_settings(app_dir,dst_local):
         terminate(e)
 
 
-def customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,apache_uid):
+def customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,apache_uid,upload_dir):
     """Customize the SSD local_settings.py file"""
 
     try:
@@ -74,6 +74,9 @@ def customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,a
 
         # Add the template information
         s_ls = s_ls.replace('$__app_dir__$',app_dir)
+
+        # Add the screenshot upload information
+        s_ls = s_ls.replace('$__upload_dir__$',upload_dir)
 
         # Add the secret key
         secret_key = "".join([random.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50)])
@@ -91,7 +94,7 @@ def customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,a
         terminate(e)
 
 
-def customize_wsgi_conf(app_dir,django_admin,dst_local):
+def customize_wsgi_conf(app_dir,django_admin,dst_local,upload_dir):
     """Customize the SSD wsgi.conf file"""
 
     print 'Customizing %s/wsgi.conf for your installation' % dst_local
@@ -109,12 +112,32 @@ def customize_wsgi_conf(app_dir,django_admin,dst_local):
         # Add the path to the DJango admin html static assets
         s_wc = s_wc.replace('$__django_admin__$',django_admin)
 
+        # Add the path to the Screenshot upload directory
+        s_wc = s_wc.replace('$__upload_dir__$',upload_dir)
+
         # Write out the new file
         f_wc = open('%s/wsgi.conf' % dst_local,'w')
         f_wc.write(s_wc)
         f_wc.close() 
     except Exception, e:
         terminate(e)
+
+
+def create_upload(upload_dir,apache_uid):
+    print 'Creating upload directory:%s/uploads' % upload_dir
+    # Create the upload directory if its not already there
+    if not os.path.exists('%s/uploads' % upload_dir):
+        try:
+            os.makedirs('%s/uploads' % upload_dir)
+        except Exception, e:
+            terminate(e)
+    else:
+        print 'Upload directory already exists'
+
+    # Ensure this is writeable by the Apache user
+    print 'Setting permissions on upload directory'
+    os.chown('%s/uploads' % upload_dir,int(apache_uid),-1)
+    os.chmod('%s/uploads' % upload_dir,0700)
 
 
 def customize_wsgi_py(app_dir,dst_local):
@@ -146,7 +169,6 @@ def apache_symlink(dst_local,web_conf):
     # If the symlink is already there, remove it
     try:
         if os.path.exists('%s/wsgi.conf' % web_conf):
-            #if os.path.islink('%s/wsgi.conf' % web_conf):
             print '%s/wsgi.conf symlink exists, removing and recreating it' % dst_local
             os.unlink('%s/wsgi.conf' % web_conf)
         os.symlink('%s/wsgi.conf' % dst_local,'%s/wsgi.conf' % web_conf)
@@ -225,6 +247,7 @@ def install():
     db_port=raw_input('7: Enter the database port\n#>')
     django_admin=raw_input('8: Enter the path to the DJango admin static files\n#>')
     apache_uid=raw_input('9: Enter the uid of the apache user\n#>')
+    upload_dir=raw_input('10: Enter the path to the screenshot upload directory\n#>')
 
     print """You have entered the following options:\n
             - SSD Source            : %s
@@ -236,8 +259,9 @@ def install():
             - Database Port         : %s
             - DJango Admin Location : %s
             - Apache UID            : %s
+            - Screenshot Directory  : %s
 
-         """ % (ssd_src,local_dir,web_conf,db_user,db_host,db_port,django_admin,apache_uid)
+         """ % (ssd_src,local_dir,web_conf,db_user,db_host,db_port,django_admin,apache_uid,upload_dir)
 
     proceed=raw_input('Proceed with installation (y/n)\n#>')
 
@@ -265,10 +289,10 @@ def install():
     copy_local(src_local,dst_local)
 
     # Customize the new local_setting.py file
-    customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,apache_uid)
+    customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,apache_uid,upload_dir)
 
     # Customize the new wsgi.conf file
-    customize_wsgi_conf(app_dir,django_admin,dst_local)
+    customize_wsgi_conf(app_dir,django_admin,dst_local,upload_dir)
 
     # Customize the new wsgi.py file
     customize_wsgi_py(app_dir,dst_local)
@@ -279,6 +303,8 @@ def install():
     # Customize settings.py to add the path the local_settings.py file
     customize_settings(app_dir,dst_local)
 
+    # Create the screenshot upload directory
+    create_upload(upload_dir,apache_uid)
 
 def upgrade():
     """Perform an upgrade of SSD"""

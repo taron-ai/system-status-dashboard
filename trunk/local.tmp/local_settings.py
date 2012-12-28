@@ -36,10 +36,10 @@ TEMPLATE_DIRS = (
 
 #NAV = True
 #REPORT_INCIDENT = True
+MEDIA_ROOT = '$__upload_dir__$/uploads'
 #CONTACTS = True
 #NOTIFY = True
 #TIME_ZONE = ''
 #LOGO = ''
 #SSD_URL = ''
-#MEDIA_ROOT = ''
 #MAX_FILE_SIZE = ''

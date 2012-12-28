@@ -4,7 +4,7 @@
 import os
 os.environ['LANG'] = 'en_US.UTF-8'
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -177,4 +177,4 @@ SSD_URL = ''
 
 # Load custom settings - must point to your local_settings.py file and
 # may not be a relative path.
-execfile('$__local_dir__$/ssd-local/local_settings.py')
+execfile('/opt/ssd-local/local_settings.py')

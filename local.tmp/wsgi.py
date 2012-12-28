@@ -31,6 +31,6 @@ application = get_wsgi_application()
 # Add the SSD project app path to the system path
 # This is the directory that contains manage.py and the top 
 # level ssd directory
-path = '/<<ENTER FULL PATH>>'
+path = '$__app_dir__$'
 if path not in sys.path:
     sys.path.append(path)

@@ -1,8 +1,8 @@
 # The following two lines are required if an error occurs when creating the Django admin
 # account after running syncdb for the first time.  If the error occurs, delete the database
 # uncomment these two lines and run syncdb again.  You may comment these out after, if desired
-#import os
-#os.environ['LANG'] = 'en_US.UTF-8'
+import os
+os.environ['LANG'] = 'en_US.UTF-8'
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -118,16 +118,6 @@ ROOT_URLCONF = 'ssd.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'ssd.wsgi.application'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
-# Make this unique, and don't share it with anybody.
-# Used to provide cryptographic signing.
-SECRET_KEY = ''
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,35 +131,6 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'ssd.main'
 )
-
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
-}
 
 
 #### SSD SPECIFIC CONFIGURATION ####
@@ -216,4 +177,4 @@ SSD_URL = ''
 
 # Load custom settings - must point to your local_settings.py file and
 # may not be a relative path.
-#execfile('<< ENTER PATH HERE >>')
+execfile('$__local_dir__%/ssd-local/local_settings.py')

@@ -214,6 +214,16 @@ def rsearch_recent(request):
 
     """
 
+    # Give the dates a timezone so search is accurate
+    # If the timezone is not set, give the local server timezone
+    if request.COOKIES.get('timezone') == None:
+        set_timezone = settings.TIME_ZONE
+    else:
+        set_timezone = request.COOKIES.get('timezone')
+
+    # Activate the timezone so the template can use it during rendering
+    jtz.activate(set_timezone)
+
     results = Report.objects.values('id',
                                     'date',
                                     'name',

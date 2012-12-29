@@ -313,14 +313,12 @@ def upgrade():
 
     ssd_src=raw_input("1: Please enter the path to the SSD source\n#>")
     local_dir=raw_input('2: Please enter the existing local directory location\n#>')
-    apache_uid=raw_input('3: Please enter the uid of the apache user\n#>')
 
     print """You have entered the following options:\n
             - SSD Source            : %s
             - Local Directory       : %s
-            - Apache UID            : %s
 
-         """ % (ssd_src,local_dir,apache_uid)
+         """ % (ssd_src,local_dir)
 
     proceed=raw_input('Proceed with upgrade (y/n)\n#>')
 

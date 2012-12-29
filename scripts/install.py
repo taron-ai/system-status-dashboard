@@ -311,8 +311,8 @@ def upgrade():
 
     print 'PERFORMING SSD UPGRADE:\n'  
 
-    ssd_src=raw_input("1: Please enter the path to the SSD source\n#>")
-    local_dir=raw_input('2: Please enter the existing local directory location\n#>')
+    ssd_src=raw_input("1: Enter the path to the SSD source\n#>")
+    local_dir=raw_input('2: Enter the existing local directory location\n#>')
 
     print """You have entered the following options:\n
             - SSD Source            : %s

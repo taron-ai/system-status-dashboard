@@ -1,0 +1,95 @@
+<table width="670px">
+
+ <tr>
+  <td>
+   <p style="font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:14px;">
+    Dear {{company.0.config_value}}, {{greeting.0.config_value}}
+   </p>
+  </td>
+ </tr>
+
+ <tr>
+  <td height="10"></td>
+ </tr>
+
+ <tr>
+  <td>
+   <p style="font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:14px;">
+    Incident Status: 
+    <b>
+     {% if detail.0.closed %}
+     CLOSED ({{detail.0.closed}})
+     {% else %}
+     OPEN
+     {% endif %}
+    </b>
+   </p>
+  </td>
+ </tr>
+
+ <tr>
+  <td height="10"></td>
+ </tr>
+
+ <tr>
+  <td>
+   <p style="font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:14px;">
+    The following services have been impacted by this incident:
+    <br>
+   {% if services %}
+   {% for row in services %}
+   <b>- {{row.service_name_id__service_name}}</b>
+    <br>
+   {% endfor %}
+   {% else %}
+   <b><font color="red">- NO SERVICES DEFINED</font></b>
+   {% endif %}
+   </p>
+  </td>
+ </tr>
+
+ <tr>
+  <td height="20"></td>
+ </tr>
+
+ <tr>
+  <td>
+   <table style="font-family: Tahoma, Arial, Helvetica, sans-serif; border-collapse:collapse;">
+    <tr>
+     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black; width:165px">Time</th>
+     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black; width:500px">Description</th>
+    </tr>
+    <tr>
+     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.date|date:"Y-m-d H:i:s"}}</td>
+     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.detail}}</td>
+    </tr>
+
+    {% if updates %}
+     {% for row in updates %}
+      <tr>
+       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s"}}</td>
+       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail}}</td>
+      </tr>
+     {% endfor %}
+    {% endif %}
+   </table>
+  </td>
+ </tr> 
+
+ <tr>
+  <td><p style="font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:12px;">* All times are in {{timezone}}</p></td>
+ </tr>
+
+ <tr>
+  <td height="15"></td>
+ </tr>
+
+ <tr>
+  <td>
+   <p style="font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:12px;">
+    You may visit the System Status Dashboard at any time for current information on the status of all services: <a href="{{link}}">Status Dashboard</a> 
+   </p>
+  </td>
+ </tr>
+
+</table>

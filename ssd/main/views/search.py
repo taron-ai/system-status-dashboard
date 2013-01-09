@@ -96,7 +96,7 @@ def search(request):
                                                                'incident__detail'
                                                               ).distinct().order_by('-incident__date')
 
-            # Activate the timezone so the template can use it during rendering
+            # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
             jtz.activate(set_timezone)
 
             # Print the page
@@ -176,7 +176,7 @@ def rsearch(request):
                                                                                'screenshot2'
                                                                               ).order_by('-id')
 
-            # Activate the timezone so the template can use it during rendering
+            # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
             jtz.activate(set_timezone)
 
             # Print the page

@@ -312,7 +312,7 @@ def index(request):
     # Obtain all timezones
     timezones = pytz.all_timezones
 
-    # Activate the timezone so the template can use it during rendering
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
     # Print the page
@@ -365,7 +365,7 @@ def detail(request):
     else:
         set_timezone = request.COOKIES.get('timezone')
 
-    # Activate the timezone so the template can use it during rendering
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
     # Print the page
@@ -546,7 +546,7 @@ def update(request):
         # Add the dict
         affected_services.append(dict)
 
-    # Activate the timezone so the template can use it during rendering
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
     # Print the page
@@ -649,7 +649,7 @@ def create(request):
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
 
-    # Activate the timezone so the template can use it during rendering
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
     # Print the page

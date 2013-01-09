@@ -104,9 +104,7 @@ class email:
         else:
             greeting = Config.objects.filter(config_name='greeting_update').values('config_value')
 
-        # Activate the timezone so the template can use it during rendering
-        # This should actually be available in the template as variable TIME_ZONE
-        # but its not so manually pass in the timezone
+        # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
         jtz.activate(set_timezone)
 
         d = Context({ 

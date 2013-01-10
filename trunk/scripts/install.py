@@ -94,7 +94,7 @@ def customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,a
         terminate(e)
 
 
-def customize_wsgi_conf(app_dir,django_admin,dst_local,upload_dir):
+def customize_wsgi_conf(app_dir,django_admin,dst_local,wsgi_dir,upload_dir):
     """Customize the SSD wsgi.conf file"""
 
     print 'Customizing %s/wsgi.conf for your installation' % dst_local
@@ -111,6 +111,9 @@ def customize_wsgi_conf(app_dir,django_admin,dst_local,upload_dir):
 
         # Add the path to the DJango admin html static assets
         s_wc = s_wc.replace('$__django_admin__$',django_admin)
+
+        # Add the path to the Apache mod_wsgi.so module
+        s_wc = s_wc.replace('$__wsgi_dir__$',wsgi_dir)
 
         # Add the path to the Screenshot upload directory
         s_wc = s_wc.replace('$__upload_dir__$',upload_dir)
@@ -247,7 +250,8 @@ def install():
     db_port=raw_input('7: Enter the database port\n#>')
     django_admin=raw_input('8: Enter the path to the DJango admin static files\n#>')
     apache_uid=raw_input('9: Enter the uid of the apache user\n#>')
-    upload_dir=raw_input('10: Enter the path to the screenshot upload directory\n#>')
+    wsgi_dir=raw_input('10: Enter the path to the Apache mod_wsgi.so module\n#>')
+    upload_dir=raw_input('11: Enter the path to the screenshot upload directory\n#>')
 
     print """You have entered the following options:\n
             - SSD Source            : %s
@@ -259,9 +263,10 @@ def install():
             - Database Port         : %s
             - DJango Admin Location : %s
             - Apache UID            : %s
+            - Path to mod_wsgi.so   : %s
             - Screenshot Directory  : %s
 
-         """ % (ssd_src,local_dir,web_conf,db_user,db_host,db_port,django_admin,apache_uid,upload_dir)
+         """ % (ssd_src,local_dir,web_conf,db_user,db_host,db_port,django_admin,apache_uid,wsgi_dir,upload_dir)
 
     proceed=raw_input('Proceed with installation (y/n)\n#>')
 
@@ -292,7 +297,7 @@ def install():
     customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,apache_uid,upload_dir)
 
     # Customize the new wsgi.conf file
-    customize_wsgi_conf(app_dir,django_admin,dst_local,upload_dir)
+    customize_wsgi_conf(app_dir,django_admin,dst_local,wsgi_dir,upload_dir)
 
     # Customize the new wsgi.py file
     customize_wsgi_py(app_dir,dst_local)

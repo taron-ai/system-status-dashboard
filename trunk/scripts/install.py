@@ -253,7 +253,7 @@ def install():
     wsgi_dir=raw_input('10: Enter the path to the Apache mod_wsgi.so module\n#>')
     upload_dir=raw_input('11: Enter the path to the screenshot upload directory\n#>')
 
-    print """You have entered the following options:\n
+    install_text = """You have entered the following options:\n
             - SSD Source            : %s
             - Local Directory       : %s
             - Apache Conf Directory : %s
@@ -268,6 +268,7 @@ def install():
 
          """ % (ssd_src,local_dir,web_conf,db_user,db_host,db_port,django_admin,apache_uid,wsgi_dir,upload_dir)
 
+    print install_text
     proceed=raw_input('Proceed with installation (y/n)\n#>')
 
     if proceed == 'y':
@@ -276,6 +277,10 @@ def install():
         print 'Exiting installation without modifying anything.'
         exit(0)
 
+    # Write out the install file for debugging issues later
+    install_file = open('install.txt','w')
+    install_file.write(install_text)
+    install_file.close() 
 
     # Determine the SSD source directory and path
     app_dir,ssd_src_dir = split_directories(ssd_src)
@@ -311,6 +316,7 @@ def install():
     # Create the screenshot upload directory
     create_upload(upload_dir,apache_uid)
 
+
 def upgrade():
     """Perform an upgrade of SSD"""
 
@@ -319,12 +325,13 @@ def upgrade():
     ssd_src=raw_input("1: Enter the path to the SSD source\n#>")
     local_dir=raw_input('2: Enter the existing local directory location\n#>')
 
-    print """You have entered the following options:\n
+    upgrade_text = """You have entered the following options:\n
             - SSD Source            : %s
             - Local Directory       : %s
 
          """ % (ssd_src,local_dir)
 
+    print upgrade_text
     proceed=raw_input('Proceed with upgrade (y/n)\n#>')
 
     if proceed == 'y':
@@ -332,6 +339,11 @@ def upgrade():
     else:
         print 'Exiting upgrade without modifying anything.'
         exit(0)
+
+    # Write out the upgrade file for debugging issues later
+    upgrade_file = open('upgrade.txt','w')
+    upgrade_file.write(upgrade_text)
+    upgrade_file.close() 
 
     # Determine the SSD source directory and path
     app_dir,ssd_src_dir = split_directories(ssd_src)

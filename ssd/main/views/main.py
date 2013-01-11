@@ -133,8 +133,8 @@ def report(request):
                 pager_status = 'success'
 
             # Give them a confirmation page
-            message_success = Config.objects.filter(config_name='message_success').values('config_value')
-            message_error = Config.objects.filter(config_name='message_error').values('config_value')
+            message_success = Config.objects.filter(config_name='message_success').values('config_value')[0]['config_value']
+            message_error = Config.objects.filter(config_name='message_error').values('config_value')[0]['config_value']
 
             # Print the page
             return render_to_response(
@@ -154,11 +154,16 @@ def report(request):
 
     # Print the page
     # On a POST, the form will give back error values for printing in the template
+
+    # Obtain the report incident help message
+    report_incident_help = Config.objects.filter(config_name='report_incident_help').values('config_value')[0]['config_value']
+
     return render_to_response(
        'main/report.html',
        {
           'title':'SSD Report Incident',
-          'form':form
+          'form':form,
+          'report_incident_help':report_incident_help
        },
        context_instance=RequestContext(request)
     )
@@ -306,8 +311,8 @@ def index(request):
         # Add the main row to our data dict
         data.append(row)
   
-    # Obtain some config values
-    maintenance = Config.objects.filter(config_name='maintenance').values('config_value')
+    # Obtain the maintenance text (if there)
+    maintenance = Config.objects.filter(config_name='maintenance').values('config_value')[0]['config_value']
 
     # Obtain all timezones
     timezones = pytz.all_timezones
@@ -652,6 +657,9 @@ def create(request):
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
+    # Obtain the create incident help message
+    create_incident_help = Config.objects.filter(config_name='create_incident_help').values('config_value')[0]['config_value']
+
     # Print the page
     return render_to_response(
        'main/create.html',
@@ -659,7 +667,8 @@ def create(request):
           'title':'SSD Create Issue',
           'services':services,
           'form':form,
-          'time_now':time_now
+          'time_now':time_now,
+          'create_incident_help':create_incident_help
        },
        context_instance=RequestContext(request)
     )
@@ -679,7 +688,7 @@ def escalation(request):
             return return_error(request,'Your system administrator has disabled this functionality')
 
     # Obtain the escalation message
-    escalation = Config.objects.filter(config_name='escalation').values('config_value')
+    escalation = Config.objects.filter(config_name='escalation').values('config_value')[0]['config_value']
 
     # Print the page
     return render_to_response(

@@ -1,0 +1,154 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2012 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<form enctype="multipart/form-data" method="POST" name="report" id="report" action="/report">
+   {% csrf_token %}
+
+<table class="top">
+
+ <tr>
+  <td style="text-align: left;" colspan="2">
+   <p class="title">Report Incident</p>
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="2">
+   <div class="help-report">
+    {{report_incident_help|safe}}
+   </div>
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="2" height="25">
+   <hr>
+  </td>
+ </tr>
+
+ <tr>
+  <td valign="top">
+   <b>Your Name</b>*
+  </td>
+  <td>
+   <input type="text" class="input_contact" name="name" id="name" maxlength="50" value="{% if not form.name.data == None %}{{form.name.data}}{% endif %}"/>
+   {% if form.name.errors %}
+   <p class="error">
+   {% for error in form.name.errors %}{{error}}{% endfor %}
+   </p>
+   {% endif %}
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="2" height="15"></td>
+ </tr>
+
+ <tr>
+  <td valign="top">
+   <b>Your Email<br>Address</b>*
+  </td>
+  <td>
+   <input type="text" class="input_contact" name="email" id="email" maxlength="50" value="{% if not form.email.data == None %}{{form.email.data}}{% endif %}"/>
+   {% if form.email.errors %}
+   <p class="error">
+   {% for error in form.email.errors %}{{error}}{% endfor %}
+   </p>
+   {% endif %}
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="2" height="15"></td>
+ </tr>
+
+ <tr>
+  <td valign="top">
+   <b>Brief<br>Incident<br>Description</b>*
+  </td>
+  <td>
+   <textarea class="textarea_detail_1" id="description" name="description" maxlength="160">{% if not form.description.data == None %}{{form.description.data}}{% endif %}</textarea>
+   {% if form.description.errors %}
+   <p class="error">
+   {% for error in form.description.errors %}{{error}}{% endfor %}
+   </p>
+   {% endif %}
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="2" height="15"></td>
+ </tr>
+
+ <tr>
+  <td valign="top">
+   <b>Additional<br>Information</b>
+  </td>
+  <td>
+   <textarea class="textarea_detail_2" id="additional" name="additional" maxlength="1000">{% if not form.additional.data == None %}{{form.additional.data}}{% endif %}</textarea>
+   {% if form.additional.errors %}
+   <p class="error">
+   {% for error in form.additional.errors %}{{error}}{% endfor %}
+   </p>
+   {% endif %}
+  </td>
+ </tr>
+
+ <tr>
+  <td valign="top">
+   <b>Attach<br>Screenshots</b>
+  </td>
+  <td>
+   {{form.screenshot1}}
+   {% if form.screenshot1.errors %}
+   <p class="error">
+   {% for error in form.screenshot1.errors %}{{error}}{% endfor %}
+   </p>
+   {% endif %}
+  </td>
+ </tr>
+
+ <tr>
+  <td></td>
+  <td>
+   {{form.screenshot2}}
+   {% if form.screenshot2.errors %}
+   <p class="error">
+   {% for error in form.screenshot2.errors %}{{error}}{% endfor %}
+   </p>
+   {% endif %}
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="2" style="text-align: right;">
+   <input type="submit" value="submit"/>
+  </td>
+ </tr>
+
+</table>
+</form>
+
+{% endblock %}
+
+
+

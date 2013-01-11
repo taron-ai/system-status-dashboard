@@ -9,7 +9,7 @@ CREATE TABLE `main_config` (
   `config_name` varchar(50) NOT NULL,
   `config_value` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of main_config

@@ -135,6 +135,9 @@ INSTALLED_APPS = (
 
 #### SSD SPECIFIC CONFIGURATION ####
 
+# All of these settings should be changed in local_settings.py and		
+# not here, otherwise they'll be overridden if an upgrade is performed
+
 # Maximum uploaded file size (in MB)
 MAX_FILE_SIZE = 1
 
@@ -168,7 +171,7 @@ CONTACTS = True
 NOTIFY = True
 
 # App Version
-APP_VERSION = '1.0.6'
+APP_VERSION = '1.1.2'
 
 # SSD Url
 # This URL will appear on any links back to SSD 

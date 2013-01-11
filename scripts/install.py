@@ -386,5 +386,5 @@ if type == "1":
 elif type == "2":
     upgrade()
 else:
-    terminate(e)
+    terminate('Incorrect option specified')
 

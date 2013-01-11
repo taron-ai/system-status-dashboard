@@ -42,12 +42,12 @@
   <td colspan="2" height="15">
  </tr>
 
- {% if not maintenance.0.config_value == 'none' %}
+ {% if not maintenance == 'none' %}
  <tr>
   <td colspan="2" style="text-align:center;">
    <center>
     <div class="maintenance">
-     {{maintenance.0.config_value}}
+     {{maintenance|safe}}
     </center>
    </div> 
   </td>

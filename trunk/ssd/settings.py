@@ -135,9 +135,6 @@ INSTALLED_APPS = (
 
 #### SSD SPECIFIC CONFIGURATION ####
 
-# All of these settings should be changed in local_settings.py and
-# not here, otherwise they'll be overridden if an upgrade is performed
-
 # Maximum uploaded file size (in MB)
 MAX_FILE_SIZE = 1
 
@@ -149,7 +146,7 @@ NAV = True
 
 # If set to True, the 'Report Incident' tab will appear in the nav.
 # If you have this set to true, you should also show the NAV header
-# If this is not set to True, the view will not work and will 
+# If this is not set to True, the view also will not work and will 
 # give the user an error
 REPORT_INCIDENT = True
 
@@ -171,13 +168,13 @@ CONTACTS = True
 NOTIFY = True
 
 # App Version
-APP_VERSION = '1.1.1'
+APP_VERSION = '1.0.6'
 
 # SSD Url
 # This URL will appear on any links back to SSD 
 # (e.g. links in email communication sent from SSD)
 SSD_URL = ''
 
-# Load custom settings - must point to the local_settings.py file and
+# Load custom settings - must point to your local_settings.py file and
 # may not be a relative path.
 execfile('$__local_dir__$/local_settings.py')

@@ -241,17 +241,17 @@ def install():
 
     print 'PERFORMING FRESH INSTALL:\n'  
 
-    ssd_src=raw_input("1: Enter the path to the SSD source\n#>")
-    local_dir=raw_input('2: Enter the desired local directory location\n#>')
-    web_conf=raw_input('3: Enter the Apache configuration directory\n#>')
-    db_user=raw_input('4: Enter the database username\n#>')
-    db_pass=raw_input('5: Enter the database password\n#>')
-    db_host=raw_input('6: Enter the database server fully qualified hostname or IP address\n#>')
-    db_port=raw_input('7: Enter the database port\n#>')
-    django_admin=raw_input('8: Enter the path to the DJango admin static files\n#>')
-    apache_uid=raw_input('9: Enter the uid of the apache user\n#>')
-    wsgi_dir=raw_input('10: Enter the path to the Apache mod_wsgi.so module\n#>')
-    upload_dir=raw_input('11: Enter the path to the screenshot upload directory\n#>')
+    ssd_src=raw_input("1: Enter the path to the SSD source\n#>").strip()
+    local_dir=raw_input('2: Enter the desired local directory location\n#>').strip()
+    web_conf=raw_input('3: Enter the Apache configuration directory\n#>').strip()
+    db_user=raw_input('4: Enter the database username\n#>').strip()
+    db_pass=raw_input('5: Enter the database password\n#>').strip()
+    db_host=raw_input('6: Enter the database server fully qualified hostname or IP address\n#>').strip()
+    db_port=raw_input('7: Enter the database port\n#>').strip()
+    django_admin=raw_input('8: Enter the path to the DJango admin static files\n#>').strip()
+    apache_uid=raw_input('9: Enter the uid of the apache user\n#>').strip()
+    wsgi_dir=raw_input('10: Enter the path to the Apache mod_wsgi.so module\n#>').strip()
+    upload_dir=raw_input('11: Enter the path to the screenshot upload directory\n#>').strip()
 
     install_text = """You have entered the following options:\n
             - SSD Source            : %s
@@ -269,7 +269,7 @@ def install():
          """ % (ssd_src,local_dir,web_conf,db_user,db_host,db_port,django_admin,apache_uid,wsgi_dir,upload_dir)
 
     print install_text
-    proceed=raw_input('Proceed with installation (y/n)\n#>')
+    proceed=raw_input('Proceed with installation (y/n)\n#>').strip()
 
     if proceed == 'y':
         print 'proceeding...'
@@ -322,8 +322,8 @@ def upgrade():
 
     print 'PERFORMING SSD UPGRADE:\n'  
 
-    ssd_src=raw_input("1: Enter the path to the SSD source\n#>")
-    local_dir=raw_input('2: Enter the existing local directory location\n#>')
+    ssd_src=raw_input("1: Enter the path to the SSD source\n#>").strip()
+    local_dir=raw_input('2: Enter the existing local directory location\n#>').strip()
 
     upgrade_text = """You have entered the following options:\n
             - SSD Source            : %s
@@ -332,7 +332,7 @@ def upgrade():
          """ % (ssd_src,local_dir)
 
     print upgrade_text
-    proceed=raw_input('Proceed with upgrade (y/n)\n#>')
+    proceed=raw_input('Proceed with upgrade (y/n)\n#>').strip()
 
     if proceed == 'y':
         print 'proceeding...'
@@ -377,7 +377,7 @@ Please select an install option:
 1.  Install - install a new instance of SSD
 2.  Upgrade - upgrade from an existing SSD installation
 
-#>""")
+#>""").strip()
 
 
 

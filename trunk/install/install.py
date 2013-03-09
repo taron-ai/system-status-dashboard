@@ -39,16 +39,19 @@ def terminate(e):
 
 
 def customize_settings(app_dir,dst_local):
-    """Customize the SSD settings.py file"""
+    """Customize the SSD settings.tmpl file"""
 
-    print 'Customizing %s/ssd/settings.py' % app_dir
+    print 'Customizing %s/ssd/settings.tmpl' % app_dir
 
     try:
-        # Open the settings.py file
-        s_sp = open('%s/ssd/settings.py' % app_dir).read()
+        # Open the settings.tmpl file
+        s_sp = open('%s/ssd/settings.tmpl' % app_dir).read()
 
         # Add the path to the SSD local dir
         s_sp = s_sp.replace('$__local_dir__$',dst_local)
+
+        # Add the path to the SSD app dir
+        s_sp = s_sp.replace('$__app_dir__$',app_dir)
 
         # Write out the new file
         f_sp = open('%s/ssd/settings.py' % app_dir,'w')
@@ -216,7 +219,7 @@ def split_directories(ssd_src):
 
 
 def copy_local(src_local,dst_local):
-    """Copy the generic SSD local.tmp so that it can be customized"""
+    """Copy the generic SSD local.tmpl so that it can be customized"""
 
     # If the ssd-local directory already exists, remove it
     print 'Checking for existing ssd-local directory at %s' % dst_local
@@ -227,7 +230,7 @@ def copy_local(src_local,dst_local):
         except Exception, e:
             terminate(e)
 
-    # Copy the local.tmp directory to the new ssd-local directory
+    # Copy the local.tmpl directory to the new ssd-local directory
     print 'Copying %s to %s' % (src_local,dst_local)
     try:
         shutil.copytree(src_local,dst_local)
@@ -292,10 +295,10 @@ def install():
     app_dir = app_dir + 'ssd'
 
     # Source and Destination local directories
-    src_local = app_dir + '/local.tmp'
+    src_local = app_dir + '/local.tmpl'
     dst_local = local_dir + '/ssd-local'
 
-    # Copy the local.tmp directory out of the source directory so it can be customized
+    # Copy the local.tmpl directory out of the source directory so it can be customized
     copy_local(src_local,dst_local)
 
     # Customize the new local_setting.py file
@@ -310,7 +313,7 @@ def install():
     # Setup the Apache symlink
     apache_symlink(dst_local,web_conf)
 
-    # Customize settings.py to add the path the local_settings.py file
+    # Customize settings.tmpl to add the path the local_settings.py file
     customize_settings(app_dir,dst_local)
 
     # Create the screenshot upload directory
@@ -357,7 +360,7 @@ def upgrade():
     # Add 'ssd' to the app dir for the remainder of this script
     app_dir = app_dir + 'ssd'
 
-    # Customize settings.py to add the path the local_settings.py file
+    # Customize settings.tmpl to add the path to the local_settings.py file
     customize_settings(app_dir,dst_local)
 
 

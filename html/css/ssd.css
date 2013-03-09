@@ -257,16 +257,15 @@ ol, ul {
 div#nav-wrapper {
    top: 0;
    width: 100%;
-   height: 44px;
+   height: 25px;
    margin: 0 auto;
    background: rgb(200,218,228);
    font:12px/20px Tahoma, Arial, Helvetica, sans-serif;
+   text-align:center;
 }
 
 nav#nav {
    position:relative;
-   margin:0 auto;
-   width: 660px;
 }
 
 ul#navigation {
@@ -290,7 +289,7 @@ ul#navigation li {
 }
 
 ul#navigation li a {
-   padding:10px 25px;
+   padding:1px 20px;
    color:#616161;
    text-shadow:1px 1px 0px #fff;
    text-decoration:none;
@@ -337,7 +336,7 @@ ul#navigation ul, ul#navigation ul li ul {
 }
 
 ul#navigation ul {
-   top: 43px;
+   top: 25px;
    left: 1px;
 }
 
@@ -355,7 +354,7 @@ ul#navigation ul li {
 
 ul#navigation ul li a {
    background:none;
-   padding:7px 15px;
+   padding:2px 15px;
    color:#616161;
    text-shadow:1px 1px 0px #fff;
    text-decoration:none;

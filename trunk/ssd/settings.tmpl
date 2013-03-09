@@ -111,6 +111,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
     'ssd.main.context_processors.prefs',
+    'ssd.main.context_processors.redirect'
 )
 
 ROOT_URLCONF = 'ssd.urls'
@@ -132,6 +133,8 @@ INSTALLED_APPS = (
     'ssd.main'
 )
 
+# Login URL
+LOGIN_URL = '/accounts/login'
 
 #### SSD SPECIFIC CONFIGURATION ####
 
@@ -177,6 +180,9 @@ APP_VERSION = '1.1.2'
 # This URL will appear on any links back to SSD 
 # (e.g. links in email communication sent from SSD)
 SSD_URL = ''
+
+# SSD Version
+execfile('$__app_dir__$/ssd/version.py')
 
 # Load custom settings - must point to your local_settings.py file and
 # may not be a relative path.

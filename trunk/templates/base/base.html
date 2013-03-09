@@ -64,14 +64,15 @@
      {% if user.is_authenticated %}
      <li><a class="sub" href="/admin">Application Administration</a></li>
      <li><a class="sub" href="/create">Create Incident</a></li>
-     <li><a class="sub" href="/admin/logout">Logout ({{user.username}})</a></li>
+     <li><a class="sub" href="/accounts/logout">Logout ({{user.username}})</a></li>
      {% else %}
-     <li><a class="sub" href="/admin">Login</a></li>
+     <li><a class="sub" href="/accounts/login">Login</a></li>
      {% endif %}
     </ul>
    </li>
   </ul>
  </nav>
+ <p><b>{{title}}</b></p>
 </div>
 {% endif %}
 

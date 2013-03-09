@@ -324,7 +324,7 @@ def index(request):
     return render_to_response(
        'main/index.html',
        {
-          'title':'SSD Home',
+          'title':'System Status Dashboard | Home',
           'data':data,
           'impaired_services':impaired_services,
           'backward_link':backward_link,

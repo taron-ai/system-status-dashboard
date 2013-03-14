@@ -31,7 +31,6 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone as jtz
-from ssd.main.models import Config
 from ssd.main.models import Incident
 from ssd.main.models import Incident_Update
 from ssd.main.models import Report
@@ -42,7 +41,7 @@ from ssd.main.forms import UpdateIncidentForm
 from ssd.main.forms import ReportIncidentForm
 from ssd.main.forms import SearchForm
 from ssd.main import notify
-
+from ssd.main import config_value
 
 def return_error(request,error):
     """Error Page
@@ -75,10 +74,12 @@ def report(request):
 
     """
 
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+
     # If this functionality is disabled in the admin, let the user know
-    if hasattr(settings, 'REPORT_INCIDENT'):
-        if not settings.REPORT_INCIDENT == True:
-            return return_error(request,'Your system administrator has disabled this functionality')
+    if int(cv.value('report_incident_display')) == 0:
+        return return_error(request,'Your system administrator has disabled this functionality')
 
     # If this is a POST, then check the input params and perform the
     # action, otherwise print the index page
@@ -123,18 +124,16 @@ def report(request):
             # If notifications are turned on, report the issue to the pager 
             # and save the return value for the confirmation page
             # If notifications are turned off, give the user a positive confirmation
-            if hasattr(settings, 'NOTIFY'):
-                if settings.NOTIFY == True:
-                    pager = notify.email()
-                    pager_status = pager.page(description)
-                else:
-                    pager_status = 'success'
+            
+            if int(cv.value('logo_display')) == 1:
+                pager = notify.email()
+                pager_status = pager.page(description)
             else:
                 pager_status = 'success'
 
             # Give them a confirmation page
-            message_success = Config.objects.filter(config_name='message_success').values('config_value')[0]['config_value']
-            message_error = Config.objects.filter(config_name='message_error').values('config_value')[0]['config_value']
+            message_success = cv.value('message_success')
+            message_error = cv.value('message_error')
 
             # Print the page
             return render_to_response(
@@ -156,8 +155,8 @@ def report(request):
     # On a POST, the form will give back error values for printing in the template
 
     # Obtain the report incident help message
-    report_incident_help = Config.objects.filter(config_name='report_incident_help').values('config_value')[0]['config_value']
-
+    report_incident_help = cv.value('report_incident_help')
+    
     return render_to_response(
        'main/report.html',
        {
@@ -175,7 +174,10 @@ def index(request):
     Show the calendar view with 7 days of information on all services
 
     """
-
+    
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+    
     # See if the timezone is set, if not, give them the server timezone
     if request.COOKIES.get('timezone') == None:
         set_timezone = settings.TIME_ZONE
@@ -312,8 +314,8 @@ def index(request):
         data.append(row)
   
     # Obtain the maintenance text (if there)
-    maintenance = Config.objects.filter(config_name='maintenance').values('config_value')[0]['config_value']
-
+    maintenance = cv.value('maintenance')
+    
     # Obtain all timezones
     timezones = pytz.all_timezones
 
@@ -577,6 +579,9 @@ def create(request):
 
     """
 
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+
     # Obtain the timezone (or set to the default DJango server timezone)
     if request.COOKIES.get('timezone') == None:
         set_timezone = settings.TIME_ZONE
@@ -658,7 +663,7 @@ def create(request):
     jtz.activate(set_timezone)
 
     # Obtain the create incident help message
-    create_incident_help = Config.objects.filter(config_name='create_incident_help').values('config_value')[0]['config_value']
+    create_incident_help = cv.value('create_incident_help')
 
     # Print the page
     return render_to_response(
@@ -682,14 +687,16 @@ def escalation(request):
 
     """
 
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+
     # If this functionality is disabled in the admin, let the user know
-    if hasattr(settings, 'CONTACTS'):
-        if not settings.CONTACTS == True:
-            return return_error(request,'Your system administrator has disabled this functionality')
+    if int(cv.value('contacts_display')) == 0:
+        return return_error(request,'Your system administrator has disabled this functionality')
 
     # Obtain the escalation message
-    escalation = Config.objects.filter(config_name='escalation').values('config_value')[0]['config_value']
-
+    escalation = cv.value('escalation')
+    
     # Print the page
     return render_to_response(
        'main/escalation.html',

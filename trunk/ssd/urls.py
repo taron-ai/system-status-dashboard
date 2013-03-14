@@ -25,6 +25,10 @@ urlpatterns = patterns('',
     # User logout
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',{'next_page': '/'}),
 
+    # Configuration area of admin site
+    url(r'^admin/config$',  'ssd.main.views.admin.config'),
+
+    # Standard admin site
     url(r'^admin/',          include(admin.site.urls)),
 
     url(r'^$',               'ssd.main.views.main.index'),

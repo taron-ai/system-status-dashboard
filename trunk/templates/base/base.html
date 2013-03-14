@@ -35,6 +35,10 @@
  </head>
  <body>
 
+{% if logo %}
+<img src="{{logo}}">
+{% endif %}
+
 {% if nav %}
 <div id="nav-wrapper">
  <nav id="nav">
@@ -62,7 +66,8 @@
    <li><a href="#">ADMIN &raquo;</a>
     <ul>
      {% if user.is_authenticated %}
-     <li><a class="sub" href="/admin">Application Administration</a></li>
+     <li><a class="sub" href="/admin">DJango Administration</a></li>
+     <li><a class="sub" href="/admin/config">Configuration Manager</a></li>
      <li><a class="sub" href="/create">Create Incident</a></li>
      <li><a class="sub" href="/accounts/logout">Logout ({{user.username}})</a></li>
      {% else %}
@@ -79,11 +84,6 @@
 <center>
 <br>
 
-{% if logo %}
-<img src="{{logo}}">
-{% else %}
-<br>
-{% endif %}
 <table>
  <tr>
   <td align="center">

@@ -23,6 +23,7 @@
    
 
 from django.conf import settings
+from ssd.main import config_value
 
 
 def prefs(request):
@@ -31,7 +32,11 @@ def prefs(request):
     # Hold the values we'll check in a dict
     values = {}
 
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+
     # Application Version?
+    # This one is in a settings file
     if hasattr(settings, 'APP_VERSION'):
         if not settings.APP_VERSION == False:
             values['app_version'] = settings.APP_VERSION
@@ -40,39 +45,31 @@ def prefs(request):
     else:
         values['app_version'] = False
 
+    # The rest of the configs are in the database
+    
     # Display the logo?
-    if hasattr(settings, 'LOGO'):
-        if not settings.LOGO == False:
-            values['logo'] = settings.LOGO
-        else:
-            values['logo'] = False
+    if int(cv.value('logo_display')) == 1:
+        # Yes, display it, what's the url
+        logo_url = cv.value('logo_url')
+        values['logo'] = logo_url
     else:
         values['logo'] = False
 
     # Display the nav?
-    if hasattr(settings, 'NAV'):
-        if settings.NAV == True:
-            values['nav'] = True
-        else:
-            values['nav'] = False
+    if int(cv.value('nav_display')) == 1:
+        values['nav'] = True
     else:
         values['nav'] = False
 
     # Display the contacts?
-    if hasattr(settings, 'CONTACTS'):
-        if settings.CONTACTS == True:
-            values['contacts'] = True
-        else:
-            values['contacts'] = False
+    if int(cv.value('contacts_display')) == 1:
+        values['contacts'] = True
     else:
         values['contacts'] = False
 
     # Display the report incident?
-    if hasattr(settings, 'REPORT_INCIDENT'):
-        if settings.REPORT_INCIDENT == True:
-            values['report_incident'] = True
-        else:
-            values['report_incident'] = False
+    if int(cv.value('report_incident_display')) == 1:
+        values['report_incident'] = True
     else:
         values['report_incident'] = False
 

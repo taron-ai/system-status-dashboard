@@ -256,3 +256,25 @@ class ConfigAdminForm(forms.ModelForm):
     class Meta:
         model = Config
 
+
+class ConfigForm(forms.Form):
+    """Form for updating configs"""
+
+    company = forms.CharField(required=False)
+    greeting_new = forms.CharField(required=False)
+    greeting_update = forms.CharField(required=False)
+    email_to = forms.EmailField(required=False)
+    email_from = forms.EmailField(required=False)
+    email_subject = forms.CharField(required=False)
+    maintenance = forms.CharField(required=False)
+    page_to = forms.EmailField(required=False)
+    message_success = forms.CharField(required=False)
+    message_error = forms.CharField(required=False)
+    escalation = forms.CharField(required=False)
+    report_incident_help = forms.CharField(required=False)
+    create_incident_help = forms.CharField(required=False)
+    logo_display = forms.IntegerField(required=False)
+    logo_url = forms.CharField(required=False)
+    nav_display = forms.IntegerField(required=False)
+    contacts_display = forms.IntegerField(required=False)
+    report_incident_display = forms.IntegerField(required=False)

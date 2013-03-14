@@ -133,6 +133,28 @@ table.standard td {
 }
 
 
+/* Standard Table Center Aligned */
+table.small {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   border-collapse:collapse;
+}
+table.small th {
+   font-size:14px;
+   border-bottom: 1px solid #b0c5d0;
+   padding:10px 10px 10px 10px;
+   text-align:left;
+   color:black;
+   font-weight:bold;
+}
+table.small td {
+   font-size:12px;
+   border-bottom: 1px solid #b0c5d0;
+   padding:5px 10px 5px 10px;
+   color:black;
+   text-align:left;
+}
+
+
 /* Standard Input settings */
 input, textarea, select {
    font-family: Tahoma, Arial, Helvetica, sans-serif;

@@ -29,20 +29,27 @@ import uuid
 
 
 class Config(models.Model):
-    """Configuration parameters"""
+    """Configuration parameters
 
-    config_name = models.CharField(max_length=50);
-    config_value = models.CharField(max_length=1000);
+    The config_value and description need to be sufficiently large to accommodate
+    enough help text to be useful
+    """
+
+    config_name = models.CharField(max_length=50, unique=True)
+    friendly_name = models.CharField(max_length=50, unique=True)
+    config_value = models.CharField(max_length=1000)
+    description = models.CharField(max_length=500,blank=True)
+    display = models.CharField(max_length=8,blank=False)
 
     # Represent the object as unicode
     def __unicode__(self):
-        return u'%s %s' % (self.config_name,self.config_value)
+        return self.config_name
 
 
 class Service(models.Model):
     """Services that will be monitored"""
 
-    service_name = models.CharField(max_length=50);
+    service_name = models.CharField(max_length=50)
 
     # Represent the object as unicode
     def __unicode__(self):
@@ -54,7 +61,7 @@ class Incident(models.Model):
 
     date = models.DateTimeField(null=False,blank=False)
     closed = models.DateTimeField(null=True)
-    detail = models.CharField(max_length=1000);
+    detail = models.CharField(max_length=1000)
 
     # Represent the objects as unicode
     def __unicode__(self):
@@ -66,7 +73,7 @@ class Incident_Update(models.Model):
 
     date = models.DateTimeField(null=False,blank=False)
     incident = models.ForeignKey(Incident)
-    detail = models.CharField(max_length=1000);
+    detail = models.CharField(max_length=1000)
 
     # Represent the objects as unicode
     def __unicode__(self):
@@ -103,9 +110,9 @@ class Report(models.Model):
         return 'screenshots/%s/%s%s' % (file_path,file_name,extension)
 
     date = models.DateTimeField(null=False,blank=False)
-    name = models.CharField(null=False,blank=False,max_length=50);
-    email = models.CharField(null=False,blank=False,max_length=50);
-    description = models.CharField(null=False,blank=False,max_length=160);
-    additional = models.CharField(blank=True,max_length=1000);
+    name = models.CharField(null=False,blank=False,max_length=50)
+    email = models.CharField(null=False,blank=False,max_length=50)
+    description = models.CharField(null=False,blank=False,max_length=160)
+    additional = models.CharField(blank=True,max_length=1000)
     screenshot1 = models.ImageField(upload_to=_upload_to)
     screenshot2 = models.ImageField(upload_to=_upload_to)

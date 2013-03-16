@@ -131,7 +131,11 @@
   <td valign="top">
    <table>
     <tr>
-     <td align="right"><input type="checkbox" name="completed"/></td>
+     <td align="right"><input type="checkbox" name="started" {% if status.0.started %}checked="on"{% endif %}/></td>
+     <td>Started</td>
+    </tr>
+    <tr>
+     <td align="right"><input type="checkbox" name="completed" {% if status.0.completed %}checked="on"{% endif %}/></td>
      <td>Completed</td>
     </tr>
     <tr>
@@ -148,6 +152,54 @@
    </table>
   </td>
  </tr>
+
+ <tr>
+  <td colspan="5">
+   <p class="error">
+     {% if form.s_date.errors %}
+      <br>{% for error in form.s_date.errors %}Start Date: {{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.s_time.errors %}
+      <br>{% for error in form.s_time.errors %}Start Time: {{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.e_date.errors %}
+      <br>{% for error in form.e_date.errors %}End Date: {{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.e_time.errors %}
+      <br>{% for error in form.e_time.errors %}End Time: {{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.description.errors %}
+      <br>{% for error in form.description.errors %}Description: {{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.impact.errors %}
+      <br>{% for error in form.impact.errors %}Impact: {{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.coordinator.errors %}
+      <br>{% for error in form.coordinator.errors %}Coordinator: {{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.service.errors %}
+      <br>{% for error in form.service.errors %}Services: {{error}}{% endfor %}
+     {% endif %}
+
+      {% if form.started.errors %}
+      <br>{% for error in form.started.errors %}Started: {{error}}{% endfor %}
+     {% endif %}
+
+      {% if form.completed.errors %}
+      <br>{% for error in form.completed.errors %}Completed: {{error}}{% endfor %}
+     {% endif %}
+   </p>
+  </td>
+ </tr>
+
+
 
 </table>
 <input type="hidden" name="id" value="{{id}}">

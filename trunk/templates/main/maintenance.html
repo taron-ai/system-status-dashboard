@@ -46,12 +46,6 @@
 <table class="top">
 
  <tr>
-  <td colspan="5">
-   <p class="title">Schedule Maintenance</p>
-  </td>
- </tr>
-
- <tr>
   <td colspan="5" align="left">
    <div class="help" id="help">
     {{maintenance_help|safe}}
@@ -93,19 +87,19 @@
     <tr>
      <td><b>Maintenance<br>Description</b></td>
      <td>
-      <textarea class="textarea_detail" id="description" name="description" rows="5" cols="50">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
+      <textarea class="textarea_detail" id="description" name="description" rows="5" cols="50">{% if form.description.data %}{{form.description.data}}{% endif %}</textarea>
      </td>
     </tr>
     <tr>
      <td><b>Impact<br>Analysis</b></td>
      <td>
-      <textarea class="textarea_detail" id="impact" name="impact" rows="5" cols="50">{% if not form.impact.data == None %}{{form.impact.data}}{% endif %}</textarea>
+      <textarea class="textarea_detail" id="impact" name="impact" rows="5" cols="50">{% if form.impact.data %}{{form.impact.data}}{% endif %}</textarea>
      </td>
     </tr>
     <tr>
      <td><b>Maintenance<br>Coordinator</b></td>
      <td>
-      <textarea class="textarea_detail" id="coordinator" name="coordinator" rows="5" cols="50">{% if not form.impact.data == None %}{{form.coordinator.data}}{% endif %}</textarea>
+      <textarea class="textarea_detail" id="coordinator" name="coordinator" rows="5" cols="50">{% if form.coordinator.data %}{{form.coordinator.data}}{% endif %}</textarea>
      </td>
     </tr>
     <tr>
@@ -134,36 +128,37 @@
  <tr>
   <td colspan="3">
    <p class="error">
+     {{form.errors}}
      {% if form.s_date.errors %}
-      <br>{% for error in form.s_date.errors %}Start Date:{{error}}{% endfor %}
+      <br>{% for error in form.s_date.errors %}Start Date: {{error}}{% endfor %}
      {% endif %}
 
      {% if form.s_time.errors %}
-      <br>{% for error in form.s_time.errors %}Start Time:{{error}}{% endfor %}
+      <br>{% for error in form.s_time.errors %}Start Time: {{error}}{% endfor %}
      {% endif %}
 
      {% if form.e_date.errors %}
-      <br>{% for error in form.e_date.errors %}End Date:{{error}}{% endfor %}
+      <br>{% for error in form.e_date.errors %}End Date: {{error}}{% endfor %}
      {% endif %}
 
      {% if form.e_time.errors %}
-      <br>{% for error in form.e_time.errors %}End Time:{{error}}{% endfor %}
+      <br>{% for error in form.e_time.errors %}End Time: {{error}}{% endfor %}
      {% endif %}
 
      {% if form.description.errors %}
-      <br>{% for error in form.description.errors %}Description:{{error}}{% endfor %}
+      <br>{% for error in form.description.errors %}Description: {{error}}{% endfor %}
      {% endif %}
 
      {% if form.impact.errors %}
-      <br>{% for error in form.impact.errors %}Impact:{{error}}{% endfor %}
+      <br>{% for error in form.impact.errors %}Impact: {{error}}{% endfor %}
      {% endif %}
 
      {% if form.coordinator.errors %}
-      <br>{% for error in form.coordinator.errors %}Coordinator:{{error}}{% endfor %}
+      <br>{% for error in form.coordinator.errors %}Coordinator: {{error}}{% endfor %}
      {% endif %}
 
      {% if form.service.errors %}
-      <br>{% for error in form.service.errors %}Services:{{error}}{% endfor %}
+      <br>{% for error in form.service.errors %}Services: {{error}}{% endfor %}
      {% endif %}
    </p>
   </td>

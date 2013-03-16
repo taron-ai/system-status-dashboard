@@ -306,3 +306,26 @@ class UpdateMaintenanceForm(forms.Form):
     update = forms.CharField(required=False)
     service = MultipleServiceField()
     id = forms.IntegerField(required=True)
+    started = forms.CharField(required=False)
+    completed = forms.CharField(required=False)
+
+    # Override the form clean method - there is some special logic to 
+    # starting/completing maintenances and we need access to multiple values
+    # to do it.
+    #
+    # Logic:
+    #  - Maintenance can be started and completed
+    #  - Maintenance cannot be completed if its not also started
+    def clean(self):
+        cleaned_data = super(UpdateMaintenanceForm, self).clean()
+        started = cleaned_data.get("started")
+        completed = cleaned_data.get("completed")
+
+        if completed and not started:
+            
+            # Set custom error messages
+            self._errors["started"] = self.error_class(['Maintenance cannot be completed if not started'])
+            self._errors["completed"] = self.error_class(['Maintenance cannot be completed if not started'])
+            
+        # Return the full collection of cleaned data
+        return cleaned_data

@@ -132,6 +132,11 @@ class email:
                                 email_from, 
                                 [email_to],None,None,None
                               )
+
+            # Change to HTML content type
+            msg.content_subtype = 'html'
+            
+            # Send it
             msg.send()
         except Exception, e:
             # Log to the error log

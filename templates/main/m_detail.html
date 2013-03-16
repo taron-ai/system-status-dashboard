@@ -24,28 +24,63 @@
 
  <tr>
   <td>
-   <p>This page contains all relevant information on this incident.  Check back here at any time to obtain current information on the status of this incident.</p>
+   <p>This page contains all relevant information on this scheduled maintenance.  Check back here at any time to obtain current information on the status of this scheduled maintenance.</p>
   </td>
  </tr>
-
+ 
  <tr>
   <td>
-   <p>Incident Status: 
+   <p>Maintenance Status: 
     <b>
-     {% if detail.0.closed %}
-     CLOSED ({{detail.0.closed|date:"Y-m-d H:i:s"}})
+     {% if detail.0.completed %}
+     COMPLETED
      {% else %}
-     OPEN
+      {% if detail.0.started %}
+        STARTED
+      {% else %}
+        NOT STARTED
+      {% endif %}
      {% endif %}
     </b>
    </p>
   </td>
  </tr>
 
+<tr>
+ <td>
+  <table class="standard">
+   <tr>
+    <td>Start Time</td>
+    <td>{{detail.0.start|date:"Y-m-d H:i:s"}}</td>
+   </tr>
+   <tr>
+    <td>End Time</td>
+    <td>{{detail.0.end|date:"Y-m-d H:i:s"}}</td>
+   </tr>
+   <tr>
+    <td>Description</td>
+    <td>{{detail.0.description}}</td>
+   </tr>
+   <tr>
+    <td>Impact Analysis</td>
+    <td>{{detail.0.impact}}</td>
+   </tr>
+   <tr>
+    <td>Coordinator</td>
+    <td>{{detail.0.coordinator}}</td>
+   </tr>
+  </table>
+ </td>
+</tr>
+
+ <tr>
+  <td height="10"></td>
+ </tr>
+
  <tr>
   <td>
    <p>
-    The following services have been impacted by this incident:
+    The following services are included in this scheduled miantenance:
     <br>
    {% if services %}
    {% for row in services %}
@@ -63,6 +98,7 @@
   <td height="10"></td>
  </tr>
 
+ {% if updates %}
  <tr>
   <td>
    <table class="standard">
@@ -70,22 +106,17 @@
      <th width="165">Time</th>
      <th width="500px">Description</th>
     </tr>
-    <tr>
-     <td>{{detail.0.date|date:"Y-m-d H:i:s"}}</td>
-     <td>{{detail.0.detail}}</td>
-    </tr>
 
-    {% if updates %}
      {% for row in updates %}
       <tr>
        <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
        <td>{{row.detail}}</td>
       </tr>
      {% endfor %}
-    {% endif %}
    </table>
   </td>
  </tr> 
+ {% endif %}
  
  <tr>
   <td>*All times are in {{TIME_ZONE}}</td>
@@ -97,7 +128,7 @@
  </tr>
 
  <tr>
-  <td><a href="/update?id={{id}}">Update Incident</td>
+  <td><a href="/m_update?id={{id}}">Update Maintenance</td>
  </tr>
  {% endif %} 
 

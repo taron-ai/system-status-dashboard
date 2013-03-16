@@ -278,3 +278,31 @@ class ConfigForm(forms.Form):
     nav_display = forms.IntegerField(required=False)
     contacts_display = forms.IntegerField(required=False)
     report_incident_display = forms.IntegerField(required=False)
+
+
+class AddMaintenanceForm(forms.Form):
+    """Form for adding maintenance"""
+
+    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    description = forms.CharField(required=True)
+    impact = forms.CharField(required=True)
+    coordinator = forms.CharField(required=True)
+    service = MultipleServiceField()
+    
+
+class UpdateMaintenanceForm(forms.Form):
+    """Form for updating maintenance"""
+
+    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    description = forms.CharField(required=True)
+    impact = forms.CharField(required=True)
+    coordinator = forms.CharField(required=True)
+    update = forms.CharField(required=False)
+    service = MultipleServiceField()
+    id = forms.IntegerField(required=True)

@@ -72,10 +72,15 @@
        {% for row1 in row %}
          {% if forloop.first %}
            <td>
+           {# impaired services will take precedence over maintenance #}
            {% if row1 in impaired_services %}
            <img src="/html/images/incident_red.png">
            {% else %}
-           <img src="/html/images/incident_green.png">
+            {% if row1 in maintenance_services %}
+             <img src="/html/images/incident_blue.png">
+            {% else %}
+             <img src="/html/images/incident_green.png">
+            {% endif %}
            {% endif %}
            {{row1}}
            </td>
@@ -83,19 +88,22 @@
            <td style="text-align:center;">
            {% for row2 in row1 %}
              {% if not row2 == 'green' %}
+               {# We have some events to show, this is an associative array #}
+               {# See if we have a maintenance or an incident #}
 
-              {# See if the incident is open or closed.  No way to break out of a loop here but there will be only a single match #}
-              {% for incident,detail in incident_status.items %}
-               {% if incident == row2 %} 
-                {% if detail.closed == None %}
-                 <a href="/detail?id={{row2}}"><img src="/html/images/incident_red.png" title="ID: {{row2}} : {{detail.open|date:"Y-m-d H:i:s"}} ~"></a>
-                {% else %}
-                 <a href="/detail?id={{row2}}"><img src="/html/images/incident_orange.png" title="ID: {{row2}} : {{detail.open|date:"Y-m-d H:i:s"}} ~ {{detail.closed|date:"Y-m-d H:i:s"}}"></a>
-                {% endif %}
+               {% if row2.type == 'incident' %}
+                 {% if row2.closed == None %}
+                   <a href="/detail?id={{row2.id}}"><img src="/html/images/incident_red.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~"></a>
+                 {% else %}
+                   <a href="/detail?id={{row2.id}}"><img src="/html/images/incident_orange.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~ {{row2.closed|date:"Y-m-d H:i:s"}}"></a>
+                 {% endif %}
+               {% else %}
+                 {% if row2.type == 'maintenance' %}
+                   <a href="/m_detail?id={{row2.id}}"><img src="/html/images/incident_blue.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~ {{row2.closed|date:"Y-m-d H:i:s"}}"></a>
+                 {% endif %}
                {% endif %}
-              {% endfor %}
-
              {% endif %}
+
            {% endfor %}
            </td>
          {% endif %}
@@ -121,6 +129,8 @@
      <td>Service Disruption</td>
      <td><img src="/html/images/incident_orange.png"></td>
      <td>Service Disruption (resolved)</td>
+     <td><img src="/html/images/incident_blue.png"></td>
+     <td>Planned Maintenance</td>
     </tr>
    </table>
   </td>

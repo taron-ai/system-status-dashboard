@@ -1,0 +1,178 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2012 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<script type="text/javascript">
+
+   // Date Pickers and Submit
+   $(function() {
+
+      //Start Date
+      $("#s_date").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //Start Time
+      $("#s_time").timepicker({timeSeparator: ':'});
+
+      //End Date
+      $("#e_date").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //End Time
+      $("#e_time").timepicker({timeSeparator: ':'});
+   });
+
+</script>
+
+<form enctype="multipart/form-data" method="POST" name="maintenance" id="maintenance" action="/maintenance">
+   {% csrf_token %}
+
+<table class="top">
+
+ <tr>
+  <td colspan="5">
+   <p class="title">Schedule Maintenance</p>
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="5" align="left">
+   <div class="help" id="help">
+    {{maintenance_help|safe}}
+   </div>
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="5" height="25"><hr></td>
+ </tr>
+
+ <tr>
+  <td><b>Maintenance Description</b></td>
+  <td width="25"></td>
+  <td><b>Affected Services</b></td>
+ </tr>
+
+ <tr>
+  <td colspan="3" height="20"></td>
+ </tr>
+
+ <tr>
+  <td>
+   <table>
+    <tr>
+     <td><b>Start</b></td>
+     <td>
+      <input type="text" class="input_date" name="s_date" id="s_date" value="{% if form.s_date.data %}{{form.s_date.data}}{% else %}Enter Date{% endif %}"/>
+      <input type="text" class="input_date" name="s_time" id="s_time" value="{% if form.s_time.data %}{{form.s_time.data}}{% else %}Enter Time{% endif %}"/>
+     </td>
+    </tr>
+    <tr>
+     <td><b>End</b></td>
+     <td>
+      <input type="text" class="input_date" name="e_date" id="e_date" value="{% if form.e_date.data %}{{form.e_date.data}}{% else %}Enter Date{% endif %}"/>
+      <input type="text" class="input_date" name="e_time" id="e_time" value="{% if form.e_time.data %}{{form.e_time.data}}{% else %}Enter Time{% endif %}"/>
+     </td>
+    </tr>
+    <tr>
+     <td><b>Maintenance<br>Description</b></td>
+     <td>
+      <textarea class="textarea_detail" id="description" name="description" rows="5" cols="50">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
+     </td>
+    </tr>
+    <tr>
+     <td><b>Impact<br>Analysis</b></td>
+     <td>
+      <textarea class="textarea_detail" id="impact" name="impact" rows="5" cols="50">{% if not form.impact.data == None %}{{form.impact.data}}{% endif %}</textarea>
+     </td>
+    </tr>
+    <tr>
+     <td><b>Maintenance<br>Coordinator</b></td>
+     <td>
+      <textarea class="textarea_detail" id="coordinator" name="coordinator" rows="5" cols="50">{% if not form.impact.data == None %}{{form.coordinator.data}}{% endif %}</textarea>
+     </td>
+    </tr>
+    <tr>
+     <td></td>
+     <td><input type="submit" value="save"/></td>
+    </tr>
+    <tr>
+     <td></td>
+     <td colspan="2">* All times are in {{TIME_ZONE}}</td>
+    </tr>
+   </table>
+  </td>
+  <td></td>
+  <td valign="top">
+   <table>
+    {% for row in services %}
+    <tr>
+     <td><input type="checkbox" name="service" value="{{row.id}}"/></td>
+     <td>{{row.service_name}}</td>
+    </tr>
+    {% endfor %}
+   </table>
+  </td>
+ </tr>
+
+ <tr>
+  <td colspan="3">
+   <p class="error">
+     {% if form.s_date.errors %}
+      <br>{% for error in form.s_date.errors %}Start Date:{{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.s_time.errors %}
+      <br>{% for error in form.s_time.errors %}Start Time:{{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.e_date.errors %}
+      <br>{% for error in form.e_date.errors %}End Date:{{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.e_time.errors %}
+      <br>{% for error in form.e_time.errors %}End Time:{{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.description.errors %}
+      <br>{% for error in form.description.errors %}Description:{{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.impact.errors %}
+      <br>{% for error in form.impact.errors %}Impact:{{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.coordinator.errors %}
+      <br>{% for error in form.coordinator.errors %}Coordinator:{{error}}{% endfor %}
+     {% endif %}
+
+     {% if form.service.errors %}
+      <br>{% for error in form.service.errors %}Services:{{error}}{% endfor %}
+     {% endif %}
+   </p>
+  </td>
+ </tr>
+
+</table>
+</form>
+
+{% endblock %}
+
+
+

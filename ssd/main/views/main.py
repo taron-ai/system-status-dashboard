@@ -36,10 +36,15 @@ from ssd.main.models import Incident_Update
 from ssd.main.models import Report
 from ssd.main.models import Service
 from ssd.main.models import Service_Issue
+from ssd.main.models import Maintenance
+from ssd.main.models import Maintenance_Update
+from ssd.main.models import Service_Maintenance
 from ssd.main.forms import AddIncidentForm
 from ssd.main.forms import UpdateIncidentForm
+from ssd.main.forms import UpdateMaintenanceForm
 from ssd.main.forms import ReportIncidentForm
 from ssd.main.forms import SearchForm
+from ssd.main.forms import AddMaintenanceForm
 from ssd.main import notify
 from ssd.main import config_value
 
@@ -236,7 +241,7 @@ def index(request):
     forward = (ref + datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     forward_link = '/?ref=%s' % (forward)
 
-    # See if we have any open incidents
+    # See if we have any open incidents or maintenances
     # Any open incidents will turn the service red on the
     # dashboard, regardless of date and the specific date marker
     # will be red or orange, depending on the open/closed state
@@ -244,26 +249,25 @@ def index(request):
     #
     # These will be lookup tables for the template
     active_incidents = Service_Issue.objects.filter(incident__closed__isnull=True).values('service_name_id__service_name')
-
+    active_maintenances = Service_Maintenance.objects.filter(maintenance__started=1,maintenance__completed=0).values('service_name_id__service_name')
+    
     # Rewrite this so its quickly searchable by the template
     impaired_services = {}
     for name in active_incidents:
         impaired_services[name['service_name_id__service_name']] = ''
 
+    # Rewrite this so its quickly searchable by the template
+    maintenance_services = {}
+    for name in active_maintenances:
+        maintenance_services[name['service_name_id__service_name']] = ''
+
     # We'll print 7 days of dates at any time
     # Construct a dictionary like this to pass to the template
     # [
     #  [service][2012-10-11][2012-10-12],
-    #  [www.domain.com][color or ID],
-    #  [www.domain1.com][color or ID]
+    #  [www.domain.com,['green'],['green']],
+    #  [www.domain1.com,['green'],[{'open':,'closed':,'type':,'id':}]]
     # ]
-    #
-    # and also a lookup table of incidents and if they are closed or not
-    # like this:
-    # {
-    #   'id':{'open':date,'closed':date}
-    # }
-    incident_status = {}
 
     # Put together the first row, which are the headings
     data = []
@@ -273,6 +277,13 @@ def index(request):
                                                                                             'incident_id',
                                                                                             'service_name_id__service_name',
                                                                                             'incident__closed')
+
+    maintenances = Service_Maintenance.objects.filter(maintenance__start__range=[dates[0],ref_q]).values('maintenance__start',
+                                                                                                         'maintenance__end',
+                                                                                                         'maintenance_id',
+                                                                                                         'service_name_id__service_name',
+                                                                                                         'maintenance__started',
+                                                                                                         'maintenance__completed')
 
     # Run through each service and see if it had an incident during the time range
     for service in services:
@@ -286,9 +297,11 @@ def index(request):
             # If there is a match, append it, otherwise leave blank
             match = False
 
-            # Check each incident to see if there is a match
+            # Check each incident and maintenance to see if there is a match
             # There could be more than one incident per day
             row_incident = []
+
+            # First the incidents
             for incident in incidents:
                 if service['service_name'] == incident['service_name_id__service_name']:
 
@@ -297,12 +310,45 @@ def index(request):
                     incident_date = incident['incident__date']
                     incident_date = incident_date.astimezone(pytz.timezone(set_timezone))
 
+                    # If the incident closed date is there, make sure the time zone is correct
+                    closed_date = incident['incident__closed']
+                    if incident['incident__closed']:
+                        closed_date = closed_date.astimezone(pytz.timezone(set_timezone))
+
                     if date.date() == incident_date.date():
                         # This is our date so add the incident ID
                         match = True
-                        row_incident.append(incident['incident_id'])
-                        # Also add to the open/closed lookup table
-                        incident_status[incident['incident_id']] = {'open':incident_date,'closed':incident['incident__closed']}
+                        event = {
+                                 'type':'incident',
+                                 'id':incident['incident_id'],
+                                 'open':incident_date,
+                                 'closed':closed_date
+                                 }
+                        row_incident.append(event)
+            
+            # Now the maintenance
+            for maint in maintenances:
+                if service['service_name'] == maint['service_name_id__service_name']:
+
+                    # This maintenance affected our service
+                    # Convert to the requested timezone
+                    start_date = maint['maintenance__start']
+                    start_date = start_date.astimezone(pytz.timezone(set_timezone))
+                    
+                    # Convert the closed date to our timezone
+                    closed_date = maint['maintenance__end']
+                    closed_date = closed_date.astimezone(pytz.timezone(set_timezone))
+
+                    if date.date() == start_date.date():
+                        # This is our date so add the incident ID
+                        match = True
+                        event = {
+                                 'type':'maintenance',
+                                 'id':maint['maintenance_id'],
+                                 'open':start_date,
+                                 'closed':closed_date
+                                 }
+                        row_incident.append(event)
 
             if match == False:
                 row_incident.append('green')
@@ -322,6 +368,7 @@ def index(request):
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
+    print data
     # Print the page
     return render_to_response(
        'main/index.html',
@@ -329,9 +376,9 @@ def index(request):
           'title':'System Status Dashboard | Home',
           'data':data,
           'impaired_services':impaired_services,
+          'maintenance_services':maintenance_services,
           'backward_link':backward_link,
           'forward_link':forward_link,
-          'incident_status':incident_status,
           'maintenance':maintenance,
           'timezones':timezones
        },
@@ -380,6 +427,56 @@ def detail(request):
        'main/detail.html',
        {
           'title':'SSD Incident',
+          'services':services,
+          'id':id,
+          'detail':detail,
+          'updates':updates
+       },
+       context_instance=RequestContext(request)
+    )
+
+
+def m_detail(request):
+    """Maintenance Detail View
+
+    Show all available information on a scheduled maintenance
+
+    """
+
+    try:
+        # Obtain the query parameters
+        id = request.GET['id']
+    except KeyError, e:
+        return return_error(request,e)
+
+    # Ensure the id is well formed
+    if not re.match(r'^\d+$', request.GET['id']):
+        return return_error(request,'Improperly formatted id: %s' % (request.GET['id']))
+
+    # Which services were impacted
+    services = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id__service_name')
+
+    # Obain the incident detail
+    detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed')
+
+    # Obain any incident updates
+    updates = Maintenance_Update.objects.filter(maintenance_id=id).values('id','date','detail').order_by('id')
+
+
+    # See if the timezone is set, if not, give them the server timezone
+    if request.COOKIES.get('timezone') == None:
+        set_timezone = settings.TIME_ZONE
+    else:
+        set_timezone = request.COOKIES.get('timezone')
+
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
+    jtz.activate(set_timezone)
+
+    # Print the page
+    return render_to_response(
+       'main/m_detail.html',
+       {
+          'title':'System Status Dashboard | Scheduled Maintenance Detail',
           'services':services,
           'id':id,
           'detail':detail,
@@ -572,6 +669,181 @@ def update(request):
 
 
 @staff_member_required
+def m_update(request):
+    """Update Maintenance Page
+
+    Accept input to update the scheduled maintenance
+
+    """
+
+    # Obtain the timezone (or set to the default DJango server timezone)
+    if request.COOKIES.get('timezone') == None:
+        set_timezone = settings.TIME_ZONE
+    else:
+        set_timezone = request.COOKIES.get('timezone')
+
+    # If this is a POST, then validate the form and save the data
+    # Some validation must take place manually (deletes and service
+    # addition/subtraction
+    if request.method == 'POST':
+        # If this is a delete request, then no need to check the 
+        # rest of the form.  Make sure the ID is well formatted
+        if 'delete' in request.POST and 'id' in request.POST:
+            if re.match(r'^\d+$', request.POST['id']):
+                print 'deleting %s' % request.POST['id']
+                # Delete it (deletes will be cascaded)
+                Maintenance.objects.filter(id=request.POST['id']).delete()
+
+                # Redirect to the home page
+                return HttpResponseRedirect('/')
+
+        # Give the template a blank time if this is a post 
+        # the user will have already set it.
+        time_now = ''
+
+        # Check the form elements
+        form = UpdateMaintenanceForm(request.POST)
+
+        if form.is_valid():
+            # Obtain the cleaned data
+            s_date = form.cleaned_data['s_date']
+            s_time = form.cleaned_data['s_time']
+            e_date = form.cleaned_data['e_date']
+            e_time = form.cleaned_data['e_time']
+            description = form.cleaned_data['description']
+            impact = form.cleaned_data['impact']
+            coordinator = form.cleaned_data['coordinator']
+            update = form.cleaned_data['update']
+            id = form.cleaned_data['id']
+
+            # Check if we are re-opening this incident (if it's closed)
+            if 'completed' in form.cleaned_data:
+                Maintenance.objects.filter(id=id).update(completed=1)
+            else:
+                Maintenance.objects.filter(id=id).update(completed=0)
+
+            # See if we are adding or subtracting services
+            # The easiest thing to do here is remove all affected  
+            # services and re-add the ones indicated here
+            # Remove first
+            Service_Issue.objects.filter(incident_id=id).delete()
+        
+            # Now add (form validation confirms that there is at least 1)
+            for service_id in request.POST.getlist('service'):
+                # Should be number only -- can't figure out how to validate
+                # multiple checkboxes in the form
+                if re.match(r'^\d+$', service_id):
+                    Service_Maintenance(service_name_id=service_id,maintenance_id=id).save()
+
+            # If an email update is being requested, send it
+            if 'email' in request.POST:
+                email = notify.email()
+                email.send(request.POST['id'],settings.SSD_URL,set_timezone,False)
+
+            # All done so redirect to the maintenance detail page so
+            # the new data can be seen.
+            return HttpResponseRedirect('/m_detail?id=%s' % id)
+    
+        else:
+            print 'Invalid form: UpdateMaintenanceForm: %s' % form.errors
+
+    # Not a POST so create a blank form
+    else:
+        form = UpdateIncidentForm()
+
+        # Obtain the current date/time so we can pre-fill them
+        # Create a datetime object for right now
+        time_now = datetime.datetime.now()
+
+        # Add the server's timezone (whatever DJango is set to)
+        time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
+
+        # Now convert to the requested timezone
+        time_now = time_now.astimezone(pytz.timezone(set_timezone))
+
+    # Obtain the id (this could have been a GET or a failed POST)
+    if request.method == 'GET':
+        if 'id' in request.GET:
+            id = request.GET['id']
+    elif request.method == 'POST':
+        if 'id' in request.POST:
+            id = request.POST['id']
+
+    # If we don't have the ID, then we have to give them an error
+    if not id:
+        return return_error(request,'No incident ID given')
+
+    # Make sure the ID is properly formed
+    if not re.match(r'^\d+$', id):
+        return return_error(request,'Improperly formatted ID: %s' % id)
+
+    # Obtain all services
+    services = Service.objects.values('id','service_name').order_by('service_name')
+
+    # Obtain all services that this maintenance impacts
+    a_services = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id')
+
+    # Put together the data in an easy to parse format
+    # for the template like this:
+    # services[service_id][service_name][affected]
+    affected_services = []
+    # Look through each service
+    for service in services:
+        dict = {}
+        dict['id'] = service['id']
+        dict['name'] = service['service_name']
+
+        # Check each affected service
+        for a_service in a_services:
+            if service['id'] == a_service['service_name_id']:
+                dict['affected'] = 'on'
+
+        # If the service is not affected, set to False
+        if not 'affected' in dict:
+            dict['affected'] = 'off'
+
+        # Add the dict
+        affected_services.append(dict)
+
+    # Obtain the details of this maintenance
+    details = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed')
+
+    start = details[0]['start']
+    end = details[0]['end']
+
+    # Set the timezone
+    start = start.astimezone(pytz.timezone(set_timezone))
+    end = end.astimezone(pytz.timezone(set_timezone))
+    
+    # Format the start/end date/time
+    s_date = start.strftime("%Y-%m-%d")   
+    s_time = start.strftime("%H:%M:%S")
+    e_date = end.strftime("%Y-%m-%d")
+    e_time = end.strftime("%H:%M:%S")
+
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
+    jtz.activate(set_timezone)
+
+    # Print the page
+    return render_to_response(
+       'main/m_update.html',
+       {
+          'title':'System Status Dashboard | Scheduled Maintenance Update',
+          'details':details,
+          'affected_services':affected_services,
+          'id':id,
+          'form':form,
+          'time_now':time_now,
+          's_date':s_date,
+          's_time':s_time,
+          'e_date':e_date,
+          'e_time':e_time
+       },
+       context_instance=RequestContext(request)
+    )
+
+
+@staff_member_required
 def create(request):
     """Update Incident Page
 
@@ -594,7 +866,6 @@ def create(request):
         # Give the template a blank time if this is a post 
         # the user will have already set it.
         time_now = ''
-
 
         # Check the form elements
         form = AddIncidentForm(request.POST)
@@ -669,7 +940,7 @@ def create(request):
     return render_to_response(
        'main/create.html',
        {
-          'title':'SSD Create Issue',
+          'title':'System Status Dashboard | Create Issue',
           'services':services,
           'form':form,
           'time_now':time_now,
@@ -703,6 +974,112 @@ def escalation(request):
        {
           'title':'SSD Escalation Path',
           'escalation':escalation
+       },
+       context_instance=RequestContext(request)
+    )
+
+
+@staff_member_required
+def maintenance(request):
+    """Schedule maintenance page
+
+    """
+
+    # Obtain the timezone (or set to the default DJango server timezone)
+    if request.COOKIES.get('timezone') == None:
+        set_timezone = settings.TIME_ZONE
+    else:
+        set_timezone = request.COOKIES.get('timezone')
+
+    # If this is a POST, then validate the form and save the data
+    # Some validation must take place manually
+    if request.method == 'POST':
+
+        # Check the form elements
+        form = AddMaintenanceForm(request.POST)
+
+        if form.is_valid():
+            # Obtain the cleaned data
+            s_date = form.cleaned_data['s_date']
+            s_time = form.cleaned_data['s_time']
+            e_date = form.cleaned_data['e_date']
+            e_time = form.cleaned_data['e_time']
+            description = form.cleaned_data['description']
+            impact = form.cleaned_data['impact']
+            coordinator = form.cleaned_data['coordinator']
+            completed = form.cleaned_data['completed']
+            
+            # Combine the dates and times into datetime objects
+            start = datetime.datetime.combine(s_date, s_time)
+            end = datetime.datetime.combine(e_date, e_time)
+
+            # Set the timezone
+            tz = pytz.timezone(set_timezone)
+            start = tz.localize(start)
+            end = tz.localize(end)
+            
+            # Add the maintenance and services
+            # Don't allow the same maintenance to be added 2x
+            # The user might have hit the back button and submitted again
+            maintenance_id = Maintenance.objects.filter(
+                                                        start=start,
+                                                        end=end,
+                                                        description=description,
+                                                        impact=impact,
+                                                        coordinator=coordinator,
+                                                        completed=0
+                                                       ).values('id')
+            if not maintenance_id:
+                Maintenance(
+                            start=start,
+                            end=end,
+                            description=description,
+                            impact=impact,
+                            coordinator=coordinator,
+                            completed=False
+                           ).save()
+                maintenance_id = Maintenance.objects.filter(
+                                                            start=start,
+                                                            end=end,
+                                                            description=description,
+                                                            impact=impact,
+                                                            coordinator=coordinator,
+                                                            completed=False
+                                                           ).values('id')[0]['id']
+
+                # Find out which services this impacts and save the data
+                # Form validation confirms that there is at least 1
+                for service_id in request.POST.getlist('service'):
+                    # Should be number only -- can't figure out how to validate
+                    # multiple checkboxes in the form
+                    if re.match(r'^\d+$', service_id):
+                        Service_Maintenance(service_name_id=service_id,maintenance_id=maintenance_id).save()
+
+            # Send them to the incident detail page for this newly created
+            # maintenance
+            return HttpResponseRedirect('/m_detail?id=%s' % maintenance_id)
+
+        # Invalid Form
+        else:
+            print 'Invalid Form: AddMaintenanceForm'
+
+    # Not a POST so create a blank form
+    else:
+        form = AddMaintenanceForm() 
+    
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
+    jtz.activate(set_timezone)
+    
+    # Obtain all services
+    services = Service.objects.values('id','service_name').order_by('service_name')
+    
+    # Print the page
+    return render_to_response(
+       'main/maintenance.html',
+       {
+          'title':'System Status Dashboard | Scheduled Maintenance',
+          'form':form,
+          'services':services
        },
        context_instance=RequestContext(request)
     )

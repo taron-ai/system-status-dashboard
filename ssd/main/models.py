@@ -90,6 +90,46 @@ class Service_Issue(models.Model):
     def __unicode__(self):
         return u'%s %s' % (self.service_name,self.incident)
 
+
+class Maintenance(models.Model):
+    """Maintenance that has been scheduled"""
+
+    start = models.DateTimeField(null=False,blank=False)
+    end = models.DateTimeField(null=False,blank=False)
+    description = models.CharField(blank=False,max_length=1000)
+    impact = models.CharField(blank=False,max_length=1000)
+    coordinator = models.CharField(blank=False,max_length=1000)
+    started = models.BooleanField()
+    completed = models.BooleanField()
+
+    # Represent the objects as unicode
+    def __unicode__(self):
+        return u'%s,%s' % (self.start,self.description)
+
+
+class Maintenance_Update(models.Model):
+    """Updates to incidents"""
+
+    date = models.DateTimeField(null=False,blank=False)
+    maintenance = models.ForeignKey(Maintenance)
+    detail = models.CharField(max_length=1000)
+
+    # Represent the objects as unicode
+    def __unicode__(self):
+        return u'%s %s %s' % (self.date,self.maintenance,self.detail)
+
+
+class Service_Maintenance(models.Model):
+    """Used to tie services to scheduled maintenance so that one maintenance can impact multiple services"""
+
+    service_name = models.ForeignKey(Service)
+    maintenance = models.ForeignKey(Maintenance)
+
+    # Represent the objects as unicode
+    def __unicode__(self):
+        return u'%s %s' % (self.service_name,self.maintenance)
+
+
 class Report(models.Model):
     """User reported issues"""
 

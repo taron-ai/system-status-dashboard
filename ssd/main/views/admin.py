@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-"""This module contains all of the special administrative functions
+"""This module contains all of the administrative functions
    of ssd
 
 """

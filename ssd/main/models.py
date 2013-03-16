@@ -26,6 +26,7 @@ from django.db import models
 import os
 import time
 import uuid
+from datetime import datetime
 
 
 class Config(models.Model):
@@ -110,7 +111,7 @@ class Maintenance(models.Model):
 class Maintenance_Update(models.Model):
     """Updates to incidents"""
 
-    date = models.DateTimeField(null=False,blank=False)
+    date = models.DateTimeField(default=datetime.now(),null=False,blank=False)
     maintenance = models.ForeignKey(Maintenance)
     detail = models.CharField(max_length=1000)
 

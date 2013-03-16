@@ -539,10 +539,6 @@ def update(request):
             time = form.cleaned_data['time']
             id = form.cleaned_data['id']
 
-            # Check if we are re-opening this incident (if its closed)
-            if not 'close' in form.cleaned_data:
-                Incident.objects.filter(id=id).update(closed=None)
-
             # Create a datetime object and add the user's timezone
             # (hopefully they set it)
             # Put the date and time together
@@ -579,6 +575,8 @@ def update(request):
             # See if we are closing this issue
             if 'close' in request.POST:
                 Incident.objects.filter(id=id).update(closed=incident_time)
+            else:
+                Incident.objects.filter(id=id).update(closed=None)
 
             # If an email update is being requested, send it
             if 'email' in request.POST:
@@ -697,10 +695,6 @@ def m_update(request):
                 # Redirect to the home page
                 return HttpResponseRedirect('/')
 
-        # Give the template a blank time if this is a post 
-        # the user will have already set it.
-        time_now = ''
-
         # Check the form elements
         form = UpdateMaintenanceForm(request.POST)
 
@@ -715,25 +709,55 @@ def m_update(request):
             coordinator = form.cleaned_data['coordinator']
             update = form.cleaned_data['update']
             id = form.cleaned_data['id']
-
-            # Check if we are re-opening this incident (if it's closed)
-            if 'completed' in form.cleaned_data:
-                Maintenance.objects.filter(id=id).update(completed=1)
+            
+            # Check if we are starting
+            if 'started' in request.POST:
+                started = 1
             else:
-                Maintenance.objects.filter(id=id).update(completed=0)
+                started = 0
+
+            # Check if we are completing
+            if 'completed' in request.POST:
+                completed = 1
+            else:
+                completed = 0
 
             # See if we are adding or subtracting services
             # The easiest thing to do here is remove all affected  
             # services and re-add the ones indicated here
             # Remove first
-            Service_Issue.objects.filter(incident_id=id).delete()
+            Service_Maintenance.objects.filter(maintenance_id=id).delete()
         
-            # Now add (form validation confirms that there is at least 1)
+            # Now add the services (form validation confirms that there is at least 1)
             for service_id in request.POST.getlist('service'):
                 # Should be number only -- can't figure out how to validate
                 # multiple checkboxes in the form
                 if re.match(r'^\d+$', service_id):
                     Service_Maintenance(service_name_id=service_id,maintenance_id=id).save()
+
+            # If there is an update, add it
+            if update:
+                Maintenance_Update(maintenance_id=id,detail=update).save()
+
+            # Update the core maintenance parameters
+            # Combine the dates and times into datetime objects
+            start = datetime.datetime.combine(s_date, s_time)
+            end = datetime.datetime.combine(e_date, e_time)
+
+            # Set the timezone
+            tz = pytz.timezone(set_timezone)
+            start = tz.localize(start)
+            end = tz.localize(end)
+            
+            Maintenance.objects.filter(id=id).update(
+                                                     start=start,
+                                                     end=end,
+                                                     description=description,
+                                                     impact=impact,
+                                                     coordinator=coordinator,
+                                                     started=started,
+                                                     completed=completed
+                                                    )
 
             # If an email update is being requested, send it
             if 'email' in request.POST:
@@ -751,16 +775,6 @@ def m_update(request):
     else:
         form = UpdateIncidentForm()
 
-        # Obtain the current date/time so we can pre-fill them
-        # Create a datetime object for right now
-        time_now = datetime.datetime.now()
-
-        # Add the server's timezone (whatever DJango is set to)
-        time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-
-        # Now convert to the requested timezone
-        time_now = time_now.astimezone(pytz.timezone(set_timezone))
-
     # Obtain the id (this could have been a GET or a failed POST)
     if request.method == 'GET':
         if 'id' in request.GET:
@@ -776,6 +790,9 @@ def m_update(request):
     # Make sure the ID is properly formed
     if not re.match(r'^\d+$', id):
         return return_error(request,'Improperly formatted ID: %s' % id)
+
+    # See if the maintenance is completed
+    status = Maintenance.objects.filter(id=id).values('started','completed')
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
@@ -817,9 +834,9 @@ def m_update(request):
     
     # Format the start/end date/time
     s_date = start.strftime("%Y-%m-%d")   
-    s_time = start.strftime("%H:%M:%S")
+    s_time = start.strftime("%H:%M")
     e_date = end.strftime("%Y-%m-%d")
-    e_time = end.strftime("%H:%M:%S")
+    e_time = end.strftime("%H:%M")
 
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
@@ -833,7 +850,7 @@ def m_update(request):
           'affected_services':affected_services,
           'id':id,
           'form':form,
-          'time_now':time_now,
+          'status':status,
           's_date':s_date,
           's_time':s_time,
           'e_date':e_date,
@@ -1007,8 +1024,7 @@ def maintenance(request):
             description = form.cleaned_data['description']
             impact = form.cleaned_data['impact']
             coordinator = form.cleaned_data['coordinator']
-            completed = form.cleaned_data['completed']
-            
+                        
             # Combine the dates and times into datetime objects
             start = datetime.datetime.combine(s_date, s_time)
             end = datetime.datetime.combine(e_date, e_time)

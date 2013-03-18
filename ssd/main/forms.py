@@ -278,6 +278,8 @@ class ConfigForm(forms.Form):
     nav_display = forms.IntegerField(required=False)
     contacts_display = forms.IntegerField(required=False)
     report_incident_display = forms.IntegerField(required=False)
+    scheduled_maintenance_help = forms.CharField(required=False)
+    scheduled_maintenance_help_display = forms.IntegerField(required=False)
 
 
 class AddMaintenanceForm(forms.Form):

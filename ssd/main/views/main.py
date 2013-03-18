@@ -29,6 +29,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone as jtz
 from ssd.main.models import Incident
@@ -460,7 +461,13 @@ def m_detail(request):
     detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed')
 
     # Obain any incident updates
-    updates = Maintenance_Update.objects.filter(maintenance_id=id).values('id','date','detail').order_by('id')
+    updates = Maintenance_Update.objects.filter(maintenance_id=id).values(
+                                                                          'id',
+                                                                          'date',
+                                                                          'user_id__first_name',
+                                                                          'user_id__last_name',
+                                                                          'detail'
+                                                                         ).order_by('id')
 
 
     # See if the timezone is set, if not, give them the server timezone
@@ -710,7 +717,7 @@ def m_update(request):
             update = form.cleaned_data['update']
             id = form.cleaned_data['id']
             
-            # Check if we are starting
+            # Check if we are starting/completing
             if 'started' in request.POST:
                 started = 1
             else:
@@ -735,9 +742,12 @@ def m_update(request):
                 if re.match(r'^\d+$', service_id):
                     Service_Maintenance(service_name_id=service_id,maintenance_id=id).save()
 
+            # Get the user's ID
+            user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
+
             # If there is an update, add it
             if update:
-                Maintenance_Update(maintenance_id=id,detail=update).save()
+                Maintenance_Update(maintenance_id=id,user_id=user_id,detail=update).save()
 
             # Update the core maintenance parameters
             # Combine the dates and times into datetime objects
@@ -1002,6 +1012,9 @@ def maintenance(request):
 
     """
 
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+
     # Obtain the timezone (or set to the default DJango server timezone)
     if request.COOKIES.get('timezone') == None:
         set_timezone = settings.TIME_ZONE
@@ -1034,6 +1047,9 @@ def maintenance(request):
             start = tz.localize(start)
             end = tz.localize(end)
             
+            # Get the user's ID
+            user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
+            
             # Add the maintenance and services
             # Don't allow the same maintenance to be added 2x
             # The user might have hit the back button and submitted again
@@ -1043,6 +1059,7 @@ def maintenance(request):
                                                         description=description,
                                                         impact=impact,
                                                         coordinator=coordinator,
+                                                        user_id=user_id,
                                                         completed=0
                                                        ).values('id')
             if not maintenance_id:
@@ -1052,14 +1069,17 @@ def maintenance(request):
                             description=description,
                             impact=impact,
                             coordinator=coordinator,
-                            completed=False
+                            user_id=user_id,
+                            completed=False,
                            ).save()
+
                 maintenance_id = Maintenance.objects.filter(
                                                             start=start,
                                                             end=end,
                                                             description=description,
                                                             impact=impact,
                                                             coordinator=coordinator,
+                                                            user_id=user_id,
                                                             completed=False
                                                            ).values('id')[0]['id']
 
@@ -1089,12 +1109,21 @@ def maintenance(request):
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
     
+    # Determine if we are showing the create maintenance help message
+    scheduled_maintenance_help_display = int(cv.value('scheduled_maintenance_help_display'))
+    if scheduled_maintenance_help_display:
+        scheduled_maintenance_help = cv.value('scheduled_maintenance_help')
+    else:
+        scheduled_maintenance_help = ''
+
     # Print the page
     return render_to_response(
        'main/maintenance.html',
        {
           'title':'System Status Dashboard | Scheduled Maintenance',
           'form':form,
+          'scheduled_maintenance_help_display':scheduled_maintenance_help_display,
+          'scheduled_maintenance_help':scheduled_maintenance_help,
           'services':services
        },
        context_instance=RequestContext(request)

@@ -63,6 +63,8 @@ def config(request):
             params['nav_display'] = form.cleaned_data['nav_display']
             params['contacts_display'] = form.cleaned_data['contacts_display']
             params['report_incident_display'] = form.cleaned_data['report_incident_display']
+            params['scheduled_maintenance_help'] = form.cleaned_data['scheduled_maintenance_help']
+            params['scheduled_maintenance_help_display'] = form.cleaned_data['scheduled_maintenance_help_display']
 
             # Update the data
             for param in params:

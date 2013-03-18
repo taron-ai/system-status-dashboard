@@ -47,7 +47,7 @@
    </tr>
    <tr>
     <td width="165">Maintenance Status</td>
-    <td width="400">
+    <td width="565">
       <b>
        {% if detail.0.completed %}
        COMPLETED
@@ -111,12 +111,14 @@
    <table class="standard">
     <tr>
      <th width="165">Time</th>
+     <th width="165">Created By</th>
      <th width="400px">Description</th>
     </tr>
 
      {% for row in updates %}
       <tr>
        <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
+       <td>{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
        <td>{{row.detail}}</td>
       </tr>
      {% endfor %}

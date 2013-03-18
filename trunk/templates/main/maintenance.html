@@ -43,15 +43,17 @@
 <form enctype="multipart/form-data" method="POST" name="maintenance" id="maintenance" action="/maintenance">
    {% csrf_token %}
 
-<table class="top">
+<table class="container">
 
+ {% if scheduled_maintenance_help_display %}
  <tr>
   <td colspan="5" align="left">
    <div class="help" id="help">
-    {{maintenance_help|safe}}
+    {{scheduled_maintenance_help|safe}}
    </div>
   </td>
  </tr>
+ {% endif %}
 
  <tr>
   <td colspan="5" height="25"><hr></td>
@@ -69,7 +71,7 @@
 
  <tr>
   <td>
-   <table>
+   <table class="container">
     <tr>
      <td><b>Start</b></td>
      <td>
@@ -104,10 +106,6 @@
     </tr>
     <tr>
      <td></td>
-     <td><input type="submit" value="save"/></td>
-    </tr>
-    <tr>
-     <td></td>
      <td colspan="2">* All times are in {{TIME_ZONE}}</td>
     </tr>
    </table>
@@ -121,6 +119,9 @@
      <td>{{row.service_name}}</td>
     </tr>
     {% endfor %}
+    <tr>
+     <td colspan="2"><input type="submit" value="save"/></td>
+    </tr>
    </table>
   </td>
  </tr>
@@ -128,7 +129,6 @@
  <tr>
   <td colspan="3">
    <p class="error">
-     {{form.errors}}
      {% if form.s_date.errors %}
       <br>{% for error in form.s_date.errors %}Start Date: {{error}}{% endfor %}
      {% endif %}

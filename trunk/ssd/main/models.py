@@ -22,10 +22,11 @@
 """
 
 
-from django.db import models
 import os
 import time
 import uuid
+from django.db import models
+from django.contrib.auth.models import User
 from datetime import datetime
 
 
@@ -100,6 +101,7 @@ class Maintenance(models.Model):
     description = models.CharField(blank=False,max_length=1000)
     impact = models.CharField(blank=False,max_length=1000)
     coordinator = models.CharField(blank=False,max_length=1000)
+    user = models.ForeignKey(User)
     started = models.BooleanField()
     completed = models.BooleanField()
 
@@ -113,6 +115,7 @@ class Maintenance_Update(models.Model):
 
     date = models.DateTimeField(default=datetime.now(),null=False,blank=False)
     maintenance = models.ForeignKey(Maintenance)
+    user = models.ForeignKey(User)
     detail = models.CharField(max_length=1000)
 
     # Represent the objects as unicode

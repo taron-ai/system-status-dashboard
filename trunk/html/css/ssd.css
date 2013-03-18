@@ -121,13 +121,36 @@ table.standard th {
    padding:10px 10px 10px 10px;
    background-color:#C8DAE4;
    text-align:center;
-   color:black;
+   color:#616161;
    font-weight:bold;
 }
 table.standard td {
    font-size:14px;
    border:1px solid #b0c5d0;
    padding:10px 10px 10px 10px;
+   color:black;
+   text-align:left;
+}
+
+
+/* Container Table Center Aligned */
+table.container {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   border-style:none;
+}
+table.container th {
+   font-size:14px;
+   border-style:none;
+   padding:0px 10px 0px 10px;
+   background-color:#C8DAE4;
+   text-align:center;
+   color:#616161;
+   font-weight:bold;
+}
+table.container td {
+   font-size:14px;
+   border-style:none;
+   padding:0px 10px 0px 10px;
    color:black;
    text-align:left;
 }

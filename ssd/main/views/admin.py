@@ -45,26 +45,45 @@ def config(request):
 
             # Obtain the cleaned data and put into a lookup table
             params = {}
-            params['company'] = form.cleaned_data['company']
-            params['greeting_new'] = form.cleaned_data['greeting_new']
-            params['greeting_update'] = form.cleaned_data['greeting_update']
-            params['email_to'] = form.cleaned_data['email_to']
+            params['recipient_name'] = form.cleaned_data['recipient_name']
+            
+            params['greeting_incident_new'] = form.cleaned_data['greeting_incident_new']
+            params['greeting_incident_update'] = form.cleaned_data['greeting_incident_update']
+            params['greeting_maintenance_new'] = form.cleaned_data['greeting_maintenance_new']
+            params['greeting_maintenance_update'] = form.cleaned_data['greeting_maintenance_update']
+            
             params['email_from'] = form.cleaned_data['email_from']
-            params['email_subject'] = form.cleaned_data['email_subject']
-            params['maintenance'] = form.cleaned_data['maintenance']
-            params['page_to'] = form.cleaned_data['page_to']
+            params['email_subject_incident'] = form.cleaned_data['email_subject_incident']
+            params['email_subject_maintenance'] = form.cleaned_data['email_subject_maintenance']
+            
+            params['alert'] = form.cleaned_data['alert']
+            params['display_alert'] = form.cleaned_data['display_alert']
+            
+            params['recipient_incident'] = form.cleaned_data['recipient_incident']
+            params['recipient_maintenance'] = form.cleaned_data['recipient_maintenance']
+            params['recipient_pager'] = form.cleaned_data['recipient_pager']
             params['message_success'] = form.cleaned_data['message_success']
             params['message_error'] = form.cleaned_data['message_error']
             params['escalation'] = form.cleaned_data['escalation']
-            params['report_incident_help'] = form.cleaned_data['report_incident_help']
-            params['create_incident_help'] = form.cleaned_data['create_incident_help']
             params['logo_display'] = form.cleaned_data['logo_display']
             params['logo_url'] = form.cleaned_data['logo_url']
+            params['ssd_url'] = form.cleaned_data['ssd_url']
             params['nav_display'] = form.cleaned_data['nav_display']
             params['contacts_display'] = form.cleaned_data['contacts_display']
             params['report_incident_display'] = form.cleaned_data['report_incident_display']
-            params['scheduled_maintenance_help'] = form.cleaned_data['scheduled_maintenance_help']
-            params['scheduled_maintenance_help_display'] = form.cleaned_data['scheduled_maintenance_help_display']
+            
+            params['instr_sched_maint'] = form.cleaned_data['instr_sched_maint']
+            params['display_sched_maint_instr'] = form.cleaned_data['display_sched_maint_instr']
+            
+            params['instr_report_incident'] = form.cleaned_data['instr_report_incident']
+            params['display_report_incident_instr'] = form.cleaned_data['display_report_incident_instr']
+
+            params['instr_create_incident'] = form.cleaned_data['instr_create_incident']
+            params['display_create_incident_instr'] = form.cleaned_data['display_create_incident_instr']
+
+            params['enable_uploads'] = form.cleaned_data['enable_uploads']
+            params['upload_path'] = form.cleaned_data['upload_path']
+            
 
             # Update the data
             for param in params:
@@ -78,11 +97,13 @@ def config(request):
     else:
         form = ConfigForm()
 
+    # Obtain all of the config values
     configs = Config.objects.values('config_name',
                                     'friendly_name',
                                     'config_value',
                                     'description',
-                                    'display').order_by('friendly_name')
+                                    'category',
+                                    'display').order_by('category','config_name')
 
     # Print the page
     return render_to_response(

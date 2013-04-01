@@ -35,38 +35,27 @@
 
 </script>
 
+ 
+ <div class="help" id="help">
+  When updating an existing incident, the following guidelines should be followed:
+  <li>When deleting an incident, no other information needs to be provided (everything else will be ignored)
+  <li>An email broadcast may be sent at any time without providing an update on the incident.  Simply check the 'Broadcast Email' checkbox and click submit.
+  <li>When adding an update to the incident, a description, date/time and affected services must be provided.
+ </div>
+ 
+<br>
+
 <form method="POST" name="update" id="update" action="/update">
    {% csrf_token %}
 
-<table class="top">
+<table class="container_top">
 
  <tr>
-  <td colspan="5">
-   <p class="title">Update Incident - id:{{id}}</p>
-  </td>
- </tr>
-
- <tr>
-  <td colspan="5" align="left">
-   <div class="help" id="help">
-    When updating an existing incident, the following guidelines should be followed:
-    <li>When deleting an incident, no other information needs to be provided (everything else will be ignored)
-    <li>An email broadcast may be sent at any time without providing an update on the incident.  Simply check the 'Broadcast Email' checkbox and click submit.
-    <li>When adding an update to the incident, a description, date/time and affected services must be provided.
-   </div>
-  </td>
- </tr>
-
- <tr>
-  <td colspan="5" height="25"><hr></td>
- </tr>
-
- <tr>
-  <td style="text-align:center;"><b>Description</b></td>
-  <td width="25"></td>
-  <td style="text-align:center;"><b>Affected Services</b></td>
-  <td width="25"></td>
-  <td style="text-align:center;"><b>Options</b></td>
+  <th>Description</th>
+  <th></th>
+  <th>Affected Services</th>
+  <th></th>
+  <th><b>Options</th>
  </tr>
 
  <tr>
@@ -79,7 +68,7 @@
   </td>
   <td></td>
   <td valign="top">
-   <table>
+   <table class="container_options">
     {% for row in affected_services %}
     <tr>
      <td><input type="checkbox" name="service" value="{{row.id}}" {% if row.affected == 'on' %}checked="on"{% endif %}/></td>
@@ -90,7 +79,7 @@
   </td>
   <td></td>
   <td valign="top">
-   <table>
+   <table class="container_options">
     <tr>
      <td align="right"><input type="checkbox" name="close" {% if not closed.0.closed == None %}checked="on"{% endif %}/></td>
      <td>Close Incident</td>

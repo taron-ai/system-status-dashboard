@@ -1,0 +1,111 @@
+{% comment %}
+
+ Copyright 2012 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+  <table style="font-family: Tahoma, Arial, Helvetica, sans-serif; border-collapse:collapse;">
+   <tr>
+    <th colspan="2" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Maintenance Details</th>
+   </tr>
+   <tr>
+    <td width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Maintenance Status</td>
+    <td width="565" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">
+      <b>
+       {% if detail.0.completed %}
+       COMPLETED
+       {% else %}
+        {% if detail.0.started %}
+          STARTED
+        {% else %}
+          NOT STARTED
+        {% endif %}
+       {% endif %}
+      </b>
+    </td>
+   </tr>
+   <tr>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Services Impacted</td>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">
+     {% if services %}
+     {% for row in services %}
+     {{row.service_name_id__service_name}}
+      <br>
+     {% endfor %}
+     {% else %}
+     <b><font color="red">- NO SERVICES DEFINED</font></b>
+     {% endif %}
+    </td>
+   </tr>
+   <tr>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Start Time</td>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.start|date:"Y-m-d H:i"}}</td>
+   </tr>
+   <tr>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">End Time</td>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.end|date:"Y-m-d H:i"}}</td>
+   </tr>
+   <tr>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Description</td>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.description|linebreaksbr}}</td>
+   </tr>
+   <tr>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Impact Analysis</td>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.impact|linebreaksbr}}</td>
+   </tr>
+   <tr>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Coordinator</td>
+    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.coordinator|linebreaksbr}}</td>
+   </tr>
+  </table>
+ 
+ </td>
+</tr>
+
+ <tr>
+  <td height="15" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;"></td>
+ </tr>
+
+ {% if updates %}
+ <tr>
+  <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">
+   <p><b>Maintenance Updates</b></p>
+  </td>
+  <td>
+   <table style="font-family: Tahoma, Arial, Helvetica, sans-serif; border-collapse:collapse;">
+    <tr>
+     <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Time</th>
+     <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Created By</th>
+     <th width="400" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Description</th>
+    </tr>
+
+    {% for row in updates %}
+    <tr>
+     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s"}}</td>
+     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
+     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail}}</td>
+    </tr>
+    {% endfor %}
+   </table>
+
+  </td>
+ </tr> 
+ {% endif %}
+ 
+ <tr>
+  <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">*All times are in {{timezone}}</td>
+ </tr>
+
+</table>

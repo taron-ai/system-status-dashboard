@@ -18,69 +18,426 @@
 
 {% endcomment %}
 {% block content %}
+
+<script type="text/javascript">
+   $(function() {
+    $("#accordion").accordion({ active: false, collapsible: true, autoHeight: false });
+   });
+</script>
+
 <br>
 <br>
+
 <form name="config" method="POST" action="/admin/config">
 {% csrf_token %}
-<table class="small" width="800">
-  <tr>
-  <td align="left" colspan="4">
-   <input type="submit" value="save">
-  </td>
- </tr>
 
- <tr>
-  <th width="200">Parameter</th>
-  <th width="500">Current Value</th>
-  <th width="20">Update</th>
-  <th>New Value</th>
- </tr>
-
- {% if form.errors %}
-  <tr>
-   <td colspan="4">{{form.errors}}</td>
-  </tr>
- {% endif %}
-
- {% for config in configs %}
- <tr>
-  <td><span title="{{config.description}}"><b>{{config.friendly_name}}</b></span></td>
-  {% if config.display == 'boolean' %}
-   <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
-   <td><input type="checkbox" name="update_{{config.config_name}}"</td>
-   <td>
-    <select name="{{config.config_name}}">
-    {% if config.config_value == '1' %}
-     <option value="0" selected>False</option>
-     <option value="1">True</option>
-    {% else %}
-     <option value="0">False</option>
-     <option value="1" selected>True</option>
-    {% endif %}
-   </td>
-  {% else %}
-   <td>{{config.config_value}}</td>
-   <td><input type="checkbox" name="update_{{config.config_name}}"></td>
-   
-   {% for field in form %}
-    {% if field.name == config.config_name %}
-     {% if field.value == None %}
-     <td><input type="text" name="{{config.config_name}}" value=""></td>
-     {% else %}
-     <td><input type="text" name="{{config.config_name}}" value="{{field.value}}"></td>
-     {% endif %}
-    {% endif %}
-  {% endfor %}
-
- {% endif %}
- </tr>
- {% endfor %}
- </tr>
+<div style="text-align:left">
 
 
+
+ <input type="submit" class="config-button" value="Save Changes">
+   {% if form.errors %}
+   <p class="error">Errors encountered saving your changes.  Please review the values you are attempting to change.</p>
+  {% endif %}
  
 
-</table>
+<div id="accordion" class="accordian">
+
+  {# Email Addresses #}  
+  <h3 align="left"><a href="#">Email Addresses</a></h3>
+  <div>
+   <table class="config">
+    <tr>
+     <th>Parameter</th>
+     <th width="300">Description</th>
+     <th width="300">Current Value</th>
+     <th>Update</th>
+     <th>New Value</th>
+    </tr>
+     {# Look through all configs and find the ones related to email #} 
+     {% for config in configs %}
+      {% if config.category == 'email_addresses' %}
+       <tr>
+        <td><b>{{config.friendly_name}}</b></td>
+        <td>{{config.description}}</td>
+        {% if config.display == 'boolean' %}
+         <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"</td>
+         <td>
+          <select name="{{config.config_name}}">
+          {% if config.config_value == '1' %}
+           <option value="0" selected>False</option>
+           <option value="1">True</option>
+          {% else %}
+           <option value="0">False</option>
+           <option value="1" selected>True</option>
+          {% endif %}
+         </td>
+        {% else %}
+         <td>{{config.config_value}}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"></td>
+   
+         {% for field in form %}
+          {% if field.name == config.config_name %}
+           {% if field.value == None %}
+           <td><input type="text" name="{{config.config_name}}" value=""></td>
+           {% else %}
+           <td><input type="text" name="{{config.config_name}}" value="{{field.value}}"></td>
+           {% endif %}
+          {% endif %}
+        {% endfor %}
+
+       {% endif %}
+       </tr>
+
+       {# See if there are any errors for this config #}
+       {% for key,value in form.errors.items %}
+        {% if key == config.config_name %}
+         <tr>
+          <td colspan="6" style="text-align:right;"><p class="error">{% for error in value %}{{error}}{% endfor %}</p></td>
+         </tr>
+        {% endif %}
+       {% endfor %}
+
+      {# End looking for specific configs #}
+      {% endif %}
+
+     {# End cycling through all configs #}
+     {% endfor %}
+
+   </table>
+  </div>
+
+
+  {# Email Text #}  
+  <h3 align="left"><a href="#">Email Text</a></h3>
+  <div>
+   <table class="config">
+    <tr>
+     <th>Parameter</th>
+     <th width="300">Description</th>
+     <th width="300">Current Value</th>
+     <th>Update</th>
+     <th>New Value</th>
+    </tr>
+     {# Look through all configs and find the ones related to email #} 
+     {% for config in configs %}
+      {% if config.category == 'email_text' %}
+       <tr>
+        <td><b>{{config.friendly_name}}</b></td>
+        <td>{{config.description}}</td>
+        {% if config.display == 'boolean' %}
+         <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"</td>
+         <td>
+          <select name="{{config.config_name}}">
+          {% if config.config_value == '1' %}
+           <option value="0" selected>False</option>
+           <option value="1">True</option>
+          {% else %}
+           <option value="0">False</option>
+           <option value="1" selected>True</option>
+          {% endif %}
+         </td>
+        {% else %}
+         <td>{{config.config_value}}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"></td>
+   
+         {% for field in form %}
+          {% if field.name == config.config_name %}
+           {% if field.value == None %}
+           <td><input type="text" name="{{config.config_name}}" value=""></td>
+           {% else %}
+           <td><input type="text" name="{{config.config_name}}" value="{{field.value}}"></td>
+           {% endif %}
+          {% endif %}
+        {% endfor %}
+
+       {% endif %}
+       </tr>
+
+       {# See if there are any errors for this config #}
+       {% for key,value in form.errors.items %}
+        {% if key == config.config_name %}
+         <tr>
+          <td colspan="6" style="text-align:right;"><p class="error">{% for error in value %}{{error}}{% endfor %}</p></td>
+         </tr>
+        {% endif %}
+       {% endfor %}
+
+      {# End looking for specific configs #}
+      {% endif %}
+
+     {# End cycling through all configs #}
+     {% endfor %}
+
+   </table>
+  </div>
+
+
+  {# File Uploads #}  
+  <h3 align="left"><a href="#">File Uploads</a></h3>
+  <div>
+   <table class="config">
+    <tr>
+     <th>Parameter</th>
+     <th width="300">Description</th>
+     <th width="300">Current Value</th>
+     <th>Update</th>
+     <th>New Value</th>
+    </tr>
+     {# Look through all configs and find the ones related to email #} 
+     {% for config in configs %}
+      {% if config.category == 'file_uploads' %}
+       <tr>
+        <td><b>{{config.friendly_name}}</b></td>
+        <td>{{config.description}}</td>
+        {% if config.display == 'boolean' %}
+         <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"</td>
+         <td>
+          <select name="{{config.config_name}}">
+          {% if config.config_value == '1' %}
+           <option value="0" selected>False</option>
+           <option value="1">True</option>
+          {% else %}
+           <option value="0">False</option>
+           <option value="1" selected>True</option>
+          {% endif %}
+         </td>
+        {% else %}
+         <td>{{config.config_value}}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"></td>
+   
+         {% for field in form %}
+          {% if field.name == config.config_name %}
+           {% if field.value == None %}
+           <td><input type="text" name="{{config.config_name}}" value=""></td>
+           {% else %}
+           <td><input type="text" name="{{config.config_name}}" value="{{field.value}}"></td>
+           {% endif %}
+          {% endif %}
+        {% endfor %}
+
+       {% endif %}
+       </tr>
+
+       {# See if there are any errors for this config #}
+       {% for key,value in form.errors.items %}
+        {% if key == config.config_name %}
+         <tr>
+          <td colspan="6" style="text-align:right;"><p class="error">{% for error in value %}{{error}}{% endfor %}</p></td>
+         </tr>
+        {% endif %}
+       {% endfor %}
+
+      {# End looking for specific configs #}
+      {% endif %}
+
+     {# End cycling through all configs #}
+     {% endfor %}
+   </table>
+  </div>
+
+
+  {# Major Functionality #}  
+  <h3 align="left"><a href="#">Major Functionality</a></h3>
+  <div>
+   <table class="config">
+    <tr>
+     <th>Parameter</th>
+     <th width="300">Description</th>
+     <th width="300">Current Value</th>
+     <th>Update</th>
+     <th>New Value</th>
+    </tr>
+     {# Look through all configs and find the ones related to email #} 
+     {% for config in configs %}
+      {% if config.category == 'functionality' %}
+       <tr>
+        <td><b>{{config.friendly_name}}</b></td>
+        <td>{{config.description}}</td>
+        {% if config.display == 'boolean' %}
+         <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"</td>
+         <td>
+          <select name="{{config.config_name}}">
+          {% if config.config_value == '1' %}
+           <option value="0" selected>False</option>
+           <option value="1">True</option>
+          {% else %}
+           <option value="0">False</option>
+           <option value="1" selected>True</option>
+          {% endif %}
+         </td>
+        {% else %}
+         <td>{{config.config_value}}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"></td>
+   
+         {% for field in form %}
+          {% if field.name == config.config_name %}
+           {% if field.value == None %}
+           <td><input type="text" name="{{config.config_name}}" value=""></td>
+           {% else %}
+           <td><input type="text" name="{{config.config_name}}" value="{{field.value}}"></td>
+           {% endif %}
+          {% endif %}
+        {% endfor %}
+
+       {% endif %}
+       </tr>
+
+       {# See if there are any errors for this config #}
+       {% for key,value in form.errors.items %}
+        {% if key == config.config_name %}
+         <tr>
+          <td colspan="6" style="text-align:right;"><p class="error">{% for error in value %}{{error}}{% endfor %}</p></td>
+         </tr>
+        {% endif %}
+       {% endfor %}
+
+      {# End looking for specific configs #}
+      {% endif %}
+
+     {# End cycling through all configs #}
+     {% endfor %}
+   </table>
+  </div>
+
+
+  {# Notifications #}  
+  <h3 align="left"><a href="#">Notifications</a></h3>
+  <div>
+   <table class="config">
+    <tr>
+     <th>Parameter</th>
+     <th width="300">Description</th>
+     <th width="300">Current Value</th>
+     <th>Update</th>
+     <th>New Value</th>
+    </tr>
+     {# Look through all configs and find the ones related to email #} 
+     {% for config in configs %}
+      {% if config.category == 'notifications' %}
+       <tr>
+        <td><b>{{config.friendly_name}}</b></td>
+        <td>{{config.description}}</td>
+        {% if config.display == 'boolean' %}
+         <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"</td>
+         <td>
+          <select name="{{config.config_name}}">
+          {% if config.config_value == '1' %}
+           <option value="0" selected>False</option>
+           <option value="1">True</option>
+          {% else %}
+           <option value="0">False</option>
+           <option value="1" selected>True</option>
+          {% endif %}
+         </td>
+        {% else %}
+         <td>{{config.config_value}}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"></td>
+   
+         {% for field in form %}
+          {% if field.name == config.config_name %}
+           {% if field.value == None %}
+           <td><input type="text" name="{{config.config_name}}" value=""></td>
+           {% else %}
+           <td><input type="text" name="{{config.config_name}}" value="{{field.value}}"></td>
+           {% endif %}
+          {% endif %}
+        {% endfor %}
+
+       {% endif %}
+       </tr>
+
+       {# See if there are any errors for this config #}
+       {% for key,value in form.errors.items %}
+        {% if key == config.config_name %}
+         <tr>
+          <td colspan="6" style="text-align:right;"><p class="error">{% for error in value %}{{error}}{% endfor %}</p></td>
+         </tr>
+        {% endif %}
+       {% endfor %}
+
+      {# End looking for specific configs #}
+      {% endif %}
+
+     {# End cycling through all configs #}
+     {% endfor %}
+   </table>
+  </div>
+
+
+  {# URLs and Paths #}  
+  <h3 align="left"><a href="#">URLs</a></h3>
+  <div>
+   <table class="config">
+    <tr>
+     <th>Parameter</th>
+     <th width="300">Description</th>
+     <th width="300">Current Value</th>
+     <th>Update</th>
+     <th>New Value</th>
+    </tr>
+     {# Look through all configs and find the ones related to email #} 
+     {% for config in configs %}
+      {% if config.category == 'urls' %}
+       <tr>
+        <td><b>{{config.friendly_name}}</b></td>
+        <td>{{config.description}}</td>
+        {% if config.display == 'boolean' %}
+         <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"</td>
+         <td>
+          <select name="{{config.config_name}}">
+          {% if config.config_value == '1' %}
+           <option value="0" selected>False</option>
+           <option value="1">True</option>
+          {% else %}
+           <option value="0">False</option>
+           <option value="1" selected>True</option>
+          {% endif %}
+         </td>
+        {% else %}
+         <td>{{config.config_value}}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"></td>
+   
+         {% for field in form %}
+          {% if field.name == config.config_name %}
+           {% if field.value == None %}
+           <td><input type="text" name="{{config.config_name}}" value=""></td>
+           {% else %}
+           <td><input type="text" name="{{config.config_name}}" value="{{field.value}}"></td>
+           {% endif %}
+          {% endif %}
+        {% endfor %}
+
+       {% endif %}
+       </tr>
+
+       {# See if there are any errors for this config #}
+       {% for key,value in form.errors.items %}
+        {% if key == config.config_name %}
+         <tr>
+          <td colspan="6" style="text-align:right;"><p class="error">{% for error in value %}{{error}}{% endfor %}</p></td>
+         </tr>
+        {% endif %}
+       {% endfor %}
+
+      {# End looking for specific configs #}
+      {% endif %}
+
+     {# End cycling through all configs #}
+     {% endfor %}
+   </table>
+  </div>
+
+
+</div>
+
+</div>
 </form>
 
 {% endblock %}

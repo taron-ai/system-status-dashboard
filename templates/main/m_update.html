@@ -40,33 +40,31 @@
 
 </script>
 
+<br>
+
 <form enctype="multipart/form-data" method="POST" name="m_update" id="m_update" action="/m_update">
    {% csrf_token %}
 
-<table class="top">
+<table class="container_top">
 
+ {% if scheduled_maintenance_help_display %}
  <tr>
   <td colspan="5" align="left">
    <div class="help" id="help">
-    {{maintenance_help|safe}}
+    {{scheduled_maintenance_help|safe}}
    </div>
   </td>
  </tr>
+ {% endif %}
 
  <tr>
-  <td colspan="5" height="25"><hr></td>
+  <th>Maintenance Description</th>
+  <th>Affected Services</th>
+  <th>Options</th>
  </tr>
 
  <tr>
-  <td><b>Maintenance Description</b></td>
-  <td width="25"></td>
-  <td><b>Affected Services</b></td>
-  <td width="25"></td>
-  <td><b>Options</b></td>
- </tr>
-
- <tr>
-  <td colspan="5" height="20"></td>
+  <td colspan="3" height="20"></td>
  </tr>
 
  <tr>
@@ -85,6 +83,10 @@
       <input type="text" class="input_date" name="e_date" id="e_date" value="{{e_date}}"/>
       <input type="text" class="input_date" name="e_time" id="e_time" value="{{e_time}}"/>
      </td>
+    </tr>
+    <tr>
+     <td></td>
+     <td>Timezone: {{TIME_ZONE}}</td>
     </tr>
     <tr>
      <td><b>Maintenance<br>Description</b></td>
@@ -110,15 +112,10 @@
       <textarea class="textarea_detail" id="update" name="update" rows="5" cols="50"></textarea>
      </td>
     </tr>
-    <tr>
-     <td></td>
-     <td colspan="2">* All times are in {{TIME_ZONE}}</td>
-    </tr>
    </table>
   </td>
-  <td></td>
   <td valign="top">
-   <table>
+   <table class="container_options">
     {% for row in affected_services %}
     <tr>
      <td><input type="checkbox" name="service" value="{{row.id}}" {% if row.affected == 'on' %}checked="on"{% endif %}/></td>
@@ -127,9 +124,8 @@
     {% endfor %}
    </table>
   </td>
-  <td></td>
   <td valign="top">
-   <table>
+   <table class="container_options">
     <tr>
      <td align="right"><input type="checkbox" name="started" {% if status.0.started %}checked="on"{% endif %}/></td>
      <td>Started</td>
@@ -154,7 +150,7 @@
  </tr>
 
  <tr>
-  <td colspan="5">
+  <td colspan="3">
    <p class="error">
      {% if form.s_date.errors %}
       <br>{% for error in form.s_date.errors %}Start Date: {{error}}{% endfor %}
@@ -198,8 +194,6 @@
    </p>
   </td>
  </tr>
-
-
 
 </table>
 <input type="hidden" name="id" value="{{id}}">

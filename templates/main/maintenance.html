@@ -40,33 +40,27 @@
 
 </script>
 
+ {% if instr %}
+ <div class="help" id="help">
+  {{instr|safe}}
+ </div>
+ {% endif %}
+ 
+<br>
+
 <form enctype="multipart/form-data" method="POST" name="maintenance" id="maintenance" action="/maintenance">
    {% csrf_token %}
 
-<table class="container">
-
- {% if scheduled_maintenance_help_display %}
- <tr>
-  <td colspan="5" align="left">
-   <div class="help" id="help">
-    {{scheduled_maintenance_help|safe}}
-   </div>
-  </td>
- </tr>
- {% endif %}
+<table class="container_top">
 
  <tr>
-  <td colspan="5" height="25"><hr></td>
+  <th>Maintenance Description</th>
+  <th>Affected Services</th>
+  <th>Options</th>
  </tr>
 
  <tr>
-  <td><b>Maintenance Description</b></td>
-  <td width="25"></td>
-  <td><b>Affected Services</b></td>
- </tr>
-
- <tr>
-  <td colspan="3" height="20"></td>
+  <td colspan="3" height="10"></td>
  </tr>
 
  <tr>
@@ -87,6 +81,10 @@
      </td>
     </tr>
     <tr>
+      <td></td>
+      <td>Timezone: {{TIME_ZONE}}</td>
+    </tr>
+    <tr>
      <td><b>Maintenance<br>Description</b></td>
      <td>
       <textarea class="textarea_detail" id="description" name="description" rows="5" cols="50">{% if form.description.data %}{{form.description.data}}{% endif %}</textarea>
@@ -104,25 +102,28 @@
       <textarea class="textarea_detail" id="coordinator" name="coordinator" rows="5" cols="50">{% if form.coordinator.data %}{{form.coordinator.data}}{% endif %}</textarea>
      </td>
     </tr>
-    <tr>
-     <td></td>
-     <td colspan="2">* All times are in {{TIME_ZONE}}</td>
-    </tr>
    </table>
   </td>
-  <td></td>
   <td valign="top">
-   <table>
+   <table class="container_options">
     {% for row in services %}
     <tr>
      <td><input type="checkbox" name="service" value="{{row.id}}"/></td>
      <td>{{row.service_name}}</td>
     </tr>
     {% endfor %}
+   </table>
+  </td>
+  <td valign="top">
+   <table class="container_options">
+    <tr>
+     <td align="right"><input type="checkbox" name="email"/></td>
+     <td>Broadcast Email</td>
+    </tr>
     <tr>
      <td colspan="2"><input type="submit" value="save"/></td>
     </tr>
-   </table>
+   </table>  
   </td>
  </tr>
 

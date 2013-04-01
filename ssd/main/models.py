@@ -40,7 +40,8 @@ class Config(models.Model):
     config_name = models.CharField(max_length=50, unique=True)
     friendly_name = models.CharField(max_length=50, unique=True)
     config_value = models.CharField(max_length=1000)
-    description = models.CharField(max_length=500,blank=True)
+    description = models.CharField(max_length=500,blank=False)
+    category = models.CharField(max_length=15,blank=False)
     display = models.CharField(max_length=8,blank=False)
 
     # Represent the object as unicode
@@ -144,7 +145,6 @@ class Report(models.Model):
         file_path = time.strftime('%Y/%m/%d')
 
         # Create a unique filename
-        #instance.uuid = uuid.uuid4().hex
         file_name = uuid.uuid4().hex
 
         # Save the original extension, if its there

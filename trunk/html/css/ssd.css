@@ -41,6 +41,13 @@ img {
    border-style: none;
 }
 
+/* Config Accordian Styling */
+div.accordian {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   font-size:14px;
+   width:950px;
+}
+
 /* Help Div */
 div.help {
    font-family: Tahoma, Arial, Helvetica, sans-serif;
@@ -58,25 +65,8 @@ div.help {
    width:700px;
 }
 
-/* Help Div Report Incident */
-div.help-report {
-   font-family: Tahoma, Arial, Helvetica, sans-serif;
-   padding:4px;
-   font-size:13px;
-   color:#3f3f3f;
-   border:1px solid red;
-   -webkit-border-radius:3px;
-   -moz-border-radius:3px;
-   border-radius:3px
-   -webkit-box-shadow: inset 0 1px 1px
-   transition: border linear .2s,box-shadow linear .2s;
-   background-color:#FFFFE0;
-   text-align:left;
-   width:550px;
-}
-
 /* Alert Div */
-div.maintenance {
+div.alert {
    font-family: Tahoma, Arial, Helvetica, sans-serif;
    padding:4px;
    font-size:16px;
@@ -93,7 +83,7 @@ div.maintenance {
 
 /* Error Text */
 p.error {
-   font-size:14px;
+   font-size:12px;
    font-weight:bold;
    color:red;
    margin: 0;
@@ -148,13 +138,74 @@ table.container th {
    font-weight:bold;
 }
 table.container td {
-   font-size:14px;
+   font-size:12px;
    border-style:none;
    padding:0px 10px 0px 10px;
    color:black;
    text-align:left;
 }
 
+
+/* Top Container Table Center Aligned with border */
+table.container_top {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   border-collapse:collapse;
+   border: 1px solid #b0c5d0;
+}
+table.container_top th {
+   font-size:14px;
+   border-bottom:1px solid #b0c5d0;
+   padding:5px 25px;
+   text-align:center;
+   color:#616161;
+   font-weight:bold;
+}
+table.container_top td {
+   font-size:12px;
+   border-style:none;
+   padding:5px 25px;
+   color:black;
+   text-align:left;
+}
+
+/* Container Table for checkboxes and options */
+table.container_options {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   border-style:none;
+}
+table.container_options td {
+   font-size:12px;
+   border-style:none;
+   padding:0px 0px 0px 0px;
+   text-align:left;
+   vertical-align: text-bottom
+}
+
+
+/* Table for config values */
+table.config {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   border: 1px solid #b0c5d0;
+   width:900px;
+   border-collapse:collapse;
+}
+table.config th {
+   font-size:12px;
+   border-bottom: 1px solid #b0c5d0;
+   background-color: #F2F2F2;
+   padding:10px 10px 10px 10px;
+   text-align:left;
+   color:#616161;
+   font-weight:bold;
+}
+table.config td {
+   font-size:12px;
+   border-top: 1px solid #b0c5d0;
+   padding:5px 10px 5px 10px;
+   color:black;
+   text-align:left;
+   background: white;
+}
 
 /* Standard Table Center Aligned */
 table.small {
@@ -192,6 +243,11 @@ input, textarea, select {
    border-radius:3px
    -webkit-box-shadow: inset 0 1px 1px
    transition: border linear .2s,box-shadow linear .2s;
+}
+
+/* config button */
+input.config-button {
+   font-size:11px;
 }
 
 select.timezone {

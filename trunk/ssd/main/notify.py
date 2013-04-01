@@ -25,6 +25,9 @@ from ssd.main.models import Config
 from ssd.main.models import Incident
 from ssd.main.models import Service_Issue
 from ssd.main.models import Incident_Update
+from ssd.main.models import Maintenance
+from ssd.main.models import Maintenance_Update
+from ssd.main.models import Service_Maintenance
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
 from django.template import Context
@@ -46,20 +49,22 @@ class email:
 
     def page(self,message):
         """
-        Send a short text message/page
+        Send a short text message/page in text format
         The required format of EmailMessage is as follows:
-        EmailMessage(subject,body,from_email,[to_email],[bcc_email],headers,[cc_email]
+          - EmailMessage(subject,body,from_email,[to_email],[bcc_email],headers,[cc_email]
+          - If there is an error, the user will be notified and an Apache error log will be generated
+          
         """
 
         # Instantiate the configuration value getter
         cv = config_value.config_value()
 
         # Obtain the recipient email address
-        page_to = cv.value('page_to')
+        recipient_pager = cv.value('recipient_pager')
 
         # Obtain the sender email address and instantiate the message
         email_from = cv.value('email_from')
-        pager = EmailMessage('Incident Alert',message,email_from,[page_to],None,None,None)
+        pager = EmailMessage('Incident Alert',message,email_from,[recipient_pager],None,None,None)
 
         # If there is an issue, the user will be notified
         try:
@@ -71,10 +76,10 @@ class email:
         return 'success'
 
     
-    def send(self,id,ssd_url,set_timezone,new):
+    def incident(self,id,set_timezone,new):
         """
-        Send an email
-        If there is an error, the user will not be notified but this will log to the Apache error log
+        Send an email message in HTML format about a new or existing incident
+           - If there is an error, the user will not be notified but an Apache error log will be generated
         """
 
         # Instantiate the configuration value getter
@@ -90,36 +95,39 @@ class email:
         updates = Incident_Update.objects.filter(incident_id=id).values('id','date','detail').order_by('id')
 
         # Get the template
-        html_template = get_template('email/notify.html')
+        html_template = get_template('email/incident.html')
 
-        # Obtain the company name
-        company = cv.value('company')
+        # Obtain the recipient name
+        recipient_name = cv.value('recipient_name')
 
         # Obtain the recipient email address
-        email_to = cv.value('email_to')
+        recipient_incident = cv.value('recipient_incident')
 
         # Obtain the sender email address
         email_from = cv.value('email_from')
 
         # Obtain the email subject
-        email_subject = cv.value('email_subject')
+        email_subject_incident = cv.value('email_subject_incident')
+
+        # Obtain the ssd url
+        ssd_url = cv.value('ssd_url')
 
         # Obtain the greeting
         if new == True:
-            greeting = cv.value('greeting_new')
+            greeting = cv.value('greeting_incident_new')
         else:
-            greeting = cv.value('greeting_update')
+            greeting = cv.value('greeting_incident_update')
 
         # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
         jtz.activate(set_timezone)
 
         d = Context({ 
                      'detail':detail,
-                     'company':company,
+                     'recipient_name':recipient_name,
                      'greeting':greeting,
                      'services':services,
                      'updates':updates,
-                     'link':ssd_url,
+                     'ssd_url':ssd_url,
                      'timezone':set_timezone
                     })
 
@@ -127,10 +135,10 @@ class email:
         
         try:
             msg = EmailMessage(
-                                email_subject, 
+                                email_subject_incident, 
                                 html, 
                                 email_from, 
-                                [email_to],None,None,None
+                                [recipient_incident],None,None,None
                               )
 
             # Change to HTML content type
@@ -142,4 +150,84 @@ class email:
             # Log to the error log
             print e
 
+
+    def maintenance(self,id,set_timezone,new):
+        """
+        Send an email message in HTML format about a new or existing maintenance
+           - If there is an error, the user will not be notified but an Apache error log will be generated
+        """
+
+        # Instantiate the configuration value getter
+        cv = config_value.config_value()
+
+        # Obain the incident detail
+        detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed')
+
+        # Which services were impacted
+        services = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id__service_name')
+
+        # Obain any incident updates
+        updates = Maintenance_Update.objects.filter(maintenance_id=id).values(
+                                                                              'id',
+                                                                              'date',
+                                                                              'user_id__first_name',
+                                                                              'user_id__last_name',
+                                                                              'detail'
+                                                                             ).order_by('id')
+
+        # Get the template
+        html_template = get_template('email/maintenance.html')
+
+        # Obtain the recipient name
+        recipient_name = cv.value('recipient_name')
+
+        # Obtain the recipient email address
+        recipient_maintenance = cv.value('recipient_maintenance')
+
+        # Obtain the sender email address
+        email_from = cv.value('email_from')
+
+        # Obtain the email subject
+        email_subject_maintenance = cv.value('email_subject_maintenance')
+
+        # Obtain the ssd url
+        ssd_url = cv.value('ssd_url')
+
+        # Obtain the greeting
+        if new == True:
+            greeting = cv.value('greeting_maintenance_new')
+        else:
+            greeting = cv.value('greeting_maintenance_update')
+
+        # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
+        jtz.activate(set_timezone)
+
+        d = Context({ 
+                     'detail':detail,
+                     'recipient':recipient,
+                     'greeting':greeting,
+                     'services':services,
+                     'updates':updates,
+                     'ssd_url':ssd_url,
+                     'timezone':set_timezone
+                    })
+
+        html = html_template.render(d)
+        
+        try:
+            msg = EmailMessage(
+                                email_subject_maintenance, 
+                                html, 
+                                email_from, 
+                                [recipient_maintenance],None,None,None
+                              )
+
+            # Change to HTML content type
+            msg.content_subtype = 'html'
+            
+            # Send it
+            msg.send()
+        except Exception, e:
+            # Log to the error log
+            print e
 

@@ -22,7 +22,7 @@
 
 <script type="text/javascript">
 
-   // Date Pickers and Submit
+   // Date Pickers
    $(function() {
 
       //Date
@@ -35,48 +35,35 @@
 
 </script>
 
+{% if instr %}
+<div class="help" id="help">
+ {{instr|safe}}
+</div>
+{% endif %}
+
+<br>
+
 <form method="POST" name="create" id="report" action="/create">
    {% csrf_token %}
 
-<table class="top">
+<table class="container_top">
 
  <tr>
-  <td colspan="5">
-   <p class="title">New Incident</p>
-  </td>
+  <th>Description</th>
+  <th>Affected Services</th>
+  <th>Options</th>
  </tr>
 
  <tr>
-  <td colspan="5" align="left">
-   <div class="help" id="help">
-    {{create_incident_help|safe}}
-   </div>
-  </td>
- </tr>
-
- <tr>
-  <td colspan="5" height="25"><hr></td>
- </tr>
-
- <tr>
-  <td style="text-align:center;"><b>Description</b></td>
-  <td width="25"></td>
-  <td style="text-align:center;"><b>Affected Services</b></td>
-  <td width="25"></td>
-  <td style="text-align:center;"><b>Options</b></td>
- </tr>
-
- <tr>
-  <td colspan="5" height="20"></td>
+  <td colspan="3" height="20"></td>
  </tr>
 
  <tr>
   <td>
-   <textarea class="textarea_detail" id="detail" name="detail" rows="25" cols="50">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
+   <textarea class="textarea_detail" id="detail" name="detail" rows="25" cols="50">{% if not form.detail.data == None %}{{form.detail.data}}{% else %}Enter a full and complete description of the incident{% endif %}</textarea>
   </td>
-  <td></td>
   <td valign="top">
-   <table>
+   <table class="container_options">
     {% for row in services %}
     <tr>
      <td><input type="checkbox" name="service" value="{{row.id}}"/></td>
@@ -85,9 +72,8 @@
     {% endfor %}
    </table>
   </td>
-  <td></td>
   <td valign="top">
-   <table>
+   <table class="container_options">
     <tr>
      <td align="right"><input type="checkbox" name="email" checked/></td>
      <td>Broadcast Email</td>
@@ -104,18 +90,18 @@
      <td><input type="text" class="input_date" name="time" id="time" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if time_now %}{{time_now|date:"H:i"}}{% endif %}{% endif %}"/></td>
     </tr>
     <tr>
-     <td colspan="2" style="text-align:right;"><input type="submit" value="submit"/></td>
+     <td colspan="2" style="text-align:right; padding-top:5px;">Timezone: {{TIME_ZONE}}</td>
     </tr>
+    <tr>
+     <td colspan="2" style="text-align:right; padding-top:5px;"><input type="submit" value="submit"/></td>
+    </tr>
+
    </table>
   </td>
  </tr>
 
  <tr>
-  <td colspan="5">* All times are in {{TIME_ZONE}}</td>
- </tr>
-
- <tr>
-  <td colspan="5">
+  <td colspan="3">
    <p class="error">
      {% if form.date.errors %}
       <br>{% for error in form.date.errors %}{{error}}{% endfor %}

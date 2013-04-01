@@ -38,12 +38,12 @@
   <td colspan="2" height="15">
  </tr>
 
- {% if not maintenance == 'none' %}
+ {% if alert %}
  <tr>
   <td colspan="2" style="text-align:center;">
    <center>
-    <div class="maintenance">
-     {{maintenance|safe}}
+    <div class="alert">
+     {{alert|safe}}
     </center>
    </div> 
   </td>
@@ -176,7 +176,7 @@
   </td>
   <td style="text-align:right;">
    {% if app_version %}
-   <a href="http://www.system-status-dashboard.com">SSD</a> v{{app_version}}
+   <a href="http://www.system-status-dashboard.com" title="version: {{app_version}}"><img width="55" height="35" src="/html/images/SSDsmall.png"></a>
    {% endif %}
   </td>
  </tr>

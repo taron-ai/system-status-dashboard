@@ -260,26 +260,43 @@ class ConfigAdminForm(forms.ModelForm):
 class ConfigForm(forms.Form):
     """Form for updating configs"""
 
-    company = forms.CharField(required=False)
-    greeting_new = forms.CharField(required=False)
-    greeting_update = forms.CharField(required=False)
-    email_to = forms.EmailField(required=False)
+    recipient_name = forms.CharField(required=False)
+    
+    greeting_incident_new = forms.CharField(required=False)
+    greeting_incident_update = forms.CharField(required=False)
+    greeting_maintenance_new = forms.CharField(required=False)
+    greeting_maintenance_update = forms.CharField(required=False)
+    
     email_from = forms.EmailField(required=False)
-    email_subject = forms.CharField(required=False)
-    maintenance = forms.CharField(required=False)
-    page_to = forms.EmailField(required=False)
+    email_subject_incident = forms.CharField(required=False)
+    email_subject_maintenance = forms.CharField(required=False)
+    alert = forms.CharField(required=False)
+    display_alert = forms.CharField(required=False)
+    
+    recipient_incident = forms.EmailField(required=False)
+    recipient_maintenance = forms.EmailField(required=False)
+    recipient_pager = forms.EmailField(required=False)
     message_success = forms.CharField(required=False)
     message_error = forms.CharField(required=False)
     escalation = forms.CharField(required=False)
-    report_incident_help = forms.CharField(required=False)
-    create_incident_help = forms.CharField(required=False)
     logo_display = forms.IntegerField(required=False)
     logo_url = forms.CharField(required=False)
+    ssd_url = forms.CharField(required=False)
     nav_display = forms.IntegerField(required=False)
     contacts_display = forms.IntegerField(required=False)
     report_incident_display = forms.IntegerField(required=False)
-    scheduled_maintenance_help = forms.CharField(required=False)
-    scheduled_maintenance_help_display = forms.IntegerField(required=False)
+    
+    instr_sched_maint = forms.CharField(required=False)
+    display_sched_maint_instr = forms.IntegerField(required=False)
+    
+    instr_report_incident = forms.CharField(required=False)
+    display_report_incident_instr = forms.IntegerField(required=False)
+    
+    instr_create_incident = forms.CharField(required=False)
+    display_create_incident_instr = forms.IntegerField(required=False)
+
+    enable_uploads = forms.IntegerField(required=False)
+    upload_path = forms.IntegerField(required=False)
 
 
 class AddMaintenanceForm(forms.Form):

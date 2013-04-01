@@ -107,7 +107,7 @@ def report(request):
             report_time = pytz.timezone(settings.TIME_ZONE).localize(report_time)
 
             # Save the data
-
+            # If file uploads are disabled but the user included them, ignore them
             if 'screenshot1' in request.FILES:
                 screenshot1 = request.FILES['screenshot1']
             else:
@@ -160,15 +160,18 @@ def report(request):
     # Print the page
     # On a POST, the form will give back error values for printing in the template
 
-    # Obtain the report incident help message
-    report_incident_help = cv.value('report_incident_help')
+    # Determine if we are showing the create maintenance help message
+    if int(cv.value('display_report_incident_instr')):
+        instr = cv.value('instr_report_incident')
+    else:
+        instr = None
     
     return render_to_response(
        'main/report.html',
        {
           'title':'SSD Report Incident',
           'form':form,
-          'report_incident_help':report_incident_help
+          'instr':instr
        },
        context_instance=RequestContext(request)
     )
@@ -360,8 +363,11 @@ def index(request):
         # Add the main row to our data dict
         data.append(row)
   
-    # Obtain the maintenance text (if there)
-    maintenance = cv.value('maintenance')
+    # Obtain the alert text (if there)
+    if int(cv.value('display_alert')):
+        alert = cv.value('alert')
+    else:
+        alert = None
     
     # Obtain all timezones
     timezones = pytz.all_timezones
@@ -380,7 +386,7 @@ def index(request):
           'maintenance_services':maintenance_services,
           'backward_link':backward_link,
           'forward_link':forward_link,
-          'maintenance':maintenance,
+          'alert':alert,
           'timezones':timezones
        },
        context_instance=RequestContext(request)
@@ -454,11 +460,12 @@ def m_detail(request):
     if not re.match(r'^\d+$', request.GET['id']):
         return return_error(request,'Improperly formatted id: %s' % (request.GET['id']))
 
-    # Which services were impacted
-    services = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id__service_name')
 
     # Obain the incident detail
     detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed')
+
+    # Which services were impacted
+    services = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id__service_name')
 
     # Obain any incident updates
     updates = Maintenance_Update.objects.filter(maintenance_id=id).values(
@@ -531,7 +538,7 @@ def update(request):
         if 'email' in request.POST and 'id' in request.POST and request.POST['detail'] == '' and not 'close' in request.POST:
             if re.match(r'^\d+$', request.POST['id']):
                 email = notify.email()
-                email.send(request.POST['id'],settings.SSD_URL,set_timezone,False)
+                email.incident(request.POST['id'],set_timezone,False)
 
                 # Redirect to the home page
                 return HttpResponseRedirect('/')
@@ -588,7 +595,7 @@ def update(request):
             # If an email update is being requested, send it
             if 'email' in request.POST:
                 email = notify.email()
-                email.send(request.POST['id'],settings.SSD_URL,set_timezone,False)
+                email.incident(request.POST['id'],set_timezone,False)
 
             # All done so redirect to the incident detail page so
             # the new data can be seen.
@@ -772,7 +779,7 @@ def m_update(request):
             # If an email update is being requested, send it
             if 'email' in request.POST:
                 email = notify.email()
-                email.send(request.POST['id'],settings.SSD_URL,set_timezone,False)
+                email.maintenance(request.POST['id'],set_timezone,False)
 
             # All done so redirect to the maintenance detail page so
             # the new data can be seen.
@@ -934,7 +941,7 @@ def create(request):
             # about this issue if requested
             if 'email' in request.POST:
                 email = notify.email()
-                email.send(incident_id[0]['id'],settings.SSD_URL,set_timezone,True)
+                email.incident(incident_id[0]['id'],set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # incident
@@ -960,8 +967,11 @@ def create(request):
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
-    # Obtain the create incident help message
-    create_incident_help = cv.value('create_incident_help')
+    # Determine if we are showing the create incident help message
+    if int(cv.value('display_create_incident_instr')):
+        instr = cv.value('instr_create_incident')
+    else:
+        instr = None
 
     # Print the page
     return render_to_response(
@@ -971,7 +981,7 @@ def create(request):
           'services':services,
           'form':form,
           'time_now':time_now,
-          'create_incident_help':create_incident_help
+          'instr':instr
        },
        context_instance=RequestContext(request)
     )
@@ -1070,7 +1080,7 @@ def maintenance(request):
                             impact=impact,
                             coordinator=coordinator,
                             user_id=user_id,
-                            completed=False,
+                            completed=0,
                            ).save()
 
                 maintenance_id = Maintenance.objects.filter(
@@ -1080,7 +1090,7 @@ def maintenance(request):
                                                             impact=impact,
                                                             coordinator=coordinator,
                                                             user_id=user_id,
-                                                            completed=False
+                                                            completed=0
                                                            ).values('id')[0]['id']
 
                 # Find out which services this impacts and save the data
@@ -1090,6 +1100,12 @@ def maintenance(request):
                     # multiple checkboxes in the form
                     if re.match(r'^\d+$', service_id):
                         Service_Maintenance(service_name_id=service_id,maintenance_id=maintenance_id).save()
+
+            # Send an email notification to the appropriate list
+            # about this maintenance, if requested
+            if 'email' in request.POST:
+                email = notify.email()
+                email.maintenance(maintenance_id,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # maintenance
@@ -1110,11 +1126,10 @@ def maintenance(request):
     services = Service.objects.values('id','service_name').order_by('service_name')
     
     # Determine if we are showing the create maintenance help message
-    scheduled_maintenance_help_display = int(cv.value('scheduled_maintenance_help_display'))
-    if scheduled_maintenance_help_display:
-        scheduled_maintenance_help = cv.value('scheduled_maintenance_help')
+    if int(cv.value('display_sched_maint_instr')):
+        instr = cv.value('instr_sched_maint')
     else:
-        scheduled_maintenance_help = ''
+        instr = None
 
     # Print the page
     return render_to_response(
@@ -1122,8 +1137,7 @@ def maintenance(request):
        {
           'title':'System Status Dashboard | Scheduled Maintenance',
           'form':form,
-          'scheduled_maintenance_help_display':scheduled_maintenance_help_display,
-          'scheduled_maintenance_help':scheduled_maintenance_help,
+          'instr':instr,
           'services':services
        },
        context_instance=RequestContext(request)

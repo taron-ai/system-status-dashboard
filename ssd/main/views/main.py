@@ -107,27 +107,37 @@ def report(request):
             report_time = pytz.timezone(settings.TIME_ZONE).localize(report_time)
 
             # Save the data
-            # If file uploads are disabled but the user included them, ignore them
-            if 'screenshot1' in request.FILES:
-                screenshot1 = request.FILES['screenshot1']
+            # If file uploads are disabled but the user included them somehow, ignore them
+            if int(cv.value('enable_uploads')) == 1:
+                if 'screenshot1' in request.FILES:
+                    screenshot1 = request.FILES['screenshot1']
+                else:
+                    screenshot1 = ''
+
+                if 'screenshot2' in request.FILES:
+                    screenshot2 = request.FILES['screenshot2']
+                else:
+                    screenshot2 = ''
+
+            # Screenshots are disabled
             else:
                 screenshot1 = ''
-
-            if 'screenshot2' in request.FILES:
-                screenshot2 = request.FILES['screenshot2']
-            else:
                 screenshot2 = ''
+            
+            # Save the data (if the admin has not setup the upload directory, it'll fail)
+            try:
+                Report(date=report_time,
+                       name=name,
+                       email=email,
+                       description=description,
+                       additional=additional,
+                       screenshot1=screenshot1,
+                       screenshot2=screenshot2,
+                      ).save()
+            except Exception as e:
+                return return_error(request,e)
 
-            Report(date=report_time,
-                   name=name,
-                   email=email,
-                   description=description,
-                   additional=additional,
-                   screenshot1=screenshot1,
-                   screenshot2=screenshot2,
-                  ).save()
-
-            # If notifications are turned on, report the issue to the pager 
+            # If notifications are turned on, report the issue to the pager address
             # and save the return value for the confirmation page
             # If notifications are turned off, give the user a positive confirmation
             
@@ -171,7 +181,8 @@ def report(request):
        {
           'title':'SSD Report Incident',
           'form':form,
-          'instr':instr
+          'instr':instr,
+          'enable_uploads':int(cv.value('enable_uploads'))
        },
        context_instance=RequestContext(request)
     )

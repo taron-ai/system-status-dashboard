@@ -266,13 +266,11 @@ class ConfigForm(forms.Form):
     greeting_incident_update = forms.CharField(required=False)
     greeting_maintenance_new = forms.CharField(required=False)
     greeting_maintenance_update = forms.CharField(required=False)
-    
     email_from = forms.EmailField(required=False)
     email_subject_incident = forms.CharField(required=False)
     email_subject_maintenance = forms.CharField(required=False)
     alert = forms.CharField(required=False)
     display_alert = forms.CharField(required=False)
-    
     recipient_incident = forms.EmailField(required=False)
     recipient_maintenance = forms.EmailField(required=False)
     recipient_pager = forms.EmailField(required=False)
@@ -285,18 +283,15 @@ class ConfigForm(forms.Form):
     nav_display = forms.IntegerField(required=False)
     contacts_display = forms.IntegerField(required=False)
     report_incident_display = forms.IntegerField(required=False)
-    
     instr_sched_maint = forms.CharField(required=False)
     display_sched_maint_instr = forms.IntegerField(required=False)
-    
     instr_report_incident = forms.CharField(required=False)
     display_report_incident_instr = forms.IntegerField(required=False)
-    
     instr_create_incident = forms.CharField(required=False)
     display_create_incident_instr = forms.IntegerField(required=False)
-
     enable_uploads = forms.IntegerField(required=False)
-    upload_path = forms.IntegerField(required=False)
+    upload_path = forms.CharField(required=False)
+    file_upload_size = forms.IntegerField(required=False)
 
 
 class AddMaintenanceForm(forms.Form):

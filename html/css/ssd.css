@@ -487,3 +487,16 @@ div.wrapper {
    width:1000px;
 }
 
+
+/*
+Text formatting for input and textareas when placing and replacing
+the default text 
+*/
+input:focus { color:#ccc;transition:color .2s linear 0;
+              -webkit-transition:color .2s linear 0;
+              -moz-transition:color .2s linear 0 }
+input.typing { color:#333; }
+textarea:focus { color:#ccc;transition:color .2s linear 0;
+              -webkit-transition:color .2s linear 0;
+              -moz-transition:color .2s linear 0 }
+textarea.typing { color:#333; }

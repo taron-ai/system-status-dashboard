@@ -83,6 +83,7 @@ def config(request):
 
             params['enable_uploads'] = form.cleaned_data['enable_uploads']
             params['upload_path'] = form.cleaned_data['upload_path']
+            params['file_upload_size'] = form.cleaned_data['file_upload_size']
             
 
             # Update the data

@@ -38,6 +38,13 @@
       $("#e_time").timepicker({timeSeparator: ':'});
    });
 
+   // Setup the default text for the input and textarea fields
+   $(function(){
+      default_text_textarea("description","Enter a description of the issue you are experiencing.  Input is limited to 160 characters.");
+      default_text_textarea("impact","Enter any additional information, beyond 160 characters, that you would like our engineers to have.");
+      default_text_textarea("coordinator","Enter any additional information, beyond 160 characters, that you would like our engineers to have.");
+    });
+
 </script>
 
  {% if instr %}

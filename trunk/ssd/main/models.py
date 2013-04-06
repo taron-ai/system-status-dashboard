@@ -27,6 +27,7 @@ import time
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
 from datetime import datetime
 
 
@@ -138,6 +139,9 @@ class Service_Maintenance(models.Model):
 class Report(models.Model):
     """User reported issues"""
 
+    # Obtain the custom upload location
+    fs = FileSystemStorage(Config.objects.filter(config_name='upload_path').values('config_value')[0]['config_value'])
+
     def _upload_to(instance, filename):
         """Rename uploaded images to a random (standard) name"""
 
@@ -158,5 +162,5 @@ class Report(models.Model):
     email = models.CharField(null=False,blank=False,max_length=50)
     description = models.CharField(null=False,blank=False,max_length=160)
     additional = models.CharField(blank=True,max_length=1000)
-    screenshot1 = models.ImageField(upload_to=_upload_to)
-    screenshot2 = models.ImageField(upload_to=_upload_to)
+    screenshot1 = models.ImageField(storage=fs,upload_to=_upload_to)
+    screenshot2 = models.ImageField(storage=fs,upload_to=_upload_to)

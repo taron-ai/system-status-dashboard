@@ -22,7 +22,7 @@
 
 <script type="text/javascript">
 
-   // Date Pickers and Submit
+   // Date Pickers
    $(function() {
 
       //Date
@@ -32,6 +32,11 @@
       $("#time").timepicker({timeSeparator: ':'});
 
    });
+
+   // Setup the default text for the input and textarea fields
+   $(function(){
+      default_text_textarea("detail","Enter an update for this incident.");
+    });
 
 </script>
 
@@ -96,12 +101,16 @@
      <td colspan="2" height="5"></td> 
     </tr>
     <tr>
-     <td>Date</td>
+     <td><b>Date</b> </td>
      <td><input type="text" class="input_date" name="date" id="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if time_now %}{{time_now|date:"Y-m-d"}}{% endif %}{% endif %}"/></td>
     </tr>
     <tr>
-     <td>Time</td>
+     <td><b>Time</b> </td>
      <td><input type="text" class="input_date" name="time" id="time" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if time_now %}{{time_now|date:"H:i"}}{% endif %}{% endif %}"/></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>Timezone: {{TIME_ZONE}}</td>
     </tr>
     <tr>
      <td colspan="2" style="text-align:right;"><input type="submit" value="submit"/></td>
@@ -110,11 +119,7 @@
   </td>
  </tr>
 
- <tr>
-  <td colspan="5">* All times are in {{TIME_ZONE}}</td>
- </tr>
-
- <tr>
+  <tr>
   <td colspan="5">
    <p class="error">
      {% if form.date.errors %}

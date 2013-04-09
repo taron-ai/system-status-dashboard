@@ -38,6 +38,14 @@
       $("#e_time").timepicker({timeSeparator: ':'});
    });
 
+   // Setup the default text for the input and textarea fields
+   $(function(){
+      default_text_textarea("description","Enter a complete description of the maintenance.");
+      default_text_textarea("impact","Enter the impact analysis.");
+      default_text_textarea("coordinator","Enter the name and contact details for the maintenance coordinator.");
+      default_text_textarea("update","Enter an update for this incident.");
+    });
+
 </script>
 
 <br>

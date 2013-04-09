@@ -21,7 +21,12 @@ function default_text_input(name,defaulttext) {
 
     var input = $('input[name='+name+']');
     
-    input.val(defaulttext);
+    // Set the default text
+    // If its empty, set to the default text, otherwise leave alone meaning we had a bad form submit
+    // so let DJango keep the bad data there
+    if(input.val() == 'None' | input.val() == '') {
+        input.val(defaulttext); 
+    }
     
     input.on('focus', function(){
         if(input.val() != defaulttext)
@@ -45,8 +50,13 @@ function default_text_input(name,defaulttext) {
 function default_text_textarea(name,defaulttext) {
 
     var input = $('textarea[name='+name+']');
-    
-    input.val(defaulttext);
+        
+    // Set the default text
+    // If its empty, set to the default text, otherwise leave alone meaning we had a bad form submit
+    // so let DJango keep the bad data there
+    if(input.val() == 'None' | input.val() == '') {
+        input.val(defaulttext); 
+    }
     
     input.on('focus', function(){
         if(input.val() != defaulttext)

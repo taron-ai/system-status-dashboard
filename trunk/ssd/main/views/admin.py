@@ -51,14 +51,11 @@ def config(request):
             params['greeting_incident_update'] = form.cleaned_data['greeting_incident_update']
             params['greeting_maintenance_new'] = form.cleaned_data['greeting_maintenance_new']
             params['greeting_maintenance_update'] = form.cleaned_data['greeting_maintenance_update']
-            
             params['email_from'] = form.cleaned_data['email_from']
             params['email_subject_incident'] = form.cleaned_data['email_subject_incident']
             params['email_subject_maintenance'] = form.cleaned_data['email_subject_maintenance']
-            
             params['alert'] = form.cleaned_data['alert']
             params['display_alert'] = form.cleaned_data['display_alert']
-            
             params['recipient_incident'] = form.cleaned_data['recipient_incident']
             params['recipient_maintenance'] = form.cleaned_data['recipient_maintenance']
             params['recipient_pager'] = form.cleaned_data['recipient_pager']
@@ -71,19 +68,16 @@ def config(request):
             params['nav_display'] = form.cleaned_data['nav_display']
             params['contacts_display'] = form.cleaned_data['contacts_display']
             params['report_incident_display'] = form.cleaned_data['report_incident_display']
-            
             params['instr_sched_maint'] = form.cleaned_data['instr_sched_maint']
             params['display_sched_maint_instr'] = form.cleaned_data['display_sched_maint_instr']
-            
             params['instr_report_incident'] = form.cleaned_data['instr_report_incident']
             params['display_report_incident_instr'] = form.cleaned_data['display_report_incident_instr']
-
             params['instr_create_incident'] = form.cleaned_data['instr_create_incident']
             params['display_create_incident_instr'] = form.cleaned_data['display_create_incident_instr']
-
             params['enable_uploads'] = form.cleaned_data['enable_uploads']
             params['upload_path'] = form.cleaned_data['upload_path']
             params['file_upload_size'] = form.cleaned_data['file_upload_size']
+            params['instr_create_description'] = form.cleaned_data['instr_create_description']
             
 
             # Update the data

@@ -74,3 +74,48 @@ function default_text_textarea(name,defaulttext) {
     });
 
 }
+
+// Add or remove input fields
+function changeElement(action,divName,fieldName,size) {
+
+   var div = document.getElementById(divName);
+
+   // Obtain all of the input fields in the div
+   var inputs = div.getElementsByTagName("input");
+   var last_item = inputs.length - 1;
+   var last = inputs[last_item].id;
+
+   if (action == 'add') {
+      var count = Number(last.split("_")[1]) + 1;
+      var input = document.createElement('input');
+      var br = document.createElement('br');
+
+      input.id = fieldName + "_" + count;
+      br.id = fieldName + "_" + 'br_' + count;
+
+      input.name = fieldName;
+      br.name = fieldName + 'br_';
+
+      input.type = "text";
+      input.className = "dash_url";
+      input.size = size;
+      div.appendChild(input);
+      div.appendChild(br);
+   } else {
+      var count = Number(last.split("_")[1]);
+
+      // If there is only one textfield, quit
+      if (count == 1) {return;}
+    
+      // Remove the field
+      var field_name = fieldName + "_" + count;
+      var input = document.getElementById(field_name);
+      div.removeChild(input);
+
+      // Remove the break
+      var br_name = fieldName + "_" + 'br_' + count;
+      var br = document.getElementById(br_name);
+      div.removeChild(br);
+
+   }
+}

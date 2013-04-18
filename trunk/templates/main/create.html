@@ -35,10 +35,11 @@
    
    // Setup the default text for the detail field
    $(function(){
-      default_text_textarea("detail","Please enter a full description of the incident including all relevant details.");
+      default_text_textarea("detail","{{instr_create_description}}");
     });
 
 </script>
+   
 
 {% if instr %}
 <div class="help" id="help">
@@ -60,8 +61,16 @@
  </tr>
 
  <tr>
-  <td colspan="3" height="20"></td>
+  <td colspan="3" height="15"></td>
  </tr>
+
+{% if form.detail.errors %}
+<tr>
+ <td colspan="3" style="text-align:left; color:red; font-weight:bold;">  
+  {% for error in form.detail.errors %}{{error}}{% endfor %}
+ </td>
+</tr>
+{% endif %}
 
  <tr>
   <td>
@@ -71,13 +80,25 @@
    <table class="container_options">
     {% for row in services %}
     <tr>
-     <td><input type="checkbox" name="service" value="{{row.id}}"/></td>
+     {# See if this service was previously selected and this is a failed form submit #}
+     <td><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %}/></td>
      <td>{{row.service_name}}</td>
     </tr>
     {% endfor %}
+
+    {% if form.service.errors %}
+    <tr>
+     <td colspan="2" style="text-align:right; color:red; font-weight:bold;">  
+      {% for error in form.service.errors %}{{error}}{% endfor %}
+      <br><br>
+     </td>
+    </tr>
+    {% endif %}
+
    </table>
   </td>
   <td valign="top">
+
    <table class="container_options">
     <tr>
      <td align="right"><input type="checkbox" name="email" checked/></td>
@@ -87,13 +108,35 @@
      <td colspan="2" height="5"></td>
     </tr>
     <tr>
-     <td>Date</td>
+     <td><b>Date:</b></td>
      <td><input type="text" class="input_date" name="date" id="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if time_now %}{{time_now|date:"Y-m-d"}}{% endif %}{% endif %}"/></td>
     </tr>
+
+    {% if form.date.errors %}
     <tr>
-     <td>Time</td>
+     <td></td>
+     <td style="text-align:left; color:red; font-weight:bold;">  
+      {% for error in form.date.errors %}{{error}}{% endfor %}
+      <br><br>
+     </td>
+    </tr>
+    {% endif %}
+
+    <tr>
+     <td><b>Time:</b></td>
      <td><input type="text" class="input_date" name="time" id="time" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if time_now %}{{time_now|date:"H:i"}}{% endif %}{% endif %}"/></td>
     </tr>
+
+    {% if form.time.errors %}
+    <tr>
+     <td></td>
+     <td style="text-align:left; color:red; font-weight:bold;">  
+      {% for error in form.time.errors %}{{error}}{% endfor %}
+      <br><br>
+     </td>
+    </tr>
+    {% endif %}
+
     <tr>
      <td colspan="2" style="text-align:right; padding-top:5px;">Timezone: {{TIME_ZONE}}</td>
     </tr>
@@ -102,25 +145,6 @@
     </tr>
 
    </table>
-  </td>
- </tr>
-
- <tr>
-  <td colspan="3">
-   <p class="error">
-     {% if form.date.errors %}
-      <br>{% for error in form.date.errors %}{{error}}{% endfor %}
-     {% endif %}
-     {% if form.time.errors %}
-      <br>{% for error in form.time.errors %}{{error}}{% endfor %}
-     {% endif %}
-     {% if form.detail.errors %}
-      <br>{% for error in form.detail.errors %}{{error}}{% endfor %}
-     {% endif %}
-     {% if form.service.errors %}
-      <br>{% for error in form.service.errors %}{{error}}{% endfor %}
-     {% endif %}
-   </p>
   </td>
  </tr>
 

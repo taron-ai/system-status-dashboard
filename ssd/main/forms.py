@@ -93,11 +93,19 @@ class DetailField(forms.Field):
 
        Requirements:
           - Must not be empty
+          - Must not contain the default text for this field
 
     """
 
     def validate(self, value):
+
+        # Is it empty?
         if value is None or value == '':
+            raise forms.ValidationError('No description provided')
+
+        # Is it the default text?
+        default = Config.objects.filter(config_name='instr_create_description').values('config_value')[0]['config_value']
+        if value == default:
             raise forms.ValidationError('No description provided')
 
 
@@ -196,8 +204,8 @@ class SearchField(forms.Field):
 class AddIncidentForm(forms.Form):
     """Form for adding a new incident (by an administrator)"""
 
-    date = DateField()
-    time = TimeField()
+    date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    time = forms.TimeField(required=True,input_formats=['%H:%M'])
     detail = DetailField()
     service = MultipleServiceField()
 
@@ -292,7 +300,7 @@ class ConfigForm(forms.Form):
     enable_uploads = forms.IntegerField(required=False)
     upload_path = forms.CharField(required=False)
     file_upload_size = forms.IntegerField(required=False)
-
+    instr_create_description = forms.CharField(required=False)
 
 class AddMaintenanceForm(forms.Form):
     """Form for adding maintenance"""

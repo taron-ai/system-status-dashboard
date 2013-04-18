@@ -906,13 +906,18 @@ def create(request):
         set_timezone = settings.TIME_ZONE
     else:
         set_timezone = request.COOKIES.get('timezone')
-
+    
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually
     if request.method == 'POST':
         # Give the template a blank time if this is a post 
         # the user will have already set it.
         time_now = ''
+
+        # If this is a form submit that fails, we want to reset whatever services were selected
+        # by the user.  Templates do not allow access to Arrays stored in QueryDict objects so we have
+        # to determine the list and send back to the template on failed form submits
+        affected_svcs = request.POST.getlist('service')
 
         # Check the form elements
         form = AddIncidentForm(request.POST)
@@ -925,10 +930,7 @@ def create(request):
 
             # Create a datetime object and add the timezone
             # Put the date and time together
-            incident_time = '%s %s' % (date,time)
-
-            # Create a datetime object
-            incident_time = datetime.datetime.strptime(incident_time,'%Y-%m-%d %H:%M')
+            incident_time = datetime.datetime.combine(date,time)
 
             # Set the timezone
             tz = pytz.timezone(set_timezone)
@@ -937,6 +939,7 @@ def create(request):
             # Add the incident and services
             # Don't allow the same incident to be added 2x
             # The user might have hit the back button and submitted again
+
             incident_id = Incident.objects.filter(date=incident_time,detail=detail).values('id')
             if not incident_id:
                 Incident(date=incident_time,detail=detail).save()
@@ -944,7 +947,7 @@ def create(request):
 
                 # Find out which services this impacts and save the data
                 # Form validation confirms that there is at least 1
-                for service_id in request.POST.getlist('service'):
+                for service_id in affected_svcs:
                     # Should be number only -- can't figure out how to validate
                     # multiple checkboxes in the form
                     if re.match(r'^\d+$', service_id):
@@ -962,6 +965,9 @@ def create(request):
 
     # Not a POST so create a blank form
     else:
+        # There are no affected services selected yet
+        affected_svcs = []
+
         form = AddIncidentForm()
 
         # Obtain the current date/time so we can pre-fill them
@@ -986,15 +992,18 @@ def create(request):
     else:
         instr = None
 
-    # Print the page
+     # Print the page
     return render_to_response(
        'main/create.html',
        {
-          'title':'System Status Dashboard | Create Issue',
+          'title':'System Status Dashboard | Create Incident',
           'services':services,
+          'affected_svcs':tuple(affected_svcs),
           'form':form,
           'time_now':time_now,
-          'instr':instr
+          'instr':instr,
+          'instr_create_description':cv.value('instr_create_description')
+
        },
        context_instance=RequestContext(request)
     )
@@ -1152,6 +1161,25 @@ def maintenance(request):
           'form':form,
           'instr':instr,
           'services':services
+       },
+       context_instance=RequestContext(request)
+    )
+
+
+@login_required
+@staff_member_required
+def add_recipients(request):
+    """Add Recipient Email Addresses
+ 
+    """
+
+
+    
+    # Print the page
+    return render_to_response(
+       'main/add_recipients.html',
+       {
+          'title':'System Status Dashboard | Add Email Addresses'
        },
        context_instance=RequestContext(request)
     )

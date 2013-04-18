@@ -32,6 +32,7 @@ urlpatterns = patterns('',
     url(r'^admin/',          include(admin.site.urls)),
 
     url(r'^$',               'ssd.main.views.main.index'),
+    url(r'^add_recipients$', 'ssd.main.views.main.add_recipients'),
     url(r'^create$',         'ssd.main.views.main.create'),
     url(r'^detail$',         'ssd.main.views.main.detail'),
     url(r'^escalation$',     'ssd.main.views.main.escalation'),

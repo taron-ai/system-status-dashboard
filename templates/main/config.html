@@ -43,6 +43,72 @@
 
 <div id="accordion" class="accordian">
 
+  {# Instructions #}  
+  <h3 align="left"><a href="#">Instructions</a></h3>
+  <div>
+   <table class="config">
+    <tr>
+     <th>Parameter</th>
+     <th width="300">Description</th>
+     <th width="300">Current Value</th>
+     <th>Update</th>
+     <th>New Value</th>
+    </tr>
+     {# Look through all configs and find the ones related to email #} 
+     {% for config in configs %}
+      {% if config.category == 'instructions' %}
+       <tr>
+        <td><b>{{config.friendly_name}}</b></td>
+        <td>{{config.description}}</td>
+        {% if config.display == 'boolean' %}
+         <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"</td>
+         <td>
+          <select name="{{config.config_name}}">
+          {% if config.config_value == '1' %}
+           <option value="0" selected>False</option>
+           <option value="1">True</option>
+          {% else %}
+           <option value="0">False</option>
+           <option value="1" selected>True</option>
+          {% endif %}
+         </td>
+        {% else %}
+         <td>{{config.config_value}}</td>
+         <td><input type="checkbox" name="update_{{config.config_name}}"></td>
+   
+         {% for field in form %}
+          {% if field.name == config.config_name %}
+           {% if field.value == None %}
+           <td><input type="text" name="{{config.config_name}}" value=""></td>
+           {% else %}
+           <td><input type="text" name="{{config.config_name}}" value="{{field.value}}"></td>
+           {% endif %}
+          {% endif %}
+        {% endfor %}
+
+       {% endif %}
+       </tr>
+
+       {# See if there are any errors for this config #}
+       {% for key,value in form.errors.items %}
+        {% if key == config.config_name %}
+         <tr>
+          <td colspan="6" style="text-align:right;"><p class="error">{% for error in value %}{{error}}{% endfor %}</p></td>
+         </tr>
+        {% endif %}
+       {% endfor %}
+
+      {# End looking for specific configs #}
+      {% endif %}
+
+     {# End cycling through all configs #}
+     {% endfor %}
+
+   </table>
+  </div>
+
+
   {# Email Addresses #}  
   <h3 align="left"><a href="#">Email Addresses</a></h3>
   <div>

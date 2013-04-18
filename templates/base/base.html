@@ -66,11 +66,20 @@
    <li><a href="#">ADMIN &raquo;</a>
     <ul>
      {% if user.is_authenticated %}
-     <li><a class="sub" href="/admin/config">Configuration Manager</a></li>
+     <li><a class="sub" href="#">Add &raquo;</a>
+      <ul>
+        <li><a class="sub" href="/add_services">Services</a></li>
+        <li><a class="sub" href="/add_recipients">Recipients</a></li>
+      </ul>
+     </li>
      <li><a class="sub" href="/create">Create Incident</a></li>
      <li><a class="sub" href="/maintenance">Schedule Maintenance</a></li>
      <li><a class="sub" href="#">Expert &raquo;</a>
-      <ul><li><a class="sub" href="/admin">DJango Administration</a></li></ul>
+      <ul>
+        <li><a class="sub" href="/admin/config">Configuration Manager</a></li>
+        <li><a class="sub" href="/admin">DJango Administration</a></li>
+      </ul>
+     </li>
      <li><a class="sub" href="/accounts/logout">Logout ({{user.username}})</a></li>
      {% else %}
      <li><a class="sub" href="/accounts/login">Login</a></li>

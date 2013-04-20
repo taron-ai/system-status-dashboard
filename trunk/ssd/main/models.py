@@ -53,11 +53,21 @@ class Config(models.Model):
 class Service(models.Model):
     """Services that will be monitored"""
 
-    service_name = models.CharField(max_length=50)
+    service_name = models.CharField(max_length=50, unique=True,null=False,blank=False)
 
     # Represent the object as unicode
     def __unicode__(self):
         return self.service_name
+
+
+class Recipient(models.Model):
+    """Email addresses that will be used for alerting"""
+
+    email_address = models.CharField(max_length=100,unique=True,null=False,blank=False)
+
+    # Represent the object as unicode
+    def __unicode__(self):
+        return self.email_address
 
 
 class Incident(models.Model):
@@ -66,6 +76,7 @@ class Incident(models.Model):
     date = models.DateTimeField(null=False,blank=False)
     closed = models.DateTimeField(null=True)
     detail = models.CharField(max_length=1000)
+    email_address = models.ForeignKey(Recipient,null=True,blank=True)
 
     # Represent the objects as unicode
     def __unicode__(self):

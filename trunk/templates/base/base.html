@@ -66,17 +66,21 @@
    <li><a href="#">ADMIN &raquo;</a>
     <ul>
      {% if user.is_authenticated %}
-     <li><a class="sub" href="#">Add &raquo;</a>
+     <li><a class="sub" href="#">Create &raquo;</a>
       <ul>
-        <li><a class="sub" href="/add_services">Services</a></li>
-        <li><a class="sub" href="/add_recipients">Recipients</a></li>
+        <li><a class="sub" href="/incident">Incident</a></li>
+        <li><a class="sub" href="/maintenance">Scheduled Maintenance</a></li>
       </ul>
      </li>
-     <li><a class="sub" href="/create">Create Incident</a></li>
-     <li><a class="sub" href="/maintenance">Schedule Maintenance</a></li>
+     <li><a class="sub" href="#">Manage &raquo;</a>
+      <ul>
+        <li><a class="sub" href="/services">Services</a></li>
+        <li><a class="sub" href="/recipients">Email Recipients</a></li>
+      </ul>
+     </li>
      <li><a class="sub" href="#">Expert &raquo;</a>
       <ul>
-        <li><a class="sub" href="/admin/config">Configuration Manager</a></li>
+        <li><a class="sub" href="/config">Configuration Manager</a></li>
         <li><a class="sub" href="/admin">DJango Administration</a></li>
       </ul>
      </li>

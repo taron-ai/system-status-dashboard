@@ -104,22 +104,22 @@ class DetailField(forms.Field):
             raise forms.ValidationError('No description provided')
 
         # Is it the default text?
-        default = Config.objects.filter(config_name='instr_create_description').values('config_value')[0]['config_value']
+        default = Config.objects.filter(config_name='instr_incident_description').values('config_value')[0]['config_value']
         if value == default:
             raise forms.ValidationError('No description provided')
 
 
 class MultipleServiceField(forms.Field):
-    """Multiple checkbox field
+    """Multiple service checkbox/input field
 
        Requirements:
-          - Must not be empty (at least one checkbox must be checked)
+          - Must not be empty (at least one service must be provided)
 
     """
 
     def validate(self, value):
         if value is None or value == '':
-            raise forms.ValidationError('No services selected')
+            raise forms.ValidationError('No services checked/entered or empty service submitted')
 
 
 class TZField(forms.Field):
@@ -300,7 +300,8 @@ class ConfigForm(forms.Form):
     enable_uploads = forms.IntegerField(required=False)
     upload_path = forms.CharField(required=False)
     file_upload_size = forms.IntegerField(required=False)
-    instr_create_description = forms.CharField(required=False)
+    instr_incident_description = forms.CharField(required=False)
+
 
 class AddMaintenanceForm(forms.Form):
     """Form for adding maintenance"""
@@ -313,7 +314,31 @@ class AddMaintenanceForm(forms.Form):
     impact = forms.CharField(required=True)
     coordinator = forms.CharField(required=True)
     service = MultipleServiceField()
-    
+
+
+class AddRecipientForm(forms.Form):
+    """Form for adding email addresses"""
+
+    recipient = forms.EmailField(required=True)
+
+
+class AddServiceForm(forms.Form):
+    """Form for adding services"""
+
+    service = MultipleServiceField()
+
+
+class RemoveServiceForm(forms.Form):
+    """Form for removing services"""
+
+    id = MultipleServiceField()
+
+
+class RemoveRecipientForm(forms.Form):
+    """Form for removing recipients"""
+
+    id = MultipleServiceField()
+
 
 class UpdateMaintenanceForm(forms.Form):
     """Form for updating maintenance"""

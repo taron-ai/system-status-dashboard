@@ -101,7 +101,7 @@ def search(request):
 
             # Print the page
             return render_to_response(
-               'main/search_results.html',
+               'search/search_results.html',
                {
                   'title':'SSD Search Results',
                   'results':results,
@@ -118,7 +118,7 @@ def search(request):
     # Print the page
     # On a POST, the form will give back error values for printing in the template
     return render_to_response(
-       'main/search.html',
+       'search/search.html',
        {
           'title':'SSD Incident Search',
           'form':form
@@ -181,7 +181,7 @@ def rsearch(request):
 
             # Print the page
             return render_to_response(
-               'main/rsearch_results.html',
+               'search/rsearch_results.html',
                {
                   'title':'SSD Incident Report Results',
                   'results':results,
@@ -197,7 +197,7 @@ def rsearch(request):
     # Print the page
     # On a POST, the form will give back error values for printing in the template
     return render_to_response(
-       'main/rsearch.html',
+       'search/rsearch.html',
        {
           'title':'SSD Incident Report Search',
           'form':form
@@ -235,7 +235,7 @@ def rsearch_recent(request):
                                    ).order_by('-id')[:5]
 
     return render_to_response(
-       'main/rsearch_results.html',
+       'search/rsearch_results.html',
        {
           'title':'SSD Incident Report Results',
           'results':results

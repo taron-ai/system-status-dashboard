@@ -25,25 +25,36 @@ urlpatterns = patterns('',
     # User logout
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',{'next_page': '/'}),
 
-    # Configuration area of admin site
-    url(r'^admin/config$',  'ssd.main.views.admin.config'),
-
     # Standard admin site
     url(r'^admin/',          include(admin.site.urls)),
 
+    # Main
     url(r'^$',               'ssd.main.views.main.index'),
-    url(r'^add_recipients$', 'ssd.main.views.main.add_recipients'),
-    url(r'^create$',         'ssd.main.views.main.create'),
-    url(r'^detail$',         'ssd.main.views.main.detail'),
+    url(r'^i_detail$',       'ssd.main.views.main.i_detail'),
     url(r'^escalation$',     'ssd.main.views.main.escalation'),
     url(r'^m_detail$',       'ssd.main.views.main.m_detail'),
-    url(r'^m_update$',       'ssd.main.views.main.m_update'),
-    url(r'^maintenance$',    'ssd.main.views.main.maintenance'),
-    url(r'^report$',         'ssd.main.views.main.report'),
+
+    # Configuration
+    url(r'^config$',         'ssd.main.views.config.config'),
+    url(r'^recipients$',     'ssd.main.views.config.recipients'),
+    url(r'^rm_recipients$',  'ssd.main.views.config.rm_recipients'),
+    url(r'^rm_services$',    'ssd.main.views.config.rm_services'),
+    url(r'^services$',       'ssd.main.views.config.services'),
+
+    # Search
     url(r'^rsearch$',        'ssd.main.views.search.rsearch'),
     url(r'^search$',         'ssd.main.views.search.search'),
     url(r'^rsearch_recent$', 'ssd.main.views.search.rsearch_recent'),
-    url(r'^update$',         'ssd.main.views.main.update'),
+
+    # Preferences
     url(r'^prefs/timezone$', 'ssd.main.views.prefs.timezone'),
     url(r'^prefs/jump$',     'ssd.main.views.prefs.jump'),
+
+    # Events
+    url(r'^i_update$',       'ssd.main.views.events.i_update'),
+    url(r'^incident$',       'ssd.main.views.events.incident'),
+    url(r'^m_update$',       'ssd.main.views.events.m_update'),
+    url(r'^maintenance$',    'ssd.main.views.events.maintenance'),
+    url(r'^report$',         'ssd.main.views.events.report'),
+
 )

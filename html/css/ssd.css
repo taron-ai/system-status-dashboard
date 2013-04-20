@@ -295,6 +295,23 @@ table.tiny_no_border td {
    color:black;
 }
 
+/* Standard table with no border */
+table.standard_no_border {
+   font-family:Tahoma, Arial, Helvetica, sans-serif;
+   border-collapse:collapse;
+}
+table.standard_no_border th {
+   border-style:none;
+   padding:2px 2px 2px 2px;
+   text-align:left;
+}
+table.standard_no_border td {
+   border-style:none;
+   padding:2px 2px 2px 2px;
+   text-align:left;
+   vertical-align:baseline;
+}
+
 
 /* Date input */
 input.input_date {

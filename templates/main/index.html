@@ -93,9 +93,9 @@
 
                {% if row2.type == 'incident' %}
                  {% if row2.closed == None %}
-                   <a href="/detail?id={{row2.id}}"><img src="/html/images/incident_red.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~"></a>
+                   <a href="/i_detail?id={{row2.id}}"><img src="/html/images/incident_red.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~"></a>
                  {% else %}
-                   <a href="/detail?id={{row2.id}}"><img src="/html/images/incident_orange.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~ {{row2.closed|date:"Y-m-d H:i:s"}}"></a>
+                   <a href="/i_detail?id={{row2.id}}"><img src="/html/images/incident_orange.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~ {{row2.closed|date:"Y-m-d H:i:s"}}"></a>
                  {% endif %}
                {% else %}
                  {% if row2.type == 'maintenance' %}

@@ -1,0 +1,77 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2012 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<br>
+<br>
+
+  <table class="standard">
+   <tr>
+    <th>Manage Existing Recipients</th>
+   </tr>
+   <tr>
+    <td>
+      <form method="POST" name="remove_recipients" id="remove_recipients" action="/rm_recipients">
+      {% csrf_token %}
+      {% if recipients %}
+       <table class="standard_no_border">
+        {% for row in recipients %}
+         <tr>
+          <td><input type="checkbox" name="id" value="{{row.id}}" /></td>
+          <td>{{row.email_address}}</td>
+         </tr>
+        {% endfor %}
+       </table>
+      {% else %}
+      No recipients defined
+      <br>
+      {% endif %}
+      <br>
+      <input type="submit" value="delete"/>
+      {% if form.id.errors %}
+      <p class="error">{% for error in form.id.errors %}{{error}}{% endfor %}</p>
+     {% endif %}
+      </form>
+    </td>
+   </tr>
+   <tr>
+    <td height="25" style="border-left:0; border-right:0;"></td>
+   </tr>
+   <tr>
+    <th>Add New Recipients</th>
+   </tr>
+   <tr>
+    <td>
+     <form method="POST" name="manage_recipients" id="manage_recipients" action="/recipients">
+     {% csrf_token %}
+      <input id="recipient" name="recipient" type="text" size="65" value="">
+      <br>
+      <input type="submit" value=" add "/>
+     {% if form.recipient.errors %}
+      <p class="error">{% for error in form.recipient.errors %}{{error}}{% endfor %}</p>
+     {% endif %}
+     </form>
+    </td>
+   </tr>
+  </table>
+
+
+{% endblock %}

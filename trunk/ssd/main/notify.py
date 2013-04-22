@@ -29,6 +29,7 @@ from ssd.main.models import Maintenance
 from ssd.main.models import Maintenance_Update
 from ssd.main.models import Service_Maintenance
 from django.core.mail import EmailMessage
+from ssd.main.models import Recipient
 from django.template.loader import get_template
 from django.template import Context
 from django.utils import timezone as jtz
@@ -76,7 +77,7 @@ class email:
         return 'success'
 
     
-    def incident(self,id,set_timezone,new):
+    def incident(self,id,recipient_id,set_timezone,new):
         """
         Send an email message in HTML format about a new or existing incident
            - If there is an error, the user will not be notified but an Apache error log will be generated
@@ -101,7 +102,7 @@ class email:
         recipient_name = cv.value('recipient_name')
 
         # Obtain the recipient email address
-        recipient_incident = cv.value('recipient_incident')
+        recipient_incident = Recipient.objects.filter(id=recipient_id).values('email_address')[0]['email_address']
 
         # Obtain the sender email address
         email_from = cv.value('email_from')

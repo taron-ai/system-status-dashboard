@@ -39,7 +39,6 @@
     });
 
 </script>
-   
 
 {% if instr %}
 <div class="help" id="help">
@@ -101,15 +100,31 @@
 
    <table class="container_options">
     <tr>
-     <td align="right"><input type="checkbox" name="email" checked/></td>
-     <td>Broadcast Email</td>
+     <td colspan="2">
+      <input type="checkbox" name="broadcast" checked/>
+      Broadcast Email
+    </td>
     </tr>
+
+    {% if form.broadcast.errors %}
     <tr>
-     <td><b>Recipient: </b></td>
-     <td>
-      <select name="timezone" id="timezone">
+     <td colspan="2" style="text-align:left; color:red; font-weight:bold;">  
+      {% for error in form.broadcast.errors %}{{error}}{% endfor %}
+      <br><br>
+     </td>
+    </tr>
+    {% endif %}
+
+    <tr>
+     <td colspan="2">
+      <select name="recipient_id" id="recipient_id">
+        <option value="">-</option>
        {% for recipient in recipients %}
-         <option value="{{recipient}}">{{recipient}}</option>
+        {% if form.recipient_id.data|slugify == recipient.id|slugify %}
+        <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
+        {% else %} 
+        <option value="{{recipient.id}}">{{recipient.email_address}}</option>
+        {% endif %}
        {% endfor %}
        </select>
      </td>
@@ -117,6 +132,7 @@
     <tr>
      <td colspan="2" height="5"></td>
     </tr>
+
     <tr>
      <td><b>Date:</b></td>
      <td><input type="text" class="input_date" name="date" id="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if time_now %}{{time_now|date:"Y-m-d"}}{% endif %}{% endif %}"/></td>
@@ -148,10 +164,12 @@
     {% endif %}
 
     <tr>
-     <td colspan="2" style="text-align:right; padding-top:5px;">Timezone: {{TIME_ZONE}}</td>
+     <td></td>
+     <td style="text-align:left; padding-top:5px;">Timezone: {{TIME_ZONE}}</td>
     </tr>
     <tr>
-     <td colspan="2" style="text-align:right; padding-top:5px;"><input type="submit" value="submit"/></td>
+     <td></td>
+     <td style="text-align:left; padding-top:5px;"><input type="submit" value="submit"/></td>
     </tr>
 
    </table>

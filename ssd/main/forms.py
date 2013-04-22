@@ -119,7 +119,7 @@ class MultipleServiceField(forms.Field):
 
     def validate(self, value):
         if value is None or value == '':
-            raise forms.ValidationError('No services checked/entered or empty service submitted')
+            raise forms.ValidationError('No service entered')
 
 
 class TZField(forms.Field):
@@ -208,6 +208,27 @@ class AddIncidentForm(forms.Form):
     time = forms.TimeField(required=True,input_formats=['%H:%M'])
     detail = DetailField()
     service = MultipleServiceField()
+    broadcast = forms.BooleanField()
+    recipient_id = forms.IntegerField(required=False)
+
+    # Override the form clean method - there is some special logic to 
+    # creating an incident and we need access to multiple values
+    # to do it.
+    #
+    # Logic:
+    #  - If broadcast email is being requested, an email address must be provided
+    def clean(self):
+        cleaned_data = super(AddIncidentForm, self).clean()
+        broadcast = cleaned_data.get("broadcast")
+        recipient_id = cleaned_data.get("recipient_id")
+
+        if broadcast and not recipient_id:
+            
+            # Set custom error messages
+            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected'])
+            
+        # Return the full collection of cleaned data
+        return cleaned_data
 
 
 class UpdateIncidentForm(forms.Form):

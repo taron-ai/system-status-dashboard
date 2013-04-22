@@ -225,6 +225,8 @@ def incident(request):
             date = form.cleaned_data['date']
             detail = form.cleaned_data['detail']
             time = form.cleaned_data['time']
+            broadcast = form.cleaned_data['broadcast']
+            recipient_id = form.cleaned_data['recipient_id']
 
             # Create a datetime object and add the timezone
             # Put the date and time together
@@ -252,14 +254,15 @@ def incident(request):
                         Service_Issue(service_name_id=service_id,incident_id=incident_id[0]['id']).save()
 
             # Send an email notification to the appropriate list
-            # about this issue if requested
-            if 'email' in request.POST:
+            # about this issue if requested.  Broadcast won't be
+            # allowed to be true if an email is not defined.
+            if broadcast:
                 email = notify.email()
-                email.incident(incident_id[0]['id'],set_timezone,True)
+                email.incident(incident_id[0]['id'],recipient_id,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # incident
-            return HttpResponseRedirect('/detail?id=%s' % incident_id[0]['id'])
+            return HttpResponseRedirect('/i_detail?id=%s' % incident_id[0]['id'])
 
     # Not a POST so create a blank form
     else:
@@ -282,7 +285,7 @@ def incident(request):
     services = Service.objects.values('id','service_name').order_by('service_name')
 
     # Obtain all current email addresses
-    recipients = Recipient.objects.all()
+    recipients = Recipient.objects.values('id','email_address')
 
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)

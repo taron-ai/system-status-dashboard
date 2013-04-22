@@ -208,7 +208,7 @@ class AddIncidentForm(forms.Form):
     time = forms.TimeField(required=True,input_formats=['%H:%M'])
     detail = DetailField()
     service = MultipleServiceField()
-    broadcast = forms.BooleanField()
+    broadcast = forms.BooleanField(required=False)
     recipient_id = forms.IntegerField(required=False)
 
     # Override the form clean method - there is some special logic to 
@@ -300,8 +300,6 @@ class ConfigForm(forms.Form):
     email_subject_maintenance = forms.CharField(required=False)
     alert = forms.CharField(required=False)
     display_alert = forms.CharField(required=False)
-    recipient_incident = forms.EmailField(required=False)
-    recipient_maintenance = forms.EmailField(required=False)
     recipient_pager = forms.EmailField(required=False)
     message_success = forms.CharField(required=False)
     message_error = forms.CharField(required=False)
@@ -322,6 +320,8 @@ class ConfigForm(forms.Form):
     upload_path = forms.CharField(required=False)
     file_upload_size = forms.IntegerField(required=False)
     instr_incident_description = forms.CharField(required=False)
+    email_format_incident = forms.IntegerField(required=False)
+    email_format_maintenance = forms.IntegerField(required=False)
 
 
 class AddMaintenanceForm(forms.Form):

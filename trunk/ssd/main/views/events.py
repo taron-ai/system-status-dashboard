@@ -314,6 +314,7 @@ def incident(request):
     )
 
 
+@login_required
 @staff_member_required
 def i_update(request):
     """Update Incident Page
@@ -345,17 +346,6 @@ def i_update(request):
         # Give the template a blank time if this is a post 
         # the user will have already set it.
         time_now = ''
-
-        # If this is a request to broadcast an email w/o any other
-        # options, then do that and send back to home page
-        # Don't check the rest of the form
-        if 'email' in request.POST and 'id' in request.POST and request.POST['detail'] == '' and not 'close' in request.POST:
-            if re.match(r'^\d+$', request.POST['id']):
-                email = notify.email()
-                email.incident(request.POST['id'],set_timezone,False)
-
-                # Redirect to the home page
-                return HttpResponseRedirect('/')
 
         # Check the form elements
         form = UpdateIncidentForm(request.POST)

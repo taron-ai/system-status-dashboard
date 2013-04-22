@@ -60,8 +60,6 @@ def config(request):
             params['email_subject_maintenance'] = form.cleaned_data['email_subject_maintenance']
             params['alert'] = form.cleaned_data['alert']
             params['display_alert'] = form.cleaned_data['display_alert']
-            params['recipient_incident'] = form.cleaned_data['recipient_incident']
-            params['recipient_maintenance'] = form.cleaned_data['recipient_maintenance']
             params['recipient_pager'] = form.cleaned_data['recipient_pager']
             params['message_success'] = form.cleaned_data['message_success']
             params['message_error'] = form.cleaned_data['message_error']
@@ -82,6 +80,8 @@ def config(request):
             params['upload_path'] = form.cleaned_data['upload_path']
             params['file_upload_size'] = form.cleaned_data['file_upload_size']
             params['instr_incident_description'] = form.cleaned_data['instr_incident_description']
+            params['email_format_incident'] = form.cleaned_data['email_format_incident']
+            params['email_format_maintenance'] = form.cleaned_data['email_format_maintenance']
             
 
             # Update the data

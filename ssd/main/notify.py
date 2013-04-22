@@ -95,9 +95,6 @@ class email:
         # Obain any incident updates
         updates = Incident_Update.objects.filter(incident_id=id).values('id','date','detail').order_by('id')
 
-        # Get the template
-        html_template = get_template('email/incident.html')
-
         # Obtain the recipient name
         recipient_name = cv.value('recipient_name')
 
@@ -113,6 +110,9 @@ class email:
         # Obtain the ssd url
         ssd_url = cv.value('ssd_url')
 
+        # HTML (true) or text (false) formatting
+        format = int(cv.value('email_format_incident'))
+
         # Obtain the greeting
         if new == True:
             greeting = cv.value('greeting_incident_new')
@@ -122,6 +122,7 @@ class email:
         # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
         jtz.activate(set_timezone)
 
+        # Interpolate values for the template
         d = Context({ 
                      'detail':detail,
                      'recipient_name':recipient_name,
@@ -132,18 +133,27 @@ class email:
                      'timezone':set_timezone
                     })
 
-        html = html_template.render(d)
-        
+        if format:
+            # Its HTML
+            template = get_template('email/incident.html')
+        else:
+            # Its text
+            template = get_template('email/incident.txt')
+
+        # Render the template
+        rendered_template = template.render(d)
+        print rendered_template
         try:
             msg = EmailMessage(
                                 email_subject_incident, 
-                                html, 
+                                rendered_template, 
                                 email_from, 
                                 [recipient_incident],None,None,None
                               )
 
-            # Change to HTML content type
-            msg.content_subtype = 'html'
+            # Change the content type to HTML, if requested
+            if format:
+                msg.content_subtype = 'html'
             
             # Send it
             msg.send()

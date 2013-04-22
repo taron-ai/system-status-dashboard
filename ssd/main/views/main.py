@@ -168,14 +168,14 @@ def index(request):
     incidents = Service_Issue.objects.filter(incident__date__range=[dates[0],ref_q]).values('incident__date',
                                                                                             'incident_id',
                                                                                             'service_name_id__service_name',
-                                                                                            'incident__closed')
+                                                                                            'incident__closed').order_by('id')
 
     maintenances = Service_Maintenance.objects.filter(maintenance__start__range=[dates[0],ref_q]).values('maintenance__start',
                                                                                                          'maintenance__end',
                                                                                                          'maintenance_id',
                                                                                                          'service_name_id__service_name',
                                                                                                          'maintenance__started',
-                                                                                                         'maintenance__completed')
+                                                                                                         'maintenance__completed').order_by('id')
 
     # Run through each service and see if it had an incident during the time range
     for service in services:

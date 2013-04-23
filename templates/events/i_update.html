@@ -40,14 +40,6 @@
 
 </script>
 
- 
- <div class="help" id="help">
-  When updating an existing incident, the following guidelines should be followed:
-  <li>When deleting an incident, no other information needs to be provided (everything else will be ignored)
-  <li>An email broadcast may be sent at any time without providing an update on the incident.  Simply check the 'Broadcast Email' checkbox and click submit.
-  <li>When adding an update to the incident, a description, date/time and affected services must be provided.
- </div>
- 
 <br>
 
 <form enctype="multipart/form-data" method="POST" name="i_update" id="i_update" action="/i_update">
@@ -57,21 +49,27 @@
 
  <tr>
   <th>Description</th>
-  <th></th>
   <th>Affected Services</th>
-  <th></th>
-  <th><b>Options</th>
+  <th>Options</th>
  </tr>
 
  <tr>
-  <td colspan="5" height="20"></td>
+  <td colspan="3" height="15"></td>
  </tr>
+
+{% if form.detail.errors %}
+<tr>
+ <td colspan="3" style="text-align:left; color:red; font-weight:bold;">  
+  {% for error in form.detail.errors %}{{error}}{% endfor %}
+ </td>
+</tr>
+{% endif %}
 
  <tr>
   <td>
    <textarea class="textarea_detail" id="detail" name="detail" rows="25" cols="50">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
   </td>
-  <td></td>
+
   <td valign="top">
    <table class="container_options">
     {% for row in affected_services %}
@@ -82,16 +80,12 @@
     {% endfor %}
    </table>
   </td>
-  <td></td>
+
   <td valign="top">
    <table class="container_options">
     <tr>
      <td align="right"><input type="checkbox" name="close" {% if not closed.0.closed == None %}checked="on"{% endif %}/></td>
      <td>Close Incident</td>
-    </tr>
-    <tr>
-     <td align="right"><input type="checkbox" name="delete"/></td>
-     <td>Delete Incident</td>
     </tr>
     <tr>
      <td align="right"><input type="checkbox" name="email" checked/></td>
@@ -119,29 +113,8 @@
   </td>
  </tr>
 
-  <tr>
-  <td colspan="5">
-   <p class="error">
-     {% if form.date.errors %}
-      <br>{% for error in form.date.errors %}{{error}}{% endfor %}
-     {% endif %}
-     {% if form.time.errors %}
-      <br>{% for error in form.time.errors %}{{error}}{% endfor %}
-     {% endif %}
-     {% if form.detail.errors %}
-      <br>{% for error in form.detail.errors %}{{error}}{% endfor %}
-     {% endif %}
-     {% if form.id.errors %}
-      <br>{% for error in form.id.errors %}{{error}}{% endfor %}
-     {% endif %}
-     {% if form.service.errors %}
-      <br>{% for error in form.service.errors %}{{error}}{% endfor %}
-     {% endif %}
-   </p>
-  </td>
- </tr>
-
 </table>
+
 <input type="hidden" name="id" value="{{id}}">
 </form>
 

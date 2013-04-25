@@ -51,6 +51,7 @@ urlpatterns = patterns('',
     url(r'^prefs/jump$',     'ssd.main.views.prefs.jump'),
 
     # Events
+    url(r'^i_delete$',       'ssd.main.views.events.i_delete'),
     url(r'^i_update$',       'ssd.main.views.events.i_update'),
     url(r'^incident$',       'ssd.main.views.events.incident'),
     url(r'^m_update$',       'ssd.main.views.events.m_update'),

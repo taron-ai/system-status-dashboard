@@ -80,22 +80,23 @@
     {% for row in services %}
     <tr>
      {# See if this service was previously selected and this is a failed form submit #}
-     <td><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %}/></td>
-     <td>{{row.service_name}}</td>
+     <td colspan="2">
+      <input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %}/>
+      {{row.service_name}}
     </tr>
     {% endfor %}
 
     {% if form.service.errors %}
     <tr>
-     <td colspan="2" style="text-align:right; color:red; font-weight:bold;">  
+     <td colspan="2" style="text-align:left; color:red; font-weight:bold;">  
       {% for error in form.service.errors %}{{error}}{% endfor %}
       <br><br>
      </td>
     </tr>
     {% endif %}
-
    </table>
   </td>
+  
   <td valign="top">
 
    <table class="container_options">
@@ -129,6 +130,7 @@
        </select>
      </td>
     </tr>
+
     <tr>
      <td colspan="2" height="5"></td>
     </tr>

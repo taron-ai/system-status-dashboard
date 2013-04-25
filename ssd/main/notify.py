@@ -142,7 +142,7 @@ class email:
 
         # Render the template
         rendered_template = template.render(d)
-        print rendered_template
+
         try:
             msg = EmailMessage(
                                 email_subject_incident, 
@@ -162,7 +162,7 @@ class email:
             print e
 
 
-    def maintenance(self,id,set_timezone,new):
+    def maintenance(self,id,recipient_id,set_timezone,new):
         """
         Send an email message in HTML format about a new or existing maintenance
            - If there is an error, the user will not be notified but an Apache error log will be generated
@@ -186,14 +186,11 @@ class email:
                                                                               'detail'
                                                                              ).order_by('id')
 
-        # Get the template
-        html_template = get_template('email/maintenance.html')
-
         # Obtain the recipient name
         recipient_name = cv.value('recipient_name')
 
         # Obtain the recipient email address
-        recipient_maintenance = cv.value('recipient_maintenance')
+        recipient_maintenance = Recipient.objects.filter(id=recipient_id).values('email_address')[0]['email_address']
 
         # Obtain the sender email address
         email_from = cv.value('email_from')
@@ -204,6 +201,9 @@ class email:
         # Obtain the ssd url
         ssd_url = cv.value('ssd_url')
 
+        # HTML (true) or text (false) formatting
+        format = int(cv.value('email_format_maintenance'))
+
         # Obtain the greeting
         if new == True:
             greeting = cv.value('greeting_maintenance_new')
@@ -213,9 +213,10 @@ class email:
         # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
         jtz.activate(set_timezone)
 
+        # Interpolate the values
         d = Context({ 
                      'detail':detail,
-                     'recipient':recipient,
+                     'recipient_name':recipient_name,
                      'greeting':greeting,
                      'services':services,
                      'updates':updates,
@@ -223,18 +224,27 @@ class email:
                      'timezone':set_timezone
                     })
 
-        html = html_template.render(d)
-        
+        if format:
+            # Its HTML
+            template = get_template('email/maintenance.html')
+        else:
+            # Its text
+            template = get_template('email/maintenance.txt')
+
+        # Render the template
+        rendered_template = template.render(d)
+
         try:
             msg = EmailMessage(
                                 email_subject_maintenance, 
-                                html, 
+                                rendered_template, 
                                 email_from, 
                                 [recipient_maintenance],None,None,None
                               )
 
-            # Change to HTML content type
-            msg.content_subtype = 'html'
+            # Change the content type to HTML, if requested
+            if format:
+                msg.content_subtype = 'html'
             
             # Send it
             msg.send()

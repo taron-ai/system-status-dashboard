@@ -88,8 +88,8 @@ class TimeField(forms.Field):
             raise forms.ValidationError('Improperly formatted time')
 
 
-class DetailField(forms.Field):
-    """A generic text field
+class IncidentDetailField(forms.Field):
+    """An incident detail text field
 
        Requirements:
           - Must not be empty
@@ -107,6 +107,90 @@ class DetailField(forms.Field):
         default = Config.objects.filter(config_name='instr_incident_description').values('config_value')[0]['config_value']
         if value == default:
             raise forms.ValidationError('No description provided')
+
+
+class MaintenanceDescriptionField(forms.Field):
+    """A maintenance description text field
+
+       Requirements:
+          - Must not be empty
+          - Must not contain the default text for this field
+
+    """
+
+    def validate(self, value):
+
+        # Is it empty?
+        if value is None or value == '':
+            raise forms.ValidationError('No description provided')
+
+        # Is it the default text?
+        default = Config.objects.filter(config_name='instr_maintenance_description').values('config_value')[0]['config_value']
+        if value == default:
+            raise forms.ValidationError('No description provided')
+
+
+class MaintenanceImpactField(forms.Field):
+    """A maintenance impact analysis text field
+
+       Requirements:
+          - Must not be empty
+          - Must not contain the default text for this field
+
+    """
+
+    def validate(self, value):
+
+        # Is it empty?
+        if value is None or value == '':
+            raise forms.ValidationError('No description provided')
+
+        # Is it the default text?
+        default = Config.objects.filter(config_name='instr_maintenance_impact').values('config_value')[0]['config_value']
+        if value == default:
+            raise forms.ValidationError('No impact provided')
+
+
+class MaintenanceCoordinatorField(forms.Field):
+    """A maintenance coordinator text field
+
+       Requirements:
+          - Must not be empty
+          - Must not contain the default text for this field
+
+    """
+
+    def validate(self, value):
+
+        # Is it empty?
+        if value is None or value == '':
+            raise forms.ValidationError('No description provided')
+
+        # Is it the default text?
+        default = Config.objects.filter(config_name='instr_maintenance_coordinator').values('config_value')[0]['config_value']
+        if value == default:
+            raise forms.ValidationError('No coordinator provided')
+
+
+class UpdateField(forms.Field):
+    """An incident update text field
+
+       Requirements:
+          - Must not be empty
+          - Must not contain the default text for this field
+
+    """
+
+    def validate(self, value):
+
+        # Is it empty?
+        if value is None or value == '':
+            raise forms.ValidationError('No update provided')
+
+        # Is it the default text?
+        default = Config.objects.filter(config_name='instr_incident_update').values('config_value')[0]['config_value']
+        if value == default:
+            raise forms.ValidationError('No update provided')
 
 
 class MultipleServiceField(forms.Field):
@@ -206,7 +290,7 @@ class AddIncidentForm(forms.Form):
 
     date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
     time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    detail = DetailField()
+    detail = IncidentDetailField()
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
     recipient_id = forms.IntegerField(required=False)
@@ -234,11 +318,39 @@ class AddIncidentForm(forms.Form):
 class UpdateIncidentForm(forms.Form):
     """Form for updating an existing incident"""
 
-    date = DateField()
-    time = TimeField()
-    detail = DetailField()
-    id = IdField()
+    date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    update = UpdateField()
     service = MultipleServiceField()
+    broadcast = forms.BooleanField(required=False)
+    closed = forms.BooleanField(required=False)
+    recipient_id = forms.IntegerField(required=False)
+    id = forms.IntegerField()
+
+    # Override the form clean method - there is some special logic to 
+    # creating an incident and we need access to multiple values
+    # to do it.
+    #
+    # Logic:
+    #  - If broadcast email is being requested, an email address must be provided
+    def clean(self):
+        cleaned_data = super(UpdateIncidentForm, self).clean()
+        broadcast = cleaned_data.get("broadcast")
+        recipient_id = cleaned_data.get("recipient_id")
+
+        if broadcast and not recipient_id:
+            
+            # Set custom error messages
+            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected'])
+            
+        # Return the full collection of cleaned data
+        return cleaned_data
+
+
+class DeleteIncidentForm(forms.Form):
+    """Form for deleting an existing incident"""
+
+    id = forms.IntegerField()
 
 
 class UpdateTZForm(forms.Form):
@@ -320,6 +432,10 @@ class ConfigForm(forms.Form):
     upload_path = forms.CharField(required=False)
     file_upload_size = forms.IntegerField(required=False)
     instr_incident_description = forms.CharField(required=False)
+    instr_incident_update = forms.CharField(required=False)
+    instr_maintenance_description = forms.CharField(required=False)
+    instr_maintenance_impact = forms.CharField(required=False)
+    instr_maintenance_coordinator = forms.CharField(required=False)
     email_format_incident = forms.IntegerField(required=False)
     email_format_maintenance = forms.IntegerField(required=False)
 
@@ -331,10 +447,31 @@ class AddMaintenanceForm(forms.Form):
     s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
     e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
     e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    description = forms.CharField(required=True)
-    impact = forms.CharField(required=True)
-    coordinator = forms.CharField(required=True)
+    description = MaintenanceDescriptionField()
+    impact = MaintenanceImpactField()
+    coordinator = MaintenanceCoordinatorField()
     service = MultipleServiceField()
+    broadcast = forms.BooleanField(required=False)
+    recipient_id = forms.IntegerField(required=False)
+
+    # Override the form clean method - there is some special logic to 
+    # scheduling a maintenance and we need access to multiple values
+    # to do it.
+    #
+    # Logic:
+    #  - If broadcast email is being requested, an email address must be provided
+    def clean(self):
+        cleaned_data = super(AddMaintenanceForm, self).clean()
+        broadcast = cleaned_data.get("broadcast")
+        recipient_id = cleaned_data.get("recipient_id")
+
+        if broadcast and not recipient_id:
+            
+            # Set custom error messages
+            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected'])
+            
+        # Return the full collection of cleaned data
+        return cleaned_data
 
 
 class AddRecipientForm(forms.Form):

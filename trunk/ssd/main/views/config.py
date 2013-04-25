@@ -80,6 +80,10 @@ def config(request):
             params['upload_path'] = form.cleaned_data['upload_path']
             params['file_upload_size'] = form.cleaned_data['file_upload_size']
             params['instr_incident_description'] = form.cleaned_data['instr_incident_description']
+            params['instr_incident_update'] = form.cleaned_data['instr_incident_update']
+            params['instr_maintenance_description'] = form.cleaned_data['instr_maintenance_description']
+            params['instr_maintenance_impact'] = form.cleaned_data['instr_maintenance_impact']
+            params['instr_maintenance_coordinator'] = form.cleaned_data['instr_maintenance_coordinator']
             params['email_format_incident'] = form.cleaned_data['email_format_incident']
             params['email_format_maintenance'] = form.cleaned_data['email_format_maintenance']
             

@@ -40,6 +40,7 @@ from ssd.main.models import Maintenance_Update
 from ssd.main.models import Recipient
 from ssd.main.models import Service_Maintenance
 from ssd.main.forms import AddIncidentForm
+from ssd.main.forms import DeleteIncidentForm
 from ssd.main.forms import UpdateIncidentForm
 from ssd.main.forms import UpdateMaintenanceForm
 from ssd.main.forms import ReportIncidentForm
@@ -190,7 +191,7 @@ def report(request):
 @login_required
 @staff_member_required
 def incident(request):
-    """Update Incident Page
+    """Create Incident Page
 
     Create a new incident view
 
@@ -242,7 +243,7 @@ def incident(request):
 
             incident_id = Incident.objects.filter(date=incident_time,detail=detail).values('id')
             if not incident_id:
-                Incident(date=incident_time,detail=detail).save()
+                Incident(date=incident_time,detail=detail,email_address_id=recipient_id).save()
                 incident_id = Incident.objects.filter(date=incident_time,detail=detail).values('id')
 
                 # Find out which services this impacts and save the data
@@ -255,7 +256,7 @@ def incident(request):
 
             # Send an email notification to the appropriate list
             # about this issue if requested.  Broadcast won't be
-            # allowed to be true if an email is not defined.
+            # allowed to be true if an email address is not defined.
             if broadcast:
                 email = notify.email()
                 email.incident(incident_id[0]['id'],recipient_id,set_timezone,True)
@@ -263,6 +264,10 @@ def incident(request):
             # Send them to the incident detail page for this newly created
             # incident
             return HttpResponseRedirect('/i_detail?id=%s' % incident_id[0]['id'])
+
+        # Bad form validation
+        else:
+            print 'Invalid form: %s.  Errors: %s' % ('AddIncidentForm',form.errors)
 
     # Not a POST so create a blank form
     else:
@@ -296,7 +301,10 @@ def incident(request):
     else:
         instr = None
 
-     # Print the page
+    # Obtain the incident description text
+    instr_incident_description = cv.value('instr_incident_description')
+
+    # Print the page
     return render_to_response(
        'events/incident.html',
        {
@@ -307,7 +315,7 @@ def incident(request):
           'form':form,
           'time_now':time_now,
           'instr':instr,
-          'instr_incident_description':cv.value('instr_incident_description')
+          'instr_incident_description':instr_incident_description
 
        },
        context_instance=RequestContext(request)
@@ -323,6 +331,9 @@ def i_update(request):
 
     """
 
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+
     # Obtain the timezone (or set to the default DJango server timezone)
     if request.COOKIES.get('timezone') == None:
         set_timezone = settings.TIME_ZONE
@@ -330,40 +341,36 @@ def i_update(request):
         set_timezone = request.COOKIES.get('timezone')
 
     # If this is a POST, then validate the form and save the data
-    # Some validation must take place manually (deletes and service
+    # Some validation must take place manually (service
     # addition/subtraction
     if request.method == 'POST':
-        # If this is a delete request, then no need to check the 
-        # rest of the form.  Make sure the ID is well formatted
-        if 'delete' in request.POST and 'id' in request.POST:
-            if re.match(r'^\d+$', request.POST['id']):
-                # Delete it (deletes will be cascaded)
-                Incident.objects.filter(id=request.POST['id']).delete()
-
-                # Redirect to the home page
-                return HttpResponseRedirect('/')
 
         # Give the template a blank time if this is a post 
         # the user will have already set it.
         time_now = ''
 
+        # If this is a form submit that fails, we want to reset whatever services were selected
+        # by the user.  Templates do not allow access to Arrays stored in QueryDict objects so we have
+        # to determine the list and send back to the template on failed form submits
+        affected_svcs = request.POST.getlist('service')
+
         # Check the form elements
         form = UpdateIncidentForm(request.POST)
 
         if form.is_valid():
+
             # Obtain the cleaned data
             date = form.cleaned_data['date']
-            detail = form.cleaned_data['detail']
+            update = form.cleaned_data['update']
             time = form.cleaned_data['time']
+            broadcast = form.cleaned_data['broadcast']
+            recipient_id = form.cleaned_data['recipient_id']
             id = form.cleaned_data['id']
+            closed = form.cleaned_data['closed']
 
-            # Create a datetime object and add the user's timezone
-            # (hopefully they set it)
+            # Create a datetime object and add the timezone
             # Put the date and time together
-            incident_time = '%s %s' % (date,time)
-
-            # Create a datetime object
-            incident_time = datetime.datetime.strptime(incident_time,'%Y-%m-%d %H:%M')
+            incident_time = datetime.datetime.combine(date,time)
 
             # Set the timezone
             tz = pytz.timezone(set_timezone)
@@ -372,9 +379,9 @@ def i_update(request):
             # Add the detail text 
             # Don't allow the same detail to be added 2x
             # The user might have hit the back button and submitted again
-            detail_id = Incident_Update.objects.filter(date=incident_time,detail=detail).values('id')
+            detail_id = Incident_Update.objects.filter(date=incident_time,detail=update).values('id')
             if not detail_id:
-                Incident_Update(date=incident_time,incident_id=id,detail=detail).save()
+                Incident_Update(date=incident_time,incident_id=id,detail=update).save()
 
                 # See if we are adding or subtracting services
                 # The easiest thing to do here is remove all affected  
@@ -384,29 +391,64 @@ def i_update(request):
                 Service_Issue.objects.filter(incident_id=id).delete()
         
                 # Now add (form validation confirms that there is at least 1)
-                for service_id in request.POST.getlist('service'):
+                for service_id in affected_svcs:
                     # Should be number only -- can't figure out how to validate
                     # multiple checkboxes in the form
                     if re.match(r'^\d+$', service_id):
                         Service_Issue(service_name_id=service_id,incident_id=id).save()
 
             # See if we are closing this issue
-            if 'close' in request.POST:
+            if closed:
                 Incident.objects.filter(id=id).update(closed=incident_time)
             else:
                 Incident.objects.filter(id=id).update(closed=None)
 
-            # If an email update is being requested, send it
-            if 'email' in request.POST:
+            # Send an email notification to the appropriate list
+            # about this issue if requested.  Broadcast won't be
+            # allowed to be true if an email address is not defined.
+            if broadcast:
+
+                # Update the email address
+                recipient = Recipient.objects.filter(id=recipient_id).values('email_address')
+                Incident.objects.filter(id=id).update(email_address=recipient_id)
+
                 email = notify.email()
-                email.incident(request.POST['id'],set_timezone,False)
+                email.incident(id,recipient_id,set_timezone,True)
 
             # All done so redirect to the incident detail page so
             # the new data can be seen.
             return HttpResponseRedirect('/i_detail?id=%s' % id)
+        
+        # Bad form validation
+        else:
+            print 'Invalid form: %s.  Errors: %s' % ('UpdateIncidentForm',form.errors)
+
+            # Obtain the id so we can print the update page again
+            if 'id' in request.POST: 
+                if re.match(r'^\d+$', request.POST['id']):
+                    id = request.POST['id']
+                else:
+                    return return_error(request,'Improperly formatted id') 
+            else:
+                return return_error(request,'No incident ID given') 
 
     # Not a POST so create a blank form
     else:
+        # Obtain the id 
+        if 'id' in request.GET: 
+            if re.match(r'^\d+$', request.GET['id']):
+                id = request.GET['id']
+            else:
+                return return_error(request,'Improperly formatted id') 
+        else:
+            return return_error(request,'No incident ID given')
+
+        # In the case of a GET, we can acquire the proper services from the DB
+        affected_svcs_tmp = Service_Issue.objects.filter(incident_id=id).values('service_name_id')
+        affected_svcs = []
+        for service_id in affected_svcs_tmp:
+            affected_svcs.append(service_id['service_name_id'])
+        affected_svcs = list(affected_svcs)
         form = UpdateIncidentForm()
 
         # Obtain the current date/time so we can pre-fill them
@@ -419,52 +461,17 @@ def i_update(request):
         # Now convert to the requested timezone
         time_now = time_now.astimezone(pytz.timezone(set_timezone))
 
-    # Obtain the id (this could have been a GET or a failed POST)
-    if request.method == 'GET':
-        if 'id' in request.GET:
-            id = request.GET['id']
-    elif request.method == 'POST':
-        if 'id' in request.POST:
-            id = request.POST['id']
-
-    # If we don't have the ID, then we have to give them an error
-    if not id:
-        return return_error(request,'No incident ID given')
-
-    # Make sure the ID is properly formed
-    if not re.match(r'^\d+$', id):
-        return return_error(request,'Improperly formatted ID: %s' % id)
-
-    # See if the incident is closed
-    closed = Incident.objects.filter(id=id).values('closed')
+    # Obtain the open/closed status and the email address (if assigned)
+    details = Incident.objects.filter(id=id).values('closed','email_address_id')
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
 
-    # Obtain all services that this issue impacts
-    a_services = Service_Issue.objects.filter(incident_id=id).values('service_name_id')
+    # Obtain all current email addresses
+    recipients = Recipient.objects.values('id','email_address')
 
-    # Put together the data in an easy to parse format
-    # for the template like this:
-    # services[service_id][service_name][affected]
-    affected_services = []
-    # Look through each service
-    for service in services:
-        dict = {}
-        dict['id'] = service['id']
-        dict['name'] = service['service_name']
-
-        # Check each affected service
-        for a_service in a_services:
-            if service['id'] == a_service['service_name_id']:
-                dict['affected'] = 'on'
-
-        # If the service is not affected, set to False
-        if not 'affected' in dict:
-            dict['affected'] = 'off'
-
-        # Add the dict
-        affected_services.append(dict)
+    # Obtain the incident update text
+    instr_incident_update = cv.value('instr_incident_update')
 
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
@@ -473,17 +480,52 @@ def i_update(request):
     return render_to_response(
        'events/i_update.html',
        {
-          'title':'SSD Incident Update',
-          'closed':closed,
-          'affected_services':affected_services,
+          'title':'System Status Dashboard | Update Incident',
+          'details':details,
+          'services':services,
+          'affected_svcs':affected_svcs,
           'id':id,
           'form':form,
-          'time_now':time_now
+          'recipients':recipients,
+          'time_now':time_now,
+          'instr_incident_update':instr_incident_update
        },
        context_instance=RequestContext(request)
     )
 
 
+@login_required
+@staff_member_required
+def i_delete(request):
+    """Delete Incident Page
+
+    Delete an incident given an id
+
+    """
+
+    # We only accept posts
+    if request.method == 'POST':
+        
+        # Check the form elements
+        form = DeleteIncidentForm(request.POST)
+
+        if form.is_valid():
+
+            # Obtain the cleaned data
+            id = form.cleaned_data['id']
+
+            # Delete the incident
+            Incident.objects.filter(id=id).delete()
+
+            # Redirect to the homepage
+            return HttpResponseRedirect('/')
+
+    # If processing got this far, its either not a POST
+    # or its an invalid form submit.  Either way, give an error        
+    return return_error(request,'Invalid delete request')
+
+
+@login_required
 @staff_member_required
 def maintenance(request):
     """Schedule maintenance page
@@ -503,6 +545,11 @@ def maintenance(request):
     # Some validation must take place manually
     if request.method == 'POST':
 
+        # If this is a form submit that fails, we want to reset whatever services were selected
+        # by the user.  Templates do not allow access to Arrays stored in QueryDict objects so we have
+        # to determine the list and send back to the template on failed form submits
+        affected_svcs = request.POST.getlist('service')
+
         # Check the form elements
         form = AddMaintenanceForm(request.POST)
 
@@ -515,6 +562,8 @@ def maintenance(request):
             description = form.cleaned_data['description']
             impact = form.cleaned_data['impact']
             coordinator = form.cleaned_data['coordinator']
+            broadcast = form.cleaned_data['broadcast']
+            recipient_id = form.cleaned_data['recipient_id']
                         
             # Combine the dates and times into datetime objects
             start = datetime.datetime.combine(s_date, s_time)
@@ -559,25 +608,25 @@ def maintenance(request):
                                                             coordinator=coordinator,
                                                             user_id=user_id,
                                                             completed=0
-                                                           ).values('id')[0]['id']
+                                                           ).values('id')
 
                 # Find out which services this impacts and save the data
                 # Form validation confirms that there is at least 1
-                for service_id in request.POST.getlist('service'):
+                for service_id in affected_svcs:
                     # Should be number only -- can't figure out how to validate
                     # multiple checkboxes in the form
                     if re.match(r'^\d+$', service_id):
-                        Service_Maintenance(service_name_id=service_id,maintenance_id=maintenance_id).save()
+                        Service_Maintenance(service_name_id=service_id,maintenance_id=maintenance_id[0]['id']).save()
 
             # Send an email notification to the appropriate list
             # about this maintenance, if requested
-            if 'email' in request.POST:
+            if broadcast:
                 email = notify.email()
-                email.maintenance(maintenance_id,set_timezone,True)
+                email.maintenance(maintenance_id[0]['id'],recipient_id,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # maintenance
-            return HttpResponseRedirect('/m_detail?id=%s' % maintenance_id)
+            return HttpResponseRedirect('/m_detail?id=%s' % maintenance_id[0]['id'])
 
         # Invalid Form
         else:
@@ -585,11 +634,18 @@ def maintenance(request):
 
     # Not a POST so create a blank form
     else:
+
+        # There are no affected services selected yet
+        affected_svcs = []
+        
         form = AddMaintenanceForm() 
     
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
-    
+
+    # Obtain all current email addresses
+    recipients = Recipient.objects.values('id','email_address')
+
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
     
@@ -599,6 +655,11 @@ def maintenance(request):
     else:
         instr = None
 
+    # Obtain the default maintenance textfield text
+    instr_maintenance_description = cv.value('instr_maintenance_description')
+    instr_maintenance_impact = cv.value('instr_maintenance_impact')
+    instr_maintenance_coordinator= cv.value('instr_maintenance_coordinator')
+
     # Print the page
     return render_to_response(
        'events/maintenance.html',
@@ -606,7 +667,12 @@ def maintenance(request):
           'title':'System Status Dashboard | Scheduled Maintenance',
           'form':form,
           'instr':instr,
-          'services':services
+          'services':services,
+          'affected_svcs':tuple(affected_svcs),
+          'recipients':recipients,
+          'instr_maintenance_description':instr_maintenance_description,
+          'instr_maintenance_impact':instr_maintenance_impact,
+          'instr_maintenance_coordinator':instr_maintenance_coordinator
        },
        context_instance=RequestContext(request)
     )
@@ -807,6 +873,7 @@ def m_update(request):
        },
        context_instance=RequestContext(request)
     )
+
 
     
    

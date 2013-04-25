@@ -14,9 +14,7 @@
 # limitations under the License.
 
 
-"""This module contains all of the views that are not related
-   to search or preferences (basically everything).  As this becomes
-   unmanageable, views will be moved to their own modules
+"""This module contains all of the basic user facing views for SSD
 
 """
 

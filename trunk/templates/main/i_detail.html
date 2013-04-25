@@ -97,8 +97,27 @@
  </tr>
 
  <tr>
-  <td><a href="/i_update?id={{id}}">Update Incident</td>
+  <td>
+   <table>
+    <tr>
+     <td>
+      <form action="/i_update?id={{id}}" method="get">
+       <input type="hidden" name="id" value="{{id}}">
+       <input type="submit" value="update">
+      </form>
+     </td>
+     <td>
+      <form enctype="multipart/form-data" method="POST" name="i_delete" id="i_delete" action="/i_delete">
+       {% csrf_token %}
+       <input type="hidden" name="id" value="{{id}}">
+       <input type="submit" value="delete"/>
+      </form>
+     </td>
+    </tr>
+   </table>
+  </td>
  </tr>
+
  {% endif %} 
 
 </table>

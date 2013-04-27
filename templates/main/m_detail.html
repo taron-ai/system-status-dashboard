@@ -113,7 +113,7 @@
       <tr>
        <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
        <td>{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
-       <td>{{row.detail}}</td>
+       <td>{{row.detail|linebreaksbr}}</td>
       </tr>
      {% endfor %}
    </table>
@@ -131,9 +131,28 @@
  </tr>
 
  <tr>
-  <td><a href="/m_update?id={{id}}">Update Maintenance</td>
+  <td>
+   <table>
+    <tr>
+     <td>
+      <form action="/m_update?id={{id}}" method="get">
+       <input type="hidden" name="id" value="{{id}}">
+       <input type="submit" value="update">
+      </form>
+     </td>
+     <td>
+      <form enctype="multipart/form-data" method="POST" name="m_delete" id="m_delete" action="/m_delete">
+       {% csrf_token %}
+       <input type="hidden" name="id" value="{{id}}">
+       <input type="submit" value="delete"/>
+      </form>
+     </td>
+    </tr>
+   </table>
+  </td>
  </tr>
- {% endif %} 
+
+{% endif %}
 
 </table>
 

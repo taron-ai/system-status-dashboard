@@ -46,8 +46,12 @@ def search(request):
 
         if form.is_valid():
             # Obtain the cleaned data (only validate the dates)
-            date_from = form.cleaned_data['date_from']
-            date_to = form.cleaned_data['date_to']
+            s_date = form.cleaned_data['s_date']
+            s_time = form.cleaned_data['s_time']
+            e_date = form.cleaned_data['e_date']
+            e_time = form.cleaned_data['e_time']
+            text = form.cleaned_data['text']
+            status = form.cleaned_data['status']
 
             # Give the dates a timezone so search is accurate
             # If the timezone is not set, give the local server timezone
@@ -56,20 +60,14 @@ def search(request):
             else:
                 set_timezone = request.COOKIES.get('timezone')
 
-            # The from date will be the beginning of the day
-            # Create a datetime object and attach a timezone to it
-            date_from += ' 00:00:00'
-            date_from = datetime.datetime.strptime(date_from,'%Y-%m-%d %H:%M:%S')
-            date_from = pytz.timezone(set_timezone).localize(date_from)
+            # Combine the dates and times into datetime objects
+            start = datetime.datetime.combine(s_date, s_time)
+            end = datetime.datetime.combine(e_date, e_time)
 
-            # The to date will be the end of the day
-            # Create a datetime object and attach a timezone to it
-            date_to += ' 23:59:59'
-            date_to = datetime.datetime.strptime(date_to,'%Y-%m-%d %H:%M:%S')
-            date_to = pytz.timezone(set_timezone).localize(date_to)
-
-            text = request.POST['text']
-            status = request.POST['status']
+            # Set the timezone
+            tz = pytz.timezone(set_timezone)
+            start = tz.localize(start)
+            end = tz.localize(end)
 
             if status == 'open':
                 status = True
@@ -78,7 +76,7 @@ def search(request):
 
             # Search without regard for open/closed status
             if status == '':
-                results = Service_Issue.objects.filter(incident__date__range=[date_from,date_to],
+                results = Service_Issue.objects.filter(incident__date__range=[start,end],
                                                        incident__detail__contains=text
                                                       ).values('incident__date',
                                                                'incident_id',
@@ -88,7 +86,7 @@ def search(request):
             # Search for open/closed incidents
             else:
                 results = Service_Issue.objects.filter(incident__closed__isnull=status,
-                                                       incident__date__range=[date_from,date_to],
+                                                       incident__date__range=[start,end],
                                                        incident__detail__contains=text
                                                       ).values('incident__date',
                                                                'incident_id',
@@ -143,8 +141,11 @@ def rsearch(request):
 
         if form.is_valid():
             # Obtain the cleaned data (only validate the dates)
-            date_from = form.cleaned_data['date_from']
-            date_to = form.cleaned_data['date_to']
+            s_date = form.cleaned_data['s_date']
+            s_time = form.cleaned_data['s_time']
+            e_date = form.cleaned_data['e_date']
+            e_time = form.cleaned_data['e_time']
+            text = form.cleaned_data['text']
 
             # Give the dates a timezone so search is accurate
             # If the timezone is not set, give the local server timezone
@@ -153,21 +154,18 @@ def rsearch(request):
             else:
                 set_timezone = request.COOKIES.get('timezone')
 
-            if date_from:
-                date_from += ' 00:00:00'
-                date_from = datetime.datetime.strptime(date_from,'%Y-%m-%d %H:%M:%S')
-                date_from = pytz.timezone(set_timezone).localize(date_from)
+            # Combine the dates and times into datetime objects
+            start = datetime.datetime.combine(s_date, s_time)
+            end = datetime.datetime.combine(e_date, e_time)
 
-            if date_to:
-                date_to += ' 23:59:59'
-                date_to = datetime.datetime.strptime(date_to,'%Y-%m-%d %H:%M:%S')
-                date_to = pytz.timezone(set_timezone).localize(date_to)
+            # Set the timezone
+            tz = pytz.timezone(set_timezone)
+            start = tz.localize(start)
+            end = tz.localize(end)
 
-            text = request.POST['text']
-
-            results = Report.objects.filter(date__range=[date_from,date_to],
+            results = Report.objects.filter(date__range=[start,end],
                                             description__contains=text).values('id',
-									       'date',
+									                                                             'date',
                                                                                'name',
                                                                                'email',
                                                                                'description',

@@ -84,6 +84,7 @@ def config(request):
             params['instr_maintenance_description'] = form.cleaned_data['instr_maintenance_description']
             params['instr_maintenance_impact'] = form.cleaned_data['instr_maintenance_impact']
             params['instr_maintenance_coordinator'] = form.cleaned_data['instr_maintenance_coordinator']
+            params['instr_maintenance_update'] = form.cleaned_data['instr_maintenance_update']
             params['email_format_incident'] = form.cleaned_data['email_format_incident']
             params['email_format_maintenance'] = form.cleaned_data['email_format_maintenance']
             

@@ -79,14 +79,14 @@
     </tr>
     <tr>
      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.date|date:"Y-m-d H:i:s"}}</td>
-     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.detail}}</td>
+     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.detail|linebreaksbr}}</td>
     </tr>
 
     {% if updates %}
      {% for row in updates %}
       <tr>
        <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s"}}</td>
-       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail}}</td>
+       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail|linebreaksbr}}</td>
       </tr>
      {% endfor %}
     {% endif %}

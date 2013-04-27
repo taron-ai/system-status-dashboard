@@ -22,14 +22,20 @@
 
 <script type="text/javascript">
 
-   // Dates
+   // Dates / Times
    $(function() {
 
-      //Date
-      $("#date_from").datepicker({dateFormat: 'yy-mm-dd'});
+      //Start Date
+      $("#s_date").datepicker({dateFormat: 'yy-mm-dd'});
 
-      //Date
-      $("#date_to").datepicker({dateFormat: 'yy-mm-dd'});
+      //Start Time
+      $("#s_time").timepicker({timeSeparator: ':'});
+
+      //End Date
+      $("#e_date").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //End Time
+      $("#e_time").timepicker({timeSeparator: ':'});
 
    });
 
@@ -53,60 +59,87 @@
  </tr>
 
  <tr>
-  <td valign="top">
-   <b>Date From*</b>
-  </td>
-  <td>
-   <input type="text" class="input_date" name="date_from" id="date_from" value="{% if form.date_from.data %}{{form.date_from.data}}{% endif %}"/>
-   {% if form.date_from.errors %}
-   <p class="error">
-   {% for error in form.date_from.errors %}{{error}}{% endfor %}
-   </p>
-   {% endif %}
+  <td colspan="2" align="left">
+
+   <table class="container">
+
+    <tr>
+     <td><b>Start</b></td>
+     <td>
+      <input type="text" class="input_date" name="s_date" id="s_date" value="{% if form.s_date.data %}{{form.s_date.data}}{% else %}Enter Date{% endif %}"/>
+      <input type="text" class="input_date" name="s_time" id="s_time" value="{% if form.s_time.data %}{{form.s_time.data}}{% else %}Enter Time{% endif %}"/>
+     </td>
+    </tr>
+
+    {% if form.s_date.errors %}
+    <tr>
+     <td></td>
+     <td style="text-align:left; color:red; font-weight:bold;">  
+     {% for error in form.s_date.errors %}{{error}}{% endfor %} 
+    </tr>
+    {% endif %}
+
+    {% if form.s_time.errors %}
+    <tr>
+     <td></td>
+     <td style="text-align:left; color:red; font-weight:bold;">  
+     {% for error in form.s_time.errors %}{{error}}{% endfor %} 
+    </tr>
+    {% endif %}
+
+    <tr>
+     <td><b>End</b></td>
+     <td>
+      <input type="text" class="input_date" name="e_date" id="e_date" value="{% if form.e_date.data %}{{form.e_date.data}}{% else %}Enter Date{% endif %}"/>
+      <input type="text" class="input_date" name="e_time" id="e_time" value="{% if form.e_time.data %}{{form.e_time.data}}{% else %}Enter Time{% endif %}"/>
+     </td>
+    </tr>
+    
+    {% if form.e_date.errors %}
+    <tr>
+     <td></td>
+     <td style="text-align:left; color:red; font-weight:bold;">  
+     {% for error in form.e_date.errors %}{{error}}{% endfor %} 
+    </tr>
+    {% endif %}
+
+    {% if form.e_time.errors %}
+    <tr>
+     <td></td>
+     <td style="text-align:left; color:red; font-weight:bold;">  
+     {% for error in form.e_time.errors %}{{error}}{% endfor %} 
+    </tr>
+    {% endif %}
+
+    <tr>
+      <td></td>
+      <td>Timezone: {{TIME_ZONE}}</td>
+    </tr>
+
+    <tr>
+     <td colspan="2" height="15"></td>
+    </tr>
+
+    <tr>
+     <td>
+      <b>Search Text</b>
+     </td>
+     <td>
+      <input type="text" class="input_search" name="text" id="text" value="{% if form.text.data %}{{form.text.data}}{% endif %}"/>
+     </td>
+    </tr>
+
+    <tr>
+     <td></td>
+     <td>
+      <input type="submit" value="submit"/>
+     </td>
+    </tr>
+
+   </table>
+
   </td>
  </tr>
-
- <tr>
-  <td colspan="2" height="15"></td>
- </tr>
-
- <tr>
-  <td valign="top">
-   <b>Date To*</b>
-  </td>
-  <td>
-   <input type="text" class="input_date" name="date_to" id="date_to" value="{% if form.date_to.data %}{{form.date_to.data}}{% endif %}"/>
-   {% if form.date_to.errors %}
-   <p class="error">
-   {% for error in form.date_to.errors %}{{error}}{% endfor %}
-   </p>
-   {% endif %}
-  </td>
- </tr>
-
- <tr>
-  <td colspan="2" height="15"></td>
- </tr>
-
- <tr>
-  <td colspan="2" height="15"></td>
- </tr>
-
- <tr>
-  <td valign="top">
-   <b>Search Text</b>
-  </td>
-  <td>
-   <input type="text" class="input_search" name="text" id="text" value=""/>
-  </td>
- </tr>
-
- <tr>
-  <td colspan="2" style="text-align: right;">
-   <input type="submit" value="submit"/>
-  </td>
- </tr>
-
 </table>
 </form>
 

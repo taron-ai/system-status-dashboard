@@ -72,14 +72,14 @@
     </tr>
     <tr>
      <td>{{detail.0.date|date:"Y-m-d H:i:s"}}</td>
-     <td>{{detail.0.detail}}</td>
+     <td>{{detail.0.detail|linebreaksbr}}</td>
     </tr>
 
     {% if updates %}
      {% for row in updates %}
       <tr>
        <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
-       <td>{{row.detail}}</td>
+       <td>{{row.detail|linebreaksbr}}</td>
       </tr>
      {% endfor %}
     {% endif %}

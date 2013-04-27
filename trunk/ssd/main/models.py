@@ -77,6 +77,7 @@ class Incident(models.Model):
     closed = models.DateTimeField(null=True)
     detail = models.CharField(max_length=1000)
     email_address = models.ForeignKey(Recipient,null=True,blank=True)
+    user = models.ForeignKey(User)
 
     # Represent the objects as unicode
     def __unicode__(self):
@@ -89,6 +90,7 @@ class Incident_Update(models.Model):
     date = models.DateTimeField(null=False,blank=False)
     incident = models.ForeignKey(Incident)
     detail = models.CharField(max_length=1000)
+    user = models.ForeignKey(User)
 
     # Represent the objects as unicode
     def __unicode__(self):
@@ -114,6 +116,7 @@ class Maintenance(models.Model):
     description = models.CharField(blank=False,max_length=1000)
     impact = models.CharField(blank=False,max_length=1000)
     coordinator = models.CharField(blank=False,max_length=1000)
+    email_address = models.ForeignKey(Recipient,null=True,blank=True)
     user = models.ForeignKey(User)
     started = models.BooleanField()
     completed = models.BooleanField()

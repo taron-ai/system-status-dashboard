@@ -70,7 +70,7 @@ INSERT INTO `main_config` VALUES
 (29,'alert_sched_maint','Scheduled Maintenance Alert','','Message that will optionally be displayed on the schedule maintenance page.','alerts','string'),
 (30,'display_report_incident_alert','Display Report Incident Alert','0','Whether or not to display the report incident alert message.','alerts','boolean'),
 (31,'alert_report_incident','Report Incident Alert','','Instructions that will optionally be displayed on the report incident screen.','notifications','string'),
-(32,'display_create_incident_alert','Display Create Incident Alert','0','Whether or not to display the create incident alert message.','alerts','boolean')
+(32,'display_create_incident_alert','Display Create Incident Alert','0','Whether or not to display the create incident alert message.','alerts','boolean'),
 (33,'alert_create_incident','Create Incident Alert','','Instructions that will optionally be displayed on the create incident page.','notifications','string'),
 
 (34,'enable_uploads','Incident Report File Uploads','0','Whether or not to allow users to upload screenshots when reporting incidents','file_uploads','boolean'),
@@ -78,7 +78,7 @@ INSERT INTO `main_config` VALUES
 (36,'file_upload_size','Maximum File Upload Size','1024','The maximum size (in bytes) allowed for user uploaded screenshots','file_uploads','string'),
 
 (37,'ssd_url','SSD URL','','The SSD url that will be displayed on communication sent from this SSD server','urls','string'),
-(38,'escalation','Escalation Path','THERE IS CURRENTLY NO ESCALATION PATH DEFINED.','','','string'),
+(38,'escalation','Escalation Path','THERE IS CURRENTLY NO ESCALATION PATH DEFINED.','','','string')
 ;
 
 /*!40000 ALTER TABLE `main_config` ENABLE KEYS */;

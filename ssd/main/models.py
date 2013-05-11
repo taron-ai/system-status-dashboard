@@ -174,7 +174,19 @@ class Report(models.Model):
     date = models.DateTimeField(null=False,blank=False)
     name = models.CharField(null=False,blank=False,max_length=50)
     email = models.CharField(null=False,blank=False,max_length=50)
-    description = models.CharField(null=False,blank=False,max_length=160)
-    additional = models.CharField(blank=True,max_length=1000)
+    detail = models.CharField(null=False,blank=False,max_length=160)
+    extra = models.CharField(null=True,blank=True,max_length=1000)
     screenshot1 = models.ImageField(storage=fs,upload_to=_upload_to)
     screenshot2 = models.ImageField(storage=fs,upload_to=_upload_to)
+
+
+class Escalation(models.Model):
+    """Escalation Contacts"""
+
+    order = models.PositiveIntegerField(null=False,blank=False)
+    name = models.CharField(null=False,blank=False,max_length=50)
+    contact_details = models.CharField(null=False,blank=False,max_length=160)
+    hidden = models.BooleanField(blank=False)
+
+    class Meta:
+        unique_together = ['name','contact_details']

@@ -20,6 +20,15 @@
 
 {% block content %}
 
+<script type="text/javascript">
+
+   // Setup the default text for the detail field
+   $(function(){
+      default_text_input("recipient","Enter a valid email address");
+    });
+
+</script>
+
 <br>
 <br>
 
@@ -29,7 +38,7 @@
    </tr>
    <tr>
     <td>
-      <form method="POST" name="remove_recipients" id="remove_recipients" action="/rm_recipients">
+      <form method="POST" name="rm_recipients" id="rm_recipients" action="/rm_recipients">
       {% csrf_token %}
       {% if recipients %}
        <table class="standard_no_border">

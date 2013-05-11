@@ -104,9 +104,6 @@ class email:
         # Obtain the sender email address
         email_from = cv.value('email_from')
 
-        # Obtain the email subject
-        email_subject_incident = cv.value('email_subject_incident')
-
         # Obtain the ssd url
         ssd_url = cv.value('ssd_url')
 
@@ -116,8 +113,10 @@ class email:
         # Obtain the greeting
         if new == True:
             greeting = cv.value('greeting_incident_new')
+            email_subject_incident = cv.value('email_subject_incident')
         else:
             greeting = cv.value('greeting_incident_update')
+            email_subject_incident = '%s - Update' % cv.value('email_subject_incident')
 
         # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
         jtz.activate(set_timezone)
@@ -195,9 +194,6 @@ class email:
         # Obtain the sender email address
         email_from = cv.value('email_from')
 
-        # Obtain the email subject
-        email_subject_maintenance = cv.value('email_subject_maintenance')
-
         # Obtain the ssd url
         ssd_url = cv.value('ssd_url')
 
@@ -207,8 +203,10 @@ class email:
         # Obtain the greeting
         if new == True:
             greeting = cv.value('greeting_maintenance_new')
+            email_subject_maintenance = cv.value('email_subject_maintenance')
         else:
             greeting = cv.value('greeting_maintenance_update')
+            email_subject_maintenance = '%s - Update' % cv.value('email_subject_maintenance')
 
         # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
         jtz.activate(set_timezone)

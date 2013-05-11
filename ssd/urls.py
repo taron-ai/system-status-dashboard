@@ -29,34 +29,37 @@ urlpatterns = patterns('',
     url(r'^admin/',          include(admin.site.urls)),
 
     # Main
-    url(r'^$',               'ssd.main.views.main.index'),
-    url(r'^i_detail$',       'ssd.main.views.main.i_detail'),
-    url(r'^escalation$',     'ssd.main.views.main.escalation'),
-    url(r'^m_detail$',       'ssd.main.views.main.m_detail'),
+    url(r'^$',                  'ssd.main.views.main.index'),
+    url(r'^i_detail$',          'ssd.main.views.main.i_detail'),
+    url(r'^escalation$',        'ssd.main.views.main.escalation'),
+    url(r'^m_detail$',          'ssd.main.views.main.m_detail'),
 
     # Configuration
-    url(r'^config$',         'ssd.main.views.config.config'),
-    url(r'^recipients$',     'ssd.main.views.config.recipients'),
-    url(r'^rm_recipients$',  'ssd.main.views.config.rm_recipients'),
-    url(r'^rm_services$',    'ssd.main.views.config.rm_services'),
-    url(r'^services$',       'ssd.main.views.config.services'),
+    url(r'^config$',            'ssd.main.views.config.config'),
+    url(r'^contacts$',          'ssd.main.views.config.contacts'),
+    url(r'^contacts_modify$',   'ssd.main.views.config.contacts_modify'),
+    url(r'^recipients$',        'ssd.main.views.config.recipients'),
+    url(r'^rm_recipients$',     'ssd.main.views.config.rm_recipients'),
+    url(r'^rm_services$',       'ssd.main.views.config.rm_services'),
+    url(r'^services$',          'ssd.main.views.config.services'),
 
     # Search
-    url(r'^rsearch$',        'ssd.main.views.search.rsearch'),
-    url(r'^search$',         'ssd.main.views.search.search'),
-    url(r'^rsearch_recent$', 'ssd.main.views.search.rsearch_recent'),
+    url(r'^isearch$',           'ssd.main.views.search.isearch'),
+    url(r'^msearch$',           'ssd.main.views.search.msearch'),
+    url(r'^rsearch$',           'ssd.main.views.search.rsearch'),
+    url(r'^rsearch_recent$',    'ssd.main.views.search.rsearch_recent'),
 
     # Preferences
-    url(r'^prefs/timezone$', 'ssd.main.views.prefs.timezone'),
-    url(r'^prefs/jump$',     'ssd.main.views.prefs.jump'),
+    url(r'^prefs/timezone$',    'ssd.main.views.prefs.timezone'),
+    url(r'^prefs/jump$',        'ssd.main.views.prefs.jump'),
 
     # Events
-    url(r'^i_delete$',       'ssd.main.views.events.i_delete'),
-    url(r'^i_update$',       'ssd.main.views.events.i_update'),
-    url(r'^incident$',       'ssd.main.views.events.incident'),
-    url(r'^m_delete$',       'ssd.main.views.events.m_delete'),
-    url(r'^m_update$',       'ssd.main.views.events.m_update'),
-    url(r'^maintenance$',    'ssd.main.views.events.maintenance'),
-    url(r'^report$',         'ssd.main.views.events.report'),
+    url(r'^i_delete$',          'ssd.main.views.events.i_delete'),
+    url(r'^i_update$',          'ssd.main.views.events.i_update'),
+    url(r'^incident$',          'ssd.main.views.events.incident'),
+    url(r'^m_delete$',          'ssd.main.views.events.m_delete'),
+    url(r'^m_update$',          'ssd.main.views.events.m_update'),
+    url(r'^maintenance$',       'ssd.main.views.events.maintenance'),
+    url(r'^report$',            'ssd.main.views.events.report'),
 
 )

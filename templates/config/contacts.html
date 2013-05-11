@@ -1,0 +1,150 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2012 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<script type="text/javascript">
+
+   // Setup the default text for the detail field
+   $(function(){
+      default_text_input("name","{{instr_escalation_name}}");
+      default_text_textarea("contact_details","{{instr_escalation_details}}");
+    });
+
+</script>
+
+<br>
+<br>
+
+  <table class="standard">
+   <tr>
+    <th>Manage Existing Contacts</th>
+   </tr>
+   <tr>
+    <td>
+      
+      
+      {% if contacts %}
+       <table class="standard_no_border">
+        <tr>
+         <td><b>Order</b></td>
+         <td><b>Name</b></td>
+         <td><b>Modify</b></td>
+        </tr>
+        {% for row in contacts %}
+         <tr>
+          <td>{{row.order}}</td>
+          <td>{{row.name}}</td>
+          <td>
+           <table>
+            <tr>
+             
+             <td style="padding:0px 2px 0px 2px;">
+              <form method="POST" name="contacts_up" id="contacts_up" action="/contacts_modify">
+              {% csrf_token %}
+              <input type="submit" style="width: 45px;" value="up"/>
+              <input type="hidden" name="action" value="up">
+              <input type="hidden" name="id" value="{{row.id}}">
+              </form>
+             </td>
+             
+             <td style="padding:0px 2px 0px 2px;">
+              <form method="POST" name="contacts_down" id="contacts_down" action="/contacts_modify">
+              {% csrf_token %}
+              <input type="submit" style="width: 45px;" value="down"/>
+              <input type="hidden" name="action" value="down">
+              <input type="hidden" name="id" value="{{row.id}}">
+              </form>
+             </td>
+             
+             {% if row.hidden %}
+             <td style="padding:0px 2px 0px 2px;">
+              <form method="POST" name="contacts_hide" id="contacts_hide" action="/contacts_modify">
+              {% csrf_token %}
+              <input type="submit" style="width: 45px;" value="show"/>
+              <input type="hidden" name="action" value="show">
+              <input type="hidden" name="id" value="{{row.id}}">
+              </form>
+             </td>
+             {% else %}
+             <td style="padding:0px 2px 0px 2px;">
+              <form method="POST" name="contacts_hide" id="contacts_hide" action="/contacts_modify">
+              {% csrf_token %}
+              <input type="submit" style="width: 45px;" value="hide"/>
+              <input type="hidden" name="action" value="hide">
+              <input type="hidden" name="id" value="{{row.id}}">
+              </form>
+             </td>
+             {% endif %}
+             
+             <td style="padding:0px 2px 0px 2px;">
+              <form method="POST" name="contacts_delete" id="contacts_delete" action="/contacts_modify">
+              {% csrf_token %}
+              <input type="submit" style="width: 45px;" value="delete"/>
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="id" value="{{row.id}}">
+              </form>
+             </td>
+           
+           </tr>
+          </table>
+          </td>
+         </tr>
+        {% endfor %}
+       </table>
+      {% else %}
+      No contacts defined
+      <br>
+      {% endif %}
+    </td>
+   </tr>
+   <tr>
+    <td height="25" style="border-left:0; border-right:0;"></td>
+   </tr>
+   <tr>
+    <th>Add New Contacts</th>
+   </tr>
+   <tr>
+    <td>
+     <form method="POST" name="manage_contacts" id="manage_contacts" action="/contacts">
+    {% csrf_token %}
+
+     <input id="name" name="name" type="text" size="49" value="{% if form.name.data %}{{form.name.data}}{% endif %}">
+     {% if form.name.errors %}
+     <p class="error">{% for error in form.name.errors %}{{error}}{% endfor %}</p>
+     {% endif %} 
+
+     <br>
+
+     <textarea class="textarea_detail" id="contact_details" name="contact_details" rows="5" cols="50">{% if form.contact_details.data %}{{form.contact_details.data}}{% endif %}</textarea>
+     {% if form.contact_details.errors %}
+     <p class="error">{% for error in form.contact_details.errors %}{{error}}{% endfor %}</p>
+     {% endif %}
+
+     <br>
+
+     <input type="submit" value=" add "/>
+     </form> 
+    </td>
+   </tr> 
+  </table>
+
+
+{% endblock %}

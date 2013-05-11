@@ -20,138 +20,117 @@
 
 {% block content %}
 
-<script>
-   // Setup the default text for the input and textarea fields
-   $(function(){
-      default_text_input("name","Enter your full name.");
-      default_text_input("email","Enter your email address.");
-      default_text_textarea("description","Enter a description of the issue you are experiencing.  Input is limited to 160 characters.");
-      default_text_textarea("additional","Enter any additional information, beyond 160 characters, that you would like to report about this incident.");
-    });
-</script>
+<div id="help" class="reveal-modal">
+  <h2>Help</h2>
+  <p class="lead">{{alert}}</p>
+  <a class="close-reveal-modal">&#215;</a>
+</div>
 
- {% if instr %}
- <div class="help">
-  {{instr|safe}}
- </div>
- {% endif %}
- 
-<br>
 
 <form enctype="multipart/form-data" method="POST" name="report" id="report" action="/report">
-   {% csrf_token %}
+{% csrf_token %}
 
-<table class="container_top">
+<fieldset>
+  <legend>Report Incident</legend>
 
- <tr>
-  <td colspan="2" height="25"></td>
- </tr>
+  <div class="row">
+    <div class="large-12 columns">
+      <label>Contact Information</label>
+    </div>
+  </div>
 
- <tr>
-  <td valign="top">
-   <b>Your Name</b>*
-  </td>
-  <td>
-   <input type="text" class="input_contact" name="name" id="name" maxlength="50" value="{% if not form.name.data == None %}{{form.name.data}}{% endif %}"/>
-   {% if form.name.errors %}
-   <p class="error">
-   {% for error in form.name.errors %}{{error}}{% endfor %}
-   </p>
-   {% endif %}
-  </td>
- </tr>
+  <div class="row">
+    <div class="large-6 columns">
+      <input type="text" name="name" placeholder="{{instr_report_name}}" value="{% if not form.name.data == None %}{{form.name.data}}{% endif %}" />
+      {% if form.name.errors %}
+      <small class="error">
+        {% for error in form.name.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
 
- <tr>
-  <td colspan="2" height="15"></td>
- </tr>
+    <div class="large-6 columns">
+      <input type="text" name="email" placeholder="{{instr_report_email}}" maxlength="50" value="{% if not form.email.data == None %}{{form.email.data}}{% endif %}" />
+      {% if form.email.errors %}
+      <small class="error">
+        {% for error in form.email.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
+  </div>
 
- <tr>
-  <td valign="top">
-   <b>Your Email<br>Address</b>*
-  </td>
-  <td>
-   <input type="text" class="input_contact" name="email" id="email" maxlength="50" value="{% if not form.email.data == None %}{{form.email.data}}{% endif %}"/>
-   {% if form.email.errors %}
-   <p class="error">
-   {% for error in form.email.errors %}{{error}}{% endfor %}
-   </p>
-   {% endif %}
-  </td>
- </tr>
+  <div class="row">
+    <div class="large-12 columns">
+      <label>Incident Description</label>
+    </div>
+  </div>
 
- <tr>
-  <td colspan="2" height="15"></td>
- </tr>
+  <div class="row">
+    <div class="large-12 columns">
+      <textarea name="detail" placeholder="{{instr_report_detail}}" maxlength="160">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
+      {% if form.detail.errors %}
+      <small class="error">
+        {% for error in form.detail.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
+  </div>
 
- <tr>
-  <td valign="top">
-   <b>Brief<br>Incident<br>Description</b>*
-  </td>
-  <td>
-   <textarea class="textarea_detail_1" id="description" name="description" maxlength="160">{% if not form.description.data == None %}{{form.description.data}}{% endif %}</textarea>
-   {% if form.description.errors %}
-   <p class="error">
-   {% for error in form.description.errors %}{{error}}{% endfor %}
-   </p>
-   {% endif %}
-  </td>
- </tr>
+  <div class="row">
+    <div class="large-12 columns">
+      <textarea name="extra" placeholder="{{instr_report_extra}}" maxlength="1000">{% if not form.extra.data == None %}{{form.extra.data}}{% endif %}</textarea>
+      {% if form.extra.errors %}
+      <small class="error">
+        {% for error in form.extra.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
+  </div>
 
- <tr>
-  <td colspan="2" height="15"></td>
- </tr>
 
- <tr>
-  <td valign="top">
-   <b>Additional<br>Information</b>
-  </td>
-  <td>
-   <textarea class="textarea_detail_2" id="additional" name="additional" maxlength="1000">{% if not form.additional.data == None %}{{form.additional.data}}{% endif %}</textarea>
-   {% if form.additional.errors %}
-   <p class="error">
-   {% for error in form.additional.errors %}{{error}}{% endfor %}
-   </p>
-   {% endif %}
-  </td>
- </tr>
+  {# Only show the upload fields if this functionality is enabled #}
+  {% if enable_uploads %}
 
- {# Only show the upload fields if this functionality is enabled #}
- {% if enable_uploads %}
- <tr>
-  <td valign="top">
-   <b>Attach<br>Screenshots</b>
-  </td>
-  <td>
-   {{form.screenshot1}}
-   {% if form.screenshot1.errors %}
-   <p class="error">
-   {% for error in form.screenshot1.errors %}{{error}}{% endfor %}
-   </p>
-   {% endif %}
-  </td>
- </tr>
+  <div class="row">
+    <div class="large-12 columns">
+      <label>Screenshots</label>
+    </div>
+  </div>
 
- <tr>
-  <td></td>
-  <td>
-   {{form.screenshot2}}
-   {% if form.screenshot2.errors %}
-   <p class="error">
-   {% for error in form.screenshot2.errors %}{{error}}{% endfor %}
-   </p>
-   {% endif %}
-  </td>
- </tr>
- {% endif %}
+  <div class="row">
+    <div class="large-6 columns">
+      {{form.screenshot1}}
+      {% if form.screenshot1.errors %}
+      <small class="error">
+        {% for error in form.screenshot1.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
 
- <tr>
-  <td colspan="2" style="text-align: right;">
-   <input type="submit" value="submit"/>
-  </td>
- </tr>
+    <div class="large-6 columns">
+      {{form.screenshot2}}
+      {% if form.screenshot2.errors %}
+      <small class="error">
+        {% for error in form.screenshot2.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
+  </div>
 
-</table>
+  {% endif %}
+
+  <div class="row">
+    <div class="large-12 columns">
+      <input type="submit" value="submit"/>
+      {% if alert %}
+      &nbsp;&nbsp;<a style="color:black;" href="#" data-reveal-id="help"><u>Help</u></a>
+      {% endif %}
+    </div>
+  </div>
+
+</fieldset>
 </form>
+
 
 {% endblock %}
 

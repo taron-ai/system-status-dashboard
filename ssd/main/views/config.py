@@ -22,14 +22,19 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.db.models import F
 from ssd.main.models import Config
 from ssd.main.models import Recipient
 from ssd.main.forms import ConfigForm
 from ssd.main.models import Service
+from ssd.main.models import Escalation
 from ssd.main.forms import AddRecipientForm
 from ssd.main.forms import AddServiceForm
 from ssd.main.forms import RemoveServiceForm
 from ssd.main.forms import RemoveRecipientForm
+from ssd.main.forms import AddContactForm
+from ssd.main.forms import ModifyContactForm
+from ssd.main import config_value
 
 
 @login_required
@@ -64,15 +69,21 @@ def config(request):
             params['message_error'] = form.cleaned_data['message_error']
             params['notify'] = form.cleaned_data['notify']
             params['instr_incident_description'] = form.cleaned_data['instr_incident_description']
+            params['instr_incident_update'] = form.cleaned_data['instr_incident_update']
             params['instr_maintenance_impact'] = form.cleaned_data['instr_maintenance_impact']
             params['instr_maintenance_coordinator'] = form.cleaned_data['instr_maintenance_coordinator']
             params['instr_maintenance_update'] = form.cleaned_data['instr_maintenance_update']
             params['instr_maintenance_description'] = form.cleaned_data['instr_maintenance_description']            
-            params['instr_incident_update'] = form.cleaned_data['instr_incident_update']
+            params['instr_report_name'] = form.cleaned_data['instr_report_name']
+            params['instr_report_email'] = form.cleaned_data['instr_report_email']
+            params['instr_report_detail'] = form.cleaned_data['instr_report_detail']
+            params['instr_report_extra'] = form.cleaned_data['instr_report_extra']
+            params['instr_escalation_name'] = form.cleaned_data['instr_escalation_name']
+            params['instr_escalation_details'] = form.cleaned_data['instr_escalation_details']
             params['logo_display'] = form.cleaned_data['logo_display']
             params['logo_url'] = form.cleaned_data['logo_url']
             params['nav_display'] = form.cleaned_data['nav_display']
-            params['contacts_display'] = form.cleaned_data['contacts_display']
+            params['escalation_display'] = form.cleaned_data['escalation_display']
             params['report_incident_display'] = form.cleaned_data['report_incident_display']
             params['display_alert'] = form.cleaned_data['display_alert']
             params['alert'] = form.cleaned_data['alert']
@@ -82,6 +93,8 @@ def config(request):
             params['alert_report_incident'] = form.cleaned_data['alert_report_incident']
             params['display_create_incident_alert'] = form.cleaned_data['display_create_incident_alert']
             params['alert_create_incident'] = form.cleaned_data['alert_create_incident']
+            params['display_escalation_alert'] = form.cleaned_data['display_escalation_alert']
+            params['alert_escalation'] = form.cleaned_data['alert_escalation']
             params['enable_uploads'] = form.cleaned_data['enable_uploads']
             params['upload_path'] = form.cleaned_data['upload_path']
             params['file_upload_size'] = form.cleaned_data['file_upload_size']
@@ -106,7 +119,7 @@ def config(request):
                                     'config_value',
                                     'description',
                                     'category',
-                                    'display').order_by('category','config_name')
+                                    'display').order_by('category','friendly_name')
 
     # Print the page
     return render_to_response(
@@ -206,15 +219,13 @@ def services(request):
         form = AddServiceForm(request.POST)
 
         if form.is_valid():
-            
-            # Add the email addresses
-            # Form validation confirms there is at leaste one
-            for service in request.POST.getlist('service'):
-                # Don't allow duplicates
-                try:
-                    Service(service_name=service).save()
-                except IntegrityError:
-                    pass
+            service = form.cleaned_data['service']
+
+            # Don't allow duplicates
+            try:
+                Service(service_name=service).save()
+            except IntegrityError:
+                pass
 
             # Send them back so they can see the newly created email addresses
             # incident
@@ -268,3 +279,111 @@ def rm_services(request):
     # Not a POST or a failed POST
     # Send them back so they can see the newly updated services list
     return HttpResponseRedirect('/services')
+
+
+@login_required
+@staff_member_required
+def contacts(request):
+    """View and Add Contacts
+ 
+    """
+
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+
+    # If this is a POST, then validate the form and save the data
+    if request.method == 'POST':
+       
+        # Check the form elements
+        form = AddContactForm(request.POST)
+
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            contact_details = form.cleaned_data['contact_details']
+
+            # Don't allow duplicates
+            try:
+                Escalation(order=1,name=name,contact_details=contact_details,hidden=True).save()
+            except IntegrityError:
+                pass
+
+            # Send them back so they can see the newly created email addresses
+            # incident
+            return HttpResponseRedirect('/contacts')
+
+        # Invalid form
+        else:
+            print 'Invalid form: AddContactForm: %s' % form.errors
+
+    # Not a POST
+    else:
+        # Create a blank form
+        form = AddContactForm()
+    
+    # Obtain all current email addresses
+    contacts = Escalation.objects.values('id','order','name','hidden').order_by('order')
+   
+    # Obtain the default maintenance textfield text
+    instr_escalation_name = cv.value('instr_escalation_name')
+    instr_escalation_details = cv.value('instr_escalation_details') 
+
+    # Print the page
+    return render_to_response(
+       'config/contacts.html',
+       {
+          'title':'System Status Dashboard | Manage Contacts',
+          'form':form,
+          'contacts':contacts,
+          'instr_escalation_name':instr_escalation_name,
+          'instr_escalation_details':instr_escalation_details
+       },
+       context_instance=RequestContext(request)
+    )
+
+
+@login_required
+@staff_member_required
+def contacts_modify(request):
+    """Remove Contacts"""
+
+    # If this is a POST, then validate the form and save the data, otherise send them
+    # to the main services page
+    if request.method == 'POST':
+        
+        # Check the form elements
+        form = ModifyContactForm(request.POST)
+
+        if form.is_valid():
+            id = form.cleaned_data['id']
+            action = form.cleaned_data['action']    
+
+            # Perform the action
+            
+            # Delete
+            if action == 'delete':
+                Escalation.objects.filter(id=id).delete()
+            
+            # Move up
+            elif action == 'up':
+                Escalation.objects.filter(id=id).update(order=F('order')+1)
+            
+            # Move down (only if greater than 1)
+            elif action == 'down':
+                if Escalation.objects.filter(id=id).values('order')[0]['order'] > 1:
+                    Escalation.objects.filter(id=id).update(order=F('order')-1)
+
+            # Hide
+            elif action == 'hide':
+                Escalation.objects.filter(id=id).update(hidden=True)
+
+            # show
+            elif action == 'show':
+                Escalation.objects.filter(id=id).update(hidden=False)
+
+        # Invalid form
+        else:
+            print 'Invalid form: RemoveContactForm: %s' % form.errors
+
+    # Not a POST or a failed POST
+    # Send them back so they can see the newly updated services list
+    return HttpResponseRedirect('/contacts')

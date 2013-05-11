@@ -40,9 +40,9 @@
 
 </script>
 
-{% if instr %}
-<div class="help" id="help">
- {{instr|safe}}
+{% if alert %}
+<div class="alert">
+ {{alert|safe}}
 </div>
 {% endif %}
 
@@ -72,7 +72,7 @@
 {% endif %}
 
  <tr>
-  <td>
+  <td valign="top">
    <textarea class="textarea_detail" id="detail" name="detail" rows="25" cols="50">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
   </td>
   
@@ -102,7 +102,7 @@
    <table class="container_options">
     <tr>
      <td colspan="2">
-      <input type="checkbox" name="broadcast" checked/>
+      <input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked{% endif %}/>
       Broadcast Email
     </td>
     </tr>

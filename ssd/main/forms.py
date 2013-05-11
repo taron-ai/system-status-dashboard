@@ -32,10 +32,12 @@ from ssd.main.models import Config
 ### VALIDATORS ###
 
 def file_size(value):
-    """Ensure file size is below maximum allowed"""
+    """Ensure file size is below the maximum allowed"""
 
-    if value.size > settings.MAX_FILE_SIZE * 1024 * 1024:
-        raise forms.ValidationError('File too large - please reduce the size of the upload to below %s MB' % settings.MAX_FILE_SIZE)
+    # Obtain the max file size
+    file_upload_size = Config.objects.filter(config_name='file_size').values('config_value')[0]['config_value']
+    if value.size > file_upload_size:
+        raise forms.ValidationError('File too large - please reduce the size of the upload to below %s bytes.' % file_upload_size)
 
 
 ### FIELDS ###
@@ -51,67 +53,7 @@ class MultipleServiceField(forms.Field):
 
     def validate(self, value):
         if value is None or value == '':
-            raise forms.ValidationError('No service entered')
-
-
-class NameField(forms.Field):
-    """Generic textfield for a user's name
-
-       Requirements:
-          - Must not be empty
-          - Must contain only alpha-numeric
-
-    """
-
-    def validate(self, value):
-        if value is None or value == '':
-            raise forms.ValidationError('No data entered')
-        if not re.match(r'^[a-zA-Z\s]+$', value):
-            raise forms.ValidationError('Invalid characters entered')
-
-
-class DescriptionField(forms.Field):
-    """Generic textarea for the incident description
-
-       Requirements:
-          - Must not be empty
-          - Must not be greater than 160 characters
-
-    """
-
-    def validate(self, value):
-        if len(value) > 160:
-            raise forms.ValidationError('Data entered is greater than 160 characters')
-
-        if value is None or value == '':
-            raise forms.ValidationError('No data entered')
-
-
-class AdditionalDescriptionField(forms.Field):
-    """Generic textarea for additional information about the incident
-
-       Requirements:
-          - Must not be empty
-          - Must not be greater than 1000 characters
-
-    """
-
-    def validate(self, value):
-        if len(value) > 1000:
-            raise forms.ValidationError('Data entered is greater than 1000 characters')
-
-
-class SearchField(forms.Field):
-    """Generic textarea search text
-
-       Requirements:
-          - Must not be greater than 100 characters
-
-    """
-
-    def validate(self, value):
-        if len(value) > 100:
-            raise forms.ValidationError('Data entered is greater than 100 characters')
+            raise forms.ValidationError('Select at least one item')
 
 
 ### FORMS ###
@@ -138,15 +80,15 @@ class JumpToForm(forms.Form):
 class ReportIncidentForm(forms.Form):
     """Form for reporting an incident (by a user)"""
 
-    name = NameField()
-    email = forms.EmailField()
-    description = DescriptionField()
-    additional = AdditionalDescriptionField()
+    name = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
+    detail = forms.CharField(required=True)
+    extra = forms.CharField(required=False)
     screenshot1 = forms.ImageField(required=False,validators=[file_size])
     screenshot2 = forms.ImageField(required=False,validators=[file_size])
 
 
-class SearchForm(forms.Form):
+class ISearchForm(forms.Form):
     """Form for searching through incidents
        This form will be used by incident searches and report searches
        so only dates are mandatory
@@ -161,17 +103,68 @@ class SearchForm(forms.Form):
     text = forms.CharField(required=False)
 
 
+class MSearchForm(forms.Form):
+    """Form for searching through scheduled maintenance
+
+    """
+
+    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    text = forms.CharField(required=False)
+
+
 class AddRecipientForm(forms.Form):
     """Form for adding email addresses"""
 
     recipient = forms.EmailField(required=True)
 
 
+class AddContactForm(forms.Form):
+    """Form for adding escalation contacts"""
+
+    name = forms.CharField(required=True)
+    contact_details = forms.CharField(required=True)
+
+    # Override the form clean method so we can do some custom validation   
+
+    def clean(self):
+        cleaned_data = super(AddContactForm, self).clean()
+        name = cleaned_data.get('name')
+        contact_details = cleaned_data.get('contact_details')
+
+        # Is the name field the default text?
+        d_name = Config.objects.filter(config_name='instr_escalation_name').values('config_value')[0]['config_value']
+        if name == d_name:
+            self._errors["name"] = self.error_class(['Please provide a name.'])
+
+        # Is the contact_details field the default text?
+        d_contact_details = Config.objects.filter(config_name='instr_escalation_details').values('config_value')[0]['config_value']
+        if contact_details == d_contact_details:
+            self._errors["contact_details"] = self.error_class(['Please provide contact details.'])
+
+        # Return the full collection of cleaned data
+        return cleaned_data
+
+
 class AddServiceForm(forms.Form):
     """Form for adding services"""
 
-    service = MultipleServiceField()
+    service = forms.CharField(required=True)
 
+    # Override the form clean method so we can do some custom validation   
+
+    def clean(self):
+        cleaned_data = super(AddServiceForm, self).clean()
+        service = cleaned_data.get('service')
+
+        # Make sure the user is not submitting the default text
+        if service == 'Enter a service name':
+            self._errors['service'] = self.error_class(['Please enter a valid service name.'])
+
+        # Return the full collection of cleaned data
+        return cleaned_data
 
 class RemoveServiceForm(forms.Form):
     """Form for removing services"""
@@ -183,6 +176,13 @@ class RemoveRecipientForm(forms.Form):
     """Form for removing recipients"""
 
     id = MultipleServiceField()
+
+
+class ModifyContactForm(forms.Form):
+    """Form for removing contacts"""
+
+    id = forms.IntegerField(required=True)
+    action = forms.CharField(required=True)
 
 
 class ConfigAdminForm(forms.ModelForm):
@@ -200,60 +200,96 @@ class ConfigForm(forms.Form):
     """Form for updating configs"""
 
     recipient_name = forms.CharField(required=False)
-    
     greeting_incident_new = forms.CharField(required=False)
     greeting_incident_update = forms.CharField(required=False)
-    greeting_maintenance_new = forms.CharField(required=False)
-    greeting_maintenance_update = forms.CharField(required=False)
+    email_format_maintenance = forms.IntegerField(required=False)
+    email_format_incident = forms.IntegerField(required=False)
     email_from = forms.EmailField(required=False)
     email_subject_incident = forms.CharField(required=False)
     email_subject_maintenance = forms.CharField(required=False)
-    alert = forms.CharField(required=False)
-    display_alert = forms.CharField(required=False)
+    greeting_maintenance_new = forms.CharField(required=False)
+    greeting_maintenance_update = forms.CharField(required=False)
     recipient_pager = forms.EmailField(required=False)
     message_success = forms.CharField(required=False)
     message_error = forms.CharField(required=False)
-    escalation = forms.CharField(required=False)
-    logo_display = forms.IntegerField(required=False)
-    logo_url = forms.CharField(required=False)
-    ssd_url = forms.CharField(required=False)
-    nav_display = forms.IntegerField(required=False)
-    contacts_display = forms.IntegerField(required=False)
-    report_incident_display = forms.IntegerField(required=False)
-    instr_sched_maint = forms.CharField(required=False)
-    display_sched_maint_instr = forms.IntegerField(required=False)
-    instr_report_incident = forms.CharField(required=False)
-    display_report_incident_instr = forms.IntegerField(required=False)
-    instr_create_incident = forms.CharField(required=False)
-    display_create_incident_instr = forms.IntegerField(required=False)
-    enable_uploads = forms.IntegerField(required=False)
-    upload_path = forms.CharField(required=False)
-    file_upload_size = forms.IntegerField(required=False)
+    notify = forms.IntegerField(required=False)
     instr_incident_description = forms.CharField(required=False)
     instr_incident_update = forms.CharField(required=False)
-    instr_maintenance_description = forms.CharField(required=False)
     instr_maintenance_impact = forms.CharField(required=False)
     instr_maintenance_coordinator = forms.CharField(required=False)
     instr_maintenance_update = forms.CharField(required=False)
-    email_format_incident = forms.IntegerField(required=False)
-    email_format_maintenance = forms.IntegerField(required=False)
+    instr_maintenance_description = forms.CharField(required=False)    
+    instr_report_name = forms.CharField(required=False)
+    instr_report_email = forms.CharField(required=False)
+    instr_report_detail = forms.CharField(required=False)
+    instr_report_extra = forms.CharField(required=False)
+    instr_escalation_name = forms.CharField(required=False)
+    instr_escalation_details = forms.CharField(required=False)
+    logo_display = forms.IntegerField(required=False)
+    logo_url = forms.CharField(required=False)
+    nav_display = forms.IntegerField(required=False)
+    escalation_display = forms.IntegerField(required=False)
+    report_incident_display = forms.IntegerField(required=False)
+    display_alert = forms.CharField(required=False)
+    alert = forms.CharField(required=False)
+    display_sched_maint_alert = forms.IntegerField(required=False)
+    alert_sched_maint = forms.CharField(required=False)
+    display_report_incident_alert = forms.IntegerField(required=False)
+    alert_report_incident = forms.CharField(required=False)
+    display_create_incident_alert = forms.IntegerField(required=False)
+    alert_create_incident = forms.CharField(required=False)
+    display_escalation_alert = forms.IntegerField(required=False)
+    alert_escalation = forms.CharField(required=False)    
+    enable_uploads = forms.IntegerField(required=False)
+    upload_path = forms.CharField(required=False)
+    enable_uploads = forms.IntegerField(required=False)
+    upload_path = forms.CharField(required=False)
+    file_upload_size = forms.CharField(required=False)
+    ssd_url = forms.CharField(required=False)
+    escalation = forms.CharField(required=False)  
+
+    # We need access to some of the update_ values, but only some.
+    update_enable_uploads = forms.BooleanField(required=False)
+    update_file_upload_size = forms.BooleanField(required=False)
+    update_upload_path = forms.BooleanField(required=False)
 
     # Override the form clean method - there is some special logic to validate 
-    # scheduling a maintenance and we need access to multiple values    # Logic:
+    # scheduling a maintenance and we need access to multiple values    
+
     def clean(self):
         cleaned_data = super(ConfigForm, self).clean()
         enable_uploads = cleaned_data.get('enable_uploads')
+        update_enable_uploads = cleaned_data.get('update_enable_uploads')
         upload_path = cleaned_data.get('upload_path')
+        update_upload_path = cleaned_data.get('update_upload_path')
         file_upload_size = cleaned_data.get('file_upload_size')
+        update_file_upload_size = cleaned_data.get('update_file_upload_size')
 
-        # File uploads must be at least 100
-        if file_upload_size < 100:
-            self._errors["file_upload_size"] = self.error_class(['Size must be at least 100'])
+        # File uploads must be an integer, not be blank, and be at least 100
+        # This is only relevant when the value is being updated (its set at install time at 1024)
+        if update_file_upload_size:
+            # Make sure its an integer
+            if re.match(r'^\d+$', file_upload_size):
+                if int(file_upload_size) < 100:
+                    self._errors["file_upload_size"] = self.error_class(['File size must be at least 100.'])
+            else:
+                self._errors["file_upload_size"] = self.error_class(['Please enter a whole number.'])    
+     
+        # If we are enabling uploads (as in they are not enabled), then make sure the upload path is set
+        if update_enable_uploads and enable_uploads and not upload_path:
+            # A new upload path is not being set but maybe its already set in the DB
+            d_upload_path = Config.objects.filter(config_name='upload_path').values('config_value')[0]['config_value']
+            if not d_upload_path:
+                self._errors["upload_path"] = self.error_class(['You must set a file upload path if uploads are enabled.'])
 
-        # If uploads are enabled, so must be the upload_path and file_upload_size
-        if enable_uploads and not upload_path:
-            self._errors["upload_path"] = self.error_class(['You must set a file upload path'])
-            
+        # If we are removing the upload path, make sure file uploads are not enabled
+        if update_upload_path and not enable_uploads and not upload_path:
+            # We are not enabling uploads at the same time, maybe its already set in the DB
+            d_enable_uploads = int(Config.objects.filter(config_name='enable_uploads').values('config_value')[0]['config_value'])
+            if d_enable_uploads:
+                self._errors["upload_path"] = self.error_class(['You must set a file upload path if uploads are enabled.'])
+
+
         # Return the full collection of cleaned data
         return cleaned_data
 
@@ -280,12 +316,12 @@ class AddIncidentForm(forms.Form):
 
         # If an email broadcast is requested, an email address must accompany it
         if broadcast and not recipient_id:
-            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected'])
+            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
         # Is the detail field the default text?
         d_detail = Config.objects.filter(config_name='instr_incident_description').values('config_value')[0]['config_value']
         if detail == d_detail:
-            self._errors["detail"] = self.error_class(['Please provide a description'])
+            self._errors["detail"] = self.error_class(['Please provide a description.'])
 
         # Return the full collection of cleaned data
         return cleaned_data
@@ -309,18 +345,18 @@ class UpdateIncidentForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(UpdateIncidentForm, self).clean()
-        update = cleaned_data.update('update')
+        update = cleaned_data.get('update')
         broadcast = cleaned_data.get('broadcast')
         recipient_id = cleaned_data.get('recipient_id')
 
         # If an email broadcast is requested, an email address must accompany it
         if broadcast and not recipient_id:
-            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected'])
+            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
         # Is it the default text?
         d_update = Config.objects.filter(config_name='instr_incident_update').values('config_value')[0]['config_value']
         if update == d_update:
-            self._errors["update"] = self.error_class(['Please provide an update'])
+            self._errors["update"] = self.error_class(['Please provide an update.'])
 
         # Return the full collection of cleaned data
         return cleaned_data
@@ -354,22 +390,22 @@ class AddMaintenanceForm(forms.Form):
 
         # If email broadcast is selected, an email address also must be
         if broadcast and not recipient_id:
-            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected'])
+            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
         # Is the description field the default text?
         d_description = Config.objects.filter(config_name='instr_maintenance_description').values('config_value')[0]['config_value']
         if description == d_description:
-            self._errors["description"] = self.error_class(['Please provide a maintenance description'])
+            self._errors["description"] = self.error_class(['Please provide a maintenance description.'])
 
         # Is the impact field the default text?
         d_impact = Config.objects.filter(config_name='instr_maintenance_impact').values('config_value')[0]['config_value']
         if impact == d_impact:
-            self._errors["impact"] = self.error_class(['Please provide an impact analysis'])
+            self._errors["impact"] = self.error_class(['Please provide an impact analysis.'])
 
         # Is the coordinator field the default text?
         d_coordinator = Config.objects.filter(config_name='instr_maintenance_coordinator').values('config_value')[0]['config_value']
         if coordinator == d_coordinator:
-            self._errors["coordinator"] = self.error_class(['Please provide a maintenance coordinator'])
+            self._errors["coordinator"] = self.error_class(['Please provide a maintenance coordinator.'])
             
         # Return the full collection of cleaned data
         return cleaned_data
@@ -410,33 +446,33 @@ class UpdateMaintenanceForm(forms.Form):
         # If an email broadcast is requested but no email address is selected, error
         if broadcast and not recipient_id:
             # Set custom error messages
-            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected'])
+            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
         # If its completed, make sure its started
         if completed and not started:
             # Set custom error messages
-            self._errors['started'] = self.error_class(['Maintenance cannot be completed if not started'])
-            self._errors['completed'] = self.error_class(['Maintenance cannot be completed if not started'])
+            self._errors['started'] = self.error_class(['Maintenance cannot be completed if not started.'])
+            self._errors['completed'] = self.error_class(['Maintenance cannot be completed if not started.'])
 
         # Make sure the description field is not default text
         d_description = Config.objects.filter(config_name='instr_maintenance_description').values('config_value')[0]['config_value']
         if description == d_description:
-            self._errors['description'] = self.error_class(['You must enter a description (reset to previous value)'])
+            self._errors['description'] = self.error_class(['You must enter a description (form reset to previous value).'])
 
         # Make sure the impact field is not default text
         d_impact = Config.objects.filter(config_name='instr_maintenance_impact').values('config_value')[0]['config_value']
         if impact == d_impact:
-            self._errors['impact'] = self.error_class(['You must enter an impact analysis (reset to previous value)'])
+            self._errors['impact'] = self.error_class(['You must enter an impact analysis (form reset to previous value).'])
 
         # Make sure the coordinator field is not default text
         d_coordinator = Config.objects.filter(config_name='instr_maintenance_coordinator').values('config_value')[0]['config_value']
         if coordinator == d_coordinator:
-            self._errors['coordinator'] = self.error_class(['You must enter a maintenance coordinator (reset to previous value)'])
+            self._errors['coordinator'] = self.error_class(['You must enter a maintenance coordinator (form reset to previous value).'])
 
         # Make sure the update field is not default text
         d_update = Config.objects.filter(config_name='instr_maintenance_update').values('config_value')[0]['config_value']
         if update == d_update:
-            self._errors['update'] = self.error_class(['You must enter an update'])
+            self._errors['update'] = self.error_class(['You must enter an update.'])
             
         # Return the full collection of cleaned data
         return cleaned_data

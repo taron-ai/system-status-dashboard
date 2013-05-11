@@ -1,0 +1,65 @@
+
+/*
+
+https://groups.google.com/forum/?fromgroups=#!topic/foundation-framework-/OuFU-iTWh2g
+
+*/
+
+
+.top-bar .name h1 {
+	font-size: 0.8em;
+}
+
+.top-bar-section li a:not(.button) {
+	background: #616161;
+	color: #C8DAE4;
+}
+
+.top-bar {
+	background: #616161;
+}
+
+.top-bar-section .has-form {
+	background: #616161;
+}
+
+label {
+	font-weight: bold;
+}
+
+
+
+table {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+}
+table th {
+   border:1px solid #B0C5D0;
+   background-color:#C8DAE4;
+}
+table td {
+   border:1px solid #B0C5D0;
+}
+
+/*
+a:hover, a:focus {
+	background: #616161;
+	color: green;
+}
+*/
+
+/*
+Text formatting for input and textareas when placing and replacing
+the default text 
+*/
+
+/*
+input:focus { color:#ccc;transition:color .2s linear 0;
+              -webkit-transition:color .2s linear 0;
+              -moz-transition:color .2s linear 0 }
+input.typing { color:#333; }
+textarea:focus { color:#ccc;transition:color .2s linear 0;
+              -webkit-transition:color .2s linear 0;
+              -moz-transition:color .2s linear 0 }
+textarea.typing { color:#333; }
+
+*/

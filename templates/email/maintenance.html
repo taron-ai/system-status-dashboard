@@ -16,6 +16,14 @@
 
 {% endcomment %}
 
+<p style="font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:14px;">
+ Dear {{recipient_name}}, {{greeting}}
+</p>
+
+<table style="font-family: Tahoma, Arial, Helvetica, sans-serif;">
+<tr>
+<td>
+
   <table style="font-family: Tahoma, Arial, Helvetica, sans-serif; border-collapse:collapse;">
    <tr>
     <th colspan="2" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Maintenance Details</th>
@@ -70,25 +78,27 @@
     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.coordinator|linebreaksbr}}</td>
    </tr>
   </table>
- 
- </td>
-</tr>
+
+</td>
+</tr> 
 
  <tr>
-  <td height="15" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;"></td>
+  <td></td>
  </tr>
 
  {% if updates %}
  <tr>
-  <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">
-   <p><b>Maintenance Updates</b></p>
+  <td>
+   <p><b>MAINTENANCE UPDATES</b></p>
   </td>
+ </tr>
+ <tr>
   <td>
    <table style="font-family: Tahoma, Arial, Helvetica, sans-serif; border-collapse:collapse;">
     <tr>
      <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Time</th>
-     <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Created By</th>
-     <th width="400" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Description</th>
+     <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Logged By</th>
+     <th width="400" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Detail</th>
     </tr>
 
     {% for row in updates %}
@@ -105,7 +115,9 @@
  {% endif %}
  
  <tr>
-  <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">*All times are in {{timezone}}</td>
+  <td style="font-size:12px; color:black;">*All times are in {{timezone}}</td>
  </tr>
 
 </table>
+
+

@@ -20,6 +20,15 @@
 
 {% block content %}
 
+<script type="text/javascript">
+
+   // Setup the default text for the detail field
+   $(function(){
+      default_text_input("service","Enter a service name");
+    });
+
+</script>
+
 <br>
 <br>
 
@@ -29,7 +38,7 @@
    </tr>
    <tr>
     <td>
-      <form method="POST" name="remove_services" id="remove_services" action="/rm_services">
+      <form method="POST" name="rm_services" id="rm_services" action="/rm_services">
       {% csrf_token %}
       {% if services %}
        <table class="standard_no_border">
@@ -60,19 +69,10 @@
    </tr>
    <tr>
     <td>
-      <a href="javascript:changeElement('add','services','service','65');">Insert</a>
-      |
-      <a href="javascript:changeElement('remove','services','service');">Remove</a>
-    </td>
-   </tr>
-   <tr>
-    <td>
-     <form method="POST" name="manage_services" id="manage_services" action="/services">
+     <form method="POST" name="services" id="services" action="/services">
      {% csrf_token %}
-      <div id="services">
-       <input id="service_1" name="service" type="text" size="65" value="">
-       <br id="service_br_1" name="service_br">
-      </div>
+      <input id="service" name="service" type="text" size="65" value="">
+      <br>
       <input type="submit" value=" add "/>
      {% if form.service.errors %}
       <p class="error">{% for error in form.service.errors %}{{error}}{% endfor %}</p>

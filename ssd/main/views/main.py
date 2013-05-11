@@ -36,8 +36,10 @@ from ssd.main.models import Service_Issue
 from ssd.main.models import Maintenance
 from ssd.main.models import Maintenance_Update
 from ssd.main.models import Service_Maintenance
+from ssd.main.models import Escalation
 from ssd.main import notify
 from ssd.main import config_value
+
 
 def return_error(request,error):
     """Error Page
@@ -53,7 +55,7 @@ def return_error(request,error):
     response = render_to_response(
      'error/error.html',
       {
-        'title':'SSD Error',
+        'title':'System Status Dashboard | Error',
         'error':error
       },
       context_instance=RequestContext(request)
@@ -318,7 +320,7 @@ def i_detail(request):
     return render_to_response(
        'main/i_detail.html',
        {
-          'title':'SSD Incident',
+          'title':'System Status Dashboard | Incident Detail',
           'services':services,
           'id':id,
           'detail':detail,
@@ -397,18 +399,25 @@ def escalation(request):
     cv = config_value.config_value()
 
     # If this functionality is disabled in the admin, let the user know
-    if int(cv.value('contacts_display')) == 0:
+    if int(cv.value('escalation_display')) == 0:
         return return_error(request,'Your system administrator has disabled this functionality')
 
-    # Obtain the escalation message
-    escalation = cv.value('escalation')
-    
+    # Obtain the escalation contacts
+    contacts = Escalation.objects.filter(hidden=False).values('id','name','contact_details').order_by('order')
+
+    # Determine if we are showing the create maintenance alert message
+    if int(cv.value('display_escalation_alert')):
+        alert = cv.value('alert_escalation')
+    else:
+        alert = None
+
     # Print the page
     return render_to_response(
        'main/escalation.html',
        {
-          'title':'SSD Escalation Path',
-          'escalation':escalation
+          'title':'System Status Dashboard | Escalation Path',
+          'contacts':contacts,
+          'alert':alert
        },
        context_instance=RequestContext(request)
     )

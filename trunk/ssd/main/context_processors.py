@@ -61,11 +61,11 @@ def prefs(request):
     else:
         values['nav'] = False
 
-    # Display the contacts?
-    if int(cv.value('contacts_display')) == 1:
-        values['contacts'] = True
+    # Display the escalation?
+    if int(cv.value('escalation_display')) == 1:
+        values['escalation'] = True
     else:
-        values['contacts'] = False
+        values['escalation'] = False
 
     # Display the report incident?
     if int(cv.value('report_incident_display')) == 1:
@@ -78,7 +78,7 @@ def prefs(request):
             'app_version':values['app_version'],
             'logo':values['logo'],
             'nav':values['nav'],
-            'contacts':values['contacts'],
+            'escalation':values['escalation'],
             'report_incident':values['report_incident'],
            }
 

@@ -99,14 +99,14 @@
     
     <tr>
      <td colspan="2">
-      <input type="checkbox" name="closed" {% if not details.0.closed == None %}checked="on"{% endif %}/>
+      <input type="checkbox" name="closed" {% if form.closed.data %}checked="on"{% else %}{% if details.0.closed %}checked="on"{% endif %}{% endif %}/>
       Incident Closed
      </td>
     </tr>
 
     <tr>
      <td colspan="2">
-      <input type="checkbox" name="broadcast" checked/>
+      <input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked{% endif %}/>
       Broadcast Email
      </td>
     </tr>

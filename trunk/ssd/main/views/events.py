@@ -97,8 +97,8 @@ def report(request):
             # Obtain the cleaned data
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
-            description = form.cleaned_data['description']
-            additional = form.cleaned_data['additional']
+            detail = form.cleaned_data['detail']
+            extra = form.cleaned_data['extra']
 
             # Create a datetime object for right now
             report_time = datetime.datetime.now()
@@ -124,13 +124,17 @@ def report(request):
                 screenshot1 = ''
                 screenshot2 = ''
             
+            # If extra is the default text, set to None
+            if extra == cv.value('instr_report_extra'):
+                extra = None
+
             # Save the data (if the admin has not setup the upload directory, it'll fail)
             try:
                 Report(date=report_time,
                        name=name,
                        email=email,
-                       description=description,
-                       additional=additional,
+                       detail=detail,
+                       extra=extra,
                        screenshot1=screenshot1,
                        screenshot2=screenshot2,
                       ).save()
@@ -141,9 +145,9 @@ def report(request):
             # and save the return value for the confirmation page
             # If notifications are turned off, give the user a positive confirmation
             
-            if int(cv.value('logo_display')) == 1:
+            if int(cv.value('notify')) == 1:
                 pager = notify.email()
-                pager_status = pager.page(description)
+                pager_status = pager.page(detail)
             else:
                 pager_status = 'success'
 
@@ -155,7 +159,7 @@ def report(request):
             return render_to_response(
                 'events/confirmation.html',
                 {
-                   'title':'SSD Report Confirmation ',
+                   'title':'System Status Dashboard | Report Confirmation',
                    'pager_status':pager_status,
                    'message_success':message_success,
                    'message_error':message_error
@@ -170,18 +174,28 @@ def report(request):
     # Print the page
     # On a POST, the form will give back error values for printing in the template
 
-    # Determine if we are showing the create maintenance help message
-    if int(cv.value('display_report_incident_instr')):
-        instr = cv.value('instr_report_incident')
+    # Determine if we are showing the create maintenance alert message
+    if int(cv.value('display_report_incident_alert')):
+        alert = cv.value('alert_report_incident')
     else:
-        instr = None
+        alert = None
+
+    # Obtain the default maintenance textfield text
+    instr_report_name = cv.value('instr_report_name')
+    instr_report_email = cv.value('instr_report_email')
+    instr_report_detail= cv.value('instr_report_detail')
+    instr_report_extra= cv.value('instr_report_extra')
     
     return render_to_response(
        'events/report.html',
        {
-          'title':'SSD Report Incident',
+          'title':'System Status Dashboard | Report Incident',
           'form':form,
-          'instr':instr,
+          'alert':alert,
+          'instr_report_name':instr_report_name,
+          'instr_report_email':instr_report_email,
+          'instr_report_detail':instr_report_detail,
+          'instr_report_extra':instr_report_extra,
           'enable_uploads':int(cv.value('enable_uploads'))
        },
        context_instance=RequestContext(request)
@@ -301,11 +315,11 @@ def incident(request):
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
-    # Determine if we are showing the create incident help message
-    if int(cv.value('display_create_incident_instr')):
-        instr = cv.value('instr_create_incident')
+    # Determine if we are showing the create incident alert message
+    if int(cv.value('display_create_incident_alert')):
+        alert = cv.value('alert_create_incident')
     else:
-        instr = None
+        alert = None
 
     # Obtain the incident description text
     instr_incident_description = cv.value('instr_incident_description')
@@ -320,7 +334,7 @@ def incident(request):
           'affected_svcs':tuple(affected_svcs),
           'form':form,
           'time_now':time_now,
-          'instr':instr,
+          'alert':alert,
           'instr_incident_description':instr_incident_description
 
        },
@@ -422,7 +436,7 @@ def i_update(request):
                 Incident.objects.filter(id=id).update(email_address=recipient_id)
 
                 email = notify.email()
-                email.incident(id,recipient_id,set_timezone,True)
+                email.incident(id,recipient_id,set_timezone,False)
 
             # All done so redirect to the incident detail page so
             # the new data can be seen.
@@ -667,10 +681,10 @@ def maintenance(request):
     services = Service.objects.values('id','service_name').order_by('service_name')
     
     # Determine if we are showing the create maintenance help message
-    if int(cv.value('display_sched_maint_instr')):
-        instr = cv.value('instr_sched_maint')
+    if int(cv.value('display_sched_maint_alert')):
+        alert = cv.value('alert_sched_maint')
     else:
-        instr = None
+        alert = None
 
     # Obtain the default maintenance textfield text
     instr_maintenance_description = cv.value('instr_maintenance_description')
@@ -683,7 +697,7 @@ def maintenance(request):
        {
           'title':'System Status Dashboard | Scheduled Maintenance',
           'form':form,
-          'instr':instr,
+          'alert':alert,
           'services':services,
           'affected_svcs':tuple(affected_svcs),
           'recipients':recipients,
@@ -795,10 +809,17 @@ def m_update(request):
                                                      completed=completed
                                                     )
 
-            # If an email update is being requested, send it
-            if 'email' in request.POST:
+            # Send an email notification to the appropriate list
+            # about this issue if requested.  Broadcast won't be
+            # allowed to be true if an email address is not defined.
+            if broadcast:
+
+                # Update the email address
+                recipient = Recipient.objects.filter(id=recipient_id).values('email_address')
+                Maintenance.objects.filter(id=id).update(email_address=recipient_id)
+
                 email = notify.email()
-                email.maintenance(request.POST['id'],set_timezone,False)
+                email.maintenance(id,recipient_id,set_timezone,False)
 
             # All done so redirect to the maintenance detail page so
             # the new data can be seen.

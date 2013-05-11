@@ -22,7 +22,7 @@
 
 <script type="text/javascript">
 
-   // Dates / Times
+   // Dates
    $(function() {
 
       //Start Date
@@ -44,14 +44,14 @@
 <br>
 <br>
 
-<form method="POST" name="rsearch" id="rsearch" action="/rsearch">
+<form method="POST" name="msearch" id="msearch" action="/msearch">
    {% csrf_token %}
 
 <table class="container_top">
 
  <tr>
-  <td colspan="2" align="left">
-
+  <td colspan="2">
+   
    <table class="container">
 
     <tr>
@@ -108,7 +108,8 @@
     </tr>
 
     <tr>
-     <td colspan="2" height="15"></td>
+     <td colspan="2" height="15">
+     </td>
     </tr>
 
     <tr>
@@ -116,7 +117,7 @@
       <b>Search Text</b>
      </td>
      <td>
-      <input type="text" class="input_search" name="text" id="text" value="{% if form.text.data %}{{form.text.data}}{% endif %}"/>
+      <input type="text" class="input_search" name="text" id="text" value=""/>
      </td>
     </tr>
 
@@ -128,7 +129,6 @@
     </tr>
 
    </table>
-
   </td>
  </tr>
 </table>

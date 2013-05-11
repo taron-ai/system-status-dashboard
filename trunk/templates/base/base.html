@@ -24,93 +24,156 @@
   
   <link type="text/css" href="/html/css/ssd-theme/jquery-ui-1.9.1.custom.css" rel="stylesheet" />
   <link type="text/css" href="/html/css/jquery.ui.timepicker.css" rel="stylesheet" />
-
   <script type="text/javascript" src="/html/js/jquery-1.8.2.js"></script>
   <script type="text/javascript" src="/html/js/jquery-ui-1.9.1.custom.min.js"></script>
+ 
   <script type="text/javascript" src="/html/js/jquery.ui.timepicker.js"></script>
   <script type="text/javascript" src="/html/js/ssd.js"></script>
   
   <link rel="StyleSheet" href="/html/css/ssd.css" type="text/css">
+ 
+  <link rel="stylesheet" href="/html/css/normalize.css" />
+  <link rel="stylesheet" href="/html/css/foundation.min.css" />
+  <link rel="StyleSheet" href="/html/css/app.css" type="text/css">
+  <script src="/html/js/vendor/custom.modernizr.js"></script>
 
   <!-- IE6-8 support of HTML5 elements --> <!--[if lt IE 9]>
   <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
+
+  <link rel="StyleSheet" href="/html/css/responsive-tables.css" media="screen" type="text/css">
+  <script type="text/javascript" src="/html/js/responsive-tables.js"></script>
+
  </head>
  <body>
+
+
+{% if nav %}
+<nav class="top-bar">
+  <ul class="title-area">
+    <li class="name"></li>
+    <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+    <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+  </ul>
+
+  <section class="top-bar-section">
+    <!-- Left Nav Section -->
+    <ul class="left">
+      <li class="divider"></li>
+      <li ><a href="/">Dashboard</a></li>
+      <li class="divider"></li>
+
+      {% if report_incident %}
+      <li><a href="/report">Report Incident</a></li>
+      <li class="divider"></li>
+      {% endif %}
+
+      {% if escalation %}
+      <li><a href="/escalation">Escalation</a></li>
+      <li class="divider"></li>
+      {% endif %}
+
+      <li class="has-dropdown"><a href="#">Search</a>
+        <ul class="dropdown">
+          <li><a href="/isearch">Incidents</a></li>
+          <li><a href="/rsearch">Incident Reports</a></li>
+          <li><a href="/rsearch_recent">Recent Incident Reports</a></li>
+          <li><a href="/msearch">Scheduled Maintenance</a></li>
+        </ul>
+      </li>
+      <li class="divider"></li>      
+
+      {% if user.is_authenticated %}
+      <li class="has-dropdown"><a href="#">Admin</a>
+        <ul class="dropdown">
+          <li class="has-dropdown"><a href="#">Create</a>
+            <ul class="dropdown">
+              <li><a href="/incident">Incident</a></li>
+              <li><a href="/maintenance">Scheduled Maintenance</a></li>
+            </ul>
+          </li>
+          <li class="has-dropdown"><a href="#">Manage</a>
+            <ul class="dropdown">
+              <li><a href="/contacts">Escalation Contacts</a></li>
+              <li><a href="/recipients">Email Recipients</a></li>
+              <li><a href="/services">Services</a></li>
+            </ul>
+          </li>
+          <li class="has-dropdown"><a href="#">Expert</a>
+            <ul class="dropdown">
+              <li><a href="/config">Configuration Manager</a></li>
+              <li><a href="/admin">DJango Administration</a></li>
+            </ul>
+          </li>
+          <li><a href="/accounts/logout">Logout ({{user.username}})</a></li>
+        </ul>
+      </li>
+      <li class="divider hide-for-small"></li>
+      {% endif %}
+    </ul>
+    
+
+    <ul>
+    <!-- Title Area -->
+     <li class="name hide-for-small">
+      <h1><a href="#">{{title}}</a></h1>
+    </li>
+    </ul>
+
+    <!-- Right Nav Section -->
+    <ul class="right">
+      <li class="divider show-for-small"></li>
+      <li class="has-form">
+        <a href="http://www.system-status-dashboard.com" title="version: {{app_version}}"><img width="55" height="35" src="/html/images/SSDsmall.png"></a>
+        <!-- <a class="button" href="#">Button!</a> -->
+      </li>
+    </ul>
+  </section>
+</nav>
+{% endif %}
+
 
 {% if logo %}
 <img src="{{logo}}">
 {% endif %}
 
-{% if nav %}
-<div id="nav-wrapper">
- <nav id="nav">
-  <ul id="navigation">
-   <li><a href="/" class="first">DASHBOARD</a></li>
-   {% if report_incident %}
-   <li><a href="/report">REPORT INCIDENT</a></li>
-   {% endif %}
-   {% if contacts %}
-   <li><a href="#">CONTACTS &raquo;</a>
-    <ul>
-     <li><a class="sub" href="/escalation">Escalation</a></li>
-    </ul>
-   </li>
-   {% endif %}
-   <li><a href="#">SEARCH &raquo;</a>
-    <ul>
-     <li><a class="sub" href="/search" title="Search incidents by date and/or text">Incidents</a></li>
-     {% if report_incident %}
-     <li><a class="sub" href="/rsearch" title="Search incident reports by date and/or text">Incident Reports</a></li>
-     <li><a class="sub" href="/rsearch_recent" title="Display the most recent 5 incident reports">Recent Incident Reports</a></li>
-     {% endif %}
-    </ul>
-   </li>
-   <li><a href="#">ADMIN &raquo;</a>
-    <ul>
-     {% if user.is_authenticated %}
-     <li><a class="sub" href="#">Create &raquo;</a>
-      <ul>
-        <li><a class="sub" href="/incident">Incident</a></li>
-        <li><a class="sub" href="/maintenance">Scheduled Maintenance</a></li>
-      </ul>
-     </li>
-     <li><a class="sub" href="#">Manage &raquo;</a>
-      <ul>
-        <li><a class="sub" href="/services">Services</a></li>
-        <li><a class="sub" href="/recipients">Email Recipients</a></li>
-      </ul>
-     </li>
-     <li><a class="sub" href="#">Expert &raquo;</a>
-      <ul>
-        <li><a class="sub" href="/config">Configuration Manager</a></li>
-        <li><a class="sub" href="/admin">DJango Administration</a></li>
-      </ul>
-     </li>
-     <li><a class="sub" href="/accounts/logout">Logout ({{user.username}})</a></li>
-     {% else %}
-     <li><a class="sub" href="/accounts/login">Login</a></li>
-     {% endif %}
-    </ul>
-   </li>
-  </ul>
- </nav>
- <p style="text-align:left; color:#616161;">&nbsp;&nbsp;&nbsp;&nbsp;<b>{{title}}</b></p>
+
+
+<div class="row">
+{% block content %}
+
+{% endblock %}
 </div>
-{% endif %}
 
-<center>
-<br>
 
-<table>
- <tr>
-  <td align="center">
-   {% block content %}
-   {% endblock %}
-  </td>
- </tr>
-</table>
 
-</center>
+
+
+
+<script>
+  document.write('<script src=' +
+  ('__proto__' in {} ? '/html/js/vendor/zepto' : '/html/js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  <script src="/html/js/foundation/foundation.js"></script>
+  <script src="/html/js/foundation/foundation.alerts.js"></script>
+  <script src="/html/js/foundation/foundation.clearing.js"></script>
+  <script src="/html/js/foundation/foundation.cookie.js"></script>
+  <script src="/html/js/foundation/foundation.dropdown.js"></script>
+  <script src="/html/js/foundation/foundation.forms.js"></script>
+  <script src="/html/js/foundation/foundation.joyride.js"></script>
+  <script src="/html/js/foundation/foundation.magellan.js"></script>
+  <script src="/html/js/foundation/foundation.orbit.js"></script>
+  <script src="/html/js/foundation/foundation.placeholder.js"></script>
+  <script src="/html/js/foundation/foundation.reveal.js"></script>
+  <script src="/html/js/foundation/foundation.section.js"></script>
+  <script src="/html/js/foundation/foundation.tooltips.js"></script>
+  <script src="/html/js/foundation/foundation.topbar.js"></script>
+  <script>
+  $(document).foundation();
+  </script>
+
+
+
 </body>
 </html>

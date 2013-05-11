@@ -20,7 +20,48 @@
 
 {% block content %}
 
-{{escalation|safe}}
+{% if alert %}
+<div class="alert">
+ {{alert|safe}}
+</div>
+{% endif %}
+
+<br>
+<br>
+
+{% if contacts %}
+ <table class="standard_no_border">
+  {% for contact in contacts %}
+   
+   <tr>
+   	<td style="border:1px solid #b0c5d0;">
+   	 <b>{{contact.name}}</b>
+   	 <br>
+   	 {{contact.contact_details|linebreaksbr}}
+   	</td>
+   </tr>
+  
+   {# Don't add the arrow on the last one #}
+   {% if not forloop.last %} 
+   <tr>
+   	<td height="5"</td>
+   </tr>
+   
+   <tr>
+   	<td style="text-align: center;"><img src="/html/images/arrow_down.png"></td>
+   </tr>
+   
+   <tr>
+   	<td height="5"</td>
+   </tr>
+   {% endif %}
+  
+  {% endfor %}
+ </table>
+
+{% else %}
+THERE ARE CURRENTLY NO ESCALATION CONTACTS DEFINED.
+{% endif %}
 
 {% endblock %}
 

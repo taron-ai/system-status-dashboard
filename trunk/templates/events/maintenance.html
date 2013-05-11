@@ -47,9 +47,9 @@
 
 </script>
 
- {% if instr %}
- <div class="help" id="help">
-  {{instr|safe}}
+ {% if alert %}
+ <div class="alert">
+  {{alert|safe}}
  </div>
  {% endif %}
  
@@ -71,7 +71,7 @@
  </tr>
 
  <tr>
-  <td>
+  <td valign="top">
    <table class="container">
     <tr>
      <td><b>Start</b></td>
@@ -202,7 +202,7 @@
   
    <table class="container_options">
     <tr>
-     <td align="right"><input type="checkbox" name="broadcast" checked/></td>
+     <td align="right"><input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked{% endif %}/></td>
      <td>Broadcast Email</td>
     </tr>
   
@@ -231,7 +231,7 @@
     </tr>
 
     <tr>
-     <td colspan="2"><input type="submit" value="save"/></td>
+     <td colspan="2"><input type="submit" value="submit"/></td>
     </tr>
    </table>  
   

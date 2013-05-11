@@ -228,7 +228,7 @@
     
     <tr>
      <td>
-     <input type="checkbox" name="started" {% if status.0.started %}checked="on"{% endif %}/>
+     <input type="checkbox" name="started" {% if form.started.data %}checked="on"{% else %}{% if status.0.started %}checked="on"{% endif %}{% endif %}/>
      Started
      </td>
     </tr>
@@ -244,7 +244,7 @@
     
     <tr>
      <td>
-      <input type="checkbox" name="completed" {% if status.0.completed %}checked="on"{% endif %}/>
+      <input type="checkbox" name="completed" {% if form.completed.data %}checked="on"{% else %}{% if status.0.completed %}checked="on"{% endif %}{% endif %}/>
       Completed
      </td>
     </tr>
@@ -260,7 +260,7 @@
     
     <tr>
      <td>
-      <input type="checkbox" name="broadcast"/>
+      <input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked="on"{% endif %}/>
       Broadcast Email
      </td>
     </tr>

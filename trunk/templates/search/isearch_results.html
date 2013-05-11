@@ -1,0 +1,66 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2012 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<table class="top">
+
+ <tr>
+  <td height="25">
+  </td>
+ </tr>
+
+ {% if results %}
+
+ <tr>
+  <td>
+   <table class="standard">
+    <tr>
+     <th>ID</th>
+     <th>Time Opened</th>
+     <th>Time Closed</th>
+     <th>Initial Detail</th>
+    </tr>
+
+    {% for row in results %}
+    <tr>
+     <td><a href="/i_detail?id={{row.incident_id}}">{{row.incident_id}}</a></td>
+     <td>{{row.incident__date|date:"Y-m-d H:i:s"}}</td>
+     <td>{{row.incident__closed|date:"Y-m-d H:i:s"}}</td>
+     <td style="width:400;">{{row.incident__detail|linebreaksbr}}</td>
+    </tr>
+    {% endfor %}
+   </table>
+  </td>
+ </tr>
+
+ <tr>
+  <td>* All times are in {{TIME_ZONE}}</td>
+ </tr>
+
+ {% else %}
+ <tr>
+  <td>No search results were returned</td>
+ </tr>
+ {% endif %}
+
+</table>
+
+{% endblock %}

@@ -20,25 +20,10 @@
 
 {% block content %}
 
-<table class="top">
+{% if results %}
 
- <tr>
-  <td style="text-align: left;">
-   <p class="title">Search Results</p>
-  </td>
- </tr>
-
- <tr>
-  <td height="25">
-   <hr>
-  </td>
- </tr>
-
- {% if results %}
-
- <tr>
-  <td>
-   <table class="standard">
+<table class="responsive">
+  <thead>
     <tr>
      <th>ID</th>
      <th>Date Submitted</th>
@@ -48,35 +33,30 @@
      <th>Additional Information</th>
      <th>Screenshots</th>
     </tr>
-
-    {% for row in results %}
+  </thead>
+  
+  <tbody>
+  {% for row in results %}
     <tr>
      <td>{{row.id}}</a></td>
      <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
      <td>{{row.name}}</td>
      <td>{{row.email}}</td>
-     <td style="width:250;">{{row.description}}</td>
-     <td style="width:250;">{{row.additional}}</td>
+     <td>{{row.detail|linebreaksbr}}</td>
+     <td>{{row.extra|linebreaksbr}}</td>
      <td>
       {% if row.screenshot1 %}<a href="/uploads/{{row.screenshot1}}">view</a>{% endif %}
       {% if row.screenshot2 %}<a href="/uploads/{{row.screenshot2}}">view</a>{% endif %}
      </td>
     </tr>
     {% endfor %}
-   </table>
-  </td>
- </tr>
-
- <tr>
-  <td>* All times are in {{TIME_ZONE}}</td>
- </tr>
-
- {% else %}
- <tr>
-  <td>No search results were returned</td>
- </tr>
- {% endif %}
-
+  </tbody>
 </table>
+
+* All times are in {{TIME_ZONE}}
+
+
+{% else %}No search results were returned{% endif %}
+
 
 {% endblock %}

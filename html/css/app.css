@@ -27,8 +27,6 @@ label {
 	font-weight: bold;
 }
 
-
-
 table {
    font-family: Tahoma, Arial, Helvetica, sans-serif;
 }
@@ -39,6 +37,20 @@ table th {
 table td {
    border:1px solid #B0C5D0;
 }
+
+table.border_top {
+	border: 0;
+}
+
+td.td_border_top {
+	border-left: 0;
+	border-right: 0;
+	border-bottom: 0;
+	background-color: white;
+	height: 40px;
+	vertical-align: bottom;
+}
+
 
 /*
 a:hover, a:focus {
@@ -63,3 +75,7 @@ textarea:focus { color:#ccc;transition:color .2s linear 0;
 textarea.typing { color:#333; }
 
 */
+
+input, select {
+	font-size: 0.875em;
+}

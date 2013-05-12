@@ -31,31 +31,8 @@
 
 </script>
 
-<div class="wrapper">
-<table class="top">
 
- <tr>
-  <td colspan="2" height="15">
- </tr>
-
- {% if alert %}
- <tr>
-  <td colspan="2" style="text-align:center;">
-   <center>
-    <div class="alert">
-     {{alert|safe}}
-    </center>
-   </div> 
-  </td>
- </tr>
- <tr>
-  <td colspan="2" height="25"></td> 
- </tr>
- {% endif %}
-
- <tr>
-  <td colspan="2">
-   <table class="standard">
+   <table class="responsive border_top">
    {% for row in data %}
      {% if forloop.first %}
        <tr>
@@ -111,48 +88,38 @@
       </tr>
      {% endif %}
    {% endfor %}
-   </table>
-  </td>
- </tr>
- 
- <tr>
-  <td colspan="2" height="5"></td>
- </tr>
 
- <tr>
-  <td style="text-align:left;">
-   <table>
-    <tr>
-     <td><img src="/html/images/incident_green.png"></td>
-     <td>Service Normal</td>
-     <td><img src="/html/images/incident_red.png"></td>
-     <td>Service Disruption</td>
-     <td><img src="/html/images/incident_orange.png"></td>
-     <td>Service Disruption (resolved)</td>
-     <td><img src="/html/images/incident_blue.png"></td>
-     <td>Planned Maintenance</td>
-    </tr>
-   </table>
-  </td>
-  <td style="text-align:right;">
-   {% if backward_link %}
-   <a href="{{backward_link}}"><<< older</a>
-   {% endif %}
-   {% if forward_link %}
-   <a href="{{forward_link}}">newer >>></a>
-   {% endif %}
-  </td>
- </tr>
+   <tr>
+    <td class="td_border_top">
+      {% if backward_link %}
+      <a href="{{backward_link}}"><<< older</a>
+      {% endif %}
 
- <tr>
-  <td style="text-align:left;">
-   <table>
-    <tr>
-     <td>Timezone:</td>
-     <td>
-      <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post" style="margin: 0px; padding: 0px;">
+      {% if forward_link %}
+      <a href="{{forward_link}}">newer >>></a>
+      {% endif %}
+    </td>
+    <td class="td_border_top" style="text-align: right;"><b>Key:</b></td>
+    <td class="td_border_top" colspan="6">
+      <img src="/html/images/incident_green.png">&nbsp;Service Normal
+      &nbsp;&nbsp;
+      <img src="/html/images/incident_red.png">&nbsp;Service Disruption
+      &nbsp;&nbsp;
+      <img src="/html/images/incident_orange.png">&nbsp;Service Disruption (resolved)
+      &nbsp;&nbsp;
+      <img src="/html/images/incident_blue.png">&nbsp;Planned Maintenance
+    </td>
+
+  </tr>
+</table>
+
+
+  <div class="row">
+    <div class="large-1 columns">Timezone:</div>
+    <div class="large-3 columns">
+       <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post" style="margin: 0px; padding: 0px;">
        {% csrf_token %}
-       <select class="timezone" name="timezone" id="timezone" onchange='this.form.submit()'>
+       <select name="timezone" onchange='this.form.submit()'>
        {% for timezone in timezones %}
         {% if timezone == TIME_ZONE %}
          <option value="{{timezone}}" selected="true">{{timezone}}</option>
@@ -162,27 +129,19 @@
        {% endfor %}
        </select>
       </form>
-     </td>
-     <td width="10"></td>
-     <td>Jump To:</td>
-     <td>
+    </div>
+    <div class="large-8 columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="large-1 columns">Jump To:</div>
+    <div class="large-3 columns">
       <form name="prefs_jump" id="prefs_jump" action="/prefs/jump" method="post" style="margin: 0px; padding: 0px;">
        {% csrf_token %}
-      <input type="text" class="jump_to" name="jump_to" id="jump_to" value="" onchange='this.form.submit()'/>
+      <input type="text" class="jump_to" name="jump_to" id="jump_to" placeholder="Enter date" onchange='this.form.submit()'/>
       </form>
-     </td>
-    </tr>
-   </table>
-  </td>
-  <td style="text-align:right;">
-   {% if app_version %}
-   <a href="http://www.system-status-dashboard.com" title="version: {{app_version}}"><img width="55" height="35" src="/html/images/SSDsmall.png"></a>
-   {% endif %}
-  </td>
- </tr>
-
-</table>
-
-</div>
+    </div>
+    <div class="large-8 columns"></div>
+  </div>
 
 {% endblock %}

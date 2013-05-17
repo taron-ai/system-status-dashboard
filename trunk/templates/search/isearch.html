@@ -29,123 +29,134 @@
       $("#s_date").datepicker({dateFormat: 'yy-mm-dd'});
 
       //Start Time
-      $("#s_time").timepicker({timeSeparator: ':'});
+      $("#s_time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
 
       //End Date
       $("#e_date").datepicker({dateFormat: 'yy-mm-dd'});
 
       //End Time
-      $("#e_time").timepicker({timeSeparator: ':'});
+      $("#e_time").timepicker();
 
    });
 
 </script>
 
 <br>
-<br>
 
-<form method="POST" name="isearch" id="isearch" action="/isearch">
-   {% csrf_token %}
+<form method="POST" name="isearch" action="/isearch">
+{% csrf_token %}
 
-<table class="container_top">
+<fieldset>
+  <legend>Search Incidents</legend>
 
- <tr>
-  <td colspan="2">
-   
-   <table class="container">
+  <div class="row">
+    <div class="large-12 columns">
+      <span class="radius secondary label">Start Date/Time</span><br><br>
+    </div>
+  </div>
 
-    <tr>
-     <td><b>Start</b></td>
-     <td>
-      <input type="text" class="input_date" name="s_date" id="s_date" value="{% if form.s_date.data %}{{form.s_date.data}}{% else %}Enter Date{% endif %}"/>
-      <input type="text" class="input_date" name="s_time" id="s_time" value="{% if form.s_time.data %}{{form.s_time.data}}{% else %}Enter Time{% endif %}"/>
-     </td>
-    </tr>
+  <div class="row">
+    <div class="large-6 columns">
+      <input type="text" name="s_date" id="s_date" placeholder="Enter Date" value="{% if form.s_date.data %}{{form.s_date.data}}{% endif %}"/>
+      {% if form.s_date.errors %}
+      <small class="error">
+        {% for error in form.s_date.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
 
-    {% if form.s_date.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-     {% for error in form.s_date.errors %}{{error}}{% endfor %} 
-    </tr>
-    {% endif %}
+    <div class="large-6 columns">
+      <input type="text" name="s_time" id="s_time" placeholder="Enter Time" value="{% if form.s_time.data %}{{form.s_time.data}}{% endif %}"/>
+      {% if form.s_time.errors %}
+      <small class="error">
+        {% for error in form.s_time.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
+  </div>
 
-    {% if form.s_time.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-     {% for error in form.s_time.errors %}{{error}}{% endfor %} 
-    </tr>
-    {% endif %}
+  <div class="row">
+    <div class="large-12 columns">
+      <span class="radius secondary label">End Date/Time</span><br><br>
+    </div>
+  </div>
 
-    <tr>
-     <td><b>End</b></td>
-     <td>
-      <input type="text" class="input_date" name="e_date" id="e_date" value="{% if form.e_date.data %}{{form.e_date.data}}{% else %}Enter Date{% endif %}"/>
-      <input type="text" class="input_date" name="e_time" id="e_time" value="{% if form.e_time.data %}{{form.e_time.data}}{% else %}Enter Time{% endif %}"/>
-     </td>
-    </tr>
-    
-    {% if form.e_date.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-     {% for error in form.e_date.errors %}{{error}}{% endfor %} 
-    </tr>
-    {% endif %}
+  <div class="row">
+    <div class="large-6 columns">
+      <input type="text" name="e_date" id="e_date" placeholder="Enter Date" value="{% if form.e_date.data %}{{form.e_date.data}}{% endif %}"/>
+      {% if form.e_date.errors %}
+      <small class="error">
+        {% for error in form.e_date.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
 
-    {% if form.e_time.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-     {% for error in form.e_time.errors %}{{error}}{% endfor %} 
-    </tr>
-    {% endif %}
+    <div class="large-6 columns">
+      <input type="text" name="e_time" id="e_time" placeholder="Enter Time" value="{% if form.e_time.data %}{{form.e_time.data}}{% endif %}"/>
+      {% if form.e_time.errors %}
+      <small class="error">
+        {% for error in form.e_time.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
+  </div>
 
-    <tr>
-      <td></td>
-      <td>Timezone: {{TIME_ZONE}}</td>
-    </tr>
+  <div class="row">
+    <div class="large-12 columns">
+      Timezone: {{TIME_ZONE}}<br><br>
+    </div>
+  </div>
 
-    <tr>
-     <td colspan="2" height="15">
-     </td>
-    </tr>
+  <div class="row">
+    <div class="large-12 columns">
+      <span class="radius secondary label">Status</span><br><br>
+    </div>
+  </div>
 
-    <tr>
-     <td>
-     <b>Status</b>
-     </td>
-     <td>
-      <select class="search" name="status" id="status">
+  <div class="row">
+    <div class="large-6 columns">
+      <select name="status">
        <option value="">--</option>
        <option value="open">open</option>
        <option value="closed">closed</option>
       </select>
-     </td>  
-    </tr>
+      {% if form.status.errors %}
+      <small class="error">
+      {% for error in form.status.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
+  </div>
 
-    <tr>
-     <td>
-      <b>Search Text</b>
-     </td>
-     <td>
-      <input type="text" class="input_search" name="text" id="text" value=""/>
-     </td>
-    </tr>
+  <div class="row">
+    <div class="large-12 columns">
+      <span class="radius secondary label">Search Text</span><br><br>
+    </div>
+  </div>
 
-    <tr>
-     <td></td>
-     <td>
-      <input type="submit" value="submit"/>
-     </td>
-    </tr>
+  <div class="row">
+    <div class="large-6 columns">
+      <input type="text" name="text" placeholder="Enter search text" value=""/>
+      {% if form.text.errors %}
+      <small class="error">
+      {% for error in form.text.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
+    </div>
+  </div>
 
-   </table>
-  </td>
- </tr>
-</table>
+  <div class="row">
+    <div class="large-12 columns">
+      <input type="submit" class="small button" value="submit"/>
+    </div>
+  </div>
+
+  </fieldset>
 </form>
+
 
 {% endblock %}
 

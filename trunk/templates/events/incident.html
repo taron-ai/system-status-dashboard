@@ -29,7 +29,7 @@
       $("#date").datepicker({dateFormat: 'yy-mm-dd'});
 
       //Time
-      $("#time").timepicker({timeSeparator: ':'});
+      $("#time").timepicker();
 
    });
    
@@ -95,7 +95,7 @@
         <span class="radius secondary label">Date/Time</span><br><br>
         <div class="row">
           <div class="large-6 columns">
-            <input type="text" name="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if time_now %}{{time_now|date:"Y-m-d"}}{% endif %}{% endif %}"/>
+            <input type="text" name="date" id="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if time_now %}{{time_now|date:"Y-m-d"}}{% endif %}{% endif %}"/>
             {% if form.date.errors %}
               <small class="error">
                 {% for error in form.date.errors %}{{error}}{% endfor %}
@@ -103,7 +103,7 @@
             {% endif %}            
           </div>
           <div class="large-6 columns">
-            <input type="text" name="time" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if time_now %}{{time_now|date:"H:i"}}{% endif %}{% endif %}"/>
+            <input type="text" name="time" id="time" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if time_now %}{{time_now|date:"H:i"}}{% endif %}{% endif %}"/>
             {% if form.time.errors %}
               <small class="error">
                 {% for error in form.time.errors %}{{error}}{% endfor %}

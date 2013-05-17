@@ -22,10 +22,7 @@ http://www.ourtuts.com/create-a-drop-down-navigation-menu-with-html5-and-css3/
 */
  
 
-a {
-   font-family: Tahoma, Arial, Helvetica, sans-serif;
-   text-decoration: none
-}
+
 
 p {
    font-family: Tahoma, Arial, Helvetica, sans-serif;
@@ -62,6 +59,10 @@ div.alert {
    background-color:#FFFFE0;
    text-align:left;
    width:750px;
+}
+
+div.horiz_stack {
+   display: inline-block;  
 }
 
 /* Error Text */
@@ -352,10 +353,7 @@ textarea.textarea_detail_2 {
    height:300px;
 }
 
-/* JQuery UI components */
-div.ui-datepicker, .ui-datepicker td{
- font-size:12px;
-}
+
 
 ol, ul {
 	list-style: none; }

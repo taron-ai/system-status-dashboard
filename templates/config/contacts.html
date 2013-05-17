@@ -20,131 +20,137 @@
 
 {% block content %}
 
-<script type="text/javascript">
-
-   // Setup the default text for the detail field
-   $(function(){
-      default_text_input("name","{{instr_escalation_name}}");
-      default_text_textarea("contact_details","{{instr_escalation_details}}");
-    });
-
-</script>
-
-<br>
 <br>
 
-  <table class="standard">
-   <tr>
-    <th>Manage Existing Contacts</th>
-   </tr>
-   <tr>
-    <td>
-      
-      
+<div class="row">
+  <div class="large-6 large-centered columns">
+    
       {% if contacts %}
-       <table class="standard_no_border">
+       <table class="responsive">
         <tr>
-         <td><b>Order</b></td>
-         <td><b>Name</b></td>
-         <td><b>Modify</b></td>
+         <th>Order</th>
+         <th>Name</th>
+         <th width="260px">Modify Contact</th>
         </tr>
         {% for row in contacts %}
          <tr>
           <td>{{row.order}}</td>
           <td>{{row.name}}</td>
-          <td>
-           <table>
-            <tr>
+          <td valign="middle">
+            <div>
+              
+              <div class="horiz_stack">
+                <form method="POST" name="contacts_up" action="/contacts_modify">
+                  {% csrf_token %}
+                  <input type="submit" class="small button" value="up"/>
+                  <input type="hidden" name="action" value="up">
+                  <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+              </div>
              
-             <td style="padding:0px 2px 0px 2px;">
-              <form method="POST" name="contacts_up" id="contacts_up" action="/contacts_modify">
-              {% csrf_token %}
-              <input type="submit" style="width: 45px;" value="up"/>
-              <input type="hidden" name="action" value="up">
-              <input type="hidden" name="id" value="{{row.id}}">
-              </form>
-             </td>
-             
-             <td style="padding:0px 2px 0px 2px;">
-              <form method="POST" name="contacts_down" id="contacts_down" action="/contacts_modify">
-              {% csrf_token %}
-              <input type="submit" style="width: 45px;" value="down"/>
-              <input type="hidden" name="action" value="down">
-              <input type="hidden" name="id" value="{{row.id}}">
-              </form>
-             </td>
-             
-             {% if row.hidden %}
-             <td style="padding:0px 2px 0px 2px;">
-              <form method="POST" name="contacts_hide" id="contacts_hide" action="/contacts_modify">
-              {% csrf_token %}
-              <input type="submit" style="width: 45px;" value="show"/>
-              <input type="hidden" name="action" value="show">
-              <input type="hidden" name="id" value="{{row.id}}">
-              </form>
-             </td>
-             {% else %}
-             <td style="padding:0px 2px 0px 2px;">
-              <form method="POST" name="contacts_hide" id="contacts_hide" action="/contacts_modify">
-              {% csrf_token %}
-              <input type="submit" style="width: 45px;" value="hide"/>
-              <input type="hidden" name="action" value="hide">
-              <input type="hidden" name="id" value="{{row.id}}">
-              </form>
-             </td>
-             {% endif %}
-             
-             <td style="padding:0px 2px 0px 2px;">
-              <form method="POST" name="contacts_delete" id="contacts_delete" action="/contacts_modify">
-              {% csrf_token %}
-              <input type="submit" style="width: 45px;" value="delete"/>
-              <input type="hidden" name="action" value="delete">
-              <input type="hidden" name="id" value="{{row.id}}">
-              </form>
-             </td>
-           
-           </tr>
-          </table>
-          </td>
-         </tr>
+              <div class="horiz_stack">
+                <form method="POST" name="contacts_down" action="/contacts_modify">
+                {% csrf_token %}
+                <input type="submit" class="small button" value="down"/>
+                <input type="hidden" name="action" value="down">
+                <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+              </div>
+
+              <div class="horiz_stack">
+               {% if row.hidden %}
+                <form method="POST" name="contacts_hide" action="/contacts_modify">
+                {% csrf_token %}
+                <input type="submit" class="small button success" value="show"/>
+                <input type="hidden" name="action" value="show">
+                <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+               {% else %}
+                <form method="POST" name="contacts_hide" action="/contacts_modify">
+                {% csrf_token %}
+                <input type="submit" class="small button alert" value="hide"/>
+                <input type="hidden" name="action" value="hide">
+                <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+               {% endif %}
+              </div>
+              
+              <div class="horiz_stack">
+                <form method="POST" name="contacts_delete" action="/contacts_modify">
+                {% csrf_token %}
+                <input type="submit" class="small button alert" value="delete"/>
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+              </div>
+            </div>
+           </td>
+          </tr>
         {% endfor %}
-       </table>
+        </table>      
       {% else %}
       No contacts defined
       <br>
       {% endif %}
-    </td>
-   </tr>
-   <tr>
-    <td height="25" style="border-left:0; border-right:0;"></td>
-   </tr>
-   <tr>
-    <th>Add New Contacts</th>
-   </tr>
-   <tr>
-    <td>
-     <form method="POST" name="manage_contacts" id="manage_contacts" action="/contacts">
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="large-6 large-centered columns">
+
+    <form method="POST" name="manage_contacts" id="manage_contacts" action="/contacts">
     {% csrf_token %}
+    <fieldset>
+      <legend>Add Contact</legend>
 
-     <input id="name" name="name" type="text" size="49" value="{% if form.name.data %}{{form.name.data}}{% endif %}">
-     {% if form.name.errors %}
-     <p class="error">{% for error in form.name.errors %}{{error}}{% endfor %}</p>
-     {% endif %} 
+      <div class="row">
+        <div class="large-6 columns">
+         <label>Full Name</label>
+        </div>
+      </div>
 
-     <br>
+      <div class="row">
+        <div class="large-12 columns">
+          <input name="name" type="text" value="{% if form.name.data %}{{form.name.data}}{% endif %}" placeholder="{{instr_escalation_name}}">
+          {% if form.name.errors %}
+          <small class="error">
+            {% for error in form.name.errors %}{{error}}{% endfor %}
+          </small>
+          {% endif %}
+        </div>
+      </div>
 
-     <textarea class="textarea_detail" id="contact_details" name="contact_details" rows="5" cols="50">{% if form.contact_details.data %}{{form.contact_details.data}}{% endif %}</textarea>
-     {% if form.contact_details.errors %}
-     <p class="error">{% for error in form.contact_details.errors %}{{error}}{% endfor %}</p>
-     {% endif %}
+      <div class="row">
+        <div class="large-12 columns">
+         <label>Contact Details</label>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="large-12 columns">
+          <textarea class="textarea_detail" id="contact_details" name="contact_details" placeholder="{{instr_escalation_details}}">{% if form.contact_details.data %}{{form.contact_details.data}}{% endif %}</textarea>
+          {% if form.contact_details.errors %}
+          <small class="error">
+            {% for error in form.contact_details.errors %}{{error}}{% endfor %}
+          </small>
+          {% endif %}
+        </div>
+      </div>
+     
+      <div class="row">
+        <div class="large-12 columns">
+          <input type="submit" class="small button" value="add"/>
+          {% if alert %}
+          &nbsp;&nbsp;<a href="#" data-reveal-id="help" class="small button">Help</a>
+          {% endif %}
+        </div>
+      </div>
 
-     <br>
-
-     <input type="submit" value=" add "/>
-     </form> 
-    </td>
-   </tr> 
-  </table>
+      </formset>
+    </form> 
+  </div>
+</div>
 
 
 {% endblock %}

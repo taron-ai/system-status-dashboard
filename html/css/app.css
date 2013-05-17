@@ -5,6 +5,17 @@ https://groups.google.com/forum/?fromgroups=#!topic/foundation-framework-/OuFU-i
 
 */
 
+/* Global Font */
+* {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+}
+
+
+a {
+   text-decoration: none;
+   color: black;
+}
+
 
 .top-bar .name h1 {
 	font-size: 0.8em;
@@ -30,10 +41,13 @@ label {
 table {
    font-family: Tahoma, Arial, Helvetica, sans-serif;
 }
+
+
 table th {
    border:1px solid #B0C5D0;
    background-color:#C8DAE4;
 }
+
 table td {
    border:1px solid #B0C5D0;
 }
@@ -52,30 +66,38 @@ td.td_border_top {
 }
 
 
-/*
-a:hover, a:focus {
-	background: #616161;
-	color: green;
-}
-*/
-
-/*
-Text formatting for input and textareas when placing and replacing
-the default text 
-*/
-
-/*
-input:focus { color:#ccc;transition:color .2s linear 0;
-              -webkit-transition:color .2s linear 0;
-              -moz-transition:color .2s linear 0 }
-input.typing { color:#333; }
-textarea:focus { color:#ccc;transition:color .2s linear 0;
-              -webkit-transition:color .2s linear 0;
-              -moz-transition:color .2s linear 0 }
-textarea.typing { color:#333; }
-
-*/
-
 input, select {
 	font-size: 0.875em;
+}
+
+fieldset legend {
+	font-size: 1.5em;
+}
+
+div.border {
+	border:1px solid #B0C5D0;
+}
+
+/* Remove the bottom padding on buttons */
+.button {
+	margin-bottom: 0em;	
+}
+
+
+/* 
+We will have two kinds of textareas only:
+ - Short ones 
+ - Long ones (the standard)
+*/
+textarea {
+	height: 150px;
+}
+
+textarea.small {
+	height: 85px;
+}
+
+/* JQuery UI components */
+div.ui-datepicker, .ui-datepicker td{
+	font-size: 12px;
 }

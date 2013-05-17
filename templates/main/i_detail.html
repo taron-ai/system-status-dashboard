@@ -20,52 +20,48 @@
 
 {% block content %}
 
-<table class="top" width="670px">
 
- <tr>
-  <td>
-   <p>This page contains all relevant information on this incident.  Check back here at any time to obtain current information on the status of this incident.</p>
-  </td>
- </tr>
+<div class="row">
+  <div class="large-9 columns">
+    <p>This page contains all relevant information on this incident.  Check back here at any time to obtain current information on the status of this incident.</p>
+  </div>
+  <div class="large-3 columns"></div>
+</div>
 
- <tr>
-  <td>
-   <p>Incident Status: 
-    <b>
-     {% if detail.0.closed %}
-     CLOSED ({{detail.0.closed|date:"Y-m-d H:i:s"}})
-     {% else %}
-     OPEN
-     {% endif %}
-    </b>
-   </p>
-  </td>
- </tr>
+<div class="row">
+  <div class="large-12 columns">
+    <p>Incident Status: 
+      <b>
+      {% if detail.0.closed %}
+      CLOSED ({{detail.0.closed|date:"Y-m-d H:i:s"}})
+      {% else %}
+      OPEN
+      {% endif %}
+      </b>
+    </p>
+  </div>
+</div>
 
- <tr>
-  <td>
-   <p>
-    The following services have been impacted by this incident:
-    <br>
-   {% if services %}
-   {% for row in services %}
-   <b>- {{row.service_name_id__service_name}}</b>
-    <br>
-   {% endfor %}
-   {% else %}
-   <b><font color="red">- NO SERVICES DEFINED</font></b>
-   {% endif %}
-   </p>
-  </td>
- </tr>
+<div class="row">
+  <div class="large-12 columns">
+    <p>
+      The following services have been impacted by this incident:
+      <br>
+    {% if services %}
+    {% for row in services %}
+    <b>- {{row.service_name_id__service_name}}</b>
+      <br>
+    {% endfor %}
+    {% else %}
+    <b><font color="red">- NO SERVICES DEFINED</font></b>
+    {% endif %}
+    </p>
+  </div>
+</div>
 
- <tr>
-  <td height="10"></td>
- </tr>
-
- <tr>
-  <td>
-   <table class="standard">
+<div class="row">
+  <div class="large-12 columns">
+   <table class="responsive border_top">
     <tr>
      <th width="165">Time</th>
      <th width="500px">Description</th>
@@ -83,43 +79,32 @@
       </tr>
      {% endfor %}
     {% endif %}
-   </table>
-  </td>
- </tr> 
- 
- <tr>
-  <td>*All times are in {{TIME_ZONE}}</td>
- </tr>
-
- {% if user.is_authenticated %}
- <tr>
-  <td height="10"></td>
- </tr>
-
- <tr>
-  <td>
-   <table>
+   
     <tr>
-     <td>
-      <form action="/i_update?id={{id}}" method="get">
-       <input type="hidden" name="id" value="{{id}}">
-       <input type="submit" value="update">
-      </form>
-     </td>
-     <td>
-      <form enctype="multipart/form-data" method="POST" name="i_delete" id="i_delete" action="/i_delete">
-       {% csrf_token %}
-       <input type="hidden" name="id" value="{{id}}">
-       <input type="submit" value="delete"/>
-      </form>
-     </td>
+      <td colspan="2" class="td_border_top">
+        *All times are in {{TIME_ZONE}}
+      </td>
     </tr>
    </table>
-  </td>
- </tr>
 
- {% endif %} 
+  </div>
+</div>
 
-</table>
+ 
+{% if user.is_authenticated %}
+<div class="row">
+  <div class="large-4 columns">
+    <form enctype="multipart/form-data" method="POST" name="i_delete" id="i_delete" action="/i_delete">
+      {% csrf_token %}
+      
+      <a href="/i_update?id={{id}}" class="small button">update</a>&nbsp;&nbsp;
+      <input type="hidden" name="id" value="{{id}}">
+      <input type="submit" class="small button" value="delete"/>
+    </form>
+  </div>
+
+  <div class="large-8 columns"></div>
+</div>
+{% endif %} 
 
 {% endblock %}

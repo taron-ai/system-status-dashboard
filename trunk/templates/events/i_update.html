@@ -32,167 +32,132 @@
       $("#time").timepicker({timeSeparator: ':'});
 
    });
-
-   // Setup the default text for the detail field
-   $(function(){
-      default_text_textarea("update","{{instr_incident_update}}");
-    });
-
+   
 </script>
 
-<br>
 
-<form enctype="multipart/form-data" method="POST" name="i_update" id="i_update" action="/i_update">
-   {% csrf_token %}
+<form method="POST" name="i_update" action="/i_update">
+{% csrf_token %}
 
-<table class="container_top">
+  <fieldset>
+    <legend>Create Incident</legend>
 
- <tr>
-  <th>Description</th>
-  <th>Affected Services</th>
-  <th>Options</th>
- </tr>
-
- <tr>
-  <td colspan="3" height="15"></td>
- </tr>
-
-{% if form.update.errors %}
-<tr>
- <td colspan="3" style="text-align:left; color:red; font-weight:bold;">  
-  {% for error in form.update.errors %}{{error}}{% endfor %}
- </td>
-</tr>
-{% endif %}
-
- <tr>
-  <td>
-   <textarea class="textarea_detail" id="update" name="update" rows="25" cols="50">{% if not form.update.data == None %}{{form.update.data}}{% endif %}</textarea>
-  </td>
-
-  <td valign="top">
-   <table class="container_options">
-    {% for row in services %}
-    <tr>
-     {# See if this service was previously selected and this is a failed form submit #}
-     {# On a failed form the list is unicode values and on a GET they are ints so we have to check both #}
-     <td colspan="2">
-      <input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% else %}{% if row.id in affected_svcs %}checked{% endif %}{% endif %}/>
-      {{row.service_name}}
-     </td>
-    </tr>
-    {% endfor %}
-
-    {% if form.service.errors %}
-    <tr>
-     <td colspan="2" style="text-align:right; color:red; font-weight:bold;">  
-      {% for error in form.service.errors %}{{error}}{% endfor %}
-      <br><br>
-     </td>
-    </tr>
-    {% endif %}
-   </table>
-  </td>
-
-  <td valign="top">
-   <table class="container_options">
-    
-    <tr>
-     <td colspan="2">
-      <input type="checkbox" name="closed" {% if form.closed.data %}checked="on"{% else %}{% if details.0.closed %}checked="on"{% endif %}{% endif %}/>
-      Incident Closed
-     </td>
-    </tr>
-
-    <tr>
-     <td colspan="2">
-      <input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked{% endif %}/>
-      Broadcast Email
-     </td>
-    </tr>
-    
-    {% if form.broadcast.errors %}
-    <tr>
-     <td colspan="2" style="text-align:left; color:red; font-weight:bold;">  
-      {% for error in form.broadcast.errors %}{{error}}{% endfor %}
-      <br><br>
-     </td>
-    </tr>
-    {% endif %}
-
-    <tr>
-     <td colspan="2">
-      <select name="recipient_id" id="recipient_id">
-        <option value="">-</option>
-       {% for recipient in recipients %}
-        {# We need to check if its a failed form submit and then if it set in the db #}
-        {% if form.recipient_id.data|slugify == recipient.id|slugify %}
-          <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
-        {% else %}
-          {% if details.0.email_address_id == recipient.id %}
-          <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
-          {% else %}
-          <option value="{{recipient.id}}">{{recipient.email_address}}</option>
-          {% endif %}
+    <div class="row">
+      <div class="large-5 columns">
+        <span class="radius secondary label">Incident Update</span><br><br>
+        <textarea name="update" placeholder="{{instr_incident_update}}">{% if form.update.data %}{{form.update.data}}{% endif %}</textarea>
+        {% if form.update.errors %}
+        <small class="error">
+          {% for error in form.update.errors %}{{error}}{% endfor %}
+        </small>
         {% endif %}
-       {% endfor %}
-       </select>
-     </td>
-    </tr>
+      </div>
 
-    <tr>
-     <td colspan="2" height="5"></td> 
-    </tr>
-    
-    <tr>
-     <td><b>Date</b> </td>
-     <td><input type="text" class="input_date" name="date" id="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if time_now %}{{time_now|date:"Y-m-d"}}{% endif %}{% endif %}"/></td>
-    </tr>
-    
-    {% if form.date.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-      {% for error in form.date.errors %}{{error}}{% endfor %}
-      <br><br>
-     </td>
-    </tr>
-    {% endif %}
+      <div class="large-7 columns">
+        <span class="radius secondary label">Email</span><br><br>
+        <div class="row">
+          
+          <div class="large-4 columns">
+            <label><input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked{% endif %} />
+            Broadcast Email</label>
+            {% if form.broadcast.errors %}
+            <br><br>
+            <small class="error">
+              {% for error in form.broadcast.errors %}{{error}}{% endfor %}
+            </small>
+            {% endif %}
+          </div>
 
-    <tr>
-     <td><b>Time</b> </td>
-     <td><input type="text" class="input_date" name="time" id="time" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if time_now %}{{time_now|date:"H:i"}}{% endif %}{% endif %}"/></td>
-    </tr>
-    
-    {% if form.time.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-      {% for error in form.time.errors %}{{error}}{% endfor %}
-      <br><br>
-     </td>
-    </tr>
-    {% endif %}
+          <div class="large-8 columns left">
+            <select name="recipient_id">
+              <option value="">-</option>
+             {% for recipient in recipients %}
+              {# We need to check if its a failed form submit and then if it set in the db #}
+              {% if form.recipient_id.data|slugify == recipient.id|slugify %}
+                <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
+              {% else %} 
+                {% if details.0.email_address_id == recipient.id %}
+                  <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
+                {% else %}
+                  <option value="{{recipient.id}}">{{recipient.email_address}}</option>
+                {% endif %}
+              {% endif %}
+             {% endfor %}
+             </select>
+          </div>
+        </div>
+      
+        <span class="radius secondary label">Date/Time</span><br><br>
+        <div class="row">
+          <div class="large-6 columns">
+            <input type="text" name="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if time_now %}{{time_now|date:"Y-m-d"}}{% endif %}{% endif %}"/>
+            {% if form.date.errors %}
+              <small class="error">
+                {% for error in form.date.errors %}{{error}}{% endfor %}
+              </small>
+            {% endif %}            
+          </div>
+          <div class="large-6 columns">
+            <input type="text" name="time" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if time_now %}{{time_now|date:"H:i"}}{% endif %}{% endif %}"/>
+            {% if form.time.errors %}
+              <small class="error">
+                {% for error in form.time.errors %}{{error}}{% endfor %}
+              </small>
+            {% endif %}            
+          </div>
+        </div>
 
-    <tr>
-      <td></td>
-      <td style="text-align:left; padding-top:5px;">Timezone: {{TIME_ZONE}}</td>
-    </tr>
-    
-    <tr>
-     <td></td>
-     <td style="text-align:left; padding-top:5px;"><input type="submit" value="submit"/></td>
-    </tr>
-   
-   </table>
-  </td>
- </tr>
+        <span class="radius secondary label">Incident Status</span><br><br>
+        <div class="row">
+          <div class="large-6 columns">
+            <label><input type="checkbox" name="closed" {% if form.closed.data %}checked="on"{% else %}{% if details.0.closed %}checked="on"{% endif %}{% endif %} />
+            Closed</label>
+            {% if form.closed.errors %}
+            <br><br>
+            <small class="error">
+              {% for error in form.closed.errors %}{{error}}{% endfor %}
+            </small>
+            {% endif %} 
+          </div>
+          <div class="large-6 columns">     
+          </div>
+        </div>
 
-</table>
+      </div>
+    </div>
 
-<input type="hidden" name="id" value="{{id}}">
+    <span class="radius secondary label">Services Impacted</span><br><br>
+    <div class="row">
+      
+      <div class="large-6 columns">
+        {% for row in services %}
+          {# See if this service was previously selected and this is a failed form submit #}
+          {# On a failed form the list is unicode values and on a GET they are ints so we have to check both #}
+
+          <label><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% else %}{% if row.id in affected_svcs %}checked{% endif %}{% endif %}/>
+          {{row.service_name}}</label>
+          
+        {% endfor %}
+        {% if form.service.errors %}
+          <br>
+          <small class="error">
+            {% for error in form.service.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <input type="submit" class="small button" value="submit"/>
+      </div>
+    </div>
+
+  </fieldset>
+  <input type="hidden" name="id" value="{{id}}">
 </form>
 
+Timezone: {{TIME_ZONE}}
 
 {% endblock %}
 

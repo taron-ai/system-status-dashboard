@@ -20,67 +20,81 @@
 
 {% block content %}
 
-<script type="text/javascript">
-
-   // Setup the default text for the detail field
-   $(function(){
-      default_text_input("recipient","Enter a valid email address");
-    });
-
-</script>
-
-<br>
 <br>
 
-  <table class="standard">
-   <tr>
-    <th>Manage Existing Recipients</th>
-   </tr>
-   <tr>
-    <td>
-      <form method="POST" name="rm_recipients" id="rm_recipients" action="/rm_recipients">
-      {% csrf_token %}
+<div class="row">
+  <div class="large-6 large-centered columns">
+    <form method="POST" name="rm_recipients" id="rm_recipients" action="/rm_recipients">
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>Manage Recipients</legend>
+
       {% if recipients %}
-       <table class="standard_no_border">
-        {% for row in recipients %}
-         <tr>
-          <td><input type="checkbox" name="id" value="{{row.id}}" /></td>
-          <td>{{row.email_address}}</td>
-         </tr>
-        {% endfor %}
-       </table>
-      {% else %}
-      No recipients defined
-      <br>
-      {% endif %}
-      <br>
-      <input type="submit" value="delete"/>
+      <table class="standard">
+       <tr>
+        <th>Delete</th>
+        <th>Email Address</th>
+       </tr>
+          
+       {% for row in recipients %}
+       <tr>
+        <td><input type="checkbox" name="id" value="{{row.id}}" /></td>
+        <td>{{row.email_address}}</td>
+       </tr>
+       {% endfor %}
+      </table>
+      
+      <input type="submit" class="small button" value="delete"/>
       {% if form.id.errors %}
-      <p class="error">{% for error in form.id.errors %}{{error}}{% endfor %}</p>
-     {% endif %}
-      </form>
-    </td>
-   </tr>
-   <tr>
-    <td height="25" style="border-left:0; border-right:0;"></td>
-   </tr>
-   <tr>
-    <th>Add New Recipients</th>
-   </tr>
-   <tr>
-    <td>
-     <form method="POST" name="manage_recipients" id="manage_recipients" action="/recipients">
-     {% csrf_token %}
-      <input id="recipient" name="recipient" type="text" size="65" value="">
-      <br>
-      <input type="submit" value=" add "/>
-     {% if form.recipient.errors %}
-      <p class="error">{% for error in form.recipient.errors %}{{error}}{% endfor %}</p>
-     {% endif %}
-     </form>
-    </td>
-   </tr>
-  </table>
+        <p class="error">{% for error in form.id.errors %}{{error}}{% endfor %}</p>
+      {% endif %}
+    </form>
+    
+    {% else %}
+    No recipients defined
+    {% endif %}
+    </fieldset>
+    </form>
+  </div>
+</div>
+  
 
+<div class="row">
+  <div class="large-6 large-centered columns">
+
+    <form method="POST" name="manage_recipients" id="manage_recipients" action="/recipients">
+     {% csrf_token %}
+
+    <fieldset>
+      <legend>Add Recipient</legend>
+
+      <div class="row">
+        <div class="large-6 columns">
+         <label>Email Address</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-12 columns">
+          <input name="recipient" type="text" placeholder="Enter a valid email address" value="{% if form.recipient.data %}{{form.recipient.data}}{% endif %}">
+          {% if form.recipient.errors %}
+          <small class="error">
+            {% for error in form.recipient.errors %}{{error}}{% endfor %}
+          </small>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-12 columns">
+          <input type="submit" class="small button" value="add"/>
+        </div>
+      </div>
+
+      </fieldset>
+    </form> 
+  </div>
+</div>
 
 {% endblock %}

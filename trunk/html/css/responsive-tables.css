@@ -19,7 +19,7 @@ table td, table th { padding: 9px 10px; text-align: left; }
 
 /* Mobile */
 @media only screen and (max-width: 767px) {
-  
+
   table.responsive { margin-bottom: 0; }
   
   .pinned { position: absolute; left: 0; top: 0; background: #fff; width: 35%; overflow: hidden; overflow-x: scroll; border-right: 1px solid #ccc; border-left: 1px solid #ccc; }
@@ -28,11 +28,27 @@ table td, table th { padding: 9px 10px; text-align: left; }
   .pinned td:last-child { border-bottom: 0; }
   
   div.table-wrapper { position: relative; margin-bottom: 20px; overflow: hidden; border-right: 1px solid #ccc; }
+ 
+  /* 
   div.table-wrapper div.scrollable { margin-left: 35%; }
+  */
+
   div.table-wrapper div.scrollable { overflow: scroll; overflow-y: hidden; }  
-  
   table.responsive td, table.responsive th { position: relative; white-space: nowrap; overflow: hidden; }
+ 
+  /* 
   table.responsive th:first-child, table.responsive td:first-child, table.responsive td:first-child, table.responsive.pinned td { display: none; }
-  
+  */
+
+  /* From http://www.design4lifeblog.com/responsive-tables/ */
+  .MobiScroll {
+      background-image: url(http://img708.imageshack.us/img708/1323/scrolli.png);
+      width: 62px;
+      height: 38px;
+      display: block;
+      /* position: absolute; */
+      bottom: 30px;
+      right: 0;
+    }
   
 }

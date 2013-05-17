@@ -35,7 +35,7 @@
 
   <div class="row">
     <div class="large-12 columns">
-      <label>Contact Information</label>
+      <span class="radius secondary label">Contact Information</span><br><br>
     </div>
   </div>
 
@@ -61,13 +61,13 @@
 
   <div class="row">
     <div class="large-12 columns">
-      <label>Incident Description</label>
+      <span class="radius secondary label">Incident Description</span><br><br>
     </div>
   </div>
 
   <div class="row">
     <div class="large-12 columns">
-      <textarea name="detail" placeholder="{{instr_report_detail}}" maxlength="160">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
+      <textarea class="small" name="detail" placeholder="{{instr_report_detail}}" maxlength="160">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
       {% if form.detail.errors %}
       <small class="error">
         {% for error in form.detail.errors %}{{error}}{% endfor %}
@@ -93,7 +93,7 @@
 
   <div class="row">
     <div class="large-12 columns">
-      <label>Screenshots</label>
+      <span class="radius secondary label">Screenshots</span><br><br>
     </div>
   </div>
 
@@ -121,9 +121,9 @@
 
   <div class="row">
     <div class="large-12 columns">
-      <input type="submit" value="submit"/>
+      <input type="submit" class="small button" value="submit"/>
       {% if alert %}
-      &nbsp;&nbsp;<a style="color:black;" href="#" data-reveal-id="help"><u>Help</u></a>
+      &nbsp;&nbsp;<a href="#" data-reveal-id="help" class="small button">Help</a>
       {% endif %}
     </div>
   </div>

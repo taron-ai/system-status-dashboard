@@ -21,43 +21,44 @@
 {% block content %}
 
 {% if alert %}
-<div class="alert">
- {{alert|safe}}
+<div class="row">
+  <div class="large-8 large-centered columns">
+    <div data-alert class="alert-box">
+      {{alert}}
+      <a href="#" class="close">&times;</a>
+    </div>
+  </div>
 </div>
 {% endif %}
 
 <br>
-<br>
 
 {% if contacts %}
- <table class="standard_no_border">
   {% for contact in contacts %}
-   
-   <tr>
-   	<td style="border:1px solid #b0c5d0;">
-   	 <b>{{contact.name}}</b>
-   	 <br>
-   	 {{contact.contact_details|linebreaksbr}}
-   	</td>
-   </tr>
+    <div class="row">
+      <div class="large-4 large-centered columns">
+        <div class="panel">
+          {{contact.name}}
+   	      <br>
+   	      {{contact.contact_details|linebreaksbr}}
+        </div>
+      </div>
+    </div>
   
    {# Don't add the arrow on the last one #}
    {% if not forloop.last %} 
-   <tr>
-   	<td height="5"</td>
-   </tr>
-   
-   <tr>
-   	<td style="text-align: center;"><img src="/html/images/arrow_down.png"></td>
-   </tr>
-   
-   <tr>
-   	<td height="5"</td>
-   </tr>
+    <div class="row">
+      <div class="large-3 large-centered columns">
+        <center><img src="/html/images/arrow_down.png"></center>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-3 large-centered columns" style="height: 25px;">
+      </div>
+    </div>
    {% endif %}
-  
   {% endfor %}
- </table>
 
 {% else %}
 THERE ARE CURRENTLY NO ESCALATION CONTACTS DEFINED.

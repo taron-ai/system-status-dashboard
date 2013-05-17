@@ -127,44 +127,12 @@ class AddContactForm(forms.Form):
     name = forms.CharField(required=True)
     contact_details = forms.CharField(required=True)
 
-    # Override the form clean method so we can do some custom validation   
-
-    def clean(self):
-        cleaned_data = super(AddContactForm, self).clean()
-        name = cleaned_data.get('name')
-        contact_details = cleaned_data.get('contact_details')
-
-        # Is the name field the default text?
-        d_name = Config.objects.filter(config_name='instr_escalation_name').values('config_value')[0]['config_value']
-        if name == d_name:
-            self._errors["name"] = self.error_class(['Please provide a name.'])
-
-        # Is the contact_details field the default text?
-        d_contact_details = Config.objects.filter(config_name='instr_escalation_details').values('config_value')[0]['config_value']
-        if contact_details == d_contact_details:
-            self._errors["contact_details"] = self.error_class(['Please provide contact details.'])
-
-        # Return the full collection of cleaned data
-        return cleaned_data
-
 
 class AddServiceForm(forms.Form):
     """Form for adding services"""
 
     service = forms.CharField(required=True)
 
-    # Override the form clean method so we can do some custom validation   
-
-    def clean(self):
-        cleaned_data = super(AddServiceForm, self).clean()
-        service = cleaned_data.get('service')
-
-        # Make sure the user is not submitting the default text
-        if service == 'Enter a service name':
-            self._errors['service'] = self.error_class(['Please enter a valid service name.'])
-
-        # Return the full collection of cleaned data
-        return cleaned_data
 
 class RemoveServiceForm(forms.Form):
     """Form for removing services"""
@@ -310,7 +278,6 @@ class AddIncidentForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(AddIncidentForm, self).clean()
-        detail = cleaned_data.get('detail')
         broadcast = cleaned_data.get('broadcast')
         recipient_id = cleaned_data.get('recipient_id')
 
@@ -318,11 +285,6 @@ class AddIncidentForm(forms.Form):
         if broadcast and not recipient_id:
             self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
-        # Is the detail field the default text?
-        d_detail = Config.objects.filter(config_name='instr_incident_description').values('config_value')[0]['config_value']
-        if detail == d_detail:
-            self._errors["detail"] = self.error_class(['Please provide a description.'])
-
         # Return the full collection of cleaned data
         return cleaned_data
 

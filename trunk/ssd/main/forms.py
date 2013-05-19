@@ -216,6 +216,8 @@ class ConfigForm(forms.Form):
     ssd_url = forms.CharField(required=False)
     escalation = forms.CharField(required=False)  
 
+    filter = forms.CharField(required=False)
+
     # We need access to some of the update_ values, but only some.
     update_enable_uploads = forms.BooleanField(required=False)
     update_file_upload_size = forms.BooleanField(required=False)

@@ -20,140 +20,130 @@
 
 {% block content %}
 
-<table class="top" width="670px">
+<div class="row">
+  <div class="large-9 columns">
+    <p>This page contains all relevant information on this scheduled maintenance.  Check back here at any time to obtain current information on the status of this scheduled maintenance.</p>
+  </div>
+  <div class="large-3 columns"></div>
+</div>
 
- <tr>
-  <td>
-   <p>This page contains all relevant information on this scheduled maintenance.  Check back here at any time to obtain current information on the status of this scheduled maintenance.</p>
-  </td>
- </tr>
- 
- <tr>
-  <td height="10"></td>
- </tr>
+<div class="row">
+  <div class="large-12 columns">
+    <table class="responsive">
+      <thead>
+        <tr>
+          <th colspan="2">Maintenance Details</th>
+        </tr>
+      </thead>
+       
+      <tbody>
+        <tr>
+          <td width="165">Maintenance Status</td>
+          <td width="565">
+            <b>
+            {% if detail.0.completed %}
+              COMPLETED
+            {% else %}
+              {% if detail.0.started %}
+                STARTED
+              {% else %}
+                NOT STARTED
+              {% endif %}
+            {% endif %}
+            </b>
+          </td>
+        </tr>
+        <tr>       
+          <td>Services Impacted</td>
+          <td>
+           {% if services %}
+           {% for row in services %}
+           {{row.service_name_id__service_name}}
+            <br>
+           {% endfor %}
+           {% else %}
+           <b><font color="red">- NO SERVICES DEFINED</font></b>
+           {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td>Start Time</td>
+          <td>{{detail.0.start|date:"Y-m-d H:i"}}</td>
+        </tr>
+        <tr>
+          <td>End Time</td>
+          <td>{{detail.0.end|date:"Y-m-d H:i"}}</td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td>{{detail.0.description|linebreaksbr}}</td>
+        </tr>
+        <tr>
+          <td>Impact Analysis</td>
+          <td>{{detail.0.impact|linebreaksbr}}</td>
+         </tr>
+        <tr>
+          <td>Coordinator</td>
+          <td>{{detail.0.coordinator|linebreaksbr}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-<tr>
- <td>
-  
-  <table class="standard">
-   <tr>
-    <th colspan="2">Maintenance Details</th>
-   </tr>
-   <tr>
-    <td width="165">Maintenance Status</td>
-    <td width="565">
-      <b>
-       {% if detail.0.completed %}
-       COMPLETED
-       {% else %}
-        {% if detail.0.started %}
-          STARTED
-        {% else %}
-          NOT STARTED
-        {% endif %}
-       {% endif %}
-      </b>
-    </td>
-   </tr>
-   <tr>
-    <td>Services Impacted</td>
-    <td>
-     {% if services %}
-     {% for row in services %}
-     {{row.service_name_id__service_name}}
-      <br>
-     {% endfor %}
-     {% else %}
-     <b><font color="red">- NO SERVICES DEFINED</font></b>
-     {% endif %}
-    </td>
-   </tr>
-   <tr>
-    <td>Start Time</td>
-    <td>{{detail.0.start|date:"Y-m-d H:i"}}</td>
-   </tr>
-   <tr>
-    <td>End Time</td>
-    <td>{{detail.0.end|date:"Y-m-d H:i"}}</td>
-   </tr>
-   <tr>
-    <td>Description</td>
-    <td>{{detail.0.description|linebreaksbr}}</td>
-   </tr>
-   <tr>
-    <td>Impact Analysis</td>
-    <td>{{detail.0.impact|linebreaksbr}}</td>
-   </tr>
-   <tr>
-    <td>Coordinator</td>
-    <td>{{detail.0.coordinator|linebreaksbr}}</td>
-   </tr>
-  </table>
- 
- </td>
-</tr>
+{% if updates %}
+<div class="row">
+  <div class="large-12 columns" style="height: 25px;">
+  </div>
+</div>
 
- <tr>
-  <td height="15"></td>
- </tr>
+<div class="row">
+  <div class="large-12 columns">
+    <table class="responsive">
+      <thead>
+        <tr>
+          <th colspan="3">Maintenance Updates</th>
+        </tr>
+        <tr>
+          <th width="165">Time</th>
+          <th width="165">Logged By</th>
+          <th width="400px">Detail</th>
+        </tr>
+      </thead>
 
- {% if updates %}
- <tr>
-  <td>
-   <p><b>Maintenance Updates</b></p>
-  
-   <table class="standard">
-    <tr>
-     <th width="165">Time</th>
-     <th width="165">Logged By</th>
-     <th width="400px">Detail</th>
-    </tr>
-
-     {% for row in updates %}
-      <tr>
-       <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
-       <td>{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
-       <td>{{row.detail|linebreaksbr}}</td>
-      </tr>
-     {% endfor %}
-   </table>
-  </td>
- </tr> 
- {% endif %}
- 
- <tr>
-  <td>*All times are in {{TIME_ZONE}}</td>
- </tr>
-
- {% if user.is_authenticated %}
- <tr>
-  <td height="10"></td>
- </tr>
-
- <tr>
-  <td>
-   <table>
-    <tr>
-     <td>
-      <form action="/m_update?id={{id}}" method="get">
-       <input type="hidden" name="id" value="{{id}}">
-       <input type="submit" value="update">
-      </form>
-     </td>
-     <td>
-      <form enctype="multipart/form-data" method="POST" name="m_delete" id="m_delete" action="/m_delete">
-       {% csrf_token %}
-       <input type="hidden" name="id" value="{{id}}">
-       <input type="submit" value="delete"/>
-      </form>
-     </td>
-    </tr>
-   </table>
-  </td>
- </tr>
-
+      <tbody>
+      {% for row in updates %}
+        <tr>
+         <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
+         <td>{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
+         <td>{{row.detail|linebreaksbr}}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endif %}
+ 
 
-</table>
+<div class="row">
+  <div class="large-4 columns">
+    <p>*All times are in {{TIME_ZONE}}</p>
+  </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="row">
+  <div class="large-4 columns">
+    <form method="POST" name="m_delete" action="/m_delete">
+      {% csrf_token %}
+      
+      <a href="/m_update?id={{id}}" class="small button">update</a>&nbsp;&nbsp;
+      <input type="hidden" name="id" value="{{id}}">
+      <input type="submit" class="small button" value="delete"/>
+    </form>
+  </div>
+</div>
+{% endif %}
 
 {% endblock %}

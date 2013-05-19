@@ -100,26 +100,43 @@ def config(request):
             params['file_upload_size'] = form.cleaned_data['file_upload_size']
             params['ssd_url'] = form.cleaned_data['ssd_url']
             params['escalation'] = form.cleaned_data['escalation']
-
+ 
+            filter = form.cleaned_data['filter'] 
+                      
             # Update the data
             for param in params:
                 if 'update_%s' % param in request.POST:
                     Config.objects.filter(config_name=param).update(config_value=params[param])
 
             # Redirect back
-            return HttpResponseRedirect('/config')
+            return HttpResponseRedirect('/config?filter=%s' % filter)
 
     # Not a POST so create a blank form and return all the existing configs
     else:
         form = ConfigForm()
 
+    # See if we are filtering results
+    # On failed POSTS, we also need this
+    if 'filter' in request.POST:
+        filter = request.POST['filter'] 
+    elif 'filter' in request.GET:
+        filter = request.GET['filter'] 
+    else:
+        filter = 'all'  
+    
     # Obtain all of the config values
-    configs = Config.objects.values('config_name',
-                                    'friendly_name',
-                                    'config_value',
-                                    'description',
-                                    'category',
-                                    'display').order_by('category','friendly_name')
+    if filter == 'all':
+        configs = Config.objects.values('config_name',
+                                        'friendly_name',
+                                        'config_value',
+                                        'description',
+                                        'display')
+    else:
+        configs = Config.objects.filter(category=filter).values('config_name',
+                                                                'friendly_name',
+                                                                'config_value',
+                                                                'description',
+                                                                'display')
 
     # Print the page
     return render_to_response(
@@ -127,7 +144,8 @@ def config(request):
        {
           'title':'System Status Dashboard | Configuration Manager',
           'form':form,
-          'configs':configs
+          'configs':configs,
+          'filter':filter
        },
        context_instance=RequestContext(request)
     )

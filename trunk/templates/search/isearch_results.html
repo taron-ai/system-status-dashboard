@@ -20,47 +20,39 @@
 
 {% block content %}
 
-<table class="top">
+<div class="row">
+  <div class="large-6 large-centered columns">
 
- <tr>
-  <td height="25">
-  </td>
- </tr>
+{% if results %}
 
- {% if results %}
+    <table class="responsive">
+      <thead>
+        <tr>
+         <th>ID</th>
+         <th>Time Opened</th>
+         <th>Time Closed</th>
+         <th>Initial Detail</th>
+        </tr>
+      </thead>
 
- <tr>
-  <td>
-   <table class="standard">
-    <tr>
-     <th>ID</th>
-     <th>Time Opened</th>
-     <th>Time Closed</th>
-     <th>Initial Detail</th>
-    </tr>
+      <tbody>
+        {% for row in results %}
+        <tr>
+         <td><a href="/i_detail?id={{row.incident_id}}">{{row.incident_id}}</a></td>
+         <td>{{row.incident__date|date:"Y-m-d H:i:s"}}</td>
+         <td>{{row.incident__closed|date:"Y-m-d H:i:s"}}</td>
+         <td style="width:400;">{{row.incident__detail|linebreaksbr}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    {% for row in results %}
-    <tr>
-     <td><a href="/i_detail?id={{row.incident_id}}">{{row.incident_id}}</a></td>
-     <td>{{row.incident__date|date:"Y-m-d H:i:s"}}</td>
-     <td>{{row.incident__closed|date:"Y-m-d H:i:s"}}</td>
-     <td style="width:400;">{{row.incident__detail|linebreaksbr}}</td>
-    </tr>
-    {% endfor %}
-   </table>
-  </td>
- </tr>
+* All times are in {{TIME_ZONE}}
 
- <tr>
-  <td>* All times are in {{TIME_ZONE}}</td>
- </tr>
+{% else %}
+No search results were returned
+{% endif %}
 
- {% else %}
- <tr>
-  <td>No search results were returned</td>
- </tr>
- {% endif %}
-
-</table>
-
+  </div>
+</div>
 {% endblock %}

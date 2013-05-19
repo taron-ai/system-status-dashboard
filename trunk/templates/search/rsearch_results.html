@@ -20,43 +20,48 @@
 
 {% block content %}
 
-{% if results %}
+<div class="row">
+  <div class="large-6 large-centered columns">
 
-<table class="responsive">
-  <thead>
-    <tr>
-     <th>ID</th>
-     <th>Date Submitted</th>
-     <th>Submitted By</th>
-     <th>Email</th>
-     <th>Description</th>
-     <th>Additional Information</th>
-     <th>Screenshots</th>
-    </tr>
-  </thead>
+  {% if results %}
+
+    <table class="responsive">
+      <thead>
+        <tr>
+         <th>ID</th>
+         <th>Date Submitted</th>
+         <th>Submitted By</th>
+         <th>Email</th>
+         <th>Description</th>
+         <th>Additional Information</th>
+         <th>Screenshots</th>
+        </tr>
+      </thead>
   
-  <tbody>
-  {% for row in results %}
-    <tr>
-     <td>{{row.id}}</a></td>
-     <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
-     <td>{{row.name}}</td>
-     <td>{{row.email}}</td>
-     <td>{{row.detail|linebreaksbr}}</td>
-     <td>{{row.extra|linebreaksbr}}</td>
-     <td>
-      {% if row.screenshot1 %}<a href="/uploads/{{row.screenshot1}}">view</a>{% endif %}
-      {% if row.screenshot2 %}<a href="/uploads/{{row.screenshot2}}">view</a>{% endif %}
-     </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+      <tbody>
+      {% for row in results %}
+        <tr>
+         <td>{{row.id}}</a></td>
+         <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
+         <td>{{row.name}}</td>
+         <td>{{row.email}}</td>
+         <td>{{row.detail|linebreaksbr}}</td>
+         <td>{{row.extra|linebreaksbr}}</td>
+         <td>
+          {% if row.screenshot1 %}<a href="/uploads/{{row.screenshot1}}">view</a>{% endif %}
+          {% if row.screenshot2 %}<a href="/uploads/{{row.screenshot2}}">view</a>{% endif %}
+         </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-* All times are in {{TIME_ZONE}}
+    * All times are in {{TIME_ZONE}}
 
+{% else %}
+No search results were returned
+{% endif %}
 
-{% else %}No search results were returned{% endif %}
-
-
+  </div>
+</div>
 {% endblock %}

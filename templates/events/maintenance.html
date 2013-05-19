@@ -29,216 +29,189 @@
       $("#s_date").datepicker({dateFormat: 'yy-mm-dd'});
 
       //Start Time
-      $("#s_time").timepicker({timeSeparator: ':'});
+      $("#s_time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
 
       //End Date
       $("#e_date").datepicker({dateFormat: 'yy-mm-dd'});
 
       //End Time
-      $("#e_time").timepicker({timeSeparator: ':'});
+      $("#e_time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
    });
-
-   // Setup the default text for the input and textarea fields
-   $(function(){
-      default_text_textarea("description","{{instr_maintenance_description}}");
-      default_text_textarea("impact","{{instr_maintenance_impact}}");
-      default_text_textarea("coordinator","{{instr_maintenance_coordinator}}");
-    });
 
 </script>
 
- {% if alert %}
- <div class="alert">
-  {{alert|safe}}
- </div>
- {% endif %}
+{% if alert %}
+<div class="row">
+  <div class="large-9 large-centered columns">
+    <div data-alert class="alert-box">
+      {{alert}}
+      <a href="#" class="close">&times;</a>
+    </div>
+  </div>
+</div>
+{% endif %}
  
 <br>
 
-<form enctype="multipart/form-data" method="POST" name="maintenance" id="maintenance" action="/maintenance">
-   {% csrf_token %}
+<form method="POST" name="maintenance" action="/maintenance">
+{% csrf_token %}
 
-<table class="container_top">
 
- <tr>
-  <th>Maintenance Description</th>
-  <th>Affected Services</th>
-  <th>Options</th>
- </tr>
+  <fieldset>
+    <legend>Create Maintenance</legend>
 
- <tr>
-  <td colspan="3" height="10"></td>
- </tr>
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">Start Time</span><br><br>
+      </div>
+    </div>
 
- <tr>
-  <td valign="top">
-   <table class="container">
-    <tr>
-     <td><b>Start</b></td>
-     <td>
-      <input type="text" class="input_date" name="s_date" id="s_date" value="{% if form.s_date.data %}{{form.s_date.data}}{% else %}Enter Date{% endif %}"/>
-      <input type="text" class="input_date" name="s_time" id="s_time" value="{% if form.s_time.data %}{{form.s_time.data}}{% else %}Enter Time{% endif %}"/>
-     </td>
-    </tr>
+    <div class="row">
+      <div class="large-6 columns">
+        <input type="text" class="input_date" name="s_date" id="s_date" placeholder="Enter date" value="{% if form.s_date.data %}{{form.s_date.data}}{% endif %}"/>
+        {% if form.s_date.errors %}
+          <small class="error">
+            {% for error in form.s_date.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}            
+      </div>
+      <div class="large-6 columns">
+        <input type="text" class="input_date" name="s_time" id="s_time" placeholder="Enter time" value="{% if form.s_time.data %}{{form.s_time.data}}{% endif %}"/>
+        {% if form.s_time.errors %}
+          <small class="error">
+            {% for error in form.s_time.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}            
+      </div>
+    </div>
 
-    {% if form.s_date.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-     {% for error in form.s_date.errors %}{{error}}{% endfor %} 
-    </tr>
-    {% endif %}
+   <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">End Time</span><br><br>
+      </div>
+    </div>
 
-    {% if form.s_time.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-     {% for error in form.s_time.errors %}{{error}}{% endfor %} 
-    </tr>
-    {% endif %}
+    <div class="row">
+      <div class="large-6 columns">
+        <input type="text" class="input_date" name="e_date" id="e_date" placeholder="Enter date" value="{% if form.e_date.data %}{{form.e_date.data}}{% endif %}"/>
+        {% if form.e_date.errors %}
+          <small class="error">
+            {% for error in form.e_date.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}            
+      </div>
+      <div class="large-6 columns">
+        <input type="text" class="input_date" name="e_time" id="e_time" placeholder="Enter time" value="{% if form.e_time.data %}{{form.e_time.data}}{% endif %}"/>
+        {% if form.e_time.errors %}
+          <small class="error">
+            {% for error in form.e_time.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}            
+      </div>
+    </div>
 
-    <tr>
-     <td><b>End</b></td>
-     <td>
-      <input type="text" class="input_date" name="e_date" id="e_date" value="{% if form.e_date.data %}{{form.e_date.data}}{% else %}Enter Date{% endif %}"/>
-      <input type="text" class="input_date" name="e_time" id="e_time" value="{% if form.e_time.data %}{{form.e_time.data}}{% else %}Enter Time{% endif %}"/>
-     </td>
-    </tr>
-    
-    {% if form.e_date.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-     {% for error in form.e_date.errors %}{{error}}{% endfor %} 
-    </tr>
-    {% endif %}
+     <div class="row">
+      <div class="large-12 columns">
+        Timezone: {{TIME_ZONE}}
+        <br>
+        <br>
+      </div>
+    </div>
 
-    {% if form.e_time.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-     {% for error in form.e_time.errors %}{{error}}{% endfor %} 
-    </tr>
-    {% endif %}
-
-    <tr>
-      <td></td>
-      <td>Timezone: {{TIME_ZONE}}</td>
-    </tr>
-    
-    <tr>
-     <td><b>Maintenance<br>Description</b></td>
-     <td>
-      <textarea class="textarea_detail" id="description" name="description" rows="5" cols="50">{% if form.description.data %}{{form.description.data}}{% endif %}</textarea>
-     </td>
-    </tr>
-    
-    {% if form.description.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-      {% for error in form.description.errors %}{{error}}{% endfor %}
-    </td>
-    </tr>
-    {% endif %}
-
-    <tr>
-     <td><b>Impact<br>Analysis</b></td>
-     <td>
-      <textarea class="textarea_detail" id="impact" name="impact" rows="5" cols="50">{% if form.impact.data %}{{form.impact.data}}{% endif %}</textarea>
-     </td>
-    </tr>
-    
-    {% if form.impact.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-      {% for error in form.impact.errors %}{{error}}{% endfor %}
-     </td>
-    </tr>
-    {% endif %}
-
-    <tr>
-     <td><b>Maintenance<br>Coordinator</b></td>
-     <td>
-      <textarea class="textarea_detail" id="coordinator" name="coordinator" rows="5" cols="50">{% if form.coordinator.data %}{{form.coordinator.data}}{% endif %}</textarea>
-     </td>
-    </tr>
-  
-    {% if form.coordinator.errors %}
-    <tr>
-     <td></td>
-     <td style="text-align:left; color:red; font-weight:bold;">  
-      {% for error in form.coordinator.errors %}{{error}}{% endfor %}
-     </td>
-    </tr>
-    {% endif %}
-
-   </table>
-  </td>
-  <td valign="top">
-   <table class="container_options">
-    {% for row in services %}
-    <tr>
-     {# See if this service was previously selected and this is a failed form submit #}
-     <td colspan="2">
-      <input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %}/>
-      {{row.service_name}}
-    </tr>
-    {% endfor %}
-
-    {% if form.service.errors %}
-    <tr>
-     <td colspan="2" style="text-align:left; color:red; font-weight:bold;">  
-      {% for error in form.service.errors %}{{error}}{% endfor %}
-      <br><br>
-     </td>
-    </tr>
-    {% endif %}
-   </table>
-  </td>
-  
-  <td valign="top">
-  
-   <table class="container_options">
-    <tr>
-     <td align="right"><input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked{% endif %}/></td>
-     <td>Broadcast Email</td>
-    </tr>
-  
-    {% if form.broadcast.errors %}
-    <tr>
-     <td colspan="2" style="text-align:left; color:red; font-weight:bold;">  
-      {% for error in form.broadcast.errors %}{{error}}{% endfor %}
-      <br><br>
-     </td>
-    </tr>
-    {% endif %}
-
-    <tr>
-     <td colspan="2">
-      <select name="recipient_id" id="recipient_id">
-        <option value="">-</option>
-       {% for recipient in recipients %}
-        {% if form.recipient_id.data|slugify == recipient.id|slugify %}
-        <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
-        {% else %} 
-        <option value="{{recipient.id}}">{{recipient.email_address}}</option>
+    <div class="row">
+      <div class="large-6 columns">
+        <span class="radius secondary label">Maintenance Description</span><br><br>
+        <textarea name="description" placeholder="{{instr_maintenance_description}}">{% if form.description.data %}{{form.description.data}}{% endif %}</textarea>
+        {% if form.description.errors %}
+        <small class="error">
+          {% for error in form.description.errors %}{{error}}{% endfor %}
+        </small>
         {% endif %}
-       {% endfor %}
-       </select>
-     </td>
-    </tr>
+      </div>
 
-    <tr>
-     <td colspan="2"><input type="submit" value="submit"/></td>
-    </tr>
-   </table>  
-  
-  </td>
- </tr>
+      <div class="large-6 columns">
+        <span class="radius secondary label">Impact Analysis</span><br><br>
+        <textarea name="impact" placeholder="{{instr_maintenance_impact}}">{% if form.impact.data %}{{form.impact.data}}{% endif %}</textarea>
+        {% if form.impact.errors %}
+        <small class="error">
+          {% for error in form.impact.errors %}{{error}}{% endfor %}
+        </small>
+        {% endif %}
+      </div>
+    </div>
 
-</table>
+    <div class="row">
+      <div class="large-6 columns">
+        <span class="radius secondary label">Maintenance Coordinator</span><br><br>
+        <textarea name="coordinator" placeholder="{{instr_maintenance_coordinator}}">{% if form.coordinator.data %}{{form.coordinator.data}}{% endif %}</textarea>
+        {% if form.coordinator.errors %}
+        <small class="error">
+          {% for error in form.coordinator.errors %}{{error}}{% endfor %}
+        </small>
+        {% endif %}
+      </div>
+
+      <div class="large-6 columns">
+        <span class="radius secondary label">Email</span><br><br>
+        <div class="row">
+          <div class="large-4 columns">
+            <label><input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked{% endif %} />
+            Broadcast Email</label>
+            {% if form.broadcast.errors %}
+            <br><br>
+            <small class="error">
+              {% for error in form.broadcast.errors %}{{error}}{% endfor %}
+            </small>
+            {% endif %}
+          </div>
+          <div class="large-8 columns">
+            <select name="recipient_id" id="recipient_id">
+              <option value="">-</option>
+             {% for recipient in recipients %}
+              {% if form.recipient_id.data|slugify == recipient.id|slugify %}
+              <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
+              {% else %} 
+              <option value="{{recipient.id}}">{{recipient.email_address}}</option>
+              {% endif %}
+             {% endfor %}
+             </select>
+           </div>
+        </div>
+      </div>
+    
+    </div>
+
+    <div class="row">
+      <div class="large-6 columns">
+        <span class="radius secondary label">Services Impacted</span><br><br>
+        {% for row in services %}
+          {# See if this service was previously selected and this is a failed form submit #}
+          <label><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %} />
+          {{row.service_name}}</label>
+          
+        {% endfor %}
+        {% if form.service.errors %}
+          <br>
+          <small class="error">
+            {% for error in form.service.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}
+      </div>
+    </div>
+
+     <div class="row">
+      <div class="large-12 columns">
+        <input type="submit" class="small button" value="submit"/>
+      </div>
+    </div>
+
+  </fieldset>
 </form>
 
 {% endblock %}

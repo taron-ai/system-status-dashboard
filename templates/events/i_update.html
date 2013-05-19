@@ -29,7 +29,10 @@
       $("#date").datepicker({dateFormat: 'yy-mm-dd'});
 
       //Time
-      $("#time").timepicker();
+      $("#time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
 
    });
    

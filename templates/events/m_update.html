@@ -29,13 +29,19 @@
       $("#s_date").datepicker({dateFormat: 'yy-mm-dd'});
 
       //Start Time
-      $("#s_time").timepicker({timeSeparator: ':'});
+      $("#s_time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
 
       //End Date
       $("#e_date").datepicker({dateFormat: 'yy-mm-dd'});
 
       //End Time
-      $("#e_time").timepicker({timeSeparator: ':'});
+      $("#e_time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
    });
 
    // Setup the default text for the input and textarea fields

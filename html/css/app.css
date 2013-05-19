@@ -52,6 +52,7 @@ table th {
 
 table td {
    border:1px solid #B0C5D0;
+   vertical-align: top;
 }
 
 table.border_top {

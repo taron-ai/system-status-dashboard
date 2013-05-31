@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,12 +22,11 @@
 
 <div id="help" class="reveal-modal">
   <h2>Help</h2>
-  <p class="lead">{{alert}}</p>
+  <p class="lead">{{help|safe}}</p>
   <a class="close-reveal-modal">&#215;</a>
 </div>
 
-
-<form method="POST" name="report" action="/report">
+<form enctype="multipart/form-data" method="POST" name="report" action="/report">
 {% csrf_token %}
 
 <fieldset>
@@ -40,7 +39,7 @@
   </div>
 
   <div class="row">
-    <div class="large-6 columns">
+    <div class="large-6 columns {% if form.name.errors %}error{% endif %}">
       <input type="text" name="name" placeholder="{{instr_report_name}}" value="{% if not form.name.data == None %}{{form.name.data}}{% endif %}" />
       {% if form.name.errors %}
       <small class="error">
@@ -49,7 +48,7 @@
       {% endif %}
     </div>
 
-    <div class="large-6 columns">
+    <div class="large-6 columns {% if form.email.errors %}error{% endif %}">
       <input type="text" name="email" placeholder="{{instr_report_email}}" maxlength="50" value="{% if not form.email.data == None %}{{form.email.data}}{% endif %}" />
       {% if form.email.errors %}
       <small class="error">
@@ -66,7 +65,7 @@
   </div>
 
   <div class="row">
-    <div class="large-12 columns">
+    <div class="large-12 columns {% if form.detail.errors %}error{% endif %}">
       <textarea class="small" name="detail" placeholder="{{instr_report_detail}}" maxlength="160">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea>
       {% if form.detail.errors %}
       <small class="error">
@@ -77,7 +76,7 @@
   </div>
 
   <div class="row">
-    <div class="large-12 columns">
+    <div class="large-12 columns {% if form.extra.errors %}error{% endif %}">
       <textarea name="extra" placeholder="{{instr_report_extra}}" maxlength="1000">{% if not form.extra.data == None %}{{form.extra.data}}{% endif %}</textarea>
       {% if form.extra.errors %}
       <small class="error">
@@ -98,7 +97,7 @@
   </div>
 
   <div class="row">
-    <div class="large-6 columns">
+    <div class="large-6 columns {% if form.screenshot1.errors %}error{% endif %}">
       {{form.screenshot1}}
       {% if form.screenshot1.errors %}
       <small class="error">
@@ -107,7 +106,7 @@
       {% endif %}
     </div>
 
-    <div class="large-6 columns">
+    <div class="large-6 columns {% if form.screenshot2.errors %}error{% endif %}">
       {{form.screenshot2}}
       {% if form.screenshot2.errors %}
       <small class="error">
@@ -122,9 +121,7 @@
   <div class="row">
     <div class="large-12 columns">
       <input type="submit" class="small button" value="submit"/>
-      {% if alert %}
-      &nbsp;&nbsp;<a href="#" data-reveal-id="help" class="small button">Help</a>
-      {% endif %}
+      &nbsp;<a href="#" data-reveal-id="help" class="small button">help</a>
     </div>
   </div>
 

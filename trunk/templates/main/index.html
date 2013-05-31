@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,20 +27,81 @@
       $("#jump_to").datepicker({dateFormat: 'yy-mm-dd'});
    });
 
+   $(function() {
+      $("#settings_button").click(function () {
+        $("#settings").slideToggle("slow");
+      });
+    });
 </script>
+
+<div class="row">
+  <div class="large-8 columns"></div>
+  <div class="large-4 columns">
+    <div class="panel" id="settings" style="display: none;">
+
+      <div class="row">
+        <div class="large-11 columns">
+          <p class="small">Set your timezone to adjust all dates/times to your location or jump to a specific date in the calendar.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-2 columns"><p class="small">Timezone:</p></div>
+        <div class="large-9 columns">
+           <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post">
+           {% csrf_token %}
+             <select name="timezone" id="timezone" onchange='this.form.submit()'>
+             {% for timezone in timezones %}
+              {% if timezone == TIME_ZONE %}
+               <option value="{{timezone}}" selected="true">{{timezone}}</option>
+              {% else %}
+               <option value="{{timezone}}">{{timezone}}</option>
+              {% endif %}
+             {% endfor %}
+             </select>
+          </form>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-2 columns"><p class="small">Jump To:</p></div>
+        <div class="large-9 columns">
+          <form name="prefs_jump" action="/prefs/jump" method="post">
+           {% csrf_token %}
+          <input type="text" class="jump_to" name="jump_to" id="jump_to" placeholder="Enter date" onchange='this.form.submit()'/>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-11 columns">
+    <p>{{information|safe}}</p>
+  </div>
+  <div class="large-1 columns">
+    <img id="settings_button" class="has-top" data-tooltip title="Preferences" src="/html/images/gear.png">
+  </div>
+</div>
+
+<div class="spacer_small"></div>
 
 {% if alert %}
 <div class="row">
-  <div class="large-9 large-centered columns">
-    <div class="panel callout radius">
+  <div class="large-10 large-centered columns">
+    <div class="panel callout radius" style="background: #D45757;">
       {{alert}}
     </div>
   </div>
 </div>
 {% endif %}
 
+
+
 <div class="row">
-  <div class="large-12 columns">
+  <div class="large-12 large-centered columns">
     <table class="responsive border_top">
      {% for row in data %}
        {% if forloop.first %}
@@ -121,36 +182,6 @@
         </tr>
     </table>
   </div>
-</div>
-
-<div class="row">
-  <div class="large-1 columns">Timezone:</div>
-  <div class="large-3 columns">
-     <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post" style="margin: 0px; padding: 0px;">
-     {% csrf_token %}
-     <select name="timezone" onchange='this.form.submit()'>
-     {% for timezone in timezones %}
-      {% if timezone == TIME_ZONE %}
-       <option value="{{timezone}}" selected="true">{{timezone}}</option>
-      {% else %}
-       <option value="{{timezone}}">{{timezone}}</option>
-      {% endif %}
-     {% endfor %}
-     </select>
-    </form>
-  </div>
-  <div class="large-8 columns"></div>
-</div>
-
-<div class="row">
-  <div class="large-1 columns">Jump To:</div>
-  <div class="large-3 columns">
-    <form name="prefs_jump" id="prefs_jump" action="/prefs/jump" method="post" style="margin: 0px; padding: 0px;">
-     {% csrf_token %}
-    <input type="text" class="jump_to" name="jump_to" id="jump_to" placeholder="Enter date" onchange='this.form.submit()'/>
-    </form>
-  </div>
-  <div class="large-8 columns"></div>
 </div>
 
 {% endblock %}

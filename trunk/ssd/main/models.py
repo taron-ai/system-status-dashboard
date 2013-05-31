@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,29 +45,17 @@ class Config(models.Model):
     category = models.CharField(max_length=15,blank=False)
     display = models.CharField(max_length=8,blank=False)
 
-    # Represent the object as unicode
-    def __unicode__(self):
-        return self.config_name
-
 
 class Service(models.Model):
     """Services that will be monitored"""
 
     service_name = models.CharField(max_length=50, unique=True,null=False,blank=False)
 
-    # Represent the object as unicode
-    def __unicode__(self):
-        return self.service_name
-
 
 class Recipient(models.Model):
     """Email addresses that will be used for alerting"""
 
     email_address = models.CharField(max_length=100,unique=True,null=False,blank=False)
-
-    # Represent the object as unicode
-    def __unicode__(self):
-        return self.email_address
 
 
 class Incident(models.Model):
@@ -79,10 +67,6 @@ class Incident(models.Model):
     email_address = models.ForeignKey(Recipient,null=True,blank=True)
     user = models.ForeignKey(User)
 
-    # Represent the objects as unicode
-    def __unicode__(self):
-        return u'%s,%s' % (self.date,self.detail)
-
 
 class Incident_Update(models.Model):
     """Updates to incidents"""
@@ -92,20 +76,12 @@ class Incident_Update(models.Model):
     detail = models.CharField(max_length=1000)
     user = models.ForeignKey(User)
 
-    # Represent the objects as unicode
-    def __unicode__(self):
-        return u'%s %s %s' % (self.date,self.incident,self.detail)
-
 
 class Service_Issue(models.Model):
     """Used to tie services to issues so that one issue can impact multiple services"""
 
     service_name = models.ForeignKey(Service)
     incident = models.ForeignKey(Incident)
-
-    # Represent the objects as unicode
-    def __unicode__(self):
-        return u'%s %s' % (self.service_name,self.incident)
 
 
 class Maintenance(models.Model):
@@ -121,10 +97,6 @@ class Maintenance(models.Model):
     started = models.BooleanField()
     completed = models.BooleanField()
 
-    # Represent the objects as unicode
-    def __unicode__(self):
-        return u'%s,%s' % (self.start,self.description)
-
 
 class Maintenance_Update(models.Model):
     """Updates to incidents"""
@@ -134,20 +106,12 @@ class Maintenance_Update(models.Model):
     user = models.ForeignKey(User)
     detail = models.CharField(max_length=1000)
 
-    # Represent the objects as unicode
-    def __unicode__(self):
-        return u'%s %s %s' % (self.date,self.maintenance,self.detail)
-
 
 class Service_Maintenance(models.Model):
     """Used to tie services to scheduled maintenance so that one maintenance can impact multiple services"""
 
     service_name = models.ForeignKey(Service)
     maintenance = models.ForeignKey(Maintenance)
-
-    # Represent the objects as unicode
-    def __unicode__(self):
-        return u'%s %s' % (self.service_name,self.maintenance)
 
 
 class Report(models.Model):
@@ -169,7 +133,7 @@ class Report(models.Model):
         extension = os.path.splitext(filename)[1]
 
         # Return the path and file
-        return 'screenshots/%s/%s%s' % (file_path,file_name,extension)
+        return 'uploads/screenshots/%s/%s%s' % (file_path,file_name,extension)
 
     date = models.DateTimeField(null=False,blank=False)
     name = models.CharField(null=False,blank=False,max_length=50)

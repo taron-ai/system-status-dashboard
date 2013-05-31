@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
       <legend>Manage Services</legend>
 
       {% if services %}
-      <table class="standard">
+      <table class="responsive standard">
        <tr>
         <th>Delete</th>
         <th>Service Name</th>
@@ -76,7 +76,7 @@
       </div>
 
       <div class="row">
-        <div class="large-12 columns">
+        <div class="large-12 columns {% if form.service.errors %}error{% endif %}">
           <input name="service" type="text" placeholder="Enter a service name" value="{% if form.service.data %}{{form.service.data}}{% endif %}">
           {% if form.service.errors %}
           <small class="error">

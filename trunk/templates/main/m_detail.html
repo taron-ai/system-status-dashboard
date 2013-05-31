@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@
 
 <div class="row">
   <div class="large-12 columns">
-    <table class="responsive">
+    <table class="responsive standard">
       <thead>
         <tr>
           <th colspan="2">Maintenance Details</th>
@@ -86,6 +86,10 @@
           <td>Coordinator</td>
           <td>{{detail.0.coordinator|linebreaksbr}}</td>
         </tr>
+        <tr>
+          <td>Email Notifications:</td>
+          <td>{% if detail.0.email_address_id__email_address %}{{detail.0.email_address_id__email_address}}{% else %}Notifications are not enabled for this maintenance{% endif %}</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -99,7 +103,7 @@
 
 <div class="row">
   <div class="large-12 columns">
-    <table class="responsive">
+    <table class="responsive standard">
       <thead>
         <tr>
           <th colspan="3">Maintenance Updates</th>
@@ -135,13 +139,23 @@
 {% if user.is_authenticated %}
 <div class="row">
   <div class="large-4 columns">
-    <form method="POST" name="m_delete" action="/m_delete">
-      {% csrf_token %}
-      
-      <a href="/m_update?id={{id}}" class="small button">update</a>&nbsp;&nbsp;
-      <input type="hidden" name="id" value="{{id}}">
-      <input type="submit" class="small button" value="delete"/>
-    </form>
+    <div class="horiz_stack">
+      <form method="POST" name="m_delete" action="/m_delete">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{id}}">      
+        <input type="submit" class="small button" value="delete"/>
+      </form>
+    </div>
+    <div class="horiz_stack">
+      <a href="/m_update?id={{id}}" class="small button">update</a>
+    </div>
+    <div class="horiz_stack">
+      <form method="POST" name="m_email" action="/m_email">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{id}}">      
+        <input type="submit" class="small button" value="email reminder"/>
+      </form>
+    </div>
   </div>
 </div>
 {% endif %}

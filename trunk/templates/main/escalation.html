@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,23 +20,19 @@
 
 {% block content %}
 
-{% if alert %}
 <div class="row">
   <div class="large-8 large-centered columns">
-    <div data-alert class="alert-box">
-      {{alert}}
-      <a href="#" class="close">&times;</a>
-    </div>
+    {{help|safe}}
+    <hr>
   </div>
 </div>
-{% endif %}
 
-<br>
+<div class="spacer_medium"></div>
 
 {% if contacts %}
   {% for contact in contacts %}
     <div class="row">
-      <div class="large-4 large-centered columns">
+      <div class="large-5 large-centered columns">
         <div class="panel">
           {{contact.name}}
    	      <br>
@@ -61,7 +57,11 @@
   {% endfor %}
 
 {% else %}
-THERE ARE CURRENTLY NO ESCALATION CONTACTS DEFINED.
+    <div class="row">
+      <div class="large-5 large-centered columns">
+        <p>THERE ARE CURRENTLY NO ESCALATION CONTACTS DEFINED.</p>
+      </div>
+    </div>
 {% endif %}
 
 {% endblock %}

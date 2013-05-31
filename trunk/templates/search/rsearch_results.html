@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@
 {% block content %}
 
 <div class="row">
-  <div class="large-6 large-centered columns">
+  <div class="large-12 large-centered columns">
 
   {% if results %}
 
-    <table class="responsive">
+    <table class="responsive standard">
       <thead>
         <tr>
          <th>ID</th>
@@ -48,15 +48,15 @@
          <td>{{row.detail|linebreaksbr}}</td>
          <td>{{row.extra|linebreaksbr}}</td>
          <td>
-          {% if row.screenshot1 %}<a href="/uploads/{{row.screenshot1}}">view</a>{% endif %}
-          {% if row.screenshot2 %}<a href="/uploads/{{row.screenshot2}}">view</a>{% endif %}
+          {% if row.screenshot1 %}<a href="{{row.screenshot1}}">view</a>{% endif %}
+          {% if row.screenshot2 %}<a href="{{row.screenshot2}}">view</a>{% endif %}
          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    * All times are in {{TIME_ZONE}}
+    <p>* All times are in {{TIME_ZONE}}</p>
 
 {% else %}
 No search results were returned

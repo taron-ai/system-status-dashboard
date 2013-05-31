@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@
     </div>
 
     <div class="row">
-      <div class="large-6 columns">
+      <div class="large-6 columns {% if form.s_date.errors %}error{% endif %}">
         <input type="text" name="s_date" id="s_date" placeholder="Enter Date" value="{% if form.s_date.data %}{{form.s_date.data}}{% endif %}"/>
         {% if form.s_date.errors %}
         <small class="error">
@@ -68,7 +68,7 @@
         {% endif %}
       </div>
 
-      <div class="large-6 columns">
+      <div class="large-6 columns {% if form.s_time.errors %}error{% endif %}">
         <input type="text" name="s_time" id="s_time" placeholder="Enter Time" value="{% if form.s_time.data %}{{form.s_time.data}}{% endif %}"/>
         {% if form.s_time.errors %}
         <small class="error">
@@ -85,7 +85,7 @@
     </div>
 
     <div class="row">
-      <div class="large-6 columns">
+      <div class="large-6 columns {% if form.e_date.errors %}error{% endif %}">
         <input type="text" name="e_date" id="e_date" placeholder="Enter Date" value="{% if form.e_date.data %}{{form.e_date.data}}{% endif %}"/>
         {% if form.e_date.errors %}
         <small class="error">
@@ -94,7 +94,7 @@
         {% endif %}
       </div>
 
-      <div class="large-6 columns">
+      <div class="large-6 columns {% if form.e_time.errors %}error{% endif %}">
         <input type="text" name="e_time" id="e_time" placeholder="Enter Time" value="{% if form.e_time.data %}{{form.e_time.data}}{% endif %}"/>
         {% if form.e_time.errors %}
         <small class="error">
@@ -106,7 +106,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        Timezone: {{TIME_ZONE}}<br><br>
+        <p>Timezone: {{TIME_ZONE}}</p>
       </div>
     </div>
 
@@ -117,7 +117,7 @@
     </div>
 
     <div class="row">
-      <div class="large-6 columns">
+      <div class="large-6 columns {% if form.text.errors %}error{% endif %}">
         <input type="text" name="text" placeholder="Enter search text" value=""/>
         {% if form.text.errors %}
         <small class="error">

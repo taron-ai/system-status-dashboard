@@ -29,7 +29,7 @@
       <thead>
         <tr>
          <th>ID</th>
-         <th>Date Submitted</th>
+         <th>Date Submitted*</th>
          <th>Submitted By</th>
          <th>Email</th>
          <th>Description</th>
@@ -48,8 +48,8 @@
          <td>{{row.detail|linebreaksbr}}</td>
          <td>{{row.extra|linebreaksbr}}</td>
          <td>
-          {% if row.screenshot1 %}<a href="{{row.screenshot1}}">view</a>{% endif %}
-          {% if row.screenshot2 %}<a href="{{row.screenshot2}}">view</a>{% endif %}
+          {% if row.screenshot1 %}<a href="{{row.screenshot1}}"><img src="{{row.screenshot1}}" width="35" height="35"></a>{% endif %}
+          {% if row.screenshot2 %}<a href="{{row.screenshot2}}"><img src="{{row.screenshot2}}" width="35" height="35"></a>{% endif %}
          </td>
         </tr>
         {% endfor %}

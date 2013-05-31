@@ -251,7 +251,7 @@ def install():
     django_admin=raw_input('8: Enter the path to the DJango admin static files\n#>').strip()
     apache_uid=raw_input('9: Enter the uid of the apache user\n#>').strip()
     wsgi_dir=raw_input('10: Enter the path to the Apache mod_wsgi.so module\n#>').strip()
-    upload_dir=raw_input('11: Enter the path to the screenshot upload directory\n#>').strip()
+    upload_dir=raw_input('11: Enter the path to the screenshot upload directory (It is recommended that you select /opt/ssd-local)\n#>').strip()
 
     install_text = """You have entered the following options:\n
             - SSD Source            : %s

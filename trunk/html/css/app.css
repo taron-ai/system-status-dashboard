@@ -55,6 +55,14 @@ p.small{
 }
 
 
+/* FONTS */
+/* small fonts for disabled */
+font.disabled {
+   font-size: 12px;
+   font-weight: bold;
+   color: blue;
+}
+
 
 /* TOOLTIPS */
 /* Background and border */

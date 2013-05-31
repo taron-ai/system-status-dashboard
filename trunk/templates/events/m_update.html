@@ -104,12 +104,6 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns">
-        <p>Timezone: {{TIME_ZONE}}</p>        
-      </div>
-    </div>
-
-    <div class="row">
       <div class="large-6 columns {% if form.description.errors %}error{% endif %}">
         <span class="radius secondary label">Maintenance Description</span><br><br>
         <textarea name="description" placeholder="{{instr_maintenance_description}}" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% else %}{{details.0.description}}{% endif %}</textarea>
@@ -189,11 +183,11 @@
 
     <div class="row">
       <div class="large-6 columns">
-        <span class="radius secondary label">Email</span><br><br>
+        <span class="radius secondary label">Email</span>&nbsp;{% if not notifications == 1 %}<font class="disabled">(disabled)</font>{% endif %}<br><br>
         <div class="row">
           <div class="large-4 columns {% if form.broadcast.errors %}error{% endif %}">
           {# Check the box if this is a failed form submit or if broadcast is set in the DB #}
-          <label><input type="checkbox" name="broadcast" {% if details.0.email_address_id %}checked{% else %}{% if form.broadcast.data %}checked{% endif %}{% endif %} />
+          <label><input type="checkbox" {% if not notifications == 1 %}disabled{% endif %} name="broadcast" {% if details.0.email_address_id %}checked{% else %}{% if form.broadcast.data %}checked{% endif %}{% endif %} />
           Broadcast Email</label>
           {% if form.broadcast.errors %}
           <br><br>
@@ -203,7 +197,7 @@
           {% endif %}
           </div>
           <div class="large-8 columns">
-          <select name="recipient_id" id="recipient_id">
+          <select name="recipient_id" {% if not notifications == 1 %}disabled{% endif %}>
             <option value="">-</option>
             {% for recipient in recipients %}
               {# We need to check if its a failed form submit and then if it set in the db #}

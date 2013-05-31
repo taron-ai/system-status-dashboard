@@ -237,12 +237,13 @@ def incident(request):
                     if re.match(r'^\d+$', service_id):
                         Service_Issue(service_name_id=service_id,incident_id=incident_id[0]['id']).save()
 
-            # Send an email notification to the appropriate list
-            # about this issue if requested.  Broadcast won't be
+            # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
             # allowed to be true if an email address is not defined.
-            if broadcast:
-                email = notify.email()
-                email.incident(incident_id[0]['id'],recipient_id,set_timezone,True)
+            # Don't send an email if notifications are disabled
+            if int(cv.value('notify')) == 1:
+                if broadcast:
+                    email = notify.email()
+                    email.incident(incident_id[0]['id'],recipient_id,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # incident
@@ -281,6 +282,9 @@ def incident(request):
     # Help message
     help = cv.value('help_create_incident')
 
+    # See if email notifications are enabled
+    notifications = int(cv.value('notify'))
+
     # Obtain the incident description text
     instr_incident_description = cv.value('instr_incident_description')
 
@@ -295,6 +299,7 @@ def incident(request):
           'form':form,
           'time_now':time_now,
           'help':help,
+          'notifications':notifications,
           'instr_incident_description':instr_incident_description
 
        },
@@ -388,21 +393,21 @@ def i_update(request):
             else:
                 Incident.objects.filter(id=id).update(closed=None)
 
-            # Send an email notification to the appropriate list
-            # about this issue if requested.  Broadcast won't be
+            # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
             # allowed to be true if an email address is not defined.
-            if broadcast:
+            # Don't send an email if notifications are disabled
+            if int(cv.value('notify')) == 1:
+                if broadcast:
+                    # Update the email address
+                    recipient = Recipient.objects.filter(id=recipient_id).values('email_address')
+                    Incident.objects.filter(id=id).update(email_address=recipient_id)
 
-                # Update the email address
-                recipient = Recipient.objects.filter(id=recipient_id).values('email_address')
-                Incident.objects.filter(id=id).update(email_address=recipient_id)
-
-                email = notify.email()
-                email.incident(id,recipient_id,set_timezone,False)
+                    email = notify.email()
+                    email.incident(id,recipient_id,set_timezone,False)
             
-            # If broadcast is not selected, turn off emails
-            else:
-                Incident.objects.filter(id=id).update(email_address=None)
+                # If broadcast is not selected, turn off emails
+                else:
+                    Incident.objects.filter(id=id).update(email_address=None)
 
 
             # All done so redirect to the incident detail page so
@@ -462,6 +467,9 @@ def i_update(request):
     # Obtain all current email addresses
     recipients = Recipient.objects.values('id','email_address')
 
+    # See if email notifications are enabled
+    notifications = int(cv.value('notify'))
+
     # Obtain the incident update text
     instr_incident_update = cv.value('instr_incident_update')
 
@@ -479,6 +487,7 @@ def i_update(request):
           'id':id,
           'form':form,
           'recipients':recipients,
+          'notifications':notifications,
           'time_now':time_now,
           'instr_incident_update':instr_incident_update
        },
@@ -616,11 +625,12 @@ def maintenance(request):
                     if re.match(r'^\d+$', service_id):
                         Service_Maintenance(service_name_id=service_id,maintenance_id=maintenance_id[0]['id']).save()
 
-            # Send an email notification to the appropriate list
-            # about this maintenance, if requested
-            if broadcast:
-                email = notify.email()
-                email.maintenance(maintenance_id[0]['id'],recipient_id,set_timezone,True)
+            # Send an email notification to the appropriate list about this maintenance, if requested
+            # Don't send an email if notifications are disabled
+            if int(cv.value('notify')) == 1:
+                if broadcast:
+                    email = notify.email()
+                    email.maintenance(maintenance_id[0]['id'],recipient_id,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # maintenance
@@ -650,6 +660,9 @@ def maintenance(request):
     # Help message
     help = cv.value('help_sched_maint')
 
+    # See if email notifications are enabled
+    notifications = int(cv.value('notify'))
+
     # Obtain the default maintenance textfield text
     instr_maintenance_description = cv.value('instr_maintenance_description')
     instr_maintenance_impact = cv.value('instr_maintenance_impact')
@@ -665,6 +678,7 @@ def maintenance(request):
           'services':services,
           'affected_svcs':tuple(affected_svcs),
           'recipients':recipients,
+          'notifications':notifications,
           'instr_maintenance_description':instr_maintenance_description,
           'instr_maintenance_impact':instr_maintenance_impact,
           'instr_maintenance_coordinator':instr_maintenance_coordinator
@@ -778,21 +792,21 @@ def m_update(request):
                                                      completed=completed
                                                     )
 
-            # Send an email notification to the appropriate list
-            # about this issue if requested.  Broadcast won't be
+            # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
             # allowed to be true if an email address is not defined.
-            if broadcast:
+            # Don't send an email if notifications are disabled
+            if int(cv.value('notify')) == 1:
+                if broadcast:
+                    # Update the email address
+                    recipient = Recipient.objects.filter(id=recipient_id).values('email_address')
+                    Maintenance.objects.filter(id=id).update(email_address=recipient_id)
 
-                # Update the email address
-                recipient = Recipient.objects.filter(id=recipient_id).values('email_address')
-                Maintenance.objects.filter(id=id).update(email_address=recipient_id)
-
-                email = notify.email()
-                email.maintenance(id,recipient_id,set_timezone,False)
+                    email = notify.email()
+                    email.maintenance(id,recipient_id,set_timezone,False)
             
-            # If broadcast is not selected, turn off emails
-            else:
-                Maintenance.objects.filter(id=id).update(email_address=None)
+                # If broadcast is not selected, turn off emails
+                else:
+                    Maintenance.objects.filter(id=id).update(email_address=None)
 
             # All done so redirect to the maintenance detail page so
             # the new data can be seen.
@@ -864,6 +878,9 @@ def m_update(request):
     # Obtain all current email addresses
     recipients = Recipient.objects.values('id','email_address')
 
+    # See if email notifications are enabled
+    notifications = int(cv.value('notify'))
+
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
@@ -889,6 +906,7 @@ def m_update(request):
           'e_date':e_date,
           'e_time':e_time,
           'recipients':recipients,
+          'notifications':notifications,
           'instr_maintenance_description':instr_maintenance_description,
           'instr_maintenance_impact':instr_maintenance_impact,
           'instr_maintenance_coordinator':instr_maintenance_coordinator,

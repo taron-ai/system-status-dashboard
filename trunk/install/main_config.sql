@@ -28,9 +28,7 @@ CREATE TABLE `main_config` (
 ) ENGINE=MyISAM AUTO_INCREMENT=42 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `main_config`
---
+
 
 LOCK TABLES `main_config` WRITE;
 /*!40000 ALTER TABLE `main_config` DISABLE KEYS */;
@@ -48,7 +46,7 @@ INSERT INTO `main_config` VALUES
 (11,'recipient_pager','Pager Recipient','/dev/null','The email address that will receive user generated incident notifications.  These messages will be constrained to 160 characters.','email_addresses','string'),
 (12,'message_success','Message Success','Your message has been successfully processed.  Our Engineers will be in touch.','The success message that will be displayed to a user who has submitted an incident report.','email_text','string'),
 (13,'message_error','Message Error','There was an error processing your message.  Please contact your system administrator.','The error message that will be displayed when a user submits an incident report but an error was encountered in processing the email.','email_text','string'),
-(14,'notify','Notify','1','Whether or not to enable email notifications.','functionality','boolean'),
+(14,'notify','Notify','0','Whether or not to enable email notifications.','functionality','boolean'),
 (15,'instr_maintenance_description','Create Maintenance : Description','Enter a complete description for this maintenance.','n/a','instructions','string'),
 (16,'instr_maintenance_impact','Create Maintenance : Impact Analysis','Enter the impact analysis.','n/a','instructions','string'),
 (17,'instr_maintenance_coordinator','Create Maintenance : Coordinator','Enter the name and contact details for the maintenance coordinator.','n/a','instructions','string'),
@@ -74,7 +72,7 @@ INSERT INTO `main_config` VALUES
 (37,'help_create_incident','Create Incident','When creating an incident, please keep the following guidelines in mind:<ol><li>Provide a human friendly description of the incident.</li><li>You must select at least one impacted service.</li><li>If you would like to broadcast a message to an individual or an email distribution list about the incident, the address must be defined first.</li><li>The date/time should reflect the actual date/time the incident began.</li><li>The date/time should be in your own timezone.</li></ol>','Help instructions that will be displayed on the create incident page.','help','string'),
 (38,'help_escalation','Escalation','If you reported an incident via the <a href="/report">Report Incident</a> link and have not received confirmation that our engineers are investigating the problem, please follow the below escalation path. If you are unable to make contact, please leave a voice message, wait 5 minutes for a response, and escalate to the next contact on the list.','Help instructions that will be displayed on the escalation page.','help','string'),
 (39,'enable_uploads','Incident Report File Uploads','0','Whether or not to allow users to upload screenshots when reporting incidents','file_uploads','boolean'),
-(40,'upload_path','Incident Report Upload Path','','The path on the local (or shared) filesystem where image uploads will be saved.  This path must be writeable by the user running the Apache webserver.  You may need to restart the Apache server after changing this value for the application to recognize the change.','file_uploads','string'),
+(40,'upload_path','Incident Report Upload Path','/opt/ssd-local','The path on the local (or shared) filesystem where image uploads will be saved.  This path must be writeable by the user running the Apache webserver.  You may need to restart the Apache server after changing this value for the application to recognize the change.','file_uploads','string'),
 (41,'file_upload_size','Maximum File Upload Size','1024','The maximum size (in bytes) allowed for user uploaded screenshots','file_uploads','string'),
 (42,'ssd_url','SSD URL','','The SSD url that will be displayed on communication sent from this SSD server','urls','string'),
 (43,'information_main','Main System Greeting','This dashboard displays status information for all critical services.  The dashboard will be updated whenever status information for any service changes.  Please check back here at any time to obtain current status information.<br><br>To report a problem with a service, please use the <a href="/report">Report Incident</a> link.','The information that will be displayed above the main status dashboard','information','string')

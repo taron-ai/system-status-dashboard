@@ -25,7 +25,7 @@ $(document).ready(function () {
 //If a table has more than 3 tds show visual scroll cue
 
   $("table.responsive").each(function () {
-    if ($("td", this).length > 3) {
+    if ($("td", this).length >= 3) {
         $(this).before("<div style='position:relative;'><span class='MobiScroll'></span></div>");
       }
   });

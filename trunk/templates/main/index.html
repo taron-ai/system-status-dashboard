@@ -82,7 +82,7 @@
     <p>{{information|safe}}</p>
   </div>
   <div class="large-1 columns">
-    <img id="settings_button" class="has-top" data-tooltip title="Preferences" src="/html/images/gear.png">
+    <img id="settings_button" data-options="disable-for-touch:true" class="has-top" title="Preferences" src="/html/images/gear.png">
   </div>
 </div>
 
@@ -108,9 +108,9 @@
          <tr>
           {% for heading in row %}
            {% if forloop.first %}
-            <th>{{heading}}</th>
+            <th style="min-width: 200px;">{{heading}}</th>
            {% else %}
-            <th>{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
+            <th style="min-width: 100px;">{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
            {% endif %}
           {% endfor %}
          </tr>
@@ -169,8 +169,8 @@
             <a href="{{forward_link}}">newer >>></a>
             {% endif %}
           </td>
-          <td class="td_border_top" style="text-align: right;"><b>Key:</b></td>
-          <td class="td_border_top" colspan="6">
+          <td class="td_border_top" style="text-align: right; font-size: 12px;"><b>Key:</b></td>
+          <td class="td_border_top" colspan="6" style="min-width: 600px; font-size: 12px;">
             <img src="/html/images/incident_green.png">&nbsp;Service Normal
             &nbsp;&nbsp;
             <img src="/html/images/incident_red.png">&nbsp;Service Disruption

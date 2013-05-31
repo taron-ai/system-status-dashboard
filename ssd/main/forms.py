@@ -60,6 +60,12 @@ class MultipleServiceField(forms.Field):
 ### FORMS ###
 
 
+class DetailForm(forms.Form):
+    """Form for obtaining the detail about an existing event (incident or maintenance)"""
+
+    id = forms.IntegerField()
+
+
 class DeleteEventForm(forms.Form):
     """Form for deleting an existing event (incident or maintenance)"""
 

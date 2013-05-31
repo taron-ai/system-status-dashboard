@@ -62,11 +62,11 @@
       </div>
 
       <div class="large-7 columns">
-        <span class="radius secondary label">Email</span><br><br>
+        <span class="radius secondary label">Email</span>&nbsp;{% if not notifications == 1 %}<font class="disabled">(disabled)</font>{% endif %}<br><br>
         <div class="row">
           
           <div class="large-4 columns {% if form.broadcast.errors %}error{% endif %}">
-            <label><input type="checkbox" name="broadcast" {% if form.broadcast.data %}checked{% endif %} />
+            <label><input type="checkbox" {% if not notifications == 1 %}disabled{% endif %} name="broadcast" {% if form.broadcast.data %}checked{% endif %} />
             Broadcast Email</label>
             {% if form.broadcast.errors %}
             <br><br>
@@ -77,7 +77,7 @@
           </div>
 
           <div class="large-8 columns left">
-            <select name="recipient_id">
+            <select name="recipient_id" {% if not notifications == 1 %}disabled{% endif %}>
               <option value="">-</option>
              {% for recipient in recipients %}
               {% if form.recipient_id.data|slugify == recipient.id|slugify %}
@@ -145,8 +145,6 @@
 
   </fieldset>
 </form>
-
-<p>Timezone: {{TIME_ZONE}}</p>
 
 {% endblock %}
 

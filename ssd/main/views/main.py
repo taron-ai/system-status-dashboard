@@ -37,6 +37,7 @@ from ssd.main.models import Maintenance
 from ssd.main.models import Maintenance_Update
 from ssd.main.models import Service_Maintenance
 from ssd.main.models import Escalation
+from ssd.main.forms import DetailForm
 from ssd.main import notify
 from ssd.main import config_value
 
@@ -296,15 +297,18 @@ def i_detail(request):
 
     """
 
-    try:
-        # Obtain the query parameters
-        id = request.GET['id']
-    except KeyError, e:
-        return system_message(request,True,e)
+    form = DetailForm(request.GET)
 
-    # Ensure the id is well formed
-    if not re.match(r'^\d+$', request.GET['id']):
+    if form.is_valid():
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+
+    # Bad form
+    else:
         return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
+
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
 
     # Which services were impacted
     services = Service_Issue.objects.filter(incident_id=id).values('service_name_id__service_name')
@@ -322,6 +326,9 @@ def i_detail(request):
     else:
         set_timezone = request.COOKIES.get('timezone')
 
+    # See if email notifications are enabled
+    notifications = int(cv.value('notify'))
+
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
@@ -333,7 +340,8 @@ def i_detail(request):
           'services':services,
           'id':id,
           'detail':detail,
-          'updates':updates
+          'updates':updates,
+          'notifications':notifications
        },
        context_instance=RequestContext(request)
     )
@@ -346,16 +354,18 @@ def m_detail(request):
 
     """
 
-    try:
-        # Obtain the query parameters
-        id = request.GET['id']
-    except KeyError, e:
-        return system_message(request,True,e)
+    form = DetailForm(request.GET)
 
-    # Ensure the id is well formed
-    if not re.match(r'^\d+$', request.GET['id']):
+    if form.is_valid():
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+
+    # Bad form
+    else:
         return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
 
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
 
     # Obain the incident detail
     detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed','email_address_id__email_address')
@@ -379,6 +389,9 @@ def m_detail(request):
     else:
         set_timezone = request.COOKIES.get('timezone')
 
+    # See if email notifications are enabled
+    notifications = int(cv.value('notify'))
+
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
@@ -390,7 +403,8 @@ def m_detail(request):
           'services':services,
           'id':id,
           'detail':detail,
-          'updates':updates
+          'updates':updates,
+          'notifications':notifications
        },
        context_instance=RequestContext(request)
     )

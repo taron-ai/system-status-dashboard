@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ urlpatterns = patterns('',
     url(r'^i_update$',          'ssd.main.views.events.i_update'),
     url(r'^incident$',          'ssd.main.views.events.incident'),
     url(r'^m_delete$',          'ssd.main.views.events.m_delete'),
+    url(r'^m_email$',           'ssd.main.views.events.m_email'),
     url(r'^m_update$',          'ssd.main.views.events.m_update'),
     url(r'^maintenance$',       'ssd.main.views.events.maintenance'),
     url(r'^report$',            'ssd.main.views.events.report'),

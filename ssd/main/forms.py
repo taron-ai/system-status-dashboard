@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
 """
 
-
+import datetime
 import re
 from django import forms
 from django.conf import settings
@@ -35,7 +35,8 @@ def file_size(value):
     """Ensure file size is below the maximum allowed"""
 
     # Obtain the max file size
-    file_upload_size = Config.objects.filter(config_name='file_size').values('config_value')[0]['config_value']
+    file_upload_size = Config.objects.filter(config_name='file_upload_size').values('config_value')[0]['config_value']
+
     if value.size > file_upload_size:
         raise forms.ValidationError('File too large - please reduce the size of the upload to below %s bytes.' % file_upload_size)
 
@@ -198,23 +199,21 @@ class ConfigForm(forms.Form):
     nav_display = forms.IntegerField(required=False)
     escalation_display = forms.IntegerField(required=False)
     report_incident_display = forms.IntegerField(required=False)
+    login_display = forms.IntegerField(required=False)
     display_alert = forms.CharField(required=False)
     alert = forms.CharField(required=False)
-    display_sched_maint_alert = forms.IntegerField(required=False)
-    alert_sched_maint = forms.CharField(required=False)
-    display_report_incident_alert = forms.IntegerField(required=False)
-    alert_report_incident = forms.CharField(required=False)
-    display_create_incident_alert = forms.IntegerField(required=False)
-    alert_create_incident = forms.CharField(required=False)
-    display_escalation_alert = forms.IntegerField(required=False)
-    alert_escalation = forms.CharField(required=False)    
+    help_sched_maint = forms.CharField(required=False)
+    help_report_incident = forms.CharField(required=False)
+    help_create_incident = forms.CharField(required=False)
+    help_escalation = forms.CharField(required=False)    
     enable_uploads = forms.IntegerField(required=False)
     upload_path = forms.CharField(required=False)
     enable_uploads = forms.IntegerField(required=False)
     upload_path = forms.CharField(required=False)
     file_upload_size = forms.CharField(required=False)
     ssd_url = forms.CharField(required=False)
-    escalation = forms.CharField(required=False)  
+    escalation = forms.CharField(required=False)
+    information_main = forms.CharField(required=False)    
 
     filter = forms.CharField(required=False)
 
@@ -309,7 +308,6 @@ class UpdateIncidentForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(UpdateIncidentForm, self).clean()
-        update = cleaned_data.get('update')
         broadcast = cleaned_data.get('broadcast')
         recipient_id = cleaned_data.get('recipient_id')
 
@@ -317,13 +315,14 @@ class UpdateIncidentForm(forms.Form):
         if broadcast and not recipient_id:
             self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
-        # Is it the default text?
-        d_update = Config.objects.filter(config_name='instr_incident_update').values('config_value')[0]['config_value']
-        if update == d_update:
-            self._errors["update"] = self.error_class(['Please provide an update.'])
-
         # Return the full collection of cleaned data
         return cleaned_data
+
+
+class EmailMaintenanceForm(forms.Form):
+    """Form for emailing about maintenance"""
+
+    id = forms.IntegerField(required=True)
 
 
 class AddMaintenanceForm(forms.Form):
@@ -351,26 +350,37 @@ class AddMaintenanceForm(forms.Form):
         description = cleaned_data.get('description')
         broadcast = cleaned_data.get('broadcast')
         recipient_id = cleaned_data.get('recipient_id')
+        s_date = cleaned_data.get('s_date')
+        s_time = cleaned_data.get('s_time')
+        e_date = cleaned_data.get('e_date')
+        e_time = cleaned_data.get('e_time')
+
 
         # If email broadcast is selected, an email address also must be
         if broadcast and not recipient_id:
             self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
-        # Is the description field the default text?
-        d_description = Config.objects.filter(config_name='instr_maintenance_description').values('config_value')[0]['config_value']
-        if description == d_description:
-            self._errors["description"] = self.error_class(['Please provide a maintenance description.'])
+        # Ensure the end date/time is not before the start date/time
+        start,end = None,None
+        try:
+            # Combine the dates and times into datetime objects (improperly formated dates/times will cause exceptions)
+            start = datetime.datetime.combine(s_date, s_time)
+        except Exception:
+            self._errors["s_date"] = self.error_class(['Empty or improperly formatted date or time'])
+            self._errors["s_time"] = self.error_class(['Empty or improperly formatted date or time'])
 
-        # Is the impact field the default text?
-        d_impact = Config.objects.filter(config_name='instr_maintenance_impact').values('config_value')[0]['config_value']
-        if impact == d_impact:
-            self._errors["impact"] = self.error_class(['Please provide an impact analysis.'])
-
-        # Is the coordinator field the default text?
-        d_coordinator = Config.objects.filter(config_name='instr_maintenance_coordinator').values('config_value')[0]['config_value']
-        if coordinator == d_coordinator:
-            self._errors["coordinator"] = self.error_class(['Please provide a maintenance coordinator.'])
+        try:
+            # Combine the dates and times into datetime objects (improperly formated dates/times will cause exceptions)
+            end = datetime.datetime.combine(e_date, e_time)
+        except Exception:
+            self._errors["e_date"] = self.error_class(['Empty or improperly formatted date or time'])
+            self._errors["e_time"] = self.error_class(['Empty or improperly formatted date or time'])
             
+        if start and end:
+            if start > end:
+                self._errors["s_date"] = self.error_class(['End date/time must be after start date/time'])
+                self._errors["e_date"] = self.error_class(['End date/time must be after start date/time'])
+        
         # Return the full collection of cleaned data
         return cleaned_data
 
@@ -395,17 +405,16 @@ class UpdateMaintenanceForm(forms.Form):
     
 
     # Override the form clean method - to validate the special logic in this form
-
     def clean(self):
         cleaned_data = super(UpdateMaintenanceForm, self).clean()
+        s_date = cleaned_data.get('s_date')
+        s_time = cleaned_data.get('s_time')
+        e_date = cleaned_data.get('e_date')
+        e_time = cleaned_data.get('e_time')
         broadcast = cleaned_data.get("broadcast")
         recipient_id = cleaned_data.get("recipient_id")
         started = cleaned_data.get('started')
         completed = cleaned_data.get('completed')
-        description = cleaned_data.get('description')
-        impact = cleaned_data.get('impact')
-        coordinator = cleaned_data.get('coordinator')
-        update = cleaned_data.get('update')
 
         # If an email broadcast is requested but no email address is selected, error
         if broadcast and not recipient_id:
@@ -418,25 +427,27 @@ class UpdateMaintenanceForm(forms.Form):
             self._errors['started'] = self.error_class(['Maintenance cannot be completed if not started.'])
             self._errors['completed'] = self.error_class(['Maintenance cannot be completed if not started.'])
 
-        # Make sure the description field is not default text
-        d_description = Config.objects.filter(config_name='instr_maintenance_description').values('config_value')[0]['config_value']
-        if description == d_description:
-            self._errors['description'] = self.error_class(['You must enter a description (form reset to previous value).'])
+        # Ensure the end date/time is not before the start date/time
+        
+        start,end = None,None
+        try:
+            # Combine the dates and times into datetime objects (improperly formated dates/times will cause exceptions)
+            start = datetime.datetime.combine(s_date, s_time)
+        except Exception:
+            self._errors["s_date"] = self.error_class(['Empty or improperly formatted date or time'])
+            self._errors["s_time"] = self.error_class(['Empty or improperly formatted date or time'])
 
-        # Make sure the impact field is not default text
-        d_impact = Config.objects.filter(config_name='instr_maintenance_impact').values('config_value')[0]['config_value']
-        if impact == d_impact:
-            self._errors['impact'] = self.error_class(['You must enter an impact analysis (form reset to previous value).'])
-
-        # Make sure the coordinator field is not default text
-        d_coordinator = Config.objects.filter(config_name='instr_maintenance_coordinator').values('config_value')[0]['config_value']
-        if coordinator == d_coordinator:
-            self._errors['coordinator'] = self.error_class(['You must enter a maintenance coordinator (form reset to previous value).'])
-
-        # Make sure the update field is not default text
-        d_update = Config.objects.filter(config_name='instr_maintenance_update').values('config_value')[0]['config_value']
-        if update == d_update:
-            self._errors['update'] = self.error_class(['You must enter an update.'])
+        try:
+            # Combine the dates and times into datetime objects (improperly formated dates/times will cause exceptions)
+            end = datetime.datetime.combine(e_date, e_time)
+        except Exception:
+            self._errors["e_date"] = self.error_class(['Empty or improperly formatted date or time'])
+            self._errors["e_time"] = self.error_class(['Empty or improperly formatted date or time'])
             
+        if start and end:
+            if start > end:
+                self._errors["s_date"] = self.error_class(['End date/time must be after start date/time'])
+                self._errors["e_date"] = self.error_class(['End date/time must be after start date/time'])
+
         # Return the full collection of cleaned data
         return cleaned_data

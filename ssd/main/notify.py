@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -74,6 +74,8 @@ class email:
             # Log to the error log and return the error to the caller
             print e
             return e
+        
+        # All good
         return 'success'
 
     
@@ -87,15 +89,25 @@ class email:
         cv = config_value.config_value()
 
         # Incident detail
-        detail = Incident.objects.filter(id=id).values('date','closed','detail')
+        detail = Incident.objects.filter(id=id).values('date',
+                                                       'closed',
+                                                       'detail',
+                                                       'user_id__first_name',
+                                                       'user_id__last_name'
+                                                       )
 
         # Which services were impacted
         services = Service_Issue.objects.filter(incident_id=id).values('service_name_id__service_name')
 
         # Obain any incident updates
-        updates = Incident_Update.objects.filter(incident_id=id).values('id','date','detail').order_by('id')
+        updates = Incident_Update.objects.filter(incident_id=id).values('id',
+                                                                        'date',
+                                                                        'detail',
+                                                                        'user_id__first_name',
+                                                                        'user_id__last_name'
+                                                                        ).order_by('id')
 
-        # Obtain the recipient name
+        # Obtain the recipient or company name
         recipient_name = cv.value('recipient_name')
 
         # Obtain the recipient email address
@@ -157,8 +169,12 @@ class email:
             # Send it
             msg.send()
         except Exception, e:
-            # Log to the error log
+            # Log to the error log and return the error to the caller
             print e
+            return e
+
+        # All good
+        return 'success'
 
 
     def maintenance(self,id,recipient_id,set_timezone,new):
@@ -185,7 +201,7 @@ class email:
                                                                               'detail'
                                                                              ).order_by('id')
 
-        # Obtain the recipient name
+        # Obtain the recipient or company name
         recipient_name = cv.value('recipient_name')
 
         # Obtain the recipient email address
@@ -247,6 +263,10 @@ class email:
             # Send it
             msg.send()
         except Exception, e:
-            # Log to the error log
+            # Log to the error log and return the error to the caller
             print e
+            return e
+
+        # All good
+        return 'success'
 

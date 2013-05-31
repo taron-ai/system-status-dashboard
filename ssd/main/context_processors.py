@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -73,6 +73,12 @@ def prefs(request):
     else:
         values['report_incident'] = False
 
+    # Display the login link?
+    if int(cv.value('login_display')) == 1:
+        values['login'] = True
+    else:
+        values['login'] = False
+
     # Return values to the template
     return {
             'app_version':values['app_version'],
@@ -80,6 +86,7 @@ def prefs(request):
             'nav':values['nav'],
             'escalation':values['escalation'],
             'report_incident':values['report_incident'],
+            'login':values['login']
            }
 
 

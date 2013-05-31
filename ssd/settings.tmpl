@@ -1,3 +1,19 @@
+#
+# Copyright 2013 - Tom Alessi
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 # The following two lines are required if an error occurs when creating the Django admin
 # account after running syncdb for the first time.  If the error occurs, delete the database
 # uncomment these two lines and run syncdb again.  You may comment these out after, if desired
@@ -32,7 +48,7 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'US/Pacific'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -135,51 +151,6 @@ INSTALLED_APPS = (
 
 # Login URL
 LOGIN_URL = '/accounts/login'
-
-#### SSD SPECIFIC CONFIGURATION ####
-
-# All of these settings should be changed in local_settings.py and		
-# not here, otherwise they'll be overridden if an upgrade is performed
-
-# Maximum uploaded file size (in MB)
-MAX_FILE_SIZE = 1
-
-# Show the NAV Header
-NAV = True
-
-# Set to the full URL of the desired logo
-# LOGO = ''
-
-# If set to True, the 'Report Incident' tab will appear in the nav.
-# If you have this set to true, you should also show the NAV header
-# If this is not set to True, the view also will not work and will 
-# give the user an error
-REPORT_INCIDENT = True
-
-# If set to True, the 'Contacts' tab will appear in the NAV header
-# You will need to complete the contacts template with your specific information
-# If this is not set to True, the view also will not work and will 
-# give the user an error
-CONTACTS = True
-
-# Email Notifications:
-# * If set to True, then email notifications will be enabled
-#   for incident creation (by admins) and incident reports (by users)
-#
-# * If set to True, ensure that you have properly set the email options
-#   in the application configuration
-#
-# * If set to False and 'Broadcast Email' is selected during incident
-#  creation or a user reports an incident, no email will be sent.
-NOTIFY = True
-
-# App Version
-APP_VERSION = '1.1.2'
-
-# SSD Url
-# This URL will appear on any links back to SSD 
-# (e.g. links in email communication sent from SSD)
-SSD_URL = ''
 
 # SSD Version
 execfile('$__app_dir__$/ssd/version.py')

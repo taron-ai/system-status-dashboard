@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,22 +41,27 @@ from ssd.main import notify
 from ssd.main import config_value
 
 
-def return_error(request,error):
+def system_message(request,status,message):
     """Error Page
 
-    Return an error page with a helpful error and also write the error to the Apache log
-
+    Return a system message
+      - confirmation that something has happened
+      - an error message
+      - on error, write to the Apache log
+      - on error, status should be set to True
     """
 
-    # Print the error to the Apache log
-    print error
+    # If its an error, print the error to the Apache log
+    if status:
+        print message
 
     # Create the response object
     response = render_to_response(
-     'error/error.html',
+     'events/system_message.html',
       {
-        'title':'System Status Dashboard | Error',
-        'error':error
+        'title':'System Status Dashboard | System Message',
+        'status':status,
+        'message':message
       },
       context_instance=RequestContext(request)
     )
@@ -251,12 +256,15 @@ def index(request):
         # Add the main row to our data dict
         data.append(row)
   
-    # Obtain the alert text (if there)
+    # Obtain the alert text (if it's being shown)
     if int(cv.value('display_alert')):
         alert = cv.value('alert')
     else:
         alert = None
-    
+
+    # Obtain the information text
+    information = cv.value('information_main')
+
     # Obtain all timezones
     timezones = pytz.all_timezones
 
@@ -274,6 +282,7 @@ def index(request):
           'backward_link':backward_link,
           'forward_link':forward_link,
           'alert':alert,
+          'information':information,
           'timezones':timezones
        },
        context_instance=RequestContext(request)
@@ -291,20 +300,20 @@ def i_detail(request):
         # Obtain the query parameters
         id = request.GET['id']
     except KeyError, e:
-        return return_error(request,e)
+        return system_message(request,True,e)
 
     # Ensure the id is well formed
     if not re.match(r'^\d+$', request.GET['id']):
-        return return_error(request,'Improperly formatted id: %s' % (request.GET['id']))
+        return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
 
     # Which services were impacted
     services = Service_Issue.objects.filter(incident_id=id).values('service_name_id__service_name')
 
     # Obain the incident detail
-    detail = Incident.objects.filter(id=id).values('date','closed','detail')
+    detail = Incident.objects.filter(id=id).values('date','closed','detail','email_address_id__email_address','user_id__first_name','user_id__last_name')
 
     # Obain any incident updates
-    updates = Incident_Update.objects.filter(incident_id=id).values('id','date','detail').order_by('id')
+    updates = Incident_Update.objects.filter(incident_id=id).values('id','date','detail','user_id__first_name','user_id__last_name').order_by('id')
 
 
     # See if the timezone is set, if not, give them the server timezone
@@ -341,15 +350,15 @@ def m_detail(request):
         # Obtain the query parameters
         id = request.GET['id']
     except KeyError, e:
-        return return_error(request,e)
+        return system_message(request,True,e)
 
     # Ensure the id is well formed
     if not re.match(r'^\d+$', request.GET['id']):
-        return return_error(request,'Improperly formatted id: %s' % (request.GET['id']))
+        return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
 
 
     # Obain the incident detail
-    detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed')
+    detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed','email_address_id__email_address')
 
     # Which services were impacted
     services = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id__service_name')
@@ -400,16 +409,13 @@ def escalation(request):
 
     # If this functionality is disabled in the admin, let the user know
     if int(cv.value('escalation_display')) == 0:
-        return return_error(request,'Your system administrator has disabled this functionality')
+        return system_message(request,True,'Your system administrator has disabled this functionality')
 
     # Obtain the escalation contacts
     contacts = Escalation.objects.filter(hidden=False).values('id','name','contact_details').order_by('order')
 
-    # Determine if we are showing the create maintenance alert message
-    if int(cv.value('display_escalation_alert')):
-        alert = cv.value('alert_escalation')
-    else:
-        alert = None
+    # Help message
+    help = cv.value('help_escalation')
 
     # Print the page
     return render_to_response(
@@ -417,7 +423,7 @@ def escalation(request):
        {
           'title':'System Status Dashboard | Escalation Path',
           'contacts':contacts,
-          'alert':alert
+          'help':help
        },
        context_instance=RequestContext(request)
     )

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,9 +77,6 @@ def customize_local_settings(db_user,db_pass,db_host,db_port,dst_local,app_dir,a
 
         # Add the template information
         s_ls = s_ls.replace('$__app_dir__$',app_dir)
-
-        # Add the screenshot upload information
-        s_ls = s_ls.replace('$__upload_dir__$',upload_dir)
 
         # Add the secret key
         secret_key = "".join([random.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50)])
@@ -244,8 +241,8 @@ def install():
 
     print 'PERFORMING FRESH INSTALL:\n'  
 
-    ssd_src=raw_input("1: Enter the path to the SSD source\n#>").strip()
-    local_dir=raw_input('2: Enter the desired local directory location\n#>').strip()
+    ssd_src=raw_input("1: Enter the path to the SSD source (It is recommended that you place the source in opt: /opt/SSD-REL-x.x.x)\n#>").strip()
+    local_dir=raw_input('2: Enter the desired local directory location (It is recommended that you select: /opt)\n#>').strip()
     web_conf=raw_input('3: Enter the Apache configuration directory\n#>').strip()
     db_user=raw_input('4: Enter the database username\n#>').strip()
     db_pass=raw_input('5: Enter the database password\n#>').strip()

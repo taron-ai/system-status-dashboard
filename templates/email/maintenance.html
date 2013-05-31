@@ -1,6 +1,6 @@
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,107 +16,112 @@
 
 {% endcomment %}
 
-<p style="font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:14px;">
+<p style="font-family: Arial, sans-serif;font-size:14px;">
  Dear {{recipient_name}}, {{greeting}}
 </p>
 
-<table style="font-family: Tahoma, Arial, Helvetica, sans-serif;">
-<tr>
-<td>
-
-  <table style="font-family: Tahoma, Arial, Helvetica, sans-serif; border-collapse:collapse;">
-   <tr>
-    <th colspan="2" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Maintenance Details</th>
-   </tr>
-   <tr>
-    <td width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Maintenance Status</td>
-    <td width="565" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">
-      <b>
-       {% if detail.0.completed %}
-       COMPLETED
+<table style="font-family: Arial, sans-serif;">
+  <tr>
+    <td>
+      <table style="font-family: Arial, sans-serif; border-collapse:collapse;">
+     <tr>
+      <th colspan="2" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Maintenance Details</th>
+     </tr>
+     <tr>
+      <td width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Maintenance Status</td>
+      <td width="565" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">
+        <b>
+         {% if detail.0.completed %}
+         COMPLETED
+         {% else %}
+          {% if detail.0.started %}
+            STARTED
+          {% else %}
+            NOT STARTED
+          {% endif %}
+         {% endif %}
+        </b>
+      </td>
+     </tr>
+     <tr>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Services Impacted</td>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">
+       {% if services %}
+       {% for row in services %}
+       {{row.service_name_id__service_name}}
+        <br>
+       {% endfor %}
        {% else %}
-        {% if detail.0.started %}
-          STARTED
-        {% else %}
-          NOT STARTED
-        {% endif %}
+       <b><font color="red">- NO SERVICES DEFINED</font></b>
        {% endif %}
-      </b>
+      </td>
+     </tr>
+     <tr>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Start Time</td>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.start|date:"Y-m-d H:i"}}</td>
+     </tr>
+     <tr>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">End Time</td>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.end|date:"Y-m-d H:i"}}</td>
+     </tr>
+     <tr>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Description</td>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.description|linebreaksbr}}</td>
+     </tr>
+     <tr>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Impact Analysis</td>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.impact|linebreaksbr}}</td>
+     </tr>
+     <tr>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Coordinator</td>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.coordinator|linebreaksbr}}</td>
+     </tr>
+      </table>
     </td>
-   </tr>
-   <tr>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Services Impacted</td>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">
-     {% if services %}
-     {% for row in services %}
-     {{row.service_name_id__service_name}}
-      <br>
-     {% endfor %}
-     {% else %}
-     <b><font color="red">- NO SERVICES DEFINED</font></b>
-     {% endif %}
+  </tr> 
+
+  <tr>
+   <td height="25"></td>
+  </tr>
+
+  {% if updates %}
+  <tr>
+    <td>
+      <table style="font-family: Arial, sans-serif; border-collapse:collapse;">
+        <tr>
+         <th width="165" colspan="3" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Maintenance Updates</th>
+        </tr>        
+        <tr>
+         <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Time</th>
+         <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Logged By</th>
+         <th width="400" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Detail</th>
+        </tr>
+
+        {% for row in updates %}
+        <tr>
+         <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s"}}</td>
+         <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
+         <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail|linebreaksbr}}</td>
+        </tr>
+        {% endfor %}
+       </table>
     </td>
-   </tr>
-   <tr>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Start Time</td>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.start|date:"Y-m-d H:i"}}</td>
-   </tr>
-   <tr>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">End Time</td>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.end|date:"Y-m-d H:i"}}</td>
-   </tr>
-   <tr>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Description</td>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.description|linebreaksbr}}</td>
-   </tr>
-   <tr>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Impact Analysis</td>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.impact|linebreaksbr}}</td>
-   </tr>
-   <tr>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Coordinator</td>
-    <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.coordinator|linebreaksbr}}</td>
-   </tr>
-  </table>
-
-</td>
-</tr> 
-
- <tr>
-  <td></td>
- </tr>
-
- {% if updates %}
- <tr>
-  <td>
-   <p><b>MAINTENANCE UPDATES</b></p>
-  </td>
- </tr>
- <tr>
-  <td>
-   <table style="font-family: Tahoma, Arial, Helvetica, sans-serif; border-collapse:collapse;">
-    <tr>
-     <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Time</th>
-     <th width="165" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Logged By</th>
-     <th width="400" style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#C8DAE4; text-align:center; color:#616161; font-weight:bold;">Detail</th>
-    </tr>
-
-    {% for row in updates %}
-    <tr>
-     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s"}}</td>
-     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
-     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail|linebreaksbr}}</td>
-    </tr>
-    {% endfor %}
-   </table>
-
-  </td>
- </tr> 
- {% endif %}
+  </tr> 
+  {% endif %}
  
- <tr>
-  <td style="font-size:12px; color:black;">*All times are in {{timezone}}</td>
- </tr>
+  <tr>
+   <td height="25"></td>
+  </tr>
+
+  <tr>
+    <td style="font-size:12px; color:black;">* All times are in {{timezone}}</td>
+  </tr>
+
+  <tr>
+    <td style="font-size:12px; color:black;">* You may visit the System Status Dashboard at any time for current information on the status of all services: {{ssd_url}}</td>
+  </tr>
+
+ 
 
 </table>
 

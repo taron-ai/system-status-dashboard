@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
       <legend>Manage Recipients</legend>
 
       {% if recipients %}
-      <table class="standard">
+      <table class="responsive standard">
        <tr>
         <th>Delete</th>
         <th>Email Address</th>
@@ -76,7 +76,7 @@
       </div>
 
       <div class="row">
-        <div class="large-12 columns">
+        <div class="large-12 columns {% if form.recipient.errors %}error{% endif %}">
           <input name="recipient" type="text" placeholder="Enter a valid email address" value="{% if form.recipient.data %}{{form.recipient.data}}{% endif %}">
           {% if form.recipient.errors %}
           <small class="error">

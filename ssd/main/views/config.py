@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,11 @@ from django.db.models import F
 from ssd.main.models import Config
 from ssd.main.models import Recipient
 from ssd.main.forms import ConfigForm
+from ssd.main.models import Incident
+from ssd.main.models import Maintenance
 from ssd.main.models import Service
+from ssd.main.models import Service_Issue
+from ssd.main.models import Service_Maintenance
 from ssd.main.models import Escalation
 from ssd.main.forms import AddRecipientForm
 from ssd.main.forms import AddServiceForm
@@ -35,6 +39,7 @@ from ssd.main.forms import RemoveRecipientForm
 from ssd.main.forms import AddContactForm
 from ssd.main.forms import ModifyContactForm
 from ssd.main import config_value
+from ssd.main.views.main import system_message
 
 
 @login_required
@@ -85,21 +90,19 @@ def config(request):
             params['nav_display'] = form.cleaned_data['nav_display']
             params['escalation_display'] = form.cleaned_data['escalation_display']
             params['report_incident_display'] = form.cleaned_data['report_incident_display']
+            params['login_display'] = form.cleaned_data['login_display']
             params['display_alert'] = form.cleaned_data['display_alert']
             params['alert'] = form.cleaned_data['alert']
-            params['display_sched_maint_alert'] = form.cleaned_data['display_sched_maint_alert']
-            params['alert_sched_maint'] = form.cleaned_data['alert_sched_maint']
-            params['display_report_incident_alert'] = form.cleaned_data['display_report_incident_alert']
-            params['alert_report_incident'] = form.cleaned_data['alert_report_incident']
-            params['display_create_incident_alert'] = form.cleaned_data['display_create_incident_alert']
-            params['alert_create_incident'] = form.cleaned_data['alert_create_incident']
-            params['display_escalation_alert'] = form.cleaned_data['display_escalation_alert']
-            params['alert_escalation'] = form.cleaned_data['alert_escalation']
+            params['help_sched_maint'] = form.cleaned_data['help_sched_maint']
+            params['help_report_incident'] = form.cleaned_data['help_report_incident']
+            params['help_create_incident'] = form.cleaned_data['help_create_incident']
+            params['help_escalation'] = form.cleaned_data['help_escalation']
             params['enable_uploads'] = form.cleaned_data['enable_uploads']
             params['upload_path'] = form.cleaned_data['upload_path']
             params['file_upload_size'] = form.cleaned_data['file_upload_size']
             params['ssd_url'] = form.cleaned_data['ssd_url']
             params['escalation'] = form.cleaned_data['escalation']
+            params['information_main'] = form.cleaned_data['information_main']
  
             filter = form.cleaned_data['filter'] 
                       
@@ -211,8 +214,18 @@ def rm_recipients(request):
 
         if form.is_valid():
             # Remove the recipients
+
+            # If these recipients are currently tied to incidents or maintenances,
+            # Do not allow them to be deleted w/o removing them from the relevant
+            # recipients first
             for id in request.POST.getlist('id'):
-                Recipient.objects.filter(id=id).delete()
+
+                # Part of any incidents or maintenances?
+                if Incident.objects.filter(email_address_id=id) or Maintenance.objects.filter(email_address_id=id):
+                    return system_message(request,True,'At least one of the recipients you are attempting to delete is currently part of an incident or maintenance.  Please remove the recipient from the incident/maintenance, or delete the incident/maintenance and then delete the recipient.')
+                # Ok, remove it
+                else:
+                    Recipient.objects.filter(id=id).delete()
 
         # Invalid form
         else:
@@ -287,8 +300,18 @@ def rm_services(request):
 
         if form.is_valid():
             # Remove the services
+            
+            # If these services are currently tied to incidents or maintenances,
+            # Do not allow them to be deleted w/o removing them from the relevant
+            # services first
             for id in request.POST.getlist('id'):
-                Service.objects.filter(id=id).delete()
+
+                # Part of any incidents or maintenances?
+                if Service_Issue.objects.filter(service_name_id=id) or Service_Maintenance.objects.filter(service_name_id=id):
+                    return system_message(request,True,'At least one of the services you are attempting to delete is currently part of an incident or maintenance.  Please remove the service from the incident/maintenance, or delete the incident/maintenance and then delete the service.')
+                # Ok, remove it
+                else:
+                    Service.objects.filter(id=id).delete()
 
         # Invalid form
         else:

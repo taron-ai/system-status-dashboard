@@ -1,3 +1,19 @@
+#
+# Copyright 2013 - Tom Alessi
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 """SSD Local Configuration File
 
    Required Configuration
@@ -6,13 +22,9 @@
       (note: database host/port can be ignored if its local and using the standard port)
     - Secret key
     - Full path to template directory
-
-   Optional configuration
-    - Everything else
    
 """
 
-### Required ###
 
 DATABASES = {
     'default': {
@@ -28,18 +40,8 @@ TEMPLATE_DIRS = (
     '$__app_dir__$/templates'
 )
 
+# Set the timezone to match the server's timezone
+TIME_ZONE = 'US/Pacific'
 
-### Optional ###
 
-# The following are already set in the project settings.py configuration
-# file but may be overridden here
 
-#NAV = True
-#REPORT_INCIDENT = True
-MEDIA_ROOT = '$__upload_dir__$/uploads'
-#CONTACTS = True
-#NOTIFY = True
-#TIME_ZONE = ''
-#LOGO = ''
-#SSD_URL = ''
-#MAX_FILE_SIZE = ''

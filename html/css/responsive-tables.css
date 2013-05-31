@@ -42,8 +42,8 @@ table td, table th { padding: 9px 10px; text-align: left; }
 
   /* From http://www.design4lifeblog.com/responsive-tables/ */
   .MobiScroll {
-      background-image: url(http://img708.imageshack.us/img708/1323/scrolli.png);
-      width: 62px;
+      background-image: url(/html/images/scroll.png);
+      width: 145px;
       height: 38px;
       display: block;
       /* position: absolute; */

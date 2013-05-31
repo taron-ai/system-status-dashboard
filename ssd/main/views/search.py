@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ from ssd.main.models import Service_Issue
 from ssd.main.models import Service_Maintenance
 from ssd.main.forms import ISearchForm
 from ssd.main.forms import MSearchForm
+from ssd.main import config_value
 
 
 def isearch(request):
@@ -289,6 +290,9 @@ def rsearch_recent(request):
     criteria
 
     """
+    
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
 
     # Give the dates a timezone so search is accurate
     # If the timezone is not set, give the local server timezone
@@ -310,11 +314,15 @@ def rsearch_recent(request):
                                     'screenshot2'
                                    ).order_by('-id')[:5]
 
+    # Incident report upload path
+    upload_path = cv.value('upload_path')
+
     return render_to_response(
        'search/rsearch_results.html',
        {
           'title':'System Status Dashboard | Recent Incident Report Search',
-          'results':results
+          'results':results,
+          'upload_path':upload_path
        },
        context_instance=RequestContext(request)
     )

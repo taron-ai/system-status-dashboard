@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@
 {% block content %}
 
 <div class="row">
-  <div class="large-6 large-centered columns">
+  <div class="large-12 large-centered columns">
 
 {% if results %}
 
-    <table class="responsive">
+    <table class="responsive standard">
       <thead>
         <tr>
          <th>ID</th>
@@ -41,13 +41,13 @@
          <td><a href="/i_detail?id={{row.incident_id}}">{{row.incident_id}}</a></td>
          <td>{{row.incident__date|date:"Y-m-d H:i:s"}}</td>
          <td>{{row.incident__closed|date:"Y-m-d H:i:s"}}</td>
-         <td style="width:400;">{{row.incident__detail|linebreaksbr}}</td>
+         <td>{{row.incident__detail|linebreaksbr}}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-* All times are in {{TIME_ZONE}}
+<p>* All times are in {{TIME_ZONE}}</p>
 
 {% else %}
 No search results were returned

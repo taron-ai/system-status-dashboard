@@ -19,12 +19,6 @@
 {% endcomment %}
 {% block content %}
 
-<script type="text/javascript">
-   $(function() {
-    $("#accordion").accordion({ active: false, collapsible: true, autoHeight: false });
-   });
-</script>
-
 <br>
   
 <form name="config" method="POST" action="/config">
@@ -36,13 +30,15 @@
       <dt>Filter:</dt>
       <dd {% if filter == "all" %}class="active"{% endif %}><a href="/config?filter=all">All</a> |</dd>
       <dd {% if filter == "alerts" %}class="active"{% endif %}><a href="/config?filter=alerts">Alerts</a> |</dd>
-      <dd {% if filter == "instructions" %}class="active"{% endif %}><a href="/config?filter=instructions">Instructions</a> |</dd>
       <dd {% if filter == "email_addresses" %}class="active"{% endif %}><a href="/config?filter=email_addresses">Email Addresses</a> |</dd>
       <dd {% if filter == "email_format" %}class="active"{% endif %}><a href="/config?filter=email_format">Email Format</a> |</dd>
       <dd {% if filter == "email_text" %}class="active"{% endif %}><a href="/config?filter=email_text">Email Text</a> |</dd>
+      <dd {% if filter == "help" %}class="active"{% endif %}><a href="/config?filter=help">Help</a> |</dd>
+      <dd {% if filter == "information" %}class="active"{% endif %}><a href="/config?filter=information">Information</a> |</dd>
+      <dd {% if filter == "instructions" %}class="active"{% endif %}><a href="/config?filter=instructions">Instructions</a> |</dd>
       <dd {% if filter == "file_uploads" %}class="active"{% endif %}><a href="/config?filter=file_uploads">File Uploads</a> |</dd>
       <dd {% if filter == "functionality" %}class="active"{% endif %}><a href="/config?filter=functionality">Functionality</a> |</dd>
-      <dd {% if filter == "urls" %}class="active"{% endif %}><a href="/config?filter=urls">URLs</a> |</dd>
+      <dd {% if filter == "urls" %}class="active"{% endif %}><a href="/config?filter=urls">URLs</a> </dd>
     </dl>
   </div>
 </div>
@@ -63,10 +59,11 @@
 </div>
 {% endif %}
 
+{% if configs %}
 <div class="row">
   <div class="large-12 columns">
 
-    <table class="responsive">
+    <table class="responsive standard">
       <thead>
         <tr>
           <th>Parameter</th>
@@ -142,8 +139,10 @@
     </table>
   </div>
 </div>
-
 <input type="hidden" name="filter" value="{{filter}}">
+{% else %}
+No configuration parameters - do you have an incorrect filter defined?
+{% endif %}
 
 </form>
 

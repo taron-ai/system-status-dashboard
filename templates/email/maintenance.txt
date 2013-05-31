@@ -1,6 +1,6 @@
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 {% endcomment %}
 Dear {{recipient_name}}, {{greeting}}
 
-START: {{detail.0.start|date:"Y-m-d H:i"}}
-END: {{detail.0.end|date:"Y-m-d H:i"}}
+
+START TIME: {{detail.0.start|date:"Y-m-d H:i"}}
+END TIME: {{detail.0.end|date:"Y-m-d H:i"}}
 STATUS: {% if detail.0.completed %}COMPLETED{% else %}{% if detail.0.started %}STARTED{% else %}NOT STARTED{% endif %}{% endif %}
 
 The following services are impacted by this maintenance:{% if services %}{% for row in services %}

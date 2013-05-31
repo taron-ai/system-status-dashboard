@@ -2,7 +2,7 @@
 
 {% comment %}
 
- Copyright 2012 - Tom Alessi
+ Copyright 2013 - Tom Alessi
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
   <div class="large-6 large-centered columns">
     
       {% if contacts %}
-       <table class="responsive">
+       <table class="responsive standard">
         <tr>
          <th>Order</th>
          <th>Name</th>
@@ -111,7 +111,7 @@
       </div>
 
       <div class="row">
-        <div class="large-12 columns">
+        <div class="large-12 columns {% if form.name.errors %}error{% endif %}">
           <input name="name" type="text" value="{% if form.name.data %}{{form.name.data}}{% endif %}" placeholder="{{instr_escalation_name}}">
           {% if form.name.errors %}
           <small class="error">
@@ -128,8 +128,8 @@
       </div>
       
       <div class="row">
-        <div class="large-12 columns">
-          <textarea class="textarea_detail" id="contact_details" name="contact_details" placeholder="{{instr_escalation_details}}">{% if form.contact_details.data %}{{form.contact_details.data}}{% endif %}</textarea>
+        <div class="large-12 columns {% if form.contact_details.errors %}error{% endif %}">
+          <textarea name="contact_details" placeholder="{{instr_escalation_details}}">{% if form.contact_details.data %}{{form.contact_details.data}}{% endif %}</textarea>
           {% if form.contact_details.errors %}
           <small class="error">
             {% for error in form.contact_details.errors %}{{error}}{% endfor %}

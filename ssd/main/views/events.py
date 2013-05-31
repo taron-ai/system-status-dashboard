@@ -1,5 +1,5 @@
 #
-# Copyright 2012 - Tom Alessi
+# Copyright 2013 - Tom Alessi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-"""Views for the SSD Project that pertain to creating events (incidents, maintenance) functionality only
+"""Views for the SSD Project that pertain to creating events (incidents, maintenance)
 
 """
 
@@ -43,34 +43,12 @@ from ssd.main.forms import AddIncidentForm
 from ssd.main.forms import DeleteEventForm
 from ssd.main.forms import UpdateIncidentForm
 from ssd.main.forms import UpdateMaintenanceForm
+from ssd.main.forms import EmailMaintenanceForm
 from ssd.main.forms import ReportIncidentForm
 from ssd.main.forms import AddMaintenanceForm
 from ssd.main import notify
 from ssd.main import config_value
-
-
-def return_error(request,error):
-    """Error Page
-
-    Return an error page with a helpful error and also write the error to the Apache log
-
-    """
-
-    # Print the error to the Apache log
-    print error
-
-    # Create the response object
-    response = render_to_response(
-     'error/error.html',
-      {
-        'title':'SSD Error',
-        'error':error
-      },
-      context_instance=RequestContext(request)
-    )
-
-    # Give the response back
-    return response
+from ssd.main.views.main import system_message
 
 
 def report(request):
@@ -85,7 +63,7 @@ def report(request):
 
     # If this functionality is disabled in the admin, let the user know
     if int(cv.value('report_incident_display')) == 0:
-        return return_error(request,'Your system administrator has disabled this functionality')
+        return system_message(request,True,'Your system administrator has disabled this functionality')
 
     # If this is a POST, then check the input params and perform the
     # action, otherwise print the index page
@@ -124,10 +102,6 @@ def report(request):
                 screenshot1 = ''
                 screenshot2 = ''
             
-            # If extra is the default text, set to None
-            if extra == cv.value('instr_report_extra'):
-                extra = None
-
             # Save the data (if the admin has not setup the upload directory, it'll fail)
             try:
                 Report(date=report_time,
@@ -139,7 +113,7 @@ def report(request):
                        screenshot2=screenshot2,
                       ).save()
             except Exception as e:
-                return return_error(request,e)
+                return system_message(request,True,e)
 
             # If notifications are turned on, report the issue to the pager address
             # and save the return value for the confirmation page
@@ -151,21 +125,13 @@ def report(request):
             else:
                 pager_status = 'success'
 
-            # Give them a confirmation page
-            message_success = cv.value('message_success')
-            message_error = cv.value('message_error')
-
-            # Print the page
-            return render_to_response(
-                'events/confirmation.html',
-                {
-                   'title':'System Status Dashboard | Report Confirmation',
-                   'pager_status':pager_status,
-                   'message_success':message_success,
-                   'message_error':message_error
-                },
-                context_instance=RequestContext(request)
-             )
+            if pager_status == 'success':
+                message = cv.value('message_success')
+                return system_message(request,False,message)
+            else:
+                message = cv.value('message_error')
+                message = '%s: %s' % (message,pager_status)
+                return system_message(request,True,message)
 
     # Ok, its a GET or an invalid form so create a blank form
     else:
@@ -174,11 +140,8 @@ def report(request):
     # Print the page
     # On a POST, the form will give back error values for printing in the template
 
-    # Determine if we are showing the create maintenance alert message
-    if int(cv.value('display_report_incident_alert')):
-        alert = cv.value('alert_report_incident')
-    else:
-        alert = None
+    # Help message
+    help = cv.value('help_report_incident')
 
     # Obtain the default maintenance textfield text
     instr_report_name = cv.value('instr_report_name')
@@ -191,7 +154,7 @@ def report(request):
        {
           'title':'System Status Dashboard | Report Incident',
           'form':form,
-          'alert':alert,
+          'help':help,
           'instr_report_name':instr_report_name,
           'instr_report_email':instr_report_email,
           'instr_report_detail':instr_report_detail,
@@ -315,11 +278,8 @@ def incident(request):
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
-    # Determine if we are showing the create incident alert message
-    if int(cv.value('display_create_incident_alert')):
-        alert = cv.value('alert_create_incident')
-    else:
-        alert = None
+    # Help message
+    help = cv.value('help_create_incident')
 
     # Obtain the incident description text
     instr_incident_description = cv.value('instr_incident_description')
@@ -334,7 +294,7 @@ def incident(request):
           'affected_svcs':tuple(affected_svcs),
           'form':form,
           'time_now':time_now,
-          'alert':alert,
+          'help':help,
           'instr_incident_description':instr_incident_description
 
        },
@@ -420,9 +380,11 @@ def i_update(request):
                     if re.match(r'^\d+$', service_id):
                         Service_Issue(service_name_id=service_id,incident_id=id).save()
 
-            # See if we are closing this issue
+            # See if we are closing this issue 
             if closed:
-                Incident.objects.filter(id=id).update(closed=incident_time)
+                # If it was already closed, then don't re-close it because it will update the closed time
+                if not Incident.objects.filter(id=id).values('closed')[0]['closed']:
+                    Incident.objects.filter(id=id).update(closed=incident_time)
             else:
                 Incident.objects.filter(id=id).update(closed=None)
 
@@ -437,6 +399,11 @@ def i_update(request):
 
                 email = notify.email()
                 email.incident(id,recipient_id,set_timezone,False)
+            
+            # If broadcast is not selected, turn off emails
+            else:
+                Incident.objects.filter(id=id).update(email_address=None)
+
 
             # All done so redirect to the incident detail page so
             # the new data can be seen.
@@ -451,9 +418,9 @@ def i_update(request):
                 if re.match(r'^\d+$', request.POST['id']):
                     id = request.POST['id']
                 else:
-                    return return_error(request,'Improperly formatted id') 
+                    return system_message(request,True,'Improperly formatted id') 
             else:
-                return return_error(request,'No incident ID given') 
+                return system_message(request,True,'No incident ID given') 
 
     # Not a POST so create a blank form
     else:
@@ -462,9 +429,9 @@ def i_update(request):
             if re.match(r'^\d+$', request.GET['id']):
                 id = request.GET['id']
             else:
-                return return_error(request,'Improperly formatted id') 
+                return system_message(request,True,'Improperly formatted id') 
         else:
-            return return_error(request,'No incident ID given')
+            return system_message(request,True,'No incident ID given')
 
         # In the case of a GET, we can acquire the proper services from the DB
         affected_svcs_tmp = Service_Issue.objects.filter(incident_id=id).values('service_name_id')
@@ -547,7 +514,7 @@ def i_delete(request):
 
     # If processing got this far, its either not a POST
     # or its an invalid form submit.  Either way, give an error        
-    return return_error(request,'Invalid delete request')
+    return system_message(request,True,'Invalid delete request')
 
 
 @login_required
@@ -680,11 +647,8 @@ def maintenance(request):
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
     
-    # Determine if we are showing the create maintenance help message
-    if int(cv.value('display_sched_maint_alert')):
-        alert = cv.value('alert_sched_maint')
-    else:
-        alert = None
+    # Help message
+    help = cv.value('help_sched_maint')
 
     # Obtain the default maintenance textfield text
     instr_maintenance_description = cv.value('instr_maintenance_description')
@@ -697,7 +661,7 @@ def maintenance(request):
        {
           'title':'System Status Dashboard | Scheduled Maintenance',
           'form':form,
-          'alert':alert,
+          'help':help,
           'services':services,
           'affected_svcs':tuple(affected_svcs),
           'recipients':recipients,
@@ -709,6 +673,7 @@ def maintenance(request):
     )
 
 
+@login_required
 @staff_member_required
 def m_update(request):
     """Update Maintenance Page
@@ -782,11 +747,16 @@ def m_update(request):
                 # multiple checkboxes in the form
                 if re.match(r'^\d+$', service_id):
                     Service_Maintenance(service_name_id=service_id,maintenance_id=id).save()
-
-            # If there is an update, add it
-            if update:
-                Maintenance_Update(maintenance_id=id,user_id=user_id,detail=update).save()
-
+            
+            # Add the update
+            # Obtain the time and add a timezone
+            # Create a datetime object for right now
+            time_now = datetime.datetime.now()
+            # Add the server's timezone (whatever DJango is set to)
+            time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
+            # Add it
+            Maintenance_Update(date=time_now,maintenance_id=id,user_id=user_id,detail=update).save()
+            
             # Update the core maintenance parameters
             # Combine the dates and times into datetime objects
             start = datetime.datetime.combine(s_date, s_time)
@@ -805,7 +775,6 @@ def m_update(request):
                                                      impact=impact,
                                                      coordinator=coordinator,
                                                      started=started,
-                                                     email_address=recipient_id,
                                                      completed=completed
                                                     )
 
@@ -820,6 +789,10 @@ def m_update(request):
 
                 email = notify.email()
                 email.maintenance(id,recipient_id,set_timezone,False)
+            
+            # If broadcast is not selected, turn off emails
+            else:
+                Maintenance.objects.filter(id=id).update(email_address=None)
 
             # All done so redirect to the maintenance detail page so
             # the new data can be seen.
@@ -836,9 +809,9 @@ def m_update(request):
             if re.match(r'^\d+$', request.GET['id']):
                 id = request.GET['id']
             else:
-                return return_error(request,'Improperly formatted id') 
+                return system_message(request,True,'Improperly formatted id') 
         else:
-            return return_error(request,'No incident ID given')
+            return system_message(request,True,'No incident ID given')
 
         # In the case of a GET, we can acquire the proper services from the DB
         affected_svcs_tmp = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id')
@@ -860,11 +833,11 @@ def m_update(request):
 
     # If we don't have the ID, then we have to give them an error
     if not id:
-        return return_error(request,'No incident ID given')
+        return system_message(request,True,'No incident ID given')
 
     # Make sure the ID is properly formed
     if not re.match(r'^\d+$', id):
-        return return_error(request,'Improperly formatted ID: %s' % id)
+        return system_message(request,True,'Improperly formatted ID: %s' % id)
 
     # See if the maintenance is completed
     status = Maintenance.objects.filter(id=id).values('started','completed')
@@ -927,6 +900,53 @@ def m_update(request):
 
 @login_required
 @staff_member_required
+def m_email(request):
+    """Send an Email Notification about a Maintenance"""
+
+    # Instantiate the configuration value getter
+    cv = config_value.config_value()
+
+    # Obtain the timezone (or set to the default DJango server timezone)
+    if request.COOKIES.get('timezone') == None:
+        set_timezone = settings.TIME_ZONE
+    else:
+        set_timezone = request.COOKIES.get('timezone')
+
+    # We will only accept POSTs
+    if request.method == 'POST':
+
+        # Check the form elements
+        form = EmailMaintenanceForm(request.POST)
+
+        if form.is_valid():
+            # Obtain the cleaned data
+            id = form.cleaned_data['id']
+
+            # Obtain the email address id
+            recipient_id = Maintenance.objects.filter(id=id).values('email_address_id')[0]['email_address_id']
+
+            # If there is no recipient defined, give them an error
+            if not recipient_id:
+                return system_message(request,True,'There is no recipient defined for this maintenance.  Please go back and add one.')
+
+            if int(cv.value('notify')) == 1:
+                email = notify.email()
+                email_status = email.maintenance(id,recipient_id,set_timezone,False)
+
+                if email_status == 'success':
+                    return system_message(request,False,'Email successfully sent')
+                else:
+                    return system_message(request,True,'Email failed: %s' % email_status)
+            else:
+                return system_message(request,True,'Email functionality is disabled')
+       
+    # Not a POST or a failed form submit
+    else:
+        return system_message(request,True,'Invalid request - please go back and try again.')
+
+
+@login_required
+@staff_member_required
 def m_delete(request):
     """Delete Maintenance Page
 
@@ -953,7 +973,7 @@ def m_delete(request):
 
     # If processing got this far, its either not a POST
     # or its an invalid form submit.  Either way, give an error        
-    return return_error(request,'Invalid delete request')
+    return system_message(request,True,'Invalid delete request')
 
     
    

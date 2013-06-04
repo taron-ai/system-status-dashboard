@@ -16,7 +16,7 @@
 
 {% endcomment %}
 
-<table width="670px">
+<table>
 
  <tr>
   <td>
@@ -24,10 +24,6 @@
     Dear {{recipient_name}}, {{greeting}}
    </p>
   </td>
- </tr>
-
- <tr>
-  <td height="10"></td>
  </tr>
 
  <tr>
@@ -43,10 +39,6 @@
     </b>
    </p>
   </td>
- </tr>
-
- <tr>
-  <td height="10"></td>
  </tr>
 
  <tr>
@@ -67,16 +59,12 @@
  </tr>
 
  <tr>
-  <td height="20"></td>
- </tr>
-
- <tr>
   <td>
    <table style="font-family: Arial, sans-serif; border-collapse:collapse;">
     <tr>
-     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black; width:165px">Time</th>
+     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black;">Time</th>
      <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black;">Logged By</th>
-     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black; width:500px">Description</th>
+     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black;">Description</th>
     </tr>
     <tr>
      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.date|date:"Y-m-d H:i:s"}}</td>

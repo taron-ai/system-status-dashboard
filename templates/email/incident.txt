@@ -23,23 +23,18 @@ The following services have been impacted by this incident:{% if services %}{% f
 - {{row.service_name_id__service_name}}{% endfor %}{% else %}- NO SERVICES DEFINED{% endif %}
 
 
-INCIDENT DETAILS:
+INCIDENT DETAILS/UPDATES:
 
--------------------
-{{detail.0.date|date:"Y-m-d H:i:s"}}
--------------------
+Date: {{detail.0.date|date:"Y-m-d H:i:s"}}
 Logged by: {{detail.0.user_id__first_name}} {{detail.0.user_id__last_name}}
 Detail: {{detail.0.detail|safe}}
     
 {% if updates %}{% for row in updates %}
--------------------
-{{row.date|date:"Y-m-d H:i:s"}}
--------------------
+Date: {{row.date|date:"Y-m-d H:i:s"}}
 Logged by: {{row.user_id__first_name}} {{row.user_id__last_name}}
-Detail: {{row.detail|safe}}
+Update: {{row.detail|safe}}
 
 {% endfor %}{% endif %}
-   
 * All times are in {{timezone}}
 * You may visit the System Status Dashboard at any time for current information on the status of all services: {{ssd_url}}
 

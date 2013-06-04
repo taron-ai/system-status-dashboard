@@ -43,5 +43,3 @@ TEMPLATE_DIRS = (
 # Set the timezone to match the server's timezone
 TIME_ZONE = 'US/Pacific'
 
-
-

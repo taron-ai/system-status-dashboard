@@ -24,6 +24,7 @@
 """
 
 
+import django
 import os
 import random
 import re
@@ -241,17 +242,85 @@ def install():
 
     print 'PERFORMING FRESH INSTALL:\n'  
 
-    ssd_src=raw_input("1: Enter the path to the SSD source (It is recommended that you place the source in opt: /opt/SSD-REL-x.x.x)\n#>").strip()
-    local_dir=raw_input('2: Enter the desired local directory location (It is recommended that you select: /opt)\n#>').strip()
+    # SOURCE DIRECTORY
+    ssd_source = re.search('^(\S+)\/install$',os.getcwd())
+    if ssd_source:
+        default_source = ssd_source.group(1)
+    else:
+        default_source = 'ERROR: source could not be automatically determined, enter manually'
+
+    ssd_src = raw_input('1: Enter the path to the SSD source [%s]\n#>' % default_source).strip()
+    ssd_src = ssd_src or default_source
+    print 'SSD source set to: %s\n' % ssd_src
+
+    # LOCAL DIRECTORY
+    default_local_dir = '/opt'
+    local_dir = raw_input('2: Enter the desired local directory location [%s]\n#>' % default_local_dir).strip()
+    local_dir = local_dir or default_local_dir
+    print 'Local directory set to: %s\n' % local_dir
+
+    # APACHE WEB CONFIGURATION
     web_conf=raw_input('3: Enter the Apache configuration directory\n#>').strip()
+    print 'Apache configuration directory set to: %s\n' % web_conf
+
+    # DB USER
     db_user=raw_input('4: Enter the database username\n#>').strip()
+    print 'Database username set to: %s\n' % db_user
+
+    # DB PASSWORD
     db_pass=raw_input('5: Enter the database password\n#>').strip()
+    print 'Database password set to: %s\n' % db_pass
+
+    # DB HOST
     db_host=raw_input('6: Enter the database server fully qualified hostname or IP address\n#>').strip()
+    print 'Database server set to: %s\n' % db_host
+
+    # DB PORT
     db_port=raw_input('7: Enter the database port\n#>').strip()
-    django_admin=raw_input('8: Enter the path to the DJango admin static files\n#>').strip()
-    apache_uid=raw_input('9: Enter the uid of the apache user\n#>').strip()
-    wsgi_dir=raw_input('10: Enter the path to the Apache mod_wsgi.so module\n#>').strip()
-    upload_dir=raw_input('11: Enter the path to the screenshot upload directory (It is recommended that you select /opt/ssd-local)\n#>').strip()
+    print 'Database port set to: %s\n' % db_port
+    
+    # DJANGO ADMIN DIRECTORY
+    django_path = re.search('^\[\'(\S+)\'\]',str(django.__path__))
+    if django_path:
+        django_admin_path = '%s/contrib/admin/static/admin' % django_path.group(1)
+    else:
+        django_admin_path = 'ERROR: django path could not be automatically determined, enter manually'
+    
+    django_admin=raw_input('8: Enter the path to the DJango admin static files [%s]\n#>' % django_admin_path).strip()
+    django_admin = django_admin or django_admin_path
+    print 'DJango admin static files set to: %s\n' % django_admin
+    
+    # APACHE UID
+    apache_uid=raw_input('9: Enter the uid of the Apache user\n#>').strip()
+    print 'Apache uid set to: %s\n' % apache_uid
+    
+    # APACHE WSGI MODULE DIRECTORY
+    # Search for it?
+    mod_wsgi_search = raw_input('The location of the apache mod_wsgi.so module is required, search for it (y/n)?\n#>').strip()
+    if mod_wsgi_search =='y':
+        print 'Searching for module...'
+        found = False
+        for d, s, f in os.walk('/'):
+            if 'mod_wsgi.so' in f:
+                print 'Module found at %s' % d
+                mod_wsgi_path = d
+                found = True
+                break
+        if found == False:
+            print 'mod_wsgi.so could not be found'
+            mod_wsgi_path = 'ERROR: mod_wsgi.so path unknown, enter manually'
+    else:
+        mod_wsgi_path = 'ERROR: mod_wsgi.so path unknown, enter manually'
+    
+    wsgi_dir=raw_input('10: Enter the path to the Apache mod_wsgi.so module [%s]\n#>' % mod_wsgi_path).strip()
+    wsgi_dir = wsgi_dir or mod_wsgi_path
+    print 'Apache mod_wsgi directory set to: %s\n' % wsgi_dir
+
+    # SCREENSHOT UPLOAD DIRECTORY
+    default_upload_dir = '/opt/ssd-local'
+    upload_dir=raw_input('11: Enter the path to the screenshot upload directory [%s]\n#>' % default_upload_dir).strip()
+    upload_dir = upload_dir or default_upload_dir 
+    print 'Upload directory set to: %s\n' % upload_dir
 
     install_text = """You have entered the following options:\n
             - SSD Source            : %s
@@ -322,8 +391,22 @@ def upgrade():
 
     print 'PERFORMING SSD UPGRADE:\n'  
 
-    ssd_src=raw_input("1: Enter the path to the SSD source\n#>").strip()
-    local_dir=raw_input('2: Enter the existing local directory location\n#>').strip()
+    # SOURCE DIRECTORY
+    ssd_source = re.search('^(\S+)\/install$',os.getcwd())
+    if ssd_source:
+        default_source = ssd_source.group(1)
+    else:
+        default_source = 'ERROR: source could not be automatically determined, enter manually'
+
+    ssd_src = raw_input('1: Enter the path to the SSD source [%s]\n#>' % default_source).strip()
+    ssd_src = ssd_src or default_source
+    print 'SSD source set to: %s\n' % ssd_src
+
+    # LOCAL DIRECTORY
+    default_local_dir = '/opt'
+    local_dir = raw_input('2: Enter the desired local directory location [%s]\n#>' % default_local_dir).strip()
+    local_dir = local_dir or default_local_dir
+    print 'Local directory set to: %s\n' % local_dir
 
     upgrade_text = """You have entered the following options:\n
             - SSD Source            : %s
@@ -366,12 +449,15 @@ def upgrade():
 
 type=raw_input("""
 **************************************
-** SSD AUTOMATED INSTALL SCRIPT **
+** SSD AUTOMATED INSTALL SCRIPT     **
 **************************************
 
 Before proceeding, please ensure that you have read the installation
 documentation available at http://www.system-status-dashboard.com and that you understand
 the installation options and expected answers.
+
+During installation, default values will be displayed in [brackets], where available.  To select
+default values, simply press enter.
 
 Please select an install option:
 1.  Install - install a new instance of SSD

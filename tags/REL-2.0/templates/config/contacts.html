@@ -1,0 +1,156 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<br>
+
+<div class="row">
+  <div class="large-6 large-centered columns">
+    
+      {% if contacts %}
+       <table class="responsive standard">
+        <tr>
+         <th>Order</th>
+         <th>Name</th>
+         <th width="260px">Modify Contact</th>
+        </tr>
+        {% for row in contacts %}
+         <tr>
+          <td>{{row.order}}</td>
+          <td>{{row.name}}</td>
+          <td valign="middle">
+            <div>
+              
+              <div class="horiz_stack">
+                <form method="POST" name="contacts_up" action="/contacts_modify">
+                  {% csrf_token %}
+                  <input type="submit" class="small button" value="up"/>
+                  <input type="hidden" name="action" value="up">
+                  <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+              </div>
+             
+              <div class="horiz_stack">
+                <form method="POST" name="contacts_down" action="/contacts_modify">
+                {% csrf_token %}
+                <input type="submit" class="small button" value="down"/>
+                <input type="hidden" name="action" value="down">
+                <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+              </div>
+
+              <div class="horiz_stack">
+               {% if row.hidden %}
+                <form method="POST" name="contacts_hide" action="/contacts_modify">
+                {% csrf_token %}
+                <input type="submit" class="small button success" value="show"/>
+                <input type="hidden" name="action" value="show">
+                <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+               {% else %}
+                <form method="POST" name="contacts_hide" action="/contacts_modify">
+                {% csrf_token %}
+                <input type="submit" class="small button alert" value="hide"/>
+                <input type="hidden" name="action" value="hide">
+                <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+               {% endif %}
+              </div>
+              
+              <div class="horiz_stack">
+                <form method="POST" name="contacts_delete" action="/contacts_modify">
+                {% csrf_token %}
+                <input type="submit" class="small button alert" value="delete"/>
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="id" value="{{row.id}}">
+                </form>
+              </div>
+            </div>
+           </td>
+          </tr>
+        {% endfor %}
+        </table>      
+      {% else %}
+      No contacts defined
+      <br>
+      {% endif %}
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="large-6 large-centered columns">
+
+    <form method="POST" name="manage_contacts" id="manage_contacts" action="/contacts">
+    {% csrf_token %}
+    <fieldset>
+      <legend>Add Contact</legend>
+
+      <div class="row">
+        <div class="large-6 columns">
+         <label>Full Name</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-12 columns {% if form.name.errors %}error{% endif %}">
+          <input name="name" type="text" value="{% if form.name.data %}{{form.name.data}}{% endif %}" placeholder="{{instr_escalation_name}}">
+          {% if form.name.errors %}
+          <small class="error">
+            {% for error in form.name.errors %}{{error}}{% endfor %}
+          </small>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-12 columns">
+         <label>Contact Details</label>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="large-12 columns {% if form.contact_details.errors %}error{% endif %}">
+          <textarea name="contact_details" placeholder="{{instr_escalation_details}}">{% if form.contact_details.data %}{{form.contact_details.data}}{% endif %}</textarea>
+          {% if form.contact_details.errors %}
+          <small class="error">
+            {% for error in form.contact_details.errors %}{{error}}{% endfor %}
+          </small>
+          {% endif %}
+        </div>
+      </div>
+     
+      <div class="row">
+        <div class="large-12 columns">
+          <input type="submit" class="small button" value="add"/>
+          {% if alert %}
+          &nbsp;&nbsp;<a href="#" data-reveal-id="help" class="small button">Help</a>
+          {% endif %}
+        </div>
+      </div>
+
+      </formset>
+    </form> 
+  </div>
+</div>
+
+
+{% endblock %}

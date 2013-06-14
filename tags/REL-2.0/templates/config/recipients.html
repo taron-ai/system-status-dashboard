@@ -1,0 +1,100 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<br>
+
+<div class="row">
+  <div class="large-6 large-centered columns">
+    <form method="POST" name="rm_recipients" id="rm_recipients" action="/rm_recipients">
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>Manage Recipients</legend>
+
+      {% if recipients %}
+      <table class="standard">
+       <tr>
+        <th>Delete</th>
+        <th>Email Address</th>
+       </tr>
+          
+       {% for row in recipients %}
+       <tr>
+        <td><input type="checkbox" name="id" value="{{row.id}}" /></td>
+        <td>{{row.email_address}}</td>
+       </tr>
+       {% endfor %}
+      </table>
+      
+      <input type="submit" class="small button" value="delete"/>
+      {% if form.id.errors %}
+        <p class="error">{% for error in form.id.errors %}{{error}}{% endfor %}</p>
+      {% endif %}
+    </form>
+    
+    {% else %}
+    No recipients defined
+    {% endif %}
+    </fieldset>
+    </form>
+  </div>
+</div>
+  
+
+<div class="row">
+  <div class="large-6 large-centered columns">
+
+    <form method="POST" name="manage_recipients" id="manage_recipients" action="/recipients">
+     {% csrf_token %}
+
+    <fieldset>
+      <legend>Add Recipient</legend>
+
+      <div class="row">
+        <div class="large-6 columns">
+         <label>Email Address</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-12 columns {% if form.recipient.errors %}error{% endif %}">
+          <input name="recipient" type="text" placeholder="Enter a valid email address" value="{% if form.recipient.data %}{{form.recipient.data}}{% endif %}">
+          {% if form.recipient.errors %}
+          <small class="error">
+            {% for error in form.recipient.errors %}{{error}}{% endfor %}
+          </small>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-12 columns">
+          <input type="submit" class="small button" value="add"/>
+        </div>
+      </div>
+
+      </fieldset>
+    </form> 
+  </div>
+</div>
+
+{% endblock %}

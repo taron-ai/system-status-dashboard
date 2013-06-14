@@ -1,0 +1,149 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+{% block content %}
+
+<br>
+  
+<form name="config" method="POST" action="/config">
+{% csrf_token %}
+
+<div class="row">
+  <div class="large-12 columns">
+    <dl class="sub-nav">
+      <dt>Filter:</dt>
+      <dd {% if filter == "all" %}class="active"{% endif %}><a href="/config?filter=all">All</a> |</dd>
+      <dd {% if filter == "alerts" %}class="active"{% endif %}><a href="/config?filter=alerts">Alerts</a> |</dd>
+      <dd {% if filter == "email_addresses" %}class="active"{% endif %}><a href="/config?filter=email_addresses">Email Addresses</a> |</dd>
+      <dd {% if filter == "email_format" %}class="active"{% endif %}><a href="/config?filter=email_format">Email Format</a> |</dd>
+      <dd {% if filter == "email_text" %}class="active"{% endif %}><a href="/config?filter=email_text">Email Text</a> |</dd>
+      <dd {% if filter == "help" %}class="active"{% endif %}><a href="/config?filter=help">Help</a> |</dd>
+      <dd {% if filter == "information" %}class="active"{% endif %}><a href="/config?filter=information">Information</a> |</dd>
+      <dd {% if filter == "instructions" %}class="active"{% endif %}><a href="/config?filter=instructions">Instructions</a> |</dd>
+      <dd {% if filter == "file_uploads" %}class="active"{% endif %}><a href="/config?filter=file_uploads">File Uploads</a> |</dd>
+      <dd {% if filter == "functionality" %}class="active"{% endif %}><a href="/config?filter=functionality">Functionality</a> |</dd>
+      <dd {% if filter == "urls" %}class="active"{% endif %}><a href="/config?filter=urls">URLs</a> </dd>
+    </dl>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
+    <input type="submit" class="small button" value="save changes"/>
+    <br>
+    <br>
+  </div>
+</div>
+
+{% if form.errors %}
+<div class="row">
+  <div class="large-12 columns">
+    <p class="error">There were errors saving your config changes - please review the messages below</p>
+  </div>
+</div>
+{% endif %}
+
+{% if configs %}
+<div class="row">
+  <div class="large-12 columns">
+
+    <table class="responsive standard">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Description</th>
+          <th>Current Value</th>
+          <th width="200">Update | New Value</th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {% for config in configs %}
+        <tr>
+          <td><b>{{config.friendly_name}}</b></td>
+          <td>{{config.description}}</td>
+          {% if config.display == 'boolean' %}
+            <td>{% if config.config_value == '1' %}True{% else %}False{% endif %}</td>
+            <td>
+              <div style="float: left; width:25px;">
+                <input type="checkbox" name="update_{{config.config_name}}" />
+              </div>
+              <div style="float: left;">
+                <select name="{{config.config_name}}">
+                  {% if config.config_value == '1' %}
+                   <option value="0" selected>False</option>
+                   <option value="1">True</option>
+                  {% else %}
+                   <option value="0">False</option>
+                   <option value="1" selected>True</option>
+                  {% endif %}
+                </select>
+              </div>
+            </td>
+          {% else %}
+            <td>{{config.config_value}}</td>
+               
+            {# See if this was a failed form submit and if we need to pre-fill the failed value #}
+            {% for field in form %}
+              {% if field.name == config.config_name %}
+                {% if field.value == None %}
+                  <td>
+                    <div style="float: left; width:25px;">
+                      <input type="checkbox" name="update_{{config.config_name}}" />
+                    </div>
+                    <div style="float: left;">
+                      <input type="text" name="{{config.config_name}}" value="" />
+                    </div>
+                  </td>
+                {% else %}
+                  <td>
+                    <div style="float: left; width:25px;">
+                      <input type="checkbox" name="update_{{config.config_name}}" />
+                    </div>
+                    <div style="float: left;">
+                      <input type="text" name="{{config.config_name}}" value="{{field.value}}" />
+                    </div>
+                  </td>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </tr>
+
+        {# See if there are any errors for this config #}
+        {% for key,value in form.errors.items %}
+          {% if key == config.config_name %}
+          <tr>
+            <td colspan="6" style="text-align:right; border-top:0;"><p class="error">{% for error in value %}{{error}}{% endfor %}</p></td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<input type="hidden" name="filter" value="{{filter}}">
+{% else %}
+No configuration parameters - do you have an incorrect filter defined?
+{% endif %}
+
+</form>
+
+{% endblock %}

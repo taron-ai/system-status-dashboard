@@ -1,0 +1,256 @@
+
+/*
+
+Copyright 2013 - Tom Alessi
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for specific language governing permissions and
+limitations under the License.
+
+System Status Dashboard Stylesheets 
+
+*/
+
+
+
+/* GLOBAL FONT */
+* {
+   font-family: Arial, sans-serif;
+}
+
+
+
+/* GLOBAL HYPERLINKS */
+a {
+   color: #005596;
+   font-weight: bold;
+}
+
+
+
+/* PARAGRAPH FORMATTING */
+/* Standard paragraph formatting */
+p {
+   font-size: 15px;
+}
+/* Error Text */
+p.error {
+   font-size: 12px;
+   font-weight: bold;
+   color: red;
+   margin: 0;
+   padding: 0;
+}
+/* small text */
+p.small{
+   font-size: 12px;
+}
+
+
+/* FONTS */
+/* small fonts for disabled */
+font.disabled {
+   font-size: 12px;
+   font-weight: bold;
+   color: blue;
+}
+
+
+/* TOOLTIPS */
+/* Background and border */
+.tooltip {
+   border-color: #B0C5D0;
+   background-color: #C8DAE4;
+   color: #616161;
+}
+/* Arrow color */
+.tooltip > .nub {
+   border-color: transparent transparent #C8DAE4 transparent;
+ }
+ 
+
+
+/* NAV BAR */
+.top-bar .name h1 {
+	font-size: 0.8em;
+}
+.top-bar-section li a:not(.button) {
+	background: #616161;
+	color: #C8DAE4;
+}
+.top-bar {
+	background: #616161;
+}
+.top-bar-section .has-form {
+	background: #616161;
+}
+
+
+
+/* LABELS */
+label {
+	font-weight: bold;
+}
+
+
+
+/* TABLES */
+/* Standard Table Setup */
+table.standard {
+   font-family: Tahoma, Arial, Helvetica, sans-serif;
+   border-collapse:collapse;
+}
+table.standard th {
+   border: 1px solid #B0C5D0;
+   background-color: #C8DAE4;
+   color: #616161;
+   font-size: 14px;
+   padding: 10px 10px 10px 10px;
+   text-align: center;
+   font-weight: bold;
+}
+table.standard td {
+   border: 1px solid #B0C5D0;
+   vertical-align: top;
+   font-size: 14px;
+   padding: 10px 10px 10px 10px;
+   color: black;
+}
+/* Homepage table with no border on the bottom cells */
+table.border_top {
+	border: 0;
+}
+table.border_top td {
+   border: 1px solid #B0C5D0;
+   vertical-align: top;
+   font-size: 14px;
+   padding: 10px 10px 10px 10px;
+   color: black;
+}
+table.border_top th {
+   border: 1px solid #B0C5D0;
+   background-color: #C8DAE4;
+   color: #616161;
+   font-size: 14px;
+   padding: 10px 10px 10px 10px;
+   text-align: center;
+   font-weight: bold;
+}
+td.td_border_top {
+	border-left: 0 !important;
+	border-right: 0 !important;
+	border-bottom: 0 !important;
+	background-color: white;
+	height: 40px;
+	vertical-align: bottom;
+}
+
+
+
+/* LEGENDS */
+fieldset legend {
+	font-size: 1.5em;
+}
+
+
+
+/* DIVS AND SPACERS */
+div.border {
+	border: 1px solid #B0C5D0;
+}
+/* Div containing the custom company logo */
+#logo_header {
+   margin: 8px;
+}
+/* Spacer rows when more space is required b/t rows in the layout */
+div.spacer_small {
+   height: 15px;
+}
+div.spacer_medium {
+   height: 35px;
+}
+/* Inline button container */
+div.horiz_stack {
+   display: inline-block;  
+}
+
+
+
+/* BUTTONS */
+/* Remove the bottom padding on buttons */
+.button {
+	margin-bottom: 0em;	
+}
+
+
+
+/* TEXTAREAS */
+textarea {
+	height: 150px;
+}
+textarea.small {
+	height: 85px;
+}
+
+
+
+/* JQUERY UI */
+div.ui-datepicker, .ui-datepicker td{
+	font-size: 12px;
+}
+/* 
+JQuery UI Timepicker
+http://trentrichardson.com/examples/timepicker/
+*/
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+
+.ui-timepicker-rtl{ direction: rtl; }
+.ui-timepicker-rtl dl { text-align: right; }
+.ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }
+
+
+
+/* INPUTS */
+input, textarea, select {
+   display: inline-block;
+   padding: 4px;
+   margin-bottom: 9px;
+   font-size: 14px;
+   color: #3f3f3f;
+   border: 1px solid #CCCCCC;
+   -webkit-border-radius: 3px;
+   -moz-border-radius: 3px;
+   border-radius: 3px
+   -webkit-box-shadow: inset 0 1px 1px
+   transition: border linear .2s,box-shadow linear .2s;
+}
+/* Timezone form */
+#prefs_timezone {
+   margin: 0px;
+   padding: 0px;
+}
+#timezone {
+   font-size: 12px;
+}
+#jump_to {
+   font-size: 12px;
+}
+
+
+
+
+
+

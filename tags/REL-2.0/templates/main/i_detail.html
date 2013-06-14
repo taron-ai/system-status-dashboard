@@ -1,0 +1,124 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+
+<div class="row">
+  <div class="large-9 columns">
+    <p>This page contains all relevant information on this incident.  Check back here at any time to obtain current information on the status of this incident.</p>
+  </div>
+  <div class="large-3 columns"></div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
+    <p>Incident Status: 
+      <b>
+      {% if detail.0.closed %}
+      CLOSED ({{detail.0.closed|date:"Y-m-d H:i:s"}})
+      {% else %}
+      OPEN
+      {% endif %}
+      </b>
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
+    <p>
+      The following services have been impacted by this incident:
+      <br>
+    {% if services %}
+    {% for row in services %}
+    <b>- {{row.service_name_id__service_name}}</b>
+      <br>
+    {% endfor %}
+    {% else %}
+    <b><font color="red">- NO SERVICES DEFINED</font></b>
+    {% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
+    <p>
+      Email Notifications{% if not notifications == 1 %} <font class="disabled">(disabled)</font>{% endif %}:
+    {% if detail.0.email_address_id__email_address %}
+    <b>{{detail.0.email_address_id__email_address}}</b>
+    {% else %}
+    No recipient defined
+    {% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
+   <table class="responsive border_top">
+    <tr>
+     <th width="165">Time*</th>
+     <th>Logged By</th>
+     <th width="500px">Detail</th>
+    </tr>
+    <tr>
+     <td>{{detail.0.date|date:"Y-m-d H:i:s"}}</td>
+     <td>{{detail.0.user_id__first_name}} {{detail.0.user_id__last_name}}</td>
+     <td>{{detail.0.detail|linebreaksbr}}</td>
+    </tr>
+
+    {% if updates %}
+     {% for row in updates %}
+      <tr>
+       <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
+       <td>{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
+       <td>{{row.detail|linebreaksbr}}</td>
+      </tr>
+     {% endfor %}
+    {% endif %}
+   
+    <tr>
+      <td colspan="2" class="td_border_top">
+        *All times are in {{TIME_ZONE}}
+      </td>
+    </tr>
+
+   </table>
+
+  </div>
+</div>
+
+ 
+{% if user.is_authenticated %}
+<div class="row">
+  <div class="large-4 columns">
+    <form method="POST" name="i_delete" action="/i_delete">
+      {% csrf_token %}
+      <a href="/i_update?id={{id}}" class="small button">update</a>&nbsp;&nbsp;
+      <input type="hidden" name="id" value="{{id}}">
+      <input type="submit" class="small button" value="delete"/>
+    </form>
+  </div>
+</div>
+{% endif %} 
+
+{% endblock %}

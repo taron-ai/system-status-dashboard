@@ -1,0 +1,179 @@
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+
+ <head>
+  <title>{{title}}</title>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" /> 
+
+  <!-- Set the viewport for mobile optimization -->
+  <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+
+  <link rel="stylesheet" href="/html/css/foundation.css" />
+  <link rel="stylesheet" href="/html/css/normalize.css" />
+  <link rel="stylesheet" href="/html/css/ssd-theme/jquery-ui-1.9.1.custom.min.css"  />
+  <link rel="stylesheet" media="screen"  href="/html/css/responsive-tables.css" />
+  <link rel="StyleSheet" href="/html/css/app.css">
+
+  <script type="text/javascript" src="/html/js/vendor/custom.modernizr.js"></script>
+  <script type="text/javascript" src="/html/js/jquery-1.8.2.js"></script>
+  <script type="text/javascript" src="/html/js/jquery-ui-1.9.1.custom.min.js"></script>
+  <script type="text/javascript" src="/html/js/ssd.js"></script>
+  <script type="text/javascript" src="/html/js/responsive-tables.js"></script>
+  <script type="text/javascript" src="/html/js/jquery-ui-timepicker-addon.js"></script>
+
+ </head>
+ <body>
+
+{% if logo %}
+<div id="logo_header">
+  <img src="{{logo}}"><br>
+</div>
+{% endif %}
+
+{% if nav %}
+<nav class="top-bar">
+  <ul class="title-area">
+    <li class="name"></li>
+    <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+    <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+  </ul>
+
+  <section class="top-bar-section">
+    <!-- Left Nav Section -->
+    <ul class="left">
+      <li class="divider"></li>
+      <li ><a href="/">Dashboard</a></li>
+      <li class="divider"></li>
+
+      {% if report_incident %}
+      <li><a href="/report">Report Incident</a></li>
+      <li class="divider"></li>
+      {% endif %}
+
+      {% if escalation %}
+      <li><a href="/escalation">Escalation</a></li>
+      <li class="divider"></li>
+      {% endif %}
+
+      <li class="has-dropdown"><a href="#">Search</a>
+        <ul class="dropdown">
+          <li><a href="/isearch">Incidents</a></li>
+          <li><a href="/rsearch">Incident Reports</a></li>
+          <li><a href="/rsearch_recent">Recent Incident Reports</a></li>
+          <li><a href="/msearch">Scheduled Maintenance</a></li>
+        </ul>
+      </li>
+      <li class="divider"></li>      
+
+      {# If the user is authenticated, show the login menu #}
+      {% if user.is_authenticated %}
+      <li class="has-dropdown"><a href="#">Admin</a>
+        <ul class="dropdown">
+          <li class="has-dropdown"><a href="#">Create</a>
+            <ul class="dropdown">
+              <li><a href="/incident">Incident</a></li>
+              <li><a href="/maintenance">Scheduled Maintenance</a></li>
+            </ul>
+          </li>
+          <li class="has-dropdown"><a href="#">Manage</a>
+            <ul class="dropdown">
+              <li><a href="/contacts">Escalation Contacts</a></li>
+              <li><a href="/recipients">Email Recipients</a></li>
+              <li><a href="/services">Services</a></li>
+            </ul>
+          </li>
+          <li class="has-dropdown"><a href="#">Expert</a>
+            <ul class="dropdown">
+              <li><a href="/config">Configuration Manager</a></li>
+              <li><a href="/admin">DJango Administration</a></li>
+            </ul>
+          </li>
+          <li><a href="/accounts/logout">Logout ({{user.username}})</a></li>
+        </ul>
+      </li>
+      <li class="divider hide-for-small"></li>
+      {% else %}
+        {# If the admins want the login link displayed, even when someone is not authenticated, show it #}
+        {% if login %}
+      <li><a href="/accounts/login">Login</a></li>
+      <li class="divider"></li>
+        {% endif %}
+      {% endif %}
+    </ul>
+
+    <!-- Title Area -->
+    <ul>
+     <li class="name hide-for-small">
+      <h1><a href="#">{{title}}</a></h1>
+    </li>
+    </ul>
+
+    <!-- Right Nav Section -->
+    <div class="hide-for-small hide-for-medium">
+      <ul class="right">
+        <li class="divider show-for-small"></li>
+        <li class="has-form">
+          <a href="http://www.system-status-dashboard.com" title="version: {{app_version}}"><img width="55" height="35" src="/html/images/SSDsmall.png"></a>
+        </li>
+      </ul>
+    </div>
+
+  </section>
+</nav>
+{% endif %}
+
+
+<div class="row">
+  <div class="large-12 large-centered columns">
+  {% block content %}
+
+  {% endblock %}
+  </div>
+</div>
+
+
+<script>
+  document.write('<script src=' +
+  ('__proto__' in {} ? '/html/js/vendor/zepto' : '/html/js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  <script src="/html/js/foundation/foundation.js"></script>
+  <script src="/html/js/foundation/foundation.alerts.js"></script>
+  <script src="/html/js/foundation/foundation.clearing.js"></script>
+  <script src="/html/js/foundation/foundation.cookie.js"></script>
+  <script src="/html/js/foundation/foundation.dropdown.js"></script>
+  <script src="/html/js/foundation/foundation.forms.js"></script>
+  <script src="/html/js/foundation/foundation.joyride.js"></script>
+  <script src="/html/js/foundation/foundation.magellan.js"></script>
+  <script src="/html/js/foundation/foundation.orbit.js"></script>
+  <script src="/html/js/foundation/foundation.placeholder.js"></script>
+  <script src="/html/js/foundation/foundation.reveal.js"></script>
+  <script src="/html/js/foundation/foundation.section.js"></script>
+  <script src="/html/js/foundation/foundation.tooltips.js"></script>
+  <script src="/html/js/foundation/foundation.topbar.js"></script>
+  <script>
+  $(document).foundation();
+  </script>
+
+
+</body>
+</html>

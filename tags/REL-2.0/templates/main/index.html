@@ -1,0 +1,188 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<script type="text/javascript">
+
+   // Date
+   $(function() {
+      $("#jump_to").datepicker({dateFormat: 'yy-mm-dd'});
+   });
+
+   // Settings Slider
+   $(function() {
+      $("#settings_button").click(function () {
+        $("#settings").slideToggle("slow");
+      });
+    });
+</script>
+
+<div class="row">
+  <div class="large-8 columns"></div>
+  <div class="large-4 columns">
+    <div class="panel" id="settings" style="display: none;">
+
+      <div class="row">
+        <div class="large-11 columns">
+          <p class="small">Set your timezone to adjust all dates/times to your location or jump to a specific date in the calendar.</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-2 columns"><p class="small">Timezone:</p></div>
+        <div class="large-9 columns">
+           <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post">
+           {% csrf_token %}
+             <select name="timezone" id="timezone" onchange='this.form.submit()'>
+             {% for timezone in timezones %}
+              {% if timezone == TIME_ZONE %}
+               <option value="{{timezone}}" selected="true">{{timezone}}</option>
+              {% else %}
+               <option value="{{timezone}}">{{timezone}}</option>
+              {% endif %}
+             {% endfor %}
+             </select>
+          </form>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="large-2 columns"><p class="small">Jump To:</p></div>
+        <div class="large-9 columns">
+          <form name="prefs_jump" action="/prefs/jump" method="post">
+           {% csrf_token %}
+          <input type="text" class="jump_to" name="jump_to" id="jump_to" placeholder="Enter date" onchange='this.form.submit()'/>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-11 columns">
+    <p>{{information|safe}}</p>
+  </div>
+  <div class="large-1 columns">
+    <img id="settings_button" data-options="disable-for-touch:true" class="has-top" title="Preferences" src="/html/images/gear.png">
+  </div>
+</div>
+
+<div class="spacer_small"></div>
+
+{% if alert %}
+<div class="row">
+  <div class="large-10 large-centered columns">
+    <div class="panel callout radius" style="background: #D45757;">
+      {{alert}}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+<div class="row">
+  <div class="large-12 large-centered columns">
+    <table class="responsive border_top">
+     {% for row in data %}
+       {% if forloop.first %}
+         <tr>
+          {% for heading in row %}
+           {% if forloop.first %}
+            <th style="min-width: 200px;">{{heading}}</th>
+           {% else %}
+            <th style="min-width: 100px;">{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
+           {% endif %}
+          {% endfor %}
+         </tr>
+       {% else %}
+        <tr>
+         {% for row1 in row %}
+           {% if forloop.first %}
+             <td>
+             {# impaired services will take precedence over maintenance #}
+             {% if row1 in impaired_services %}
+             <img src="/html/images/incident_red.png">
+             {% else %}
+              {% if row1 in maintenance_services %}
+               <img src="/html/images/incident_blue.png">
+              {% else %}
+               <img src="/html/images/incident_green.png">
+              {% endif %}
+             {% endif %}
+             {{row1}}
+             </td>
+           {% else %}
+             <td style="text-align:center;">
+             {% for row2 in row1 %}
+               {% if not row2 == 'green' %}
+                 {# We have some events to show, this is an associative array #}
+                 {# See if we have a maintenance or an incident #}
+
+                 {% if row2.type == 'incident' %}
+                   {% if row2.closed == None %}
+                     <a href="/i_detail?id={{row2.id}}"><img src="/html/images/incident_red.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~"></a>
+                   {% else %}
+                     <a href="/i_detail?id={{row2.id}}"><img src="/html/images/incident_orange.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~ {{row2.closed|date:"Y-m-d H:i:s"}}"></a>
+                   {% endif %}
+                 {% else %}
+                   {% if row2.type == 'maintenance' %}
+                     <a href="/m_detail?id={{row2.id}}"><img src="/html/images/incident_blue.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~ {{row2.closed|date:"Y-m-d H:i:s"}}"></a>
+                   {% endif %}
+                 {% endif %}
+               {% endif %}
+
+             {% endfor %}
+             </td>
+           {% endif %}
+         {% endfor %}
+        </tr>
+       {% endif %}
+     {% endfor %}
+
+         <tr>
+          <td class="td_border_top">
+            {% if backward_link %}
+            <a href="{{backward_link}}"><<< older</a>
+            {% endif %}
+
+            {% if forward_link %}
+            <a href="{{forward_link}}">newer >>></a>
+            {% endif %}
+          </td>
+          <td class="td_border_top" style="text-align: right; font-size: 12px;"><b>Key:</b></td>
+          <td class="td_border_top" colspan="6" style="min-width: 600px; font-size: 12px;">
+            <img src="/html/images/incident_green.png">&nbsp;Service Normal
+            &nbsp;&nbsp;
+            <img src="/html/images/incident_red.png">&nbsp;Service Disruption
+            &nbsp;&nbsp;
+            <img src="/html/images/incident_orange.png">&nbsp;Service Disruption (resolved)
+            &nbsp;&nbsp;
+            <img src="/html/images/incident_blue.png">&nbsp;Planned Maintenance
+          </td>
+        </tr>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

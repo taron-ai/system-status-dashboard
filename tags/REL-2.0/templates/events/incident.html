@@ -1,0 +1,152 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<script type="text/javascript">
+
+   // Date Pickers
+   $(function() {
+
+      //Date
+      $("#date").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //Time
+      $("#time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
+
+   });
+   
+</script>
+
+<div id="help" class="reveal-modal">
+  <h2>Help</h2>
+  <p class="lead">{{help|safe}}</p>
+  <a class="close-reveal-modal">&#215;</a>
+</div>
+
+<form method="POST" name="incident" action="/incident">
+{% csrf_token %}
+
+  <fieldset>
+    <legend>Create Incident</legend>
+
+    <div class="row">
+      <div class="large-5 columns {% if form.detail.errors %}error{% endif %}">
+        <span class="radius secondary label">Incident Description</span><br><br>
+        <textarea name="detail" placeholder="{{instr_incident_description}}" maxlength="1000">{% if form.detail.data %}{{form.detail.data}}{% endif %}</textarea>
+        {% if form.detail.errors %}
+        <small class="error">
+          {% for error in form.detail.errors %}{{error}}{% endfor %}
+        </small>
+        {% endif %}
+      </div>
+
+      <div class="large-7 columns">
+        <span class="radius secondary label">Email</span>&nbsp;{% if not notifications == 1 %}<font class="disabled">(disabled)</font>{% endif %}<br><br>
+        <div class="row">
+          
+          <div class="large-4 columns {% if form.broadcast.errors %}error{% endif %}">
+            <label><input type="checkbox" {% if not notifications == 1 %}disabled{% endif %} name="broadcast" {% if form.broadcast.data %}checked{% endif %} />
+            Broadcast Email</label>
+            {% if form.broadcast.errors %}
+            <br><br>
+            <small class="error">
+              {% for error in form.broadcast.errors %}{{error}}{% endfor %}
+            </small>
+            {% endif %}
+          </div>
+
+          <div class="large-8 columns left">
+            <select name="recipient_id" {% if not notifications == 1 %}disabled{% endif %}>
+              <option value="">-</option>
+             {% for recipient in recipients %}
+              {% if form.recipient_id.data|slugify == recipient.id|slugify %}
+              <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
+              {% else %} 
+              <option value="{{recipient.id}}">{{recipient.email_address}}</option>
+              {% endif %}
+             {% endfor %}
+             </select>
+          </div>
+        </div>
+      
+        <div class="row">
+          <div class="large-12 columns">
+            <span class="radius secondary label">Date/Time</span><br><br>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="large-6 columns {% if form.date.errors %}error{% endif %}">
+            <input type="text" name="date" id="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if time_now %}{{time_now|date:"Y-m-d"}}{% endif %}{% endif %}"/>
+            {% if form.date.errors %}
+              <small class="error">
+                {% for error in form.date.errors %}{{error}}{% endfor %}
+              </small>
+            {% endif %}            
+          </div>
+          <div class="large-6 columns {% if form.time.errors %}error{% endif %}">
+            <input type="text" name="time" id="time" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if time_now %}{{time_now|date:"H:i"}}{% endif %}{% endif %}"/>
+            {% if form.time.errors %}
+              <small class="error">
+                {% for error in form.time.errors %}{{error}}{% endfor %}
+              </small>
+            {% endif %}            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="radius secondary label">Services Impacted</span><br><br>
+    <div class="row">
+      
+      <div class="large-6 columns {% if form.service.errors %}error{% endif %}">
+        {% for row in services %}
+          {# See if this service was previously selected and this is a failed form submit #}
+          <label><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %} />
+          {{row.service_name}}</label>
+          
+        {% endfor %}
+        {% if form.service.errors %}
+          <br>
+          <small class="error">
+            {% for error in form.service.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <input type="submit" class="small button" value="submit"/>
+        &nbsp;<a href="#" data-reveal-id="help" class="small button">help</a>
+      </div>
+    </div>
+
+  </fieldset>
+</form>
+
+{% endblock %}
+
+
+

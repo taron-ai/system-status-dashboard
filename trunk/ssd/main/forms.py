@@ -229,7 +229,6 @@ class ConfigForm(forms.Form):
     update_upload_path = forms.BooleanField(required=False)
 
     # Override the form clean method - there is some special logic to validate 
-    # scheduling a maintenance and we need access to multiple values    
 
     def clean(self):
         cleaned_data = super(ConfigForm, self).clean()

@@ -204,6 +204,40 @@ def msearch(request):
     )
 
 
+def mrusearch(request):
+    """Recent / Upcoming Maintenance Search View
+
+    Allow a user to search through recent or upcoming scheduled maintenance
+
+    """
+
+
+    results = Service_Maintenance.objects.values('maintenance__start',
+                                                 'maintenance__id',
+                                                 'maintenance__description'
+                                                ).distinct().order_by('-maintenance__start')[:10]
+
+    # Give the dates a timezone so search is accurate
+    # If the timezone is not set, give the local server timezone
+    if request.COOKIES.get('timezone') == None:
+        set_timezone = settings.TIME_ZONE
+    else:
+        set_timezone = request.COOKIES.get('timezone')
+
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
+    jtz.activate(set_timezone)
+
+    # Print the page
+    return render_to_response(
+       'search/msearch_results.html',
+       {
+          'title':'System Status Dashboard | Recent / Upcoming Maintenance Search',
+          'results':results,
+       },
+       context_instance=RequestContext(request)
+    )
+
+
 def rsearch(request):
     """Incident Report Search View
 
@@ -286,14 +320,12 @@ def rsearch(request):
 def rsearch_recent(request):
     """Recent Incident Report Search View
 
-    Allow a user to search through the most recent user reported incidents using specific search
+    Allow a user to search through the most recent user reported incidents
     criteria
 
     """
-    
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
 
+    
     # Give the dates a timezone so search is accurate
     # If the timezone is not set, give the local server timezone
     if request.COOKIES.get('timezone') == None:
@@ -314,15 +346,11 @@ def rsearch_recent(request):
                                     'screenshot2'
                                    ).order_by('-id')[:5]
 
-    # Incident report upload path
-    upload_path = cv.value('upload_path')
-
     return render_to_response(
        'search/rsearch_results.html',
        {
           'title':'System Status Dashboard | Recent Incident Report Search',
-          'results':results,
-          'upload_path':upload_path
+          'results':results
        },
        context_instance=RequestContext(request)
     )

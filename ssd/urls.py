@@ -45,6 +45,7 @@ urlpatterns = patterns('',
 
     # Search
     url(r'^isearch$',           'ssd.main.views.search.isearch'),
+    url(r'^mrusearch$',         'ssd.main.views.search.mrusearch'),
     url(r'^msearch$',           'ssd.main.views.search.msearch'),
     url(r'^rsearch$',           'ssd.main.views.search.rsearch'),
     url(r'^rsearch_recent$',    'ssd.main.views.search.rsearch_recent'),

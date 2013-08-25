@@ -28,6 +28,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count
 from django.utils import timezone as jtz
 from ssd.main.models import Incident
 from ssd.main.models import Incident_Update
@@ -113,7 +114,7 @@ def index(request):
 
     # The reference date is the last date displayed in the calendar
     # so add that and create a datetime object in the user's timezone
-    # (hopefully they set it)
+    # (or the server timezone if its not set)
     ref += ' 00:00:00'
     ref = datetime.datetime.strptime(ref,'%Y-%m-%d %H:%M:%S') 
     ref = pytz.timezone(set_timezone).localize(ref)
@@ -256,7 +257,73 @@ def index(request):
 
         # Add the main row to our data dict
         data.append(row)
-  
+
+
+    # ------------------ #
+    # Obtain a count of all incidents/maintenances/reports going back 30 days and forward 30 days (from the reference date) for the summary
+    # graph
+    
+    # First populate all of the dates into an array so we can iterate through 
+    graph_dates = []
+    
+    # The back dates (including today)
+    counter = 30
+    while counter >= 0:
+        day = datetime.timedelta(days=counter)
+        day = ref - day
+        day = day.strftime("%Y-%m-%d")
+        graph_dates.append(day)
+        counter -= 1
+
+    # Now the forward dates
+    counter = 1
+    while counter <= 30:
+        day = datetime.timedelta(days=counter)
+        day = ref + day
+        day = day.strftime("%Y-%m-%d")
+        graph_dates.append(day)
+        counter += 1
+
+
+    # Obtain the back and forward dates for the query    
+    back = datetime.timedelta(days=30)
+    back_date = ref - back
+    forward = datetime.timedelta(days=30)
+    forward_date = ref_q + forward
+    
+    # Obtain a count of incidents, per day
+    incident_count = Incident.objects.filter(date__range=[back_date,forward_date]).values('date')
+    
+    # Obtain a count of maintenances, per day
+    maintenance_count = Maintenance.objects.filter(start__range=[back_date,forward_date]).values('start')
+
+    # Iterate through the graph_dates and find matching incidents/maintenances/reports
+    # This data structure will look like this:
+    # count_data = [
+    #               {'date' : '2013-09-01', 'incidents':0, 'maintenances':0, 'reports':1}
+    #              ]
+    count_data = []
+
+    for day in graph_dates:
+
+        # Create a tuple to hold this data series
+        t = {'date':day, 'incidents':0, 'maintenances':0, 'reports':0}
+
+        # Check for incidents that match this date
+        for row in incident_count:
+            if row['date'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
+                t['incidents'] += 1
+
+        # Check for maintenances that match this date
+        for row in maintenance_count:
+            if row['start'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
+                t['maintenances'] += 1
+
+        # Add the tuple
+        count_data.append(t)
+    # ------------------ #
+
+
     # Obtain the alert text (if it's being shown)
     if int(cv.value('display_alert')):
         alert = cv.value('alert')
@@ -284,6 +351,7 @@ def index(request):
           'forward_link':forward_link,
           'alert':alert,
           'information':information,
+          'count_data':count_data,
           'timezones':timezones
        },
        context_instance=RequestContext(request)

@@ -181,6 +181,13 @@ div.spacer_medium {
 div.horiz_stack {
    display: inline-block;  
 }
+/* Graph Containers */
+div.graph_container {
+   margin: 0 auto; 
+   border: 1px solid; 
+   border-color: #B0C5D0;
+   border-radius:5px;
+}
 
 
 

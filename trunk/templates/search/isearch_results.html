@@ -29,8 +29,8 @@
       <thead>
         <tr>
          <th>ID</th>
-         <th>Time Opened*</th>
-         <th>Time Closed*</th>
+         <th>Time Opened</th>
+         <th>Time Closed</th>
          <th>Initial Detail</th>
         </tr>
       </thead>
@@ -39,15 +39,14 @@
         {% for row in results %}
         <tr>
          <td><a href="/i_detail?id={{row.incident_id}}">{{row.incident_id}}</a></td>
-         <td>{{row.incident__date|date:"Y-m-d H:i:s"}}</td>
-         <td>{{row.incident__closed|date:"Y-m-d H:i:s"}}</td>
+         <td>{{row.incident__date|date:"Y-m-d H:i:s e"}}</td>
+         <td>{{row.incident__closed|date:"Y-m-d H:i:s e"}}</td>
          <td>{{row.incident__detail|linebreaksbr}}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-<p>* All times are in {{TIME_ZONE}}</p>
 
 {% else %}
 No search results were returned

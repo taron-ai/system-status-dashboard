@@ -55,12 +55,22 @@ p.small{
 }
 
 
+
 /* FONTS */
 /* small fonts for disabled */
 font.disabled {
    font-size: 12px;
    font-weight: bold;
    color: blue;
+}
+/* Index page heading */
+font.heading {
+   font-size: 15px;
+   font-weight: bold;
+   color: #616161;
+}
+font.all_good {
+   color: #16AF48;
 }
 
 

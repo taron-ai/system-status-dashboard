@@ -76,12 +76,12 @@
   <div class="large-12 columns">
    <table class="responsive border_top">
     <tr>
-     <th width="165">Time*</th>
+     <th width="200">Time</th>
      <th>Logged By</th>
      <th width="500px">Detail</th>
     </tr>
     <tr>
-     <td>{{detail.0.date|date:"Y-m-d H:i:s"}}</td>
+     <td>{{detail.0.date|date:"Y-m-d H:i:s e"}}</td>
      <td>{{detail.0.user_id__first_name}} {{detail.0.user_id__last_name}}</td>
      <td>{{detail.0.detail|linebreaksbr}}</td>
     </tr>
@@ -96,12 +96,6 @@
      {% endfor %}
     {% endif %}
    
-    <tr>
-      <td colspan="2" class="td_border_top">
-        *All times are in {{TIME_ZONE}}
-      </td>
-    </tr>
-
    </table>
 
   </div>

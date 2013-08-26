@@ -141,7 +141,6 @@ class email:
                      'services':services,
                      'updates':updates,
                      'ssd_url':ssd_url,
-                     'timezone':set_timezone
                     })
 
         if format:
@@ -235,7 +234,6 @@ class email:
                      'services':services,
                      'updates':updates,
                      'ssd_url':ssd_url,
-                     'timezone':set_timezone
                     })
 
         if format:

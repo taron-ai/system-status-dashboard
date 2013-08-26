@@ -101,7 +101,7 @@
 
 <div class="row">
   <div class="large-6 columns">
-    <label>System Status as of {% now "D F jS Y H:i e" %}:</label><br>
+    <font class="heading">System Status as of {% now "Y-m-d H:i:s e" %}:</font><br><br>
   </div>
 </div>
 
@@ -283,14 +283,14 @@ $(function () {
 <div class="row">
   <div class="large-11 columns">
     <br><br><br>
-    <label>Detailed Service Disruption Timeline:</label><hr>
+    <font class="heading">Detailed Service Disruption Timeline:</font><hr>
     <p>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
-       {{row.incident__date}} - {{row.incident__detail}} <a href="/i_detail?id={{row.incident_id}}">more detail...</a><br>
+       {{row.incident__date|date:"Y-m-d H:i:s e"}} - {{row.incident__detail}} <a href="/i_detail?id={{row.incident_id}}">more detail...</a><br>
       {% endfor %}
     {% else %}
-      <font color="#16AF48">No current service disruptions.</font>
+      <font class="all_good">No current service disruptions.</font>
     {% endif %}
     </p>
   </div>
@@ -299,14 +299,14 @@ $(function () {
 <div class="row">
   <div class="large-11 columns">
     <br><br><br>
-    <label>Detailed Maintenance Timeline:</label><hr>
+    <font class="heading">Detailed Maintenance Timeline:</font><hr>
     <p>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
-       {{row.maintenance__start}} - {{row.maintenance__description}} <a href="/m_detail?id={{row.maintenance_id}}">more detail...</a><br>
+       {{row.maintenance__start|date:"Y-m-d H:i:s e"}} - {{row.maintenance__description}} <a href="/m_detail?id={{row.maintenance_id}}">more detail...</a><br>
       {% endfor %}
     {% else %}
-      <font color="#16AF48">No planned maintenance is occurring.</font>
+      <font class="all_good">No planned maintenance is occurring.</font>
     {% endif %}
     </p>  
   </div>
@@ -315,13 +315,13 @@ $(function () {
 <div class="row hide-for-small">
   <div class="large-11 columns">
     <br><br><br><br>
-    <label>Historical Summary Status:</label><hr>
+    <font class="heading">Historical Summary Status:</font><hr>
   </div>
 </div>
 
 <div class="row left hide-for-small">
   <div class="large-12 columns">
-    <div id="graph" class="graph_container" style="width: 905px;"></div>
+    <div id="graph" style="width: 905px;"></div>
     <br><br>
   </div>
 </div>

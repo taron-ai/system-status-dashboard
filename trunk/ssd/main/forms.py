@@ -110,6 +110,14 @@ class ISearchForm(forms.Form):
     text = forms.CharField(required=False)
 
 
+class IGSearchForm(forms.Form):
+    """Form for searching through incidents from the summary graph
+
+    """
+
+    date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+
+
 class MSearchForm(forms.Form):
     """Form for searching through scheduled maintenance
 

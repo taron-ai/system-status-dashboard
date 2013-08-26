@@ -324,6 +324,21 @@ def index(request):
     # ------------------ #
 
 
+    # ------------------ #
+    # Obtain the incident and maintenance timelines
+    incident_timeline = Service_Issue.objects.filter(incident__closed__isnull=True
+                                                    ).values('incident__date',
+                                                             'incident_id',
+                                                             'incident__detail'
+                                                            ).order_by('-incident__id')
+    
+    maintenance_timeline = Service_Maintenance.objects.filter(maintenance__started=1,maintenance__completed=0
+                                                             ).values('maintenance__start',
+                                                                      'maintenance_id',
+                                                                      'maintenance__description'
+                                                             ).order_by('-maintenance__id')
+    # ------------------ #
+
     # Obtain the alert text (if it's being shown)
     if int(cv.value('display_alert')):
         alert = cv.value('alert')
@@ -352,7 +367,9 @@ def index(request):
           'alert':alert,
           'information':information,
           'count_data':count_data,
-          'timezones':timezones
+          'timezones':timezones,
+          'incident_timeline': incident_timeline,
+          'maintenance_timeline': maintenance_timeline
        },
        context_instance=RequestContext(request)
     )

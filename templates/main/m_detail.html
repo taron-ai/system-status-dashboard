@@ -67,12 +67,12 @@
           </td>
         </tr>
         <tr>
-          <td>Start Time*</td>
-          <td>{{detail.0.start|date:"Y-m-d H:i"}}</td>
+          <td>Start Time</td>
+          <td>{{detail.0.start|date:"Y-m-d H:i e"}}</td>
         </tr>
         <tr>
-          <td>End Time*</td>
-          <td>{{detail.0.end|date:"Y-m-d H:i"}}</td>
+          <td>End Time</td>
+          <td>{{detail.0.end|date:"Y-m-d H:i e"}}</td>
         </tr>
         <tr>
           <td>Description</td>
@@ -129,12 +129,6 @@
 </div>
 {% endif %}
  
-
-<div class="row">
-  <div class="large-4 columns">
-    <p>*All times are in {{TIME_ZONE}}</p>
-  </div>
-</div>
 
 {% if user.is_authenticated %}
 <div class="row">

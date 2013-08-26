@@ -58,11 +58,11 @@
      </tr>
      <tr>
       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Start Time</td>
-      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.start|date:"Y-m-d H:i"}}</td>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.start|date:"Y-m-d H:i e"}}</td>
      </tr>
      <tr>
       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">End Time</td>
-      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.end|date:"Y-m-d H:i"}}</td>
+      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.end|date:"Y-m-d H:i e"}}</td>
      </tr>
      <tr>
       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">Description</td>
@@ -99,7 +99,7 @@
 
         {% for row in updates %}
         <tr>
-         <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s"}}</td>
+         <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s e"}}</td>
          <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
          <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail|linebreaksbr}}</td>
         </tr>
@@ -111,10 +111,6 @@
  
   <tr>
    <td height="5"></td>
-  </tr>
-
-  <tr>
-    <td style="font-size:12px; color:black;">* All times are in {{timezone}}</td>
   </tr>
 
   <tr>

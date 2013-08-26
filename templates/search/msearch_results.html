@@ -29,7 +29,7 @@
       <thead>
         <tr>
          <th>ID</th>
-         <th>Start Time*</th>
+         <th>Start Time</th>
          <th>Description</th>
         </tr>
       </thead>
@@ -38,14 +38,13 @@
         {% for row in results %}
         <tr>
          <td><a href="/m_detail?id={{row.maintenance__id}}">{{row.maintenance__id}}</a></td>
-         <td>{{row.maintenance__start|date:"Y-m-d H:i:s"}}</td>
+         <td>{{row.maintenance__start|date:"Y-m-d H:i:s e"}}</td>
          <td style="width:400;">{{row.maintenance__description|linebreaksbr}}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    <p>* All times are in {{TIME_ZONE}}</p>
 
 {% else %}
 No search results were returned

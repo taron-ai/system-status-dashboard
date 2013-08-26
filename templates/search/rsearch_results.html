@@ -29,7 +29,7 @@
       <thead>
         <tr>
          <th>ID</th>
-         <th>Date Submitted*</th>
+         <th>Date Submitted</th>
          <th>Submitted By</th>
          <th>Email</th>
          <th>Description</th>
@@ -42,7 +42,7 @@
       {% for row in results %}
         <tr>
          <td>{{row.id}}</a></td>
-         <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
+         <td>{{row.date|date:"Y-m-d H:i:s e"}}</td>
          <td>{{row.name}}</td>
          <td>{{row.email}}</td>
          <td>{{row.detail|linebreaksbr}}</td>
@@ -56,7 +56,6 @@
       </tbody>
     </table>
 
-    <p>* All times are in {{TIME_ZONE}}</p>
 
 {% else %}
 No search results were returned

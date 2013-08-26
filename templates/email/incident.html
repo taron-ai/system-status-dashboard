@@ -79,7 +79,7 @@
      <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black;">Description</th>
     </tr>
     <tr>
-     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.date|date:"Y-m-d H:i:s"}}</td>
+     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.date|date:"Y-m-d H:i:s e"}}</td>
      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.user_id__first_name}} {{detail.0.user_id__last_name}}</td>
      <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.detail|linebreaksbr}}</td>
     </tr>
@@ -87,7 +87,7 @@
     {% if updates %}
      {% for row in updates %}
       <tr>
-       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s"}}</td>
+       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s e"}}</td>
        <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
        <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail|linebreaksbr}}</td>
       </tr>
@@ -100,10 +100,6 @@
  <tr>
   <td height="25"></td>
  </tr>
-
-  <tr>
-    <td style="font-size:12px; color:black;">* All times are in {{timezone}}</td>
-  </tr>
 
   <tr>
     <td style="font-size:12px; color:black;">* You may visit the System Status Dashboard at any time for current information on the status of all services: {{ssd_url}}</td>

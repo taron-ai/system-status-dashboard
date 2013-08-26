@@ -99,7 +99,11 @@
 </div>
 {% endif %}
 
-
+<div class="row">
+  <div class="large-6 columns">
+    <label>System Status as of {% now "D F jS Y H:i e" %}:</label><br>
+  </div>
+</div>
 
 <div class="row">
   <div class="large-12 large-centered columns">
@@ -208,7 +212,7 @@ $(function () {
                 }
             },
             title: {
-                text: 'Summary Status : Past and Future, All Services',
+                text: ' ',
                 x: -20, //center
                 style: {
                   color: '#616161',
@@ -239,7 +243,31 @@ $(function () {
             },
             series: [{
                 name: 'Disruptions',
-                data: [{% for row in count_data %}{% if forloop.last %}{{row.incidents}}{% else %}{{row.incidents}},{% endif %}{% endfor %}],
+                data: [
+     
+                  {% for row in count_data %}
+                    {% if forloop.last %}
+                    {
+                      y: {{row.incidents}},
+                      events: {
+                        click: function() {
+                          window.open('/igsearch?date={{row.date}}');
+                        }
+                      }
+                    }
+                    {% else %}
+                    {  
+                      y: {{row.incidents}},
+                      events: {
+                        click: function() {
+                          window.open('/igsearch?date={{row.date}}');
+                        }
+                      }
+                    },
+                    {% endif %}
+                  {% endfor %}
+                
+                ],
                 color: '#FDBE08'
             }, {
                 name: 'Maintenance',
@@ -249,15 +277,45 @@ $(function () {
         });
 });
 
-
-
-       
 </script>
 <script type="text/javascript" src="/html/js/highcharts.js"></script>
 
 <div class="row">
-  <div class="large-12 columns">
+  <div class="large-11 columns">
+    <br><br><br>
+    <label>Detailed Service Disruption Timeline:</label><hr>
+    <p>
+    {% if incident_timeline %}
+      {% for row in incident_timeline %}
+       {{row.incident__date}} - {{row.incident__detail}} <a href="/i_detail?id={{row.incident_id}}">more detail...</a><br>
+      {% endfor %}
+    {% else %}
+      <font color="#16AF48">No current service disruptions.</font>
+    {% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-11 columns">
+    <br><br><br>
+    <label>Detailed Maintenance Timeline:</label><hr>
+    <p>
+    {% if maintenance_timeline %}
+      {% for row in maintenance_timeline %}
+       {{row.maintenance__start}} - {{row.maintenance__description}} <a href="/m_detail?id={{row.maintenance_id}}">more detail...</a><br>
+      {% endfor %}
+    {% else %}
+      <font color="#16AF48">No planned maintenance is occurring.</font>
+    {% endif %}
+    </p>  
+  </div>
+</div>
+
+<div class="row hide-for-small">
+  <div class="large-11 columns">
     <br><br><br><br>
+    <label>Historical Summary Status:</label><hr>
   </div>
 </div>
 
@@ -267,8 +325,5 @@ $(function () {
     <br><br>
   </div>
 </div>
-
-
-
 
 {% endblock %}

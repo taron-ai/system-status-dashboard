@@ -26,7 +26,10 @@ urlpatterns = patterns('',
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',{'next_page': '/'}),
 
     # Standard admin site
-    url(r'^admin/',          include(admin.site.urls)),
+    url(r'^djadmin/',             include(admin.site.urls)),
+
+    # SSD Admin Site
+    url(r'^admin',              'ssd.main.views.admin.index'),
 
     # Main
     url(r'^$',                  'ssd.main.views.main.index'),

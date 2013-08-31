@@ -44,105 +44,13 @@
  <body>
 
 {% if logo %}
-<div id="logo_header">
+<div class="row">
   <img src="{{logo}}"><br>
 </div>
 {% endif %}
 
-{% if nav %}
-<nav class="top-bar">
-  <ul class="title-area">
-    <li class="name"></li>
-    <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-    <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
-  </ul>
-
-  <section class="top-bar-section">
-    <!-- Left Nav Section -->
-    <ul class="left">
-      <li class="divider"></li>
-      <li ><a href="/">Dashboard</a></li>
-      <li class="divider"></li>
-
-      {% if report_incident %}
-      <li><a href="/report">Report Incident</a></li>
-      <li class="divider"></li>
-      {% endif %}
-
-      {% if escalation %}
-      <li><a href="/escalation">Escalation</a></li>
-      <li class="divider"></li>
-      {% endif %}
-
-      <li class="has-dropdown"><a href="#">Search</a>
-        <ul class="dropdown">
-          <li><a href="/isearch">Incidents</a></li>
-          <li><a href="/rsearch">Incident Reports</a></li>
-          <li><a href="/rsearch_recent">Recent Incident Reports</a></li>
-          <li><a href="/msearch">Scheduled Maintenance</a></li>
-          <li><a href="/mrusearch">Recent/Upcoming Maintenance</a></li>
-        </ul>
-      </li>
-      <li class="divider"></li>      
-
-      {# If the user is authenticated, show the login menu #}
-      {% if user.is_authenticated %}
-      <li class="has-dropdown"><a href="#">Admin</a>
-        <ul class="dropdown">
-          <li class="has-dropdown"><a href="#">Create</a>
-            <ul class="dropdown">
-              <li><a href="/incident">Incident</a></li>
-              <li><a href="/maintenance">Scheduled Maintenance</a></li>
-            </ul>
-          </li>
-          <li class="has-dropdown"><a href="#">Manage</a>
-            <ul class="dropdown">
-              <li><a href="/contacts">Escalation Contacts</a></li>
-              <li><a href="/recipients">Email Recipients</a></li>
-              <li><a href="/services">Services</a></li>
-            </ul>
-          </li>
-          <li class="has-dropdown"><a href="#">Expert</a>
-            <ul class="dropdown">
-              <li><a href="/config">Configuration Manager</a></li>
-              <li><a href="/admin">DJango Administration</a></li>
-            </ul>
-          </li>
-          <li><a href="/accounts/logout">Logout ({{user.username}})</a></li>
-        </ul>
-      </li>
-      <li class="divider hide-for-small"></li>
-      {% else %}
-        {# If the admins want the login link displayed, even when someone is not authenticated, show it #}
-        {% if login %}
-      <li><a href="/accounts/login">Login</a></li>
-      <li class="divider"></li>
-        {% endif %}
-      {% endif %}
-    </ul>
-
-    <!-- Title Area -->
-    <ul>
-     <li class="name hide-for-small">
-      <h1><a href="#">{{title}}</a></h1>
-     </li>
-    </ul>
-
-    <!-- Right Nav Section -->
-    <div class="hide-for-small hide-for-medium">
-      <ul class="right">
-        <li class="divider show-for-small"></li>
-        <li class="has-form">
-          <a href="http://www.system-status-dashboard.com" title="version: {{app_version}}"><img width="55" height="35" src="/html/images/SSDsmall.png"></a>
-        </li>
-      </ul>
-    </div>
-
-  </section>
-</nav>
-{% endif %}
-
-
+  
+      
 <div class="row">
   <div class="large-12 large-centered columns">
   {% block content %}

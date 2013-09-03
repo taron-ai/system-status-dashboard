@@ -58,24 +58,33 @@ class Recipient(models.Model):
     email_address = models.CharField(max_length=100,unique=True,null=False,blank=False)
 
 
-class Incident(models.Model):
-    """Incidents that have been logged"""
+class Type(models.Model):
+    """Event Types"""
+
+    type = models.CharField(max_length=20)
+
+
+class Event(models.Model):
+    """Events that have been logged"""
 
     date = models.DateTimeField(null=False,blank=False)
-    closed = models.DateTimeField(null=True)
-    detail = models.CharField(max_length=1000)
-    email_address = models.ForeignKey(Recipient,null=True,blank=True)
-    user = models.ForeignKey(User)
+    type = models.ForeignKey(Type)
 
 
-class Incident_Update(models.Model):
+class Event_Time(models.Model):
+    """Event start/stop times"""
+
+    start = models.DateTimeField(null=False,blank=False)
+    end = models.DateTimeField(null=False,blank=False)
+    event = models.ForeignKey(Event)
+
+
+class Event_Update(models.Model):
     """Updates to incidents"""
 
-    date = models.DateTimeField(null=False,blank=False)
-    incident = models.ForeignKey(Incident)
-    detail = models.CharField(max_length=1000)
-    user = models.ForeignKey(User)
-
+    event = models.ForeignKey(Event)
+    update = models.CharField(max_length=1000)
+    
 
 class Service_Issue(models.Model):
     """Used to tie services to issues so that one issue can impact multiple services"""

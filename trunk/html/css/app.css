@@ -72,6 +72,13 @@ font.heading {
 font.all_good {
    color: #16AF48;
 }
+font.footer {
+   font-size: 10px;
+}
+font.breadcrumb {
+   font-size: 11px;
+}
+
 
 
 /* TOOLTIPS */
@@ -162,7 +169,24 @@ td.td_border_top {
 	height: 40px;
 	vertical-align: bottom;
 }
-
+/* Table for footer */
+table.footer {
+   border: 0;
+}
+table.footer td {
+   vertical-align: top;
+   font-size: 10px;
+   padding: 1px 1px 1px 1px;
+}
+/* Table for jump_to date */
+table.jump_to {
+   border: 0;
+}
+table.jump_to td {
+   vertical-align: bottom;
+   font-size: 11px;
+   padding: 1px 1px 1px 1px;
+}
 
 
 /* LEGENDS */
@@ -260,12 +284,26 @@ input, textarea, select {
    padding: 0px;
 }
 #timezone {
-   font-size: 12px;
+   font-size: 10px;
+   width: 200px;
 }
 #jump_to {
-   font-size: 12px;
+   font-size: 10px;
+   width: 100px;
 }
 
+
+
+
+#sticky_footer {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    background-color: #f9f9f9;
+    border-top: 2px solid #EEE;
+    padding: 20px 0 1em;
+}
 
 
 

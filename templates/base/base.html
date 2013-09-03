@@ -43,12 +43,53 @@
  </head>
  <body>
 
-{% if logo %}
 <div class="row">
-  <img src="{{logo}}"><br>
-</div>
-{% endif %}
+  <div class="large-11 columns">
+    <br>
+    <table class="footer">
+      <tr>
+        <td>
+          <a href="/">Home</a>
+          &nbsp;|&nbsp;
+        </td>
+        <td>
+          <a href="/events">Search Events</a>
+          &nbsp;|&nbsp;
+        </td>
+        <td>
+          <a href="/admin">Admin</a>
+          &nbsp;|&nbsp;
+        </td>
+        <td>
+          <a href="/report">Report</a>
+        </td>
+      </tr>
+    </table>
 
+    {% if logo %}
+      <img src="{{logo}}"><br>
+    {% endif %}
+    
+    {% if breadcrumbs %}
+      <br>
+      <font class="breadcrumb">
+        {% for row in breadcrumbs %}
+          {% if forloop.last %}
+            {% for key,value in row.items %}
+              <a href="{{value}}">{{key}}</a>
+            {% endfor %}
+          {% else %}
+            {% for key,value in row.items %}
+              <a href="{{value}}">{{key}}</a> &rarr;
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </font>
+    {% endif %}
+    
+    <hr><br>
+  </div>
+</div>
   
       
 <div class="row">
@@ -59,6 +100,39 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="large-11 columns">
+    <br><br><br>
+    <hr> 
+  </div>
+</div>
+
+<div id="sticky_footer">
+  <div class="row">
+    <div class="large-6 columns">
+      <font class="footer">
+        Set your timezone:
+        <br>
+        <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post">
+         {% csrf_token %}
+           <select name="timezone" id="timezone" onchange='this.form.submit()'>
+           {% for timezone in timezones %}
+            {% if timezone == TIME_ZONE %}
+             <option value="{{timezone}}" selected="true">{{timezone}}</option>
+            {% else %}
+             <option value="{{timezone}}">{{timezone}}</option>
+            {% endif %}
+           {% endfor %}
+           </select>
+        </form>
+      </font>
+    </div>
+
+    <div class="large-5 columns">
+      <font class="footer">Dashboard powered by OpStatus.io</font>
+    </div>
+  </div>
+</div>
 
 <script>
   document.write('<script src=' +

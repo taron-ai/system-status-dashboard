@@ -35,6 +35,25 @@ from ssd.main.forms import MSearchForm
 from ssd.main import config_value
 
 
+def events(request):
+    """Main search view for displaying events
+        - This view will initially display all events and will also
+          allow the user to search or constrain the view
+ 
+    """
+
+
+    # Print the page
+    return render_to_response(
+       'search/events.html',
+       {
+          'title':'System Status Dashboard | Search Events',
+          'breadcrumbs':[{'Home':'/'},{'Events':'/events'}]
+       },
+       context_instance=RequestContext(request)
+    )
+
+
 def isearch(request):
     """Incident Search View
 

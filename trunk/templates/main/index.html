@@ -69,37 +69,40 @@
          </tr>
        {% else %}
         <tr>
-         {% for row1 in row %}
+         {% for column in row %}
+           
+           {# Set the status colors next to the service and print the service #}
            {% if forloop.first %}
              <td>
-             {# impaired services will take precedence over maintenance #}
-             {% if row1 in impaired_services %}
+             {% if column.status == 1 %}
              <img src="/html/images/incident_red.png">
              {% else %}
-              {% if row1 in maintenance_services %}
+              {% if column.status == 2 %}
                <img src="/html/images/incident_blue.png">
               {% else %}
                <img src="/html/images/incident_green.png">
               {% endif %}
              {% endif %}
-             {{row1}}
+             {{column.service}}
              </td>
            {% else %}
+
+             {# Check each date #}
              <td style="text-align:center;">
-             {% for row2 in row1 %}
-               {% if not row2 == 'green' %}
-                 {# We have some events to show, this is an associative array #}
+             {% for event in column %}
+               {% if not event == 'green' %}
+                 {# We have some events to show #}
                  {# See if we have a maintenance or an incident #}
 
-                 {% if row2.type == 'incident' %}
-                   {% if row2.closed == None %}
-                     <a href="/i_detail?id={{row2.id}}"><img src="/html/images/incident_red.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~"></a>
+                 {% if event.type == 1 %}
+                   {% if event.closed == None %}
+                     <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_red.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~"></a>
                    {% else %}
-                     <a href="/i_detail?id={{row2.id}}"><img src="/html/images/incident_orange.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~ {{row2.closed|date:"Y-m-d H:i:s"}}"></a>
+                     <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_orange.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~ {{event.closed|date:"Y-m-d H:i:s"}}"></a>
                    {% endif %}
                  {% else %}
-                   {% if row2.type == 'maintenance' %}
-                     <a href="/m_detail?id={{row2.id}}"><img src="/html/images/incident_blue.png" title="ID: {{row2.id}} : {{row2.open|date:"Y-m-d H:i:s"}} ~ {{row2.closed|date:"Y-m-d H:i:s"}}"></a>
+                   {% if event.type == 2 %}
+                     <a href="/m_detail?id={{event.id}}"><img src="/html/images/incident_blue.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~ {{event.closed|date:"Y-m-d H:i:s"}}"></a>
                    {% endif %}
                  {% endif %}
                {% endif %}
@@ -243,7 +246,7 @@ $(function () {
     <p>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
-       {{row.incident__date|date:"Y-m-d H:i:s e"}} - {{row.incident__detail}} <a href="/i_detail?id={{row.incident_id}}">more detail...</a><br>
+       {{row.event_time__start|date:"Y-m-d H:i:s e"}} - {{row.event_description__description}} <a href="/i_detail?id={{row.id}}">more detail...</a><br>
       {% endfor %}
     {% else %}
       <font class="all_good">No current service disruptions.</font>
@@ -259,7 +262,7 @@ $(function () {
     <p>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
-       {{row.maintenance__start|date:"Y-m-d H:i:s e"}} - {{row.maintenance__description}} <a href="/m_detail?id={{row.maintenance_id}}">more detail...</a><br>
+       {{row.event_time__start|date:"Y-m-d H:i:s e"}} - {{row.event_description__description}} <a href="/m_detail?id={{row.id}}">more detail...</a><br>
       {% endfor %}
     {% else %}
       <font class="all_good">No planned maintenance is occurring.</font>

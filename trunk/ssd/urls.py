@@ -47,26 +47,26 @@ urlpatterns = patterns('',
     url(r'^services$',          'ssd.main.views.config.services'),
 
     # Search
-    url(r'^events$',            'ssd.main.views.search.events'),
-    url(r'^isearch$',           'ssd.main.views.search.isearch'),
+    #url(r'^search$',            'ssd.main.views.search.search'),
     url(r'^igsearch$',          'ssd.main.views.search.igsearch'),
-    url(r'^mrusearch$',         'ssd.main.views.search.mrusearch'),
-    url(r'^msearch$',           'ssd.main.views.search.msearch'),
-    url(r'^rsearch$',           'ssd.main.views.search.rsearch'),
-    url(r'^rsearch_recent$',    'ssd.main.views.search.rsearch_recent'),
+
 
     # Preferences
     url(r'^prefs/timezone$',    'ssd.main.views.prefs.timezone'),
     url(r'^prefs/jump$',        'ssd.main.views.prefs.jump'),
 
-    # Events
-    url(r'^i_delete$',          'ssd.main.views.events.i_delete'),
+    # Incident Events
     url(r'^i_update$',          'ssd.main.views.events.i_update'),
     url(r'^incident$',          'ssd.main.views.events.incident'),
-    url(r'^m_delete$',          'ssd.main.views.events.m_delete'),
+    
+    # Maintenance Events
     url(r'^m_email$',           'ssd.main.views.events.m_email'),
     url(r'^m_update$',          'ssd.main.views.events.m_update'),
     url(r'^maintenance$',       'ssd.main.views.events.maintenance'),
+    
+    # Incident Reports
     url(r'^report$',            'ssd.main.views.events.report'),
 
+    # Shared
+    url(r'^delete$',            'ssd.main.views.events.delete'),
 )

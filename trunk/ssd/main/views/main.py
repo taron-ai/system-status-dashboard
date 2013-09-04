@@ -30,14 +30,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count
 from django.utils import timezone as jtz
-from ssd.main.models import Incident
-from ssd.main.models import Incident_Update
-from ssd.main.models import Service
-from ssd.main.models import Service_Issue
-from ssd.main.models import Maintenance
-from ssd.main.models import Maintenance_Update
-from ssd.main.models import Service_Maintenance
+from ssd.main.models import Event
 from ssd.main.models import Escalation
+from ssd.main.models import Service
 from ssd.main.forms import DetailForm
 from ssd.main import notify
 from ssd.main import config_value
@@ -140,55 +135,37 @@ def index(request):
     forward = (ref + datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     forward_link = '/?ref=%s' % (forward)
 
-    # See if we have any open incidents or maintenances
-    # Any open incidents will turn the service red on the
-    # dashboard, regardless of date and the specific date marker
-    # will be red or orange, depending on the open/closed state
-    # of the incident.
-    #
-    # These will be lookup tables for the template
-    active_incidents = Service_Issue.objects.filter(incident__closed__isnull=True).values('service_name_id__service_name')
-    active_maintenances = Service_Maintenance.objects.filter(maintenance__started=1,maintenance__completed=0).values('service_name_id__service_name')
-    
-    # Rewrite this so its quickly searchable by the template
-    impaired_services = {}
-    for name in active_incidents:
-        impaired_services[name['service_name_id__service_name']] = ''
-
-    # Rewrite this so its quickly searchable by the template
-    maintenance_services = {}
-    for name in active_maintenances:
-        maintenance_services[name['service_name_id__service_name']] = ''
-
     # We'll print 7 days of dates at any time
     # Construct a dictionary like this to pass to the template
     # [
     #  [service][2012-10-11][2012-10-12],
-    #  [www.domain.com,['green'],['green']],
-    #  [www.domain1.com,['green'],[{'open':,'closed':,'type':,'id':}]]
+    #  [{service:www.domain.com,status:1},['green'],['green']],
+    #  [{service:www.domain1.com,status:0},['green'],[{'open':,'closed':,'type':,'id':}]]
     # ]
 
     # Put together the first row, which are the headings
     data = []
     data.append(headings)
     services = Service.objects.values('service_name').order_by('service_name')
-    incidents = Service_Issue.objects.filter(incident__date__range=[dates[0],ref_q]).values('incident__date',
-                                                                                            'incident_id',
-                                                                                            'service_name_id__service_name',
-                                                                                            'incident__closed').order_by('id')
+    events = Event.objects.filter(event_time__start__range=[dates[0],ref_q]).values('id',
+                                                                                    'type',
+                                                                                    'event_time__start',
+                                                                                    'event_time__end',
+                                                                                    'event_service__service__service_name',
+                                                                                    'event_status__status').order_by('id')
 
-    maintenances = Service_Maintenance.objects.filter(maintenance__start__range=[dates[0],ref_q]).values('maintenance__start',
-                                                                                                         'maintenance__end',
-                                                                                                         'maintenance_id',
-                                                                                                         'service_name_id__service_name',
-                                                                                                         'maintenance__started',
-                                                                                                         'maintenance__completed').order_by('id')
+    print events
 
     # Run through each service and see if it had an incident during the time range
     for service in services:
-        # Make a row for this service
-        row = []
-        row.append(service['service_name'])
+        # Make a row for this service, which looks like this:
+        # {service:www.domain1.com,status:0},['green'],[{'open':,'closed':,'type':,'id':}]
+        # The service will initially be green and incidents trump maintenances
+        # Statuses are as follows:
+        #   - 0 = green
+        #   - 1 = active incident
+        #   - 2 = active maintenance
+        row = [{'service':service['service_name'],'status':0}]
 
         # Run through each date for each service
         for date in dates:
@@ -196,64 +173,50 @@ def index(request):
             # If there is a match, append it, otherwise leave blank
             match = False
 
-            # Check each incident and maintenance to see if there is a match
-            # There could be more than one incident per day
-            row_incident = []
+            # Check each event to see if there is a match
+            # There could be more than one event per day
+            row_event = []
 
             # First the incidents
-            for incident in incidents:
-                if service['service_name'] == incident['service_name_id__service_name']:
+            for event in events:
+                if service['service_name'] == event['event_service__service__service_name']:
 
-                    # This incident affected our service
+                    # This event affected our service
                     # Convert to the requested timezone
-                    incident_date = incident['incident__date']
-                    incident_date = incident_date.astimezone(pytz.timezone(set_timezone))
+                    event_date = event['event_time__start']
+                    event_date = event_date.astimezone(pytz.timezone(set_timezone))
 
-                    # If the incident closed date is there, make sure the time zone is correct
-                    closed_date = incident['incident__closed']
-                    if incident['incident__closed']:
-                        closed_date = closed_date.astimezone(pytz.timezone(set_timezone))
+                    # If the event closed date is there, make sure the time zone is correct
+                    end_date = event['event_time__end']
+                    if event['event_time__end']:
+                        end_date = closed_date.astimezone(pytz.timezone(set_timezone))
 
-                    if date.date() == incident_date.date():
+                    if date.date() == event_date.date():
                         # This is our date so add the incident ID
                         match = True
-                        event = {
-                                 'type':'incident',
-                                 'id':incident['incident_id'],
-                                 'open':incident_date,
-                                 'closed':closed_date
+                        e = {
+                                 'type':event['type'],
+                                 'id':event['id'],
+                                 'open':event_date,
+                                 'closed':end_date
                                  }
-                        row_incident.append(event)
+                        row_event.append(e)
             
-            # Now the maintenance
-            for maint in maintenances:
-                if service['service_name'] == maint['service_name_id__service_name']:
+                    # If this is an incident and it's still open, set the status
+                    # Incidents over-ride anything for setting the status of the service
+                    if event['type'] == 1 and event['event_status__status'] == 1:
+                        row[0]['status'] = 1
 
-                    # This maintenance affected our service
-                    # Convert to the requested timezone
-                    start_date = maint['maintenance__start']
-                    start_date = start_date.astimezone(pytz.timezone(set_timezone))
-                    
-                    # Convert the closed date to our timezone
-                    closed_date = maint['maintenance__end']
-                    closed_date = closed_date.astimezone(pytz.timezone(set_timezone))
-
-                    if date.date() == start_date.date():
-                        # This is our date so add the incident ID
-                        match = True
-                        event = {
-                                 'type':'maintenance',
-                                 'id':maint['maintenance_id'],
-                                 'open':start_date,
-                                 'closed':closed_date
-                                 }
-                        row_incident.append(event)
+                    # If it's a maintenance and it's still open, and there is no active incident,
+                    # set the status
+                    if event['type'] == 2 and event['event_status__status'] == 1 and not row[0]['event_status__status'] == 1:
+                        row[0]['status'] = 2
 
             if match == False:
-                row_incident.append('green')
+                row_event.append('green')
 
-            # Add the incident row to the main row
-            row.append(row_incident)
+            # Add the event row to the main row
+            row.append(row_event)
 
         # Add the main row to our data dict
         data.append(row)
@@ -292,10 +255,10 @@ def index(request):
     forward_date = ref_q + forward
     
     # Obtain a count of incidents, per day
-    incident_count = Incident.objects.filter(date__range=[back_date,forward_date]).values('date')
+    incident_count = Event.objects.filter(event_time__start__range=[back_date,forward_date],type=1).values('event_time__start')
     
     # Obtain a count of maintenances, per day
-    maintenance_count = Maintenance.objects.filter(start__range=[back_date,forward_date]).values('start')
+    maintenance_count = Event.objects.filter(event_time__start__range=[back_date,forward_date],type=2).values('event_time__start')
 
     # Iterate through the graph_dates and find matching incidents/maintenances/reports
     # This data structure will look like this:
@@ -311,12 +274,12 @@ def index(request):
 
         # Check for incidents that match this date
         for row in incident_count:
-            if row['date'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
+            if row['event_time__start'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
                 t['incidents'] += 1
 
         # Check for maintenances that match this date
         for row in maintenance_count:
-            if row['start'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
+            if row['event_time__start'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
                 t['maintenances'] += 1
 
         # Add the tuple
@@ -325,18 +288,16 @@ def index(request):
 
 
     # ------------------ #
-    # Obtain the incident and maintenance timelines
-    incident_timeline = Service_Issue.objects.filter(incident__closed__isnull=True
-                                                    ).values('incident__date',
-                                                             'incident_id',
-                                                             'incident__detail'
-                                                            ).order_by('-incident__id')
+    # Obtain the incident and maintenance timelines (open incidents)
+    incident_timeline = Event.objects.filter(event_status__status=1,type=1).values('id',
+                                                                                   'event_time__start',
+                                                                                   'event_description__description',
+                                                                                   ).order_by('-id')
     
-    maintenance_timeline = Service_Maintenance.objects.filter(maintenance__started=1,maintenance__completed=0
-                                                             ).values('maintenance__start',
-                                                                      'maintenance_id',
-                                                                      'maintenance__description'
-                                                             ).order_by('-maintenance__id')
+    maintenance_timeline = Event.objects.filter(event_status__status=1,type=2).values('id',
+                                                                                      'event_time__start',
+                                                                                      'event_description__description',
+                                                                                     ).order_by('-id')
     # ------------------ #
 
     # Obtain the alert text (if it's being shown)
@@ -360,8 +321,6 @@ def index(request):
        {
           'title':'System Status Dashboard | Home',
           'data':data,
-          'impaired_services':impaired_services,
-          'maintenance_services':maintenance_services,
           'backward_link':backward_link,
           'forward_link':forward_link,
           'alert':alert,
@@ -396,13 +355,26 @@ def i_detail(request):
     cv = config_value.config_value()
 
     # Which services were impacted
-    services = Service_Issue.objects.filter(incident_id=id).values('service_name_id__service_name')
+    services = Event.objects.filter(id=id).values('event_service__service__service_name')
 
     # Obain the incident detail
-    detail = Incident.objects.filter(id=id).values('date','closed','detail','email_address_id__email_address','user_id__first_name','user_id__last_name')
+    detail = Event.objects.filter(id=id).values(
+                                                'event_time__start',
+                                                'event_time__end',
+                                                'event_description__description',
+                                                'event_email__email__email',
+                                                'event_user__user__first_name',
+                                                'event_user__user__last_name'
+                                                )
 
     # Obain any incident updates
-    updates = Incident_Update.objects.filter(incident_id=id).values('id','date','detail','user_id__first_name','user_id__last_name').order_by('id')
+    updates = Event.objects.filter(id=id).values(
+                                                'event_update__id',
+                                                'event_update__date',
+                                                'event_update__update',
+                                                'event_update__user__first_name',
+                                                'event_update__user__last_name'
+                                                ).order_by('event_update__id')
 
 
     # See if the timezone is set, if not, give them the server timezone

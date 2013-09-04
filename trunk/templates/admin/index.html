@@ -20,42 +20,15 @@
 
 {% block content %}
 
-<h2>Search</h2>
-<ul>
-  <li><a href="/isearch">Incidents</a></li>
-  <li><a href="/rsearch">Incident Reports</a></li>
-  <li><a href="/rsearch_recent">Recent Incident Reports</a></li>
-  <li><a href="/msearch">Scheduled Maintenance</a></li>
-  <li><a href="/mrusearch">Recent/Upcoming Maintenance</a></li>
-</ul>
-      
 
-{% if escalation %}
-	<a href="/escalation">Escalation</a></li>
-{% endif %}
-
-
-{% if report_incident %}
-	<a href="/report">Report Incident</a>
-{% endif %}
-
-
-<h2>Schedule</h2>
 <li><a href="/incident">Incident</a>
 <li><a href="/maintenance">Scheduled Maintenance</a>
-
-
-<h2>Manage</h2>
 <li><a href="/contacts">Escalation Contacts</a>
 <li><a href="/recipients">Email Recipients</a>
 <li><a href="/services">Services</a>
-
-
-<h2>Expert</h2>
 <li><a href="/config">Configuration Manager</a>
 <li><a href="/djadmin">DJango Administration</a>
-
-<a href="/accounts/logout">Logout ({{user.username}})</a>
+<li><a href="/accounts/logout">Logout ({{user.username}})</a>
 
 
 {% endblock %}

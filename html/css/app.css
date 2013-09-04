@@ -95,23 +95,6 @@ font.breadcrumb {
  
 
 
-/* NAV BAR */
-.top-bar .name h1 {
-	font-size: 0.8em;
-}
-.top-bar-section li a:not(.button) {
-	background: #616161;
-	color: #C8DAE4;
-}
-.top-bar {
-	background: #616161;
-}
-.top-bar-section .has-form {
-	background: #616161;
-}
-
-
-
 /* LABELS */
 label {
 	font-weight: bold;
@@ -225,14 +208,6 @@ div.graph_container {
 
 
 
-/* BUTTONS */
-/* Remove the bottom padding on buttons */
-.button {
-	margin-bottom: 0em;	
-}
-
-
-
 /* TEXTAREAS */
 textarea {
 	height: 150px;
@@ -290,6 +265,12 @@ input, textarea, select {
 #jump_to {
    font-size: 10px;
    width: 100px;
+}
+input.date {
+   width: 135px;
+}
+select.email {
+   width: 250px;
 }
 
 

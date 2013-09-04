@@ -22,14 +22,8 @@
 
 
 from ssd.main.models import Config
-from ssd.main.models import Incident
-from ssd.main.models import Service_Issue
-from ssd.main.models import Incident_Update
-from ssd.main.models import Maintenance
-from ssd.main.models import Maintenance_Update
-from ssd.main.models import Service_Maintenance
+from ssd.main.models import Event
 from django.core.mail import EmailMessage
-from ssd.main.models import Recipient
 from django.template.loader import get_template
 from django.template import Context
 from django.utils import timezone as jtz

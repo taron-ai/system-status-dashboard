@@ -24,13 +24,10 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.db.models import F
 from ssd.main.models import Config
-from ssd.main.models import Recipient
+from ssd.main.models import Email
 from ssd.main.forms import ConfigForm
-from ssd.main.models import Incident
-from ssd.main.models import Maintenance
+from ssd.main.models import Event
 from ssd.main.models import Service
-from ssd.main.models import Service_Issue
-from ssd.main.models import Service_Maintenance
 from ssd.main.models import Escalation
 from ssd.main.forms import AddRecipientForm
 from ssd.main.forms import AddServiceForm

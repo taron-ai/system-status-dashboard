@@ -20,7 +20,6 @@
 
 {% block content %}
 
-
 <div class="row">
   <div class="large-9 columns">
     <p>This page contains all relevant information on this incident.  Check back here at any time to obtain current information on the status of this incident.</p>
@@ -49,7 +48,7 @@
       <br>
     {% if services %}
     {% for row in services %}
-    <b>- {{row.service_name_id__service_name}}</b>
+    <b>- {{row.event_service__service__service_name}}</b>
       <br>
     {% endfor %}
     {% else %}
@@ -81,18 +80,20 @@
      <th width="500px">Detail</th>
     </tr>
     <tr>
-     <td>{{detail.0.date|date:"Y-m-d H:i:s e"}}</td>
-     <td>{{detail.0.user_id__first_name}} {{detail.0.user_id__last_name}}</td>
-     <td>{{detail.0.detail|linebreaksbr}}</td>
+     <td>{{detail.0.event_time__start|date:"Y-m-d H:i:s e"}}</td>
+     <td>{{detail.0.event_user__user__first_name}} {{detail.0.event_user__user__last_name}}</td>
+     <td>{{detail.0.event_description__description|linebreaksbr}}</td>
     </tr>
 
     {% if updates %}
      {% for row in updates %}
-      <tr>
-       <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
-       <td>{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
-       <td>{{row.detail|linebreaksbr}}</td>
-      </tr>
+      {% if row.event_update__id != None %}
+        <tr>
+         <td>{{row.event_update__date|date:"Y-m-d H:i:s"}}</td>
+         <td>{{row.event_update__user__first_name}} {{row.event_update__user__last_name}}</td>
+         <td>{{row.event_update__update|linebreaksbr}}</td>
+        </tr>
+      {% endif %}
      {% endfor %}
     {% endif %}
    
@@ -105,7 +106,7 @@
 {% if user.is_authenticated %}
 <div class="row">
   <div class="large-4 columns">
-    <form method="POST" name="i_delete" action="/i_delete">
+    <form method="POST" name="delete" action="/delete">
       {% csrf_token %}
       <a href="/i_update?id={{id}}" class="small button">update</a>&nbsp;&nbsp;
       <input type="hidden" name="id" value="{{id}}">

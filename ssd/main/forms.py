@@ -95,10 +95,8 @@ class ReportIncidentForm(forms.Form):
     screenshot2 = forms.ImageField(required=False,validators=[file_size])
 
 
-class ISearchForm(forms.Form):
-    """Form for searching through incidents
-       This form will be used by incident searches and report searches
-       so only dates are mandatory
+class SearchForm(forms.Form):
+    """Form for searching through events
 
     """
 

@@ -52,10 +52,10 @@ class Service(models.Model):
     service_name = models.CharField(max_length=50, unique=True,null=False,blank=False)
 
 
-class Recipient(models.Model):
+class Email(models.Model):
     """Email addresses that will be used for alerting"""
 
-    email_address = models.CharField(max_length=100,unique=True,null=False,blank=False)
+    email = models.CharField(max_length=100,unique=True,null=False,blank=False)
 
 
 class Type(models.Model):
@@ -67,60 +67,78 @@ class Type(models.Model):
 class Event(models.Model):
     """Events that have been logged"""
 
-    date = models.DateTimeField(null=False,blank=False)
+    date = models.DateTimeField(null=False,blank=False,auto_now=True)
     type = models.ForeignKey(Type)
+
+
+class Event_Service(models.Model):
+    """Tie services to events"""
+
+    event = models.ForeignKey(Event)
+    service = models.ForeignKey(Service)
 
 
 class Event_Time(models.Model):
     """Event start/stop times"""
 
-    start = models.DateTimeField(null=False,blank=False)
-    end = models.DateTimeField(null=False,blank=False)
     event = models.ForeignKey(Event)
+    start = models.DateTimeField(null=False)
+    end = models.DateTimeField(null=True)
+
+
+class Event_Status(models.Model):
+    """Event Status (opened/closed, etc)
+        - 1 = open
+        - 2 = closed
+
+    """
+
+    event = models.ForeignKey(Event)
+    status = models.IntegerField()
+
+
+class Event_Description(models.Model):
+    """Event Descriptions"""
+
+    event = models.ForeignKey(Event)
+    description = models.CharField(blank=False,max_length=1000)
+
+
+class Event_Impact(models.Model):
+    """Event Impact Analysis (maintenance specific)"""
+
+    event = models.ForeignKey(Event)
+    impact = models.CharField(max_length=1000)
+
+
+class Event_Coordinator(models.Model):
+    """Event Coordinator (maintenance specific)"""
+
+    event = models.ForeignKey(Event)
+    coordinator = models.CharField(max_length=1000)
+
+
+class Event_Email(models.Model):
+    """Event Email Recipient"""
+
+    event = models.ForeignKey(Event)
+    email = models.ForeignKey(Email)
 
 
 class Event_Update(models.Model):
-    """Updates to incidents"""
+    """Updates to Events"""
 
     event = models.ForeignKey(Event)
+    date = models.DateTimeField(null=False,blank=False,auto_now=True)
     update = models.CharField(max_length=1000)
-    
-
-class Service_Issue(models.Model):
-    """Used to tie services to issues so that one issue can impact multiple services"""
-
-    service_name = models.ForeignKey(Service)
-    incident = models.ForeignKey(Incident)
-
-
-class Maintenance(models.Model):
-    """Maintenance that has been scheduled"""
-
-    start = models.DateTimeField(null=False,blank=False)
-    end = models.DateTimeField(null=False,blank=False)
-    description = models.CharField(blank=False,max_length=1000)
-    impact = models.CharField(blank=False,max_length=1000)
-    coordinator = models.CharField(blank=False,max_length=1000)
-    email_address = models.ForeignKey(Recipient,null=True,blank=True)
     user = models.ForeignKey(User)
-    started = models.BooleanField()
-    completed = models.BooleanField()
 
 
-class Maintenance_Update(models.Model):
-    """Updates to incidents"""
+class Event_User(models.Model):
+    """Store the user who created the event"""
 
-    date = models.DateTimeField(default=datetime.now(),null=False,blank=False)
-    maintenance = models.ForeignKey(Maintenance)
+    event = models.ForeignKey(Event)
     user = models.ForeignKey(User)
-    detail = models.CharField(max_length=1000)
-
-
-class Service_Maintenance(models.Model):
-    """Used to tie services to scheduled maintenance so that one maintenance can impact multiple services"""
-
-    service_name = models.ForeignKey(Service)
-    maintenance = models.ForeignKey(Maintenance)
 
 
 class Report(models.Model):

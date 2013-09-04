@@ -30,15 +30,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone as jtz
-from ssd.main.models import Incident
-from ssd.main.models import Incident_Update
+from ssd.main.models import Event
+from ssd.main.models import Event_Description
+from ssd.main.models import Event_Service
+from ssd.main.models import Event_Status
+from ssd.main.models import Event_Time
+from ssd.main.models import Event_User
+from ssd.main.models import Event_Update
+from ssd.main.models import Event_Email
 from ssd.main.models import Report
 from ssd.main.models import Service
-from ssd.main.models import Service_Issue
-from ssd.main.models import Maintenance
-from ssd.main.models import Maintenance_Update
-from ssd.main.models import Recipient
-from ssd.main.models import Service_Maintenance
+from ssd.main.models import Email
 from ssd.main.forms import AddIncidentForm
 from ssd.main.forms import DeleteEventForm
 from ssd.main.forms import UpdateIncidentForm
@@ -218,24 +220,30 @@ def incident(request):
             incident_time = tz.localize(incident_time)
 
             # Add the incident and services
-            # Don't allow the same incident to be added 2x
-            # The user might have hit the back button and submitted again
 
-            # Check for this incident
-            incident_id = Incident.objects.filter(date=incident_time,detail=detail,user_id=user_id).values('id')
+            # Create the event and obtain the ID                                     
+            e = Event.objects.create(type_id=1)
+            event_id = e.pk
             
-            # If its not there, add it                                     
-            if not incident_id:
-                Incident(date=incident_time,detail=detail,email_address_id=recipient_id,user_id=user_id).save()
-                incident_id = Incident.objects.filter(date=incident_time,detail=detail,user_id=user_id).values('id')
+            # Save the description
+            Event_Description(event_id=event_id,description=detail).save()
 
-                # Find out which services this impacts and save the data
-                # Form validation confirms that there is at least 1
-                for service_id in affected_svcs:
-                    # Should be number only -- can't figure out how to validate
-                    # multiple checkboxes in the form
-                    if re.match(r'^\d+$', service_id):
-                        Service_Issue(service_name_id=service_id,incident_id=incident_id[0]['id']).save()
+            # Save the status
+            Event_Status(event_id=event_id,status=1).save()
+
+            # Save the start time
+            Event_Time(event_id=event_id,start=incident_time).save()
+
+            # Add the user
+            Event_User(event_id=event_id,user_id=user_id).save()
+
+            # Find out which services this impacts and associate the services with the event
+            # Form validation confirms that there is at least 1
+            for service_id in affected_svcs:
+                # Should be number only -- can't figure out how to validate
+                # multiple checkboxes in the form
+                if re.match(r'^\d+$', service_id):
+                    Event_Service(service_id=service_id,event_id=event_id).save()
 
             # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
             # allowed to be true if an email address is not defined.
@@ -243,11 +251,11 @@ def incident(request):
             if int(cv.value('notify')) == 1:
                 if broadcast:
                     email = notify.email()
-                    email.incident(incident_id[0]['id'],recipient_id,set_timezone,True)
+                    email.incident(event_id,recipient_id,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # incident
-            return HttpResponseRedirect('/i_detail?id=%s' % incident_id[0]['id'])
+            return HttpResponseRedirect('/')
 
         # Bad form validation
         else:
@@ -274,7 +282,7 @@ def incident(request):
     services = Service.objects.values('id','service_name').order_by('service_name')
 
     # Obtain all current email addresses
-    recipients = Recipient.objects.values('id','email_address')
+    recipients = Email.objects.values('id','email')
 
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
@@ -345,12 +353,12 @@ def i_update(request):
         if form.is_valid():
 
             # Obtain the cleaned data
+            id = form.cleaned_data['id']
             date = form.cleaned_data['date']
             update = form.cleaned_data['update']
             time = form.cleaned_data['time']
             broadcast = form.cleaned_data['broadcast']
             recipient_id = form.cleaned_data['recipient_id']
-            id = form.cleaned_data['id']
             closed = form.cleaned_data['closed']
 
             # Get the user's ID
@@ -365,33 +373,29 @@ def i_update(request):
             incident_time = tz.localize(incident_time)
 
             # Add the detail text 
-            # Don't allow the same detail to be added 2x
-            # The user might have hit the back button and submitted again
-            detail_id = Incident_Update.objects.filter(date=incident_time,detail=update,).values('id')
-            if not detail_id:
-                Incident_Update(date=incident_time,incident_id=id,detail=update,user_id=user_id).save()
+            Event_Update(event_id=id,date=incident_time,update=update,user_id=user_id).save()
 
-                # See if we are adding or subtracting services
-                # The easiest thing to do here is remove all affected  
-                # services and re-add the ones indicated here
+            # See if we are adding or subtracting services
+            # The easiest thing to do here is remove all affected  
+            # services and re-add the ones indicated here
 
-                # Remove first
-                Service_Issue.objects.filter(incident_id=id).delete()
-        
-                # Now add (form validation confirms that there is at least 1)
-                for service_id in affected_svcs:
-                    # Should be number only -- can't figure out how to validate
-                    # multiple checkboxes in the form
-                    if re.match(r'^\d+$', service_id):
-                        Service_Issue(service_name_id=service_id,incident_id=id).save()
+            # Remove first
+            Event_Service.objects.filter(event_id=id).delete()
+    
+            # Now add (form validation confirms that there is at least 1)
+            for service_id in affected_svcs:
+                # Should be number only -- can't figure out how to validate
+                # multiple checkboxes in the form
+                if re.match(r'^\d+$', service_id):
+                    Event_Service(event_id=id,service_id=service_id).save()
 
             # See if we are closing this issue 
             if closed:
                 # If it was already closed, then don't re-close it because it will update the closed time
-                if not Incident.objects.filter(id=id).values('closed')[0]['closed']:
-                    Incident.objects.filter(id=id).update(closed=incident_time)
+                if not Event_Status.objects.filter(event_id=id).values('status')[0]['status'] == 2:
+                    Event_Status.objects.filter(event_id=id).update(status=2)
             else:
-                Incident.objects.filter(id=id).update(closed=None)
+                Event_Status.objects.filter(event_id=id).update(status=1)
 
             # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
             # allowed to be true if an email address is not defined.
@@ -407,7 +411,7 @@ def i_update(request):
             
                 # If broadcast is not selected, turn off emails
                 else:
-                    Incident.objects.filter(id=id).update(email_address=None)
+                    Event_Email.objects.filter(event_id=id).delete()
 
 
             # All done so redirect to the incident detail page so
@@ -439,10 +443,10 @@ def i_update(request):
             return system_message(request,True,'No incident ID given')
 
         # In the case of a GET, we can acquire the proper services from the DB
-        affected_svcs_tmp = Service_Issue.objects.filter(incident_id=id).values('service_name_id')
+        affected_svcs_tmp = Event.objects.filter(id=id).values('event_service__service_id')
         affected_svcs = []
         for service_id in affected_svcs_tmp:
-            affected_svcs.append(service_id['service_name_id'])
+            affected_svcs.append(service_id['event_service__service_id'])
         affected_svcs = list(affected_svcs)
         
         # Create a blank form
@@ -459,13 +463,13 @@ def i_update(request):
         time_now = time_now.astimezone(pytz.timezone(set_timezone))
 
     # Obtain the open/closed status and the email address (if assigned)
-    details = Incident.objects.filter(id=id).values('closed','email_address_id')
+    details = Event.objects.filter(id=id).values('event_status__status')
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
 
     # Obtain all current email addresses
-    recipients = Recipient.objects.values('id','email_address')
+    recipients = Email.objects.values('id','email')
 
     # See if email notifications are enabled
     notifications = int(cv.value('notify'))
@@ -497,10 +501,10 @@ def i_update(request):
 
 @login_required
 @staff_member_required
-def i_delete(request):
+def delete(request):
     """Delete Incident Page
 
-    Delete an incident given an id
+    Delete an event given an id
 
     """
 
@@ -516,7 +520,7 @@ def i_delete(request):
             id = form.cleaned_data['id']
 
             # Delete the incident
-            Incident.objects.filter(id=id).delete()
+            Event.objects.filter(id=id).delete()
 
             # Redirect to the homepage
             return HttpResponseRedirect('/')
@@ -962,36 +966,5 @@ def m_email(request):
     else:
         return system_message(request,True,'Invalid request - please go back and try again.')
 
-
-@login_required
-@staff_member_required
-def m_delete(request):
-    """Delete Maintenance Page
-
-    Delete a maintenance given an id
-
-    """
-
-    # We only accept posts
-    if request.method == 'POST':
-        
-        # Check the form elements
-        form = DeleteEventForm(request.POST)
-
-        if form.is_valid():
-
-            # Obtain the cleaned data
-            id = form.cleaned_data['id']
-
-            # Delete the incident
-            Maintenance.objects.filter(id=id).delete()
-
-            # Redirect to the homepage
-            return HttpResponseRedirect('/')
-
-    # If processing got this far, its either not a POST
-    # or its an invalid form submit.  Either way, give an error        
-    return system_message(request,True,'Invalid delete request')
-
-    
+   
    

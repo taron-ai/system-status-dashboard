@@ -128,10 +128,16 @@ class MSearchForm(forms.Form):
     text = forms.CharField(required=False)
 
 
-class AddRecipientForm(forms.Form):
-    """Form for adding email addresses"""
+class AddEmailForm(forms.Form):
+    """Form for adding email recipients"""
 
-    recipient = forms.EmailField(required=True)
+    email = forms.EmailField(required=True)
+
+
+class RemoveEmailForm(forms.Form):
+    """Form for removing remail recipients"""
+
+    id = MultipleServiceField()
 
 
 class AddContactForm(forms.Form):
@@ -149,12 +155,6 @@ class AddServiceForm(forms.Form):
 
 class RemoveServiceForm(forms.Form):
     """Form for removing services"""
-
-    id = MultipleServiceField()
-
-
-class RemoveRecipientForm(forms.Form):
-    """Form for removing recipients"""
 
     id = MultipleServiceField()
 
@@ -282,7 +282,7 @@ class AddIncidentForm(forms.Form):
     detail = forms.CharField(required=True)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
-    recipient_id = forms.IntegerField(required=False)
+    email_id = forms.IntegerField(required=False)
 
     # Override the form clean method - there is some special logic to 
     # adding an incident and we need access to multiple values
@@ -291,10 +291,10 @@ class AddIncidentForm(forms.Form):
     def clean(self):
         cleaned_data = super(AddIncidentForm, self).clean()
         broadcast = cleaned_data.get('broadcast')
-        recipient_id = cleaned_data.get('recipient_id')
+        email_id = cleaned_data.get('email_id')
 
         # If an email broadcast is requested, an email address must accompany it
-        if broadcast and not recipient_id:
+        if broadcast and not email_id:
             self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
         # Return the full collection of cleaned data
@@ -304,13 +304,11 @@ class AddIncidentForm(forms.Form):
 class UpdateIncidentForm(forms.Form):
     """Form for updating an existing incident"""
 
-    date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    time = forms.TimeField(required=True,input_formats=['%H:%M'])
     update = forms.CharField(required=True)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
     closed = forms.BooleanField(required=False)
-    recipient_id = forms.IntegerField(required=False)
+    email_id = forms.IntegerField(required=False)
     id = forms.IntegerField()
 
     # Override the form clean method - there is some special logic to 
@@ -320,11 +318,11 @@ class UpdateIncidentForm(forms.Form):
     def clean(self):
         cleaned_data = super(UpdateIncidentForm, self).clean()
         broadcast = cleaned_data.get('broadcast')
-        recipient_id = cleaned_data.get('recipient_id')
+        email_id = cleaned_data.get('email_id')
 
         # If an email broadcast is requested, an email address must accompany it
-        if broadcast and not recipient_id:
-            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
+        if broadcast and not email_id:
+            self._errors["broadcast"] = self.error_class(['Cannot broadcast if no email address selected.'])
         
         # Return the full collection of cleaned data
         return cleaned_data
@@ -348,7 +346,7 @@ class AddMaintenanceForm(forms.Form):
     coordinator = forms.CharField(required=True)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
-    recipient_id = forms.IntegerField(required=False)
+    email_id = forms.IntegerField(required=False)
 
     # Override the form clean method - there is some special logic to 
     # scheduling a maintenance and we need access to multiple values
@@ -360,7 +358,7 @@ class AddMaintenanceForm(forms.Form):
         coordinator = cleaned_data.get('coordinator')
         description = cleaned_data.get('description')
         broadcast = cleaned_data.get('broadcast')
-        recipient_id = cleaned_data.get('recipient_id')
+        email_id = cleaned_data.get('email_id')
         s_date = cleaned_data.get('s_date')
         s_time = cleaned_data.get('s_time')
         e_date = cleaned_data.get('e_date')
@@ -368,7 +366,7 @@ class AddMaintenanceForm(forms.Form):
 
 
         # If email broadcast is selected, an email address also must be
-        if broadcast and not recipient_id:
+        if broadcast and not email_id:
             self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         
         # Ensure the end date/time is not before the start date/time
@@ -412,7 +410,7 @@ class UpdateMaintenanceForm(forms.Form):
     started = forms.CharField(required=False)
     completed = forms.CharField(required=False)
     broadcast = forms.BooleanField(required=False)
-    recipient_id = forms.IntegerField(required=False)
+    email_id = forms.IntegerField(required=False)
     
 
     # Override the form clean method - to validate the special logic in this form
@@ -423,12 +421,12 @@ class UpdateMaintenanceForm(forms.Form):
         e_date = cleaned_data.get('e_date')
         e_time = cleaned_data.get('e_time')
         broadcast = cleaned_data.get("broadcast")
-        recipient_id = cleaned_data.get("recipient_id")
+        email_id = cleaned_data.get("email_id")
         started = cleaned_data.get('started')
         completed = cleaned_data.get('completed')
 
         # If an email broadcast is requested but no email address is selected, error
-        if broadcast and not recipient_id:
+        if broadcast and not email_id:
             # Set custom error messages
             self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
         

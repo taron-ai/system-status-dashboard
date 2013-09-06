@@ -36,6 +36,7 @@ def index(request):
        'admin/index.html',
        {
           'title':'System Status Dashboard | Admin',
+          'breadcrumbs':{'Admin':'/admin'}
        },
        context_instance=RequestContext(request)
     )

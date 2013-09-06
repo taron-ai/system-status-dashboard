@@ -29,10 +29,10 @@ from ssd.main.forms import ConfigForm
 from ssd.main.models import Event
 from ssd.main.models import Service
 from ssd.main.models import Escalation
-from ssd.main.forms import AddRecipientForm
+from ssd.main.forms import AddEmailForm
+from ssd.main.forms import RemoveEmailForm
 from ssd.main.forms import AddServiceForm
 from ssd.main.forms import RemoveServiceForm
-from ssd.main.forms import RemoveRecipientForm
 from ssd.main.forms import AddContactForm
 from ssd.main.forms import ModifyContactForm
 from ssd.main import config_value
@@ -152,7 +152,7 @@ def config(request):
 
 @login_required
 @staff_member_required
-def recipients(request):
+def email(request):
     """Manage Recipient Email Addresses
  
     """
@@ -161,56 +161,56 @@ def recipients(request):
     if request.method == 'POST':
        
         # Check the form elements
-        form = AddRecipientForm(request.POST)
+        form = AddEmailForm(request.POST)
 
         if form.is_valid():
             
-            recipient = form.cleaned_data['recipient']
+            email = form.cleaned_data['email']
 
             # Don't allow duplicates
             try:
-                Recipient(email_address=recipient).save()
+                Email(email=email).save()
             except IntegrityError:
                 pass
 
             # Send them back so they can see the newly created email addresses
-            return HttpResponseRedirect('/recipients')
+            return HttpResponseRedirect('/email')
         else:
-            print 'Invalid form: AddRecipientForm: %s' % form.errors
+            print 'Invalid form: AddEmailForm: %s' % form.errors
 
     # Not a POST
     else:
         # Create a blank form
-        form = AddRecipientForm()
+        form = AddEmailForm()
     
     # Obtain all current email addresses
-    recipients = Recipient.objects.all()
+    emails = Email.objects.all()
     
     # Print the page
     return render_to_response(
-       'config/recipients.html',
+       'config/email.html',
        {
           'title':'System Status Dashboard | Manage Email Recipients',
           'form':form,
-          'recipients':recipients
+          'emails':emails
        },
        context_instance=RequestContext(request)
     )
 
 @login_required
 @staff_member_required
-def rm_recipients(request):
-    """Remove Recipients"""
+def rm_email(request):
+    """Remove Email Recipients"""
 
     # If this is a POST, then validate the form and save the data, otherise send them
     # to the main recipients page
     if request.method == 'POST':
         
         # Check the form elements
-        form = RemoveRecipientForm(request.POST)
+        form = RemoveEmailForm(request.POST)
 
         if form.is_valid():
-            # Remove the recipients
+            # Remove the email recipients
 
             # If these recipients are currently tied to incidents or maintenances,
             # Do not allow them to be deleted w/o removing them from the relevant
@@ -218,19 +218,19 @@ def rm_recipients(request):
             for id in request.POST.getlist('id'):
 
                 # Part of any incidents or maintenances?
-                if Incident.objects.filter(email_address_id=id) or Maintenance.objects.filter(email_address_id=id):
+                if Event.objects.filter(event_email__email__id=id):
                     return system_message(request,True,'At least one of the recipients you are attempting to delete is currently part of an incident or maintenance.  Please remove the recipient from the incident/maintenance, or delete the incident/maintenance and then delete the recipient.')
                 # Ok, remove it
                 else:
-                    Recipient.objects.filter(id=id).delete()
+                    Email.objects.filter(id=id).delete()
 
         # Invalid form
         else:
-            print 'Invalid form: RemoveRecipientForm: %s' % form.errors
+            print 'Invalid form: RemoveEmailForm: %s' % form.errors
 
     # Not a POST or a failed POST
     # Send them back so they can see the newly updated services list
-    return HttpResponseRedirect('/recipients')
+    return HttpResponseRedirect('/email')
 
 
 @login_required

@@ -71,17 +71,14 @@
     {% endif %}
     
     {% if breadcrumbs %}
+
       <br>
       <font class="breadcrumb">
-        {% for row in breadcrumbs %}
+        {% for item in breadcrumbs.items %}
           {% if forloop.last %}
-            {% for key,value in row.items %}
-              <a href="{{value}}">{{key}}</a>
-            {% endfor %}
+            <a href="{{item.1}}">{{item.0}}</a>
           {% else %}
-            {% for key,value in row.items %}
-              <a href="{{value}}">{{key}}</a> &rarr;
-            {% endfor %}
+            <a href="{{item.1}}">{{item.0}}</a> &rarr;
           {% endif %}
         {% endfor %}
       </font>

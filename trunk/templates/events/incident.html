@@ -62,13 +62,13 @@
         
         <label><input type="checkbox" {% if not notifications == 1 %}disabled{% endif %} name="broadcast" {% if form.broadcast.data %}checked{% endif %} />&nbsp;Broadcast Email</label>
             
-        <select name="recipient_id" class="email" {% if not notifications == 1 %}disabled{% endif %}>
+        <select name="email_id" class="email" {% if not notifications == 1 %}disabled{% endif %}>
           <option value="">-</option>
-         {% for recipient in recipients %}
-          {% if form.recipient_id.data|slugify == recipient.id|slugify %}
-          <option value="{{recipient.id}}" selected="true">{{recipient.email_address}}</option>
+         {% for email in emails %}
+          {% if form.email_id.data|slugify == email.id|slugify %}
+          <option value="{{email.id}}" selected="true">{{email.email}}</option>
           {% else %} 
-          <option value="{{recipient.id}}">{{recipient.email_address}}</option>
+          <option value="{{email.id}}">{{email.email}}</option>
           {% endif %}
          {% endfor %}
         </select>

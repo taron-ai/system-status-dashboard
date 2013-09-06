@@ -24,23 +24,21 @@
 
 <div class="row">
   <div class="large-6 columns">
-    <span class="radius secondary label">Current Services</span><br><br>
-    <form method="POST" name="rm_services" id="rm_services" action="/rm_services">
+    <span class="radius secondary label">Email Addresses</span><br><br>
+    <form method="POST" action="/rm_email">
     {% csrf_token %}
 
-
-      {% if services %}
-      
+      {% if emails %}
       <table>
        <tr>
         <th>Delete</th>
-        <th>Service Name</th>
+        <th>Email Address</th>
        </tr>
           
-       {% for row in services %}
+       {% for row in emails %}
        <tr>
         <td><input type="checkbox" name="id" value="{{row.id}}" /></td>
-        <td>{{row.service_name}}</td>
+        <td>{{row.email}}</td>
        </tr>
        {% endfor %}
       </table>
@@ -52,33 +50,32 @@
     </form>
     
     {% else %}
-    No services defined
+    No email recipients defined
     {% endif %}
     </fieldset>
     </form>
   </div>
 </div>
 
-<div class="spacer_medium"></div>
+<div class="spacer_medium"></div>  
 
 <div class="row">
-  <div class="large-6 columns {% if form.service.errors %}error{% endif %}">
-    <span class="radius secondary label">Add Services</span><br><br>
-    <form method="POST" name="manage_services" id="manage_services" action="/services">
+  <div class="large-6 columns {% if form.email.errors %}error{% endif %}">
+
+    <span class="radius secondary label">Add Email Address</span><br><br>
+    <form method="POST" action="/email">
      {% csrf_token %}
+        
+      <input name="email" type="text" class="email" placeholder="Enter a valid email address" value="{% if form.recipient.data %}{{form.recipient.data}}{% endif %}">
+      {% if form.recipient.errors %}
+      <small class="error">
+        {% for error in form.recipient.errors %}{{error}}{% endfor %}
+      </small>
+      {% endif %}
 
-    <input name="service" type="text" class="service" placeholder="Enter a service name" value="{% if form.service.data %}{{form.service.data}}{% endif %}">
-    {% if form.service.errors %}
-    <small class="error">
-      {% for error in form.service.errors %}{{error}}{% endfor %}
-    </small>
-    {% endif %}
-
-    <input type="submit" class="small button secondary" value="add"/>
-    </form>
+      <input type="submit" class="small button secondary" value="add"/>
+    </form> 
   </div>
 </div>
-
-
 
 {% endblock %}

@@ -172,11 +172,6 @@ table.jump_to td {
 }
 
 
-/* LEGENDS */
-fieldset legend {
-	font-size: 1.5em;
-}
-
 
 
 /* DIVS AND SPACERS */
@@ -269,7 +264,13 @@ input, textarea, select {
 input.date {
    width: 135px;
 }
+input.service {
+   width: 300px;
+}
 select.email {
+   width: 250px;
+}
+input.email {
    width: 250px;
 }
 

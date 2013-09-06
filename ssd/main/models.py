@@ -79,49 +79,69 @@ class Event_Service(models.Model):
 
 
 class Event_Time(models.Model):
-    """Event start/stop times"""
+    """Event start/stop times
+        - only one entry allowed per event
 
-    event = models.ForeignKey(Event)
+    """
+
+    event = models.ForeignKey(Event, unique=True)
     start = models.DateTimeField(null=False)
     end = models.DateTimeField(null=True)
 
 
 class Event_Status(models.Model):
     """Event Status (opened/closed, etc)
-        - 1 = open
-        - 2 = closed
+        - only one entry allowed per event
+
+        - 0 = default (inactive)
+        - 1 = open (incident only)
+        - 2 = closed (incident only)
+        - 3 = started (maintenance only)
+        - 4 = completed (maintenance only)
 
     """
 
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey(Event, unique=True)
     status = models.IntegerField()
 
 
 class Event_Description(models.Model):
-    """Event Descriptions"""
+    """Event Descriptions
+        - only one entry allowed per event
 
-    event = models.ForeignKey(Event)
+    """
+
+    event = models.ForeignKey(Event, unique=True)
     description = models.CharField(blank=False,max_length=1000)
 
 
 class Event_Impact(models.Model):
-    """Event Impact Analysis (maintenance specific)"""
+    """Event Impact Analysis (maintenance specific)
+        - only one entry allowed per event
 
-    event = models.ForeignKey(Event)
+    """
+
+    event = models.ForeignKey(Event, unique=True)
     impact = models.CharField(max_length=1000)
 
 
 class Event_Coordinator(models.Model):
-    """Event Coordinator (maintenance specific)"""
+    """Event Coordinator (maintenance specific)
+        - only one entry allowed per event
 
-    event = models.ForeignKey(Event)
+    """
+
+    event = models.ForeignKey(Event, unique=True)
     coordinator = models.CharField(max_length=1000)
 
 
 class Event_Email(models.Model):
-    """Event Email Recipient"""
+    """Event Email Recipient
+        - only one entry allowed per event
 
-    event = models.ForeignKey(Event)
+    """
+
+    event = models.ForeignKey(Event, unique=True)
     email = models.ForeignKey(Email)
 
 
@@ -135,9 +155,12 @@ class Event_Update(models.Model):
 
 
 class Event_User(models.Model):
-    """Store the user who created the event"""
+    """Store the user who created the event
+        - only one entry allowed per event
 
-    event = models.ForeignKey(Event)
+    """
+
+    event = models.ForeignKey(Event, unique=True)
     user = models.ForeignKey(User)
 
 

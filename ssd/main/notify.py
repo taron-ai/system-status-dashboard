@@ -22,6 +22,7 @@
 
 
 from ssd.main.models import Config
+from ssd.main.models import Email
 from ssd.main.models import Event
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
@@ -73,7 +74,7 @@ class email:
         return 'success'
 
     
-    def incident(self,id,recipient_id,set_timezone,new):
+    def incident(self,id,email_id,set_timezone,new):
         """
         Send an email message in HTML format about a new or existing incident
            - If there is an error, the user will not be notified but an Apache error log will be generated
@@ -82,30 +83,33 @@ class email:
         # Instantiate the configuration value getter
         cv = config_value.config_value()
 
-        # Incident detail
-        detail = Incident.objects.filter(id=id).values('date',
-                                                       'closed',
-                                                       'detail',
-                                                       'user_id__first_name',
-                                                       'user_id__last_name'
-                                                       )
-
         # Which services were impacted
-        services = Service_Issue.objects.filter(incident_id=id).values('service_name_id__service_name')
+        services = Event.objects.filter(id=id).values('event_service__service__service_name')
+
+        # Obain the incident detail
+        detail = Event.objects.filter(id=id).values(
+                                                    'event_time__start',
+                                                    'event_time__end',
+                                                    'event_description__description',
+                                                    'event_email__email__email',
+                                                    'event_user__user__first_name',
+                                                    'event_user__user__last_name'
+                                                    )
 
         # Obain any incident updates
-        updates = Incident_Update.objects.filter(incident_id=id).values('id',
-                                                                        'date',
-                                                                        'detail',
-                                                                        'user_id__first_name',
-                                                                        'user_id__last_name'
-                                                                        ).order_by('id')
+        updates = Event.objects.filter(id=id).values(
+                                                    'event_update__id',
+                                                    'event_update__date',
+                                                    'event_update__update',
+                                                    'event_update__user__first_name',
+                                                    'event_update__user__last_name'
+                                                    ).order_by('event_update__id')
 
         # Obtain the recipient or company name
         recipient_name = cv.value('recipient_name')
 
         # Obtain the recipient email address
-        recipient_incident = Recipient.objects.filter(id=recipient_id).values('email_address')[0]['email_address']
+        recipient_incident = Email.objects.filter(id=email_id).values('email')[0]['email']
 
         # Obtain the sender email address
         email_from = cv.value('email_from')
@@ -170,7 +174,7 @@ class email:
         return 'success'
 
 
-    def maintenance(self,id,recipient_id,set_timezone,new):
+    def maintenance(self,id,email_id,set_timezone,new):
         """
         Send an email message in HTML format about a new or existing maintenance
            - If there is an error, the user will not be notified but an Apache error log will be generated
@@ -198,7 +202,7 @@ class email:
         recipient_name = cv.value('recipient_name')
 
         # Obtain the recipient email address
-        recipient_maintenance = Recipient.objects.filter(id=recipient_id).values('email_address')[0]['email_address']
+        recipient_maintenance = Recipient.objects.filter(id=email_id).values('email_address')[0]['email_address']
 
         # Obtain the sender email address
         email_from = cv.value('email_from')

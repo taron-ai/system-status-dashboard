@@ -149,6 +149,46 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="large-11 columns">
+    <br><br><br>
+    <font class="heading">Detailed Service Disruption Timeline:</font><hr>
+    <p>
+    {% if incident_timeline %}
+      {% for row in incident_timeline %}
+       {{row.event_time__start|date:"Y-m-d H:i:s e"}} - {{row.event_description__description}} <a href="/i_detail?id={{row.id}}">more detail...</a><br>
+      {% endfor %}
+    {% else %}
+      <font class="all_good">No current service disruptions.</font>
+    {% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-11 columns">
+    <br><br><br>
+    <font class="heading">Detailed Maintenance Timeline:</font><hr>
+    <p>
+    {% if maintenance_timeline %}
+      {% for row in maintenance_timeline %}
+       {{row.event_time__start|date:"Y-m-d H:i:s e"}} - {{row.event_description__description}} <a href="/m_detail?id={{row.id}}">more detail...</a><br>
+      {% endfor %}
+    {% else %}
+      <font class="all_good">No planned maintenance is occurring.</font>
+    {% endif %}
+    </p>  
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-11 columns">
+    <br><br><br>
+    <font class="heading">Historical Summary Status:</font><hr>
+  </div>
+</div>
+
+{% if show_graph %}
 <script type="text/javascript">
 $(function () {
         
@@ -235,54 +275,16 @@ $(function () {
             }]
         });
 });
-
 </script>
 <script type="text/javascript" src="/html/js/highcharts.js"></script>
-
-<div class="row">
-  <div class="large-11 columns">
-    <br><br><br>
-    <font class="heading">Detailed Service Disruption Timeline:</font><hr>
-    <p>
-    {% if incident_timeline %}
-      {% for row in incident_timeline %}
-       {{row.event_time__start|date:"Y-m-d H:i:s e"}} - {{row.event_description__description}} <a href="/i_detail?id={{row.id}}">more detail...</a><br>
-      {% endfor %}
-    {% else %}
-      <font class="all_good">No current service disruptions.</font>
-    {% endif %}
-    </p>
-  </div>
-</div>
-
-<div class="row">
-  <div class="large-11 columns">
-    <br><br><br>
-    <font class="heading">Detailed Maintenance Timeline:</font><hr>
-    <p>
-    {% if maintenance_timeline %}
-      {% for row in maintenance_timeline %}
-       {{row.event_time__start|date:"Y-m-d H:i:s e"}} - {{row.event_description__description}} <a href="/m_detail?id={{row.id}}">more detail...</a><br>
-      {% endfor %}
-    {% else %}
-      <font class="all_good">No planned maintenance is occurring.</font>
-    {% endif %}
-    </p>  
-  </div>
-</div>
-
-<div class="row hide-for-small">
-  <div class="large-11 columns">
-    <br><br><br>
-    <font class="heading">Historical Summary Status:</font>
-  </div>
-</div>
-
 <div class="row left hide-for-small">
   <div class="large-12 columns">
     <div id="graph" style="width: 905px;"></div>
     <br><br>
   </div>
 </div>
+{% else %}
+<p><font class="all_good">No incidents or maintenance have occurred in the past 30 days and no maintenance is planned for the next 30 days.</font></p><br><br>
+{% endif %}
 
 {% endblock %}

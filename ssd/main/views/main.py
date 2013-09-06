@@ -154,8 +154,6 @@ def index(request):
                                                                                     'event_service__service__service_name',
                                                                                     'event_status__status').order_by('id')
 
-    print events
-
     # Run through each service and see if it had an incident during the time range
     for service in services:
         # Make a row for this service, which looks like this:
@@ -189,7 +187,7 @@ def index(request):
                     # If the event closed date is there, make sure the time zone is correct
                     end_date = event['event_time__end']
                     if event['event_time__end']:
-                        end_date = closed_date.astimezone(pytz.timezone(set_timezone))
+                        end_date = end_date.astimezone(pytz.timezone(set_timezone))
 
                     if date.date() == event_date.date():
                         # This is our date so add the incident ID
@@ -267,6 +265,10 @@ def index(request):
     #              ]
     count_data = []
 
+    # Boolean which turns true if we have maintenances or incidents
+    # If not, the graph on the home page will not be shown
+    show_graph = False
+
     for day in graph_dates:
 
         # Create a tuple to hold this data series
@@ -276,11 +278,13 @@ def index(request):
         for row in incident_count:
             if row['event_time__start'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
                 t['incidents'] += 1
+                show_graph = True
 
         # Check for maintenances that match this date
         for row in maintenance_count:
             if row['event_time__start'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
                 t['maintenances'] += 1
+                show_graph = True
 
         # Add the tuple
         count_data.append(t)
@@ -327,8 +331,9 @@ def index(request):
           'information':information,
           'count_data':count_data,
           'timezones':timezones,
-          'incident_timeline': incident_timeline,
-          'maintenance_timeline': maintenance_timeline
+          'incident_timeline':incident_timeline,
+          'maintenance_timeline':maintenance_timeline,
+          'show_graph':show_graph
        },
        context_instance=RequestContext(request)
     )
@@ -375,7 +380,12 @@ def i_detail(request):
                                                 'event_update__user__first_name',
                                                 'event_update__user__last_name'
                                                 ).order_by('event_update__id')
+    # If there are no updates, set to None
+    if len(updates) == 1 and updates[0]['event_update__date'] == None:
+        updates = None
 
+    # See if an email address is selected
+    email_selected = Event.objects.filter(event_email__event_id=id).values('event_email__email__email')
 
     # See if the timezone is set, if not, give them the server timezone
     if request.COOKIES.get('timezone') == None:
@@ -398,7 +408,9 @@ def i_detail(request):
           'id':id,
           'detail':detail,
           'updates':updates,
-          'notifications':notifications
+          'notifications':notifications,
+          'email_selected':email_selected,
+          'breadcrumbs':{'Admin':'/admin','Update Detail':'i_detail'}
        },
        context_instance=RequestContext(request)
     )
@@ -424,20 +436,36 @@ def m_detail(request):
     # Instantiate the configuration value getter
     cv = config_value.config_value()
 
-    # Obain the incident detail
-    detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed','email_address_id__email_address')
-
     # Which services were impacted
-    services = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id__service_name')
+    services = Event.objects.filter(id=id).values('event_service__service__service_name')
+
+    # Obain the incident detail
+    detail = Event.objects.filter(id=id).values(
+                                                'event_time__start',
+                                                'event_time__end',
+                                                'event_status__status',
+                                                'event_description__description',
+                                                'event_impact__impact',
+                                                'event_coordinator__coordinator',
+                                                'event_email__email__email',
+                                                'event_user__user__first_name',
+                                                'event_user__user__last_name'
+                                                )
 
     # Obain any incident updates
-    updates = Maintenance_Update.objects.filter(maintenance_id=id).values(
-                                                                          'id',
-                                                                          'date',
-                                                                          'user_id__first_name',
-                                                                          'user_id__last_name',
-                                                                          'detail'
-                                                                         ).order_by('id')
+    updates = Event.objects.filter(id=id).values(
+                                                'event_update__id',
+                                                'event_update__date',
+                                                'event_update__update',
+                                                'event_update__user__first_name',
+                                                'event_update__user__last_name'
+                                                ).order_by('event_update__id')
+    # If there are no updates, set to None
+    if len(updates) == 1 and updates[0]['event_update__date'] == None:
+        updates = None
+
+    # See if an email address is selected
+    email_selected = Event.objects.filter(event_email__event_id=id).values('event_email__email__email')
 
 
     # See if the timezone is set, if not, give them the server timezone
@@ -461,7 +489,8 @@ def m_detail(request):
           'id':id,
           'detail':detail,
           'updates':updates,
-          'notifications':notifications
+          'notifications':notifications,
+          'email_selected':email_selected
        },
        context_instance=RequestContext(request)
     )

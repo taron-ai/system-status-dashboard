@@ -29,7 +29,7 @@
 
 <div class="row">
   <div class="large-12 columns">
-    <table class="responsive standard">
+    <table>
       <thead>
         <tr>
           <th colspan="2">Maintenance Details</th>
@@ -41,10 +41,10 @@
           <td width="165">Maintenance Status</td>
           <td width="565">
             <b>
-            {% if detail.0.completed %}
+            {% if detail.0.event_status__status == 2 %}
               COMPLETED
             {% else %}
-              {% if detail.0.started %}
+              {% if detail.0.event_status__status == 1 %}
                 STARTED
               {% else %}
                 NOT STARTED
@@ -58,7 +58,7 @@
           <td>
            {% if services %}
            {% for row in services %}
-           {{row.service_name_id__service_name}}
+           {{row.event_service__service__service_name}}
             <br>
            {% endfor %}
            {% else %}
@@ -68,23 +68,23 @@
         </tr>
         <tr>
           <td>Start Time</td>
-          <td>{{detail.0.start|date:"Y-m-d H:i e"}}</td>
+          <td>{{detail.0.event_time__start|date:"Y-m-d H:i e"}}</td>
         </tr>
         <tr>
           <td>End Time</td>
-          <td>{{detail.0.end|date:"Y-m-d H:i e"}}</td>
+          <td>{{detail.0.event_time__end|date:"Y-m-d H:i e"}}</td>
         </tr>
         <tr>
           <td>Description</td>
-          <td>{{detail.0.description|linebreaksbr}}</td>
+          <td>{{detail.0.event_description__description|linebreaksbr}}</td>
         </tr>
         <tr>
           <td>Impact Analysis</td>
-          <td>{{detail.0.impact|linebreaksbr}}</td>
+          <td>{{detail.0.event_impact__impact|linebreaksbr}}</td>
          </tr>
         <tr>
           <td>Coordinator</td>
-          <td>{{detail.0.coordinator|linebreaksbr}}</td>
+          <td>{{detail.0.event_coordinator__coordinator|linebreaksbr}}</td>
         </tr>
         <tr>
           <td>Email Notifications:{% if not notifications == 1 %}<br><font class="disabled">(disabled)</font>{% endif %}</td>
@@ -96,14 +96,11 @@
 </div>
 
 {% if updates %}
-<div class="row">
-  <div class="large-12 columns" style="height: 25px;">
-  </div>
-</div>
+<div class="spacer_medium"></div>
 
 <div class="row">
   <div class="large-12 columns">
-    <table class="responsive standard">
+    <table>
       <thead>
         <tr>
           <th colspan="3">Maintenance Updates</th>
@@ -118,9 +115,9 @@
       <tbody>
       {% for row in updates %}
         <tr>
-         <td>{{row.date|date:"Y-m-d H:i:s"}}</td>
-         <td>{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
-         <td>{{row.detail|linebreaksbr}}</td>
+         <td>{{row.event_update__date|date:"Y-m-d H:i:s"}}</td>
+         <td>{{row.event_update__user__first_name}} {{row.event_update__user__last_name}}</td>
+         <td>{{row.event_update__update|linebreaksbr}}</td>
         </tr>
       {% endfor %}
       </tbody>
@@ -131,23 +128,24 @@
  
 
 {% if user.is_authenticated %}
+
 <div class="row">
   <div class="large-4 columns">
     <div class="horiz_stack">
-      <form method="POST" name="m_delete" action="/m_delete">
+      <form method="POST" action="/delete">
         {% csrf_token %}
         <input type="hidden" name="id" value="{{id}}">      
-        <input type="submit" class="small button" value="delete"/>
+        <input type="submit" class="small button secondary" value="delete"/>
       </form>
     </div>
     <div class="horiz_stack">
-      <a href="/m_update?id={{id}}" class="small button">update</a>
+      <a href="/m_update?id={{id}}" class="small button secondary">update</a>
     </div>
     <div class="horiz_stack">
       <form method="POST" name="m_email" action="/m_email">
         {% csrf_token %}
         <input type="hidden" name="id" value="{{id}}">      
-        {% if notifications %}<input type="submit" class="small button" value="email reminder"/>{% endif %}
+        {% if notifications %}<input type="submit" class="small button secondary" value="email reminder"/>{% endif %}
       </form>
     </div>
   </div>

@@ -38,6 +38,8 @@ from ssd.main.models import Event_Time
 from ssd.main.models import Event_User
 from ssd.main.models import Event_Update
 from ssd.main.models import Event_Email
+from ssd.main.models import Event_Impact
+from ssd.main.models import Event_Coordinator
 from ssd.main.models import Report
 from ssd.main.models import Service
 from ssd.main.models import Email
@@ -206,7 +208,7 @@ def incident(request):
             detail = form.cleaned_data['detail']
             time = form.cleaned_data['time']
             broadcast = form.cleaned_data['broadcast']
-            recipient_id = form.cleaned_data['recipient_id']
+            email_id = form.cleaned_data['email_id']
 
             # Get the user's ID
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
@@ -237,6 +239,11 @@ def incident(request):
             # Add the user
             Event_User(event_id=event_id,user_id=user_id).save()
 
+            # Add the email recipient, if requested.
+            # Form validation ensures that a valid email is selected if broadcast is selected.  
+            if broadcast: 
+                Event_Email(event_id=event_id,email_id=email_id).save()
+
             # Find out which services this impacts and associate the services with the event
             # Form validation confirms that there is at least 1
             for service_id in affected_svcs:
@@ -251,11 +258,11 @@ def incident(request):
             if int(cv.value('notify')) == 1:
                 if broadcast:
                     email = notify.email()
-                    email.incident(event_id,recipient_id,set_timezone,True)
+                    email.incident(event_id,email_id,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # incident
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/i_detail?id=%s' % event_id)
 
         # Bad form validation
         else:
@@ -282,7 +289,7 @@ def incident(request):
     services = Service.objects.values('id','service_name').order_by('service_name')
 
     # Obtain all current email addresses
-    recipients = Email.objects.values('id','email')
+    emails = Email.objects.values('id','email')
 
     # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
@@ -302,13 +309,14 @@ def incident(request):
        {
           'title':'System Status Dashboard | Create Incident',
           'services':services,
-          'recipients':recipients,
+          'emails':emails,
           'affected_svcs':tuple(affected_svcs),
           'form':form,
           'time_now':time_now,
           'help':help,
           'notifications':notifications,
-          'instr_incident_description':instr_incident_description
+          'instr_incident_description':instr_incident_description,
+          'breadcrumbs':{'Admin':'/admin','Log Incident':'incident'}
 
        },
        context_instance=RequestContext(request)
@@ -354,26 +362,28 @@ def i_update(request):
 
             # Obtain the cleaned data
             id = form.cleaned_data['id']
-            date = form.cleaned_data['date']
             update = form.cleaned_data['update']
-            time = form.cleaned_data['time']
             broadcast = form.cleaned_data['broadcast']
-            recipient_id = form.cleaned_data['recipient_id']
+            email_id = form.cleaned_data['email_id']
             closed = form.cleaned_data['closed']
 
             # Get the user's ID
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
 
-            # Create a datetime object and add the timezone
-            # Put the date and time together
-            incident_time = datetime.datetime.combine(date,time)
+            # Add the update
+            # Obtain the time and add a timezone
+            # Create a datetime object for right now
+            time_now = datetime.datetime.now()
+            # Add the server's timezone (whatever DJango is set to)
+            time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
+            # Add it
+            Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
 
-            # Set the timezone
-            tz = pytz.timezone(set_timezone)
-            incident_time = tz.localize(incident_time)
-
-            # Add the detail text 
-            Event_Update(event_id=id,date=incident_time,update=update,user_id=user_id).save()
+            # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
+            # In both cases, delete the existing email (because it will be re-added)
+            Event_Email.objects.filter(event_id=id).delete()
+            if broadcast: 
+                Event_Email(event_id=id,email_id=email_id).save()
 
             # See if we are adding or subtracting services
             # The easiest thing to do here is remove all affected  
@@ -402,12 +412,8 @@ def i_update(request):
             # Don't send an email if notifications are disabled
             if int(cv.value('notify')) == 1:
                 if broadcast:
-                    # Update the email address
-                    recipient = Recipient.objects.filter(id=recipient_id).values('email_address')
-                    Incident.objects.filter(id=id).update(email_address=recipient_id)
-
                     email = notify.email()
-                    email.incident(id,recipient_id,set_timezone,False)
+                    email.incident(id,email_id,set_timezone,False)
             
                 # If broadcast is not selected, turn off emails
                 else:
@@ -462,14 +468,14 @@ def i_update(request):
         # Now convert to the requested timezone
         time_now = time_now.astimezone(pytz.timezone(set_timezone))
 
-    # Obtain the open/closed status and the email address (if assigned)
-    details = Event.objects.filter(id=id).values('event_status__status')
+    # Obtain the details
+    details = Event.objects.filter(id=id).values('event_status__status','event_email__email_id')
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
 
     # Obtain all current email addresses
-    recipients = Email.objects.values('id','email')
+    emails = Email.objects.values('id','email')
 
     # See if email notifications are enabled
     notifications = int(cv.value('notify'))
@@ -490,7 +496,7 @@ def i_update(request):
           'affected_svcs':affected_svcs,
           'id':id,
           'form':form,
-          'recipients':recipients,
+          'emails':emails,
           'notifications':notifications,
           'time_now':time_now,
           'instr_incident_update':instr_incident_update
@@ -568,7 +574,7 @@ def maintenance(request):
             impact = form.cleaned_data['impact']
             coordinator = form.cleaned_data['coordinator']
             broadcast = form.cleaned_data['broadcast']
-            recipient_id = form.cleaned_data['recipient_id']
+            email_id = form.cleaned_data['email_id']
                         
             # Combine the dates and times into datetime objects
             start = datetime.datetime.combine(s_date, s_time)
@@ -581,64 +587,54 @@ def maintenance(request):
             
             # Get the user's ID
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
+
+            # Create the event and obtain the ID                                     
+            e = Event.objects.create(type_id=2)
+            event_id = e.pk
             
-            # Add the maintenance and services
-            # Don't allow the same maintenance to be added 2x
-            # The user might have hit the back button and submitted again
+            # Save the description
+            Event_Description(event_id=event_id,description=description).save()
 
-            # Look for an existing maintenance w/ these params
-            maintenance_id = Maintenance.objects.filter(
-                                                        start=start,
-                                                        end=end,
-                                                        description=description,
-                                                        impact=impact,
-                                                        coordinator=coordinator,
-                                                        user_id=user_id,
-                                                        completed=0
-                                                       ).values('id')
-            
-            # Create it, if not there
-            if not maintenance_id:
-                Maintenance(
-                            start=start,
-                            end=end,
-                            description=description,
-                            impact=impact,
-                            coordinator=coordinator,
-                            user_id=user_id,
-                            email_address_id=recipient_id,
-                            completed=0,
-                           ).save()
+            # Save the impact analysis
+            Event_Impact(event_id=event_id,impact=impact).save()
 
-                # Obtain the maintenance id
-                maintenance_id = Maintenance.objects.filter(
-                                                            start=start,
-                                                            end=end,
-                                                            description=description,
-                                                            impact=impact,
-                                                            coordinator=coordinator,
-                                                            user_id=user_id,
-                                                            completed=0
-                                                           ).values('id')
+            # Save the coordinator
+            Event_Coordinator(event_id=event_id,coordinator=coordinator).save()
 
-                # Find out which services this impacts and save the data
-                # Form validation confirms that there is at least 1
-                for service_id in affected_svcs:
-                    # Should be number only -- can't figure out how to validate
-                    # multiple checkboxes in the form
-                    if re.match(r'^\d+$', service_id):
-                        Service_Maintenance(service_name_id=service_id,maintenance_id=maintenance_id[0]['id']).save()
+            # Save the status
+            # Initially, the status will be inactive (not started and not completed)
+            Event_Status(event_id=event_id,status=0).save()
 
-            # Send an email notification to the appropriate list about this maintenance, if requested
+            # Save the start time
+            Event_Time(event_id=event_id,start=start,end=end).save()
+
+            # Add the user
+            Event_User(event_id=event_id,user_id=user_id).save()
+
+            # Add the email recipient, if requested.
+            # Form validation ensures that a valid email is selected if broadcast is selected.  
+            if broadcast: 
+                Event_Email(event_id=event_id,email_id=email_id).save()
+
+            # Find out which services this impacts and associate the services with the event
+            # Form validation confirms that there is at least 1
+            for service_id in affected_svcs:
+                # Should be number only -- can't figure out how to validate
+                # multiple checkboxes in the form
+                if re.match(r'^\d+$', service_id):
+                    Event_Service(service_id=service_id,event_id=event_id).save()
+
+            # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
+            # allowed to be true if an email address is not defined.
             # Don't send an email if notifications are disabled
             if int(cv.value('notify')) == 1:
                 if broadcast:
                     email = notify.email()
-                    email.maintenance(maintenance_id[0]['id'],recipient_id,set_timezone,True)
+                    email.maintenance(event_id,email_id,set_timezone,True)
 
             # Send them to the incident detail page for this newly created
             # maintenance
-            return HttpResponseRedirect('/m_detail?id=%s' % maintenance_id[0]['id'])
+            return HttpResponseRedirect('/m_detail?id=%s' % event_id)
 
         # Invalid Form
         else:
@@ -656,7 +652,7 @@ def maintenance(request):
     jtz.activate(set_timezone)
 
     # Obtain all current email addresses
-    recipients = Recipient.objects.values('id','email_address')
+    emails = Email.objects.values('id','email')
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
@@ -681,7 +677,7 @@ def maintenance(request):
           'help':help,
           'services':services,
           'affected_svcs':tuple(affected_svcs),
-          'recipients':recipients,
+          'emails':emails,
           'notifications':notifications,
           'instr_maintenance_description':instr_maintenance_description,
           'instr_maintenance_impact':instr_maintenance_impact,
@@ -724,6 +720,7 @@ def m_update(request):
 
         if form.is_valid():
             # Obtain the cleaned data
+            id = form.cleaned_data['id']
             s_date = form.cleaned_data['s_date']
             s_time = form.cleaned_data['s_time']
             e_date = form.cleaned_data['e_date']
@@ -733,11 +730,49 @@ def m_update(request):
             coordinator = form.cleaned_data['coordinator']
             update = form.cleaned_data['update']
             broadcast = form.cleaned_data['broadcast']
-            recipient_id = form.cleaned_data['recipient_id']
-            id = form.cleaned_data['id']
+            email_id = form.cleaned_data['email_id']
+
+            # Combine the dates and times into datetime objects
+            start = datetime.datetime.combine(s_date, s_time)
+            end = datetime.datetime.combine(e_date, e_time)
+
+            # Set the timezone
+            tz = pytz.timezone(set_timezone)
+            start = tz.localize(start)
+            end = tz.localize(end)
 
             # Get the user's ID
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
+
+            # Update the description
+            Event_Description.objects.filter(event_id=id).update(description=description)
+
+            # Update the impact analysis
+            Event_Impact.objects.filter(event_id=id).update(impact=impact)
+
+            # Update the coordinator
+            Event_Coordinator.objects.filter(event_id=id).update(coordinator=coordinator)
+
+            # Update the status
+            Event_Status.objects.filter(event_id=id).update(status=0)
+
+            # Update the start/end times
+            Event_Time.objects.filter(event_id=id).update(start=start,end=end)
+
+            # Add the update
+            # Obtain the time and add a timezone
+            # Create a datetime object for right now
+            time_now = datetime.datetime.now()
+            # Add the server's timezone (whatever DJango is set to)
+            time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
+            # Add it
+            Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
+
+            # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
+            # In both cases, delete the existing email (because it will be re-added)
+            Event_Email.objects.filter(event_id=id).delete()
+            if broadcast: 
+                Event_Email(event_id=id,email_id=email_id).save()
 
             # Check if we are starting/completing
             # The logic of when these two can/cannot be done is handled
@@ -756,61 +791,25 @@ def m_update(request):
             # See if we are adding or subtracting services
             # The easiest thing to do here is remove all affected  
             # services and re-add the ones indicated here
+
             # Remove first
-            Service_Maintenance.objects.filter(maintenance_id=id).delete()
-        
-            # Now add the services (form validation confirms that there is at least 1)
-            for service_id in request.POST.getlist('service'):
+            Event_Service.objects.filter(event_id=id).delete()
+    
+            # Now add (form validation confirms that there is at least 1)
+            for service_id in affected_svcs:
                 # Should be number only -- can't figure out how to validate
                 # multiple checkboxes in the form
                 if re.match(r'^\d+$', service_id):
-                    Service_Maintenance(service_name_id=service_id,maintenance_id=id).save()
+                    Event_Service(event_id=id,service_id=service_id).save()
+      
             
-            # Add the update
-            # Obtain the time and add a timezone
-            # Create a datetime object for right now
-            time_now = datetime.datetime.now()
-            # Add the server's timezone (whatever DJango is set to)
-            time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-            # Add it
-            Maintenance_Update(date=time_now,maintenance_id=id,user_id=user_id,detail=update).save()
-            
-            # Update the core maintenance parameters
-            # Combine the dates and times into datetime objects
-            start = datetime.datetime.combine(s_date, s_time)
-            end = datetime.datetime.combine(e_date, e_time)
-
-            # Set the timezone
-            tz = pytz.timezone(set_timezone)
-            start = tz.localize(start)
-            end = tz.localize(end)
-           
-            # Update the main entry 
-            Maintenance.objects.filter(id=id).update(
-                                                     start=start,
-                                                     end=end,
-                                                     description=description,
-                                                     impact=impact,
-                                                     coordinator=coordinator,
-                                                     started=started,
-                                                     completed=completed
-                                                    )
-
             # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
             # allowed to be true if an email address is not defined.
             # Don't send an email if notifications are disabled
             if int(cv.value('notify')) == 1:
                 if broadcast:
-                    # Update the email address
-                    recipient = Recipient.objects.filter(id=recipient_id).values('email_address')
-                    Maintenance.objects.filter(id=id).update(email_address=recipient_id)
-
                     email = notify.email()
-                    email.maintenance(id,recipient_id,set_timezone,False)
-            
-                # If broadcast is not selected, turn off emails
-                else:
-                    Maintenance.objects.filter(id=id).update(email_address=None)
+                    email.maintenance(event_id,email_id,set_timezone,True)
 
             # All done so redirect to the maintenance detail page so
             # the new data can be seen.
@@ -832,10 +831,10 @@ def m_update(request):
             return system_message(request,True,'No incident ID given')
 
         # In the case of a GET, we can acquire the proper services from the DB
-        affected_svcs_tmp = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id')
+        affected_svcs_tmp = Event.objects.filter(id=id).values('event_service__service_id')
         affected_svcs = []
         for service_id in affected_svcs_tmp:
-            affected_svcs.append(service_id['service_name_id'])
+            affected_svcs.append(service_id['event_service__service_id'])
         affected_svcs = list(affected_svcs)
 
         # Create a blank form
@@ -857,17 +856,28 @@ def m_update(request):
     if not re.match(r'^\d+$', id):
         return system_message(request,True,'Improperly formatted ID: %s' % id)
 
-    # See if the maintenance is completed
-    status = Maintenance.objects.filter(id=id).values('started','completed')
+    # Obtain the details
+    # Obain the incident detail
+    details = Event.objects.filter(id=id).values(
+                                                'event_time__start',
+                                                'event_time__end',
+                                                'event_status__status',
+                                                'event_description__description',
+                                                'event_impact__impact',
+                                                'event_coordinator__coordinator',
+                                                'event_email__email__email',
+                                                'event_user__user__first_name',
+                                                'event_user__user__last_name'
+                                                )
+
+    # Obtain all current email addresses
+    emails = Email.objects.values('id','email')
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
 
-    # Obtain the details of this maintenance
-    details = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed','email_address_id')
-
-    start = details[0]['start']
-    end = details[0]['end']
+    start = details[0]['event_time__start']
+    end = details[0]['event_time__end']
 
     # Set the timezone
     start = start.astimezone(pytz.timezone(set_timezone))
@@ -878,9 +888,6 @@ def m_update(request):
     s_time = start.strftime("%H:%M")
     e_date = end.strftime("%Y-%m-%d")
     e_time = end.strftime("%H:%M")
-
-    # Obtain all current email addresses
-    recipients = Recipient.objects.values('id','email_address')
 
     # See if email notifications are enabled
     notifications = int(cv.value('notify'))
@@ -904,12 +911,13 @@ def m_update(request):
           'services':services,
           'id':id,
           'form':form,
-          'status':status,
+          'start':start,
+          'end':end,
           's_date':s_date,
           's_time':s_time,
           'e_date':e_date,
           'e_time':e_time,
-          'recipients':recipients,
+          'emails':emails,
           'notifications':notifications,
           'instr_maintenance_description':instr_maintenance_description,
           'instr_maintenance_impact':instr_maintenance_impact,

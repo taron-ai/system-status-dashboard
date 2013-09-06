@@ -62,8 +62,8 @@
   <div class="large-12 columns">
     <p>
       Email Notifications{% if not notifications == 1 %} <font class="disabled">(disabled)</font>{% endif %}:
-    {% if detail.0.email_address_id__email_address %}
-    <b>{{detail.0.email_address_id__email_address}}</b>
+    {% if email_selected.0.event_email__email__email %}
+    <b>{{email_selected.0.event_email__email__email}}</b>
     {% else %}
     No recipient defined
     {% endif %}
@@ -73,7 +73,7 @@
 
 <div class="row">
   <div class="large-12 columns">
-   <table class="responsive border_top">
+   <table>
     <tr>
      <th width="200">Time</th>
      <th>Logged By</th>
@@ -87,13 +87,11 @@
 
     {% if updates %}
      {% for row in updates %}
-      {% if row.event_update__id != None %}
-        <tr>
-         <td>{{row.event_update__date|date:"Y-m-d H:i:s"}}</td>
-         <td>{{row.event_update__user__first_name}} {{row.event_update__user__last_name}}</td>
-         <td>{{row.event_update__update|linebreaksbr}}</td>
-        </tr>
-      {% endif %}
+      <tr>
+       <td>{{row.event_update__date|date:"Y-m-d H:i:s"}}</td>
+       <td>{{row.event_update__user__first_name}} {{row.event_update__user__last_name}}</td>
+       <td>{{row.event_update__update|linebreaksbr}}</td>
+      </tr>
      {% endfor %}
     {% endif %}
    
@@ -108,9 +106,9 @@
   <div class="large-4 columns">
     <form method="POST" name="delete" action="/delete">
       {% csrf_token %}
-      <a href="/i_update?id={{id}}" class="small button">update</a>&nbsp;&nbsp;
+      <a href="/i_update?id={{id}}" class="small button secondary">update</a>&nbsp;&nbsp;
       <input type="hidden" name="id" value="{{id}}">
-      <input type="submit" class="small button" value="delete"/>
+      <input type="submit" class="small button secondary" value="delete"/>
     </form>
   </div>
 </div>

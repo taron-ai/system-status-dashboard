@@ -95,7 +95,7 @@
                  {# See if we have a maintenance or an incident #}
 
                  {% if event.type == 1 %}
-                   {% if event.closed == None %}
+                   {% if event.status == 1 %}
                      <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_red.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~"></a>
                    {% else %}
                      <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_orange.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~ {{event.closed|date:"Y-m-d H:i:s"}}"></a>

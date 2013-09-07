@@ -33,9 +33,9 @@ urlpatterns = patterns('',
 
     # Main
     url(r'^$',                  'ssd.main.views.main.index'),
-    url(r'^i_detail$',          'ssd.main.views.main.i_detail'),
-    url(r'^escalation$',        'ssd.main.views.main.escalation'),
-    url(r'^m_detail$',          'ssd.main.views.main.m_detail'),
+    
+    # Escalation
+    url(r'^escalation$',        'ssd.main.views.escalation.escalation'),
 
     # Configuration
     url(r'^config$',            'ssd.main.views.config.config'),
@@ -50,23 +50,24 @@ urlpatterns = patterns('',
     #url(r'^search$',            'ssd.main.views.search.search'),
     url(r'^igsearch$',          'ssd.main.views.search.igsearch'),
 
-
     # Preferences
     url(r'^prefs/timezone$',    'ssd.main.views.prefs.timezone'),
     url(r'^prefs/jump$',        'ssd.main.views.prefs.jump'),
 
     # Incident Events
-    url(r'^i_update$',          'ssd.main.views.events.i_update'),
-    url(r'^incident$',          'ssd.main.views.events.incident'),
+    url(r'^i_delete$',          'ssd.main.views.incidents.i_delete'),
+    url(r'^i_detail$',          'ssd.main.views.incidents.i_detail'),
+    url(r'^i_update$',          'ssd.main.views.incidents.i_update'),
+    url(r'^incident$',          'ssd.main.views.incidents.incident'),
     
     # Maintenance Events
-    url(r'^m_email$',           'ssd.main.views.events.m_email'),
-    url(r'^m_update$',          'ssd.main.views.events.m_update'),
-    url(r'^maintenance$',       'ssd.main.views.events.maintenance'),
+    url(r'^i_delete$',          'ssd.main.views.maintenance.i_delete'),
+    url(r'^m_detail$',          'ssd.main.views.maintenance.m_detail'),
+    url(r'^m_email$',           'ssd.main.views.maintenance.m_email'),
+    url(r'^m_update$',          'ssd.main.views.maintenance.m_update'),
+    url(r'^maintenance$',       'ssd.main.views.maintenance.maintenance'),
     
     # Incident Reports
-    url(r'^report$',            'ssd.main.views.events.report'),
+    url(r'^report$',            'ssd.main.views.report.report'),
 
-    # Shared
-    url(r'^delete$',            'ssd.main.views.events.delete'),
 )

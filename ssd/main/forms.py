@@ -277,8 +277,10 @@ class ConfigForm(forms.Form):
 class AddIncidentForm(forms.Form):
     """Form for adding a new incident (by an administrator)"""
 
-    date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
+    e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
     detail = forms.CharField(required=True)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
@@ -290,13 +292,37 @@ class AddIncidentForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(AddIncidentForm, self).clean()
+        s_date = cleaned_data.get('s_date')
+        s_time = cleaned_data.get('s_time')
+        e_date = cleaned_data.get('e_date')
+        e_time = cleaned_data.get('e_time')
         broadcast = cleaned_data.get('broadcast')
         email_id = cleaned_data.get('email_id')
 
         # If an email broadcast is requested, an email address must accompany it
         if broadcast and not email_id:
             self._errors["broadcast"] = self.error_class(['Cannot broadcast if no address selected.'])
-        
+
+        # Ensure the end date/time is not before the start date/time
+        start,end = None,None
+        try:
+            # Combine the dates and times into datetime objects (improperly formated dates/times will cause exceptions)
+            start = datetime.datetime.combine(s_date, s_time)
+        except Exception:
+            self._errors["s_date"] = self.error_class(['Empty or improperly formatted date or time'])
+            self._errors["s_time"] = self.error_class(['Empty or improperly formatted date or time'])
+
+        try:
+            # Combine the dates and times into datetime objects (improperly formated dates/times will cause exceptions)
+            end = datetime.datetime.combine(e_date, e_time)
+        except Exception:
+            self._errors["e_date"] = self.error_class(['Empty or improperly formatted date or time'])
+            self._errors["e_time"] = self.error_class(['Empty or improperly formatted date or time'])
+            
+        if start and end:
+            if start > end:
+                self._errors["s_date"] = self.error_class(['End date/time must be after start date/time'])
+                self._errors["e_date"] = self.error_class(['End date/time must be after start date/time'])        
         # Return the full collection of cleaned data
         return cleaned_data
 
@@ -304,6 +330,8 @@ class AddIncidentForm(forms.Form):
 class UpdateIncidentForm(forms.Form):
     """Form for updating an existing incident"""
 
+    date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    time = forms.TimeField(required=True,input_formats=['%H:%M'])
     update = forms.CharField(required=True)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)

@@ -58,17 +58,34 @@ class Email(models.Model):
     email = models.CharField(max_length=100,unique=True,null=False,blank=False)
 
 
-class Type(models.Model):
-    """Event Types"""
-
-    type = models.CharField(max_length=20)
-
-
 class Event(models.Model):
-    """Events that have been logged"""
+    """Events that have been logged
+
+        Event Types:
+            1 = incident
+            2 = maintenance
+            3 = incident report
+
+    """
 
     date = models.DateTimeField(null=False,blank=False,auto_now=True)
-    type = models.ForeignKey(Type)
+    type = models.IntegerField(max_length=2,null=False)
+
+
+class Event_Status(models.Model):
+    """Event Status (opened/closed, etc)
+        - only one entry allowed per event
+
+        - 0 = default (maintenance only)
+        - 1 = open (incident only)
+        - 2 = closed (incident only)
+        - 3 = started (maintenance only)
+        - 4 = completed (maintenance only)
+
+    """
+
+    event = models.ForeignKey(Event, unique=True)
+    status = models.IntegerField(max_length=2)
 
 
 class Event_Service(models.Model):
@@ -87,22 +104,6 @@ class Event_Time(models.Model):
     event = models.ForeignKey(Event, unique=True)
     start = models.DateTimeField(null=False)
     end = models.DateTimeField(null=True)
-
-
-class Event_Status(models.Model):
-    """Event Status (opened/closed, etc)
-        - only one entry allowed per event
-
-        - 0 = default (inactive)
-        - 1 = open (incident only)
-        - 2 = closed (incident only)
-        - 3 = started (maintenance only)
-        - 4 = completed (maintenance only)
-
-    """
-
-    event = models.ForeignKey(Event, unique=True)
-    status = models.IntegerField()
 
 
 class Event_Description(models.Model):

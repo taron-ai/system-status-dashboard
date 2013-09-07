@@ -204,37 +204,38 @@ def incident(request):
 
         if form.is_valid():
             # Obtain the cleaned data
-            date = form.cleaned_data['date']
+            s_date = form.cleaned_data['s_date']
+            s_time = form.cleaned_data['s_time']
+            e_date = form.cleaned_data['e_date']
+            e_time = form.cleaned_data['e_time']
             detail = form.cleaned_data['detail']
-            time = form.cleaned_data['time']
             broadcast = form.cleaned_data['broadcast']
             email_id = form.cleaned_data['email_id']
+
+            # Combine the dates and times into datetime objects
+            start = datetime.datetime.combine(s_date, s_time)
+            end = datetime.datetime.combine(e_date, e_time)
 
             # Get the user's ID
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
 
-            # Create a datetime object and add the timezone
-            # Put the date and time together
-            incident_time = datetime.datetime.combine(date,time)
-
             # Set the timezone
             tz = pytz.timezone(set_timezone)
-            incident_time = tz.localize(incident_time)
-
-            # Add the incident and services
+            start = tz.localize(start)
+            end = tz.localize(end)
 
             # Create the event and obtain the ID                                     
-            e = Event.objects.create(type_id=1)
+            e = Event.objects.create(type=1)
             event_id = e.pk
             
             # Save the description
             Event_Description(event_id=event_id,description=detail).save()
 
-            # Save the status
+            # Save the status as "open"
             Event_Status(event_id=event_id,status=1).save()
 
             # Save the start time
-            Event_Time(event_id=event_id,start=incident_time).save()
+            Event_Time(event_id=event_id,start=start_time).save()
 
             # Add the user
             Event_User(event_id=event_id,user_id=user_id).save()
@@ -346,10 +347,6 @@ def i_update(request):
     # addition/subtraction
     if request.method == 'POST':
 
-        # Give the template a blank time if this is a post 
-        # the user will have already set it.
-        time_now = ''
-
         # If this is a form submit that fails, we want to reset whatever services were selected
         # by the user.  Templates do not allow access to Arrays stored in QueryDict objects so we have
         # to determine the list and send back to the template on failed form submits
@@ -362,6 +359,8 @@ def i_update(request):
 
             # Obtain the cleaned data
             id = form.cleaned_data['id']
+            date = form.cleaned_data['date']
+            time = form.cleaned_data['time']
             update = form.cleaned_data['update']
             broadcast = form.cleaned_data['broadcast']
             email_id = form.cleaned_data['email_id']
@@ -370,13 +369,10 @@ def i_update(request):
             # Get the user's ID
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
 
-            # Add the update
-            # Obtain the time and add a timezone
-            # Create a datetime object for right now
+            # Add the update using the current time
+            # Create a datetime object for right now and add the server's timezone (whatever DJango has)
             time_now = datetime.datetime.now()
-            # Add the server's timezone (whatever DJango is set to)
             time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-            # Add it
             Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
 
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
@@ -401,9 +397,21 @@ def i_update(request):
 
             # See if we are closing this issue 
             if closed:
-                # If it was already closed, then don't re-close it because it will update the closed time
+                # If this event was already closed, then we don't want to re-close it, because that will update the closed time
+                # which will throw off any SLA calculations.
                 if not Event_Status.objects.filter(event_id=id).values('status')[0]['status'] == 2:
+                    
+                    # Ok, its not closed, so close it
                     Event_Status.objects.filter(event_id=id).update(status=2)
+
+                    # Put the date and time together and add a timezone
+                    end_time = datetime.datetime.combine(date,time)
+                    tz = pytz.timezone(set_timezone)
+                    end_time = tz.localize(end_time)
+
+                    # Save the start time
+                    Event_Time.objects.filter(event_id=id).update(end=end_time)
+
             else:
                 Event_Status.objects.filter(event_id=id).update(status=1)
 
@@ -458,18 +466,12 @@ def i_update(request):
         # Create a blank form
         form = UpdateIncidentForm()
 
-        # Obtain the current date/time so we can pre-fill them
-        # Create a datetime object for right now
-        time_now = datetime.datetime.now()
-
-        # Add the server's timezone (whatever DJango is set to)
-        time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-
-        # Now convert to the requested timezone
-        time_now = time_now.astimezone(pytz.timezone(set_timezone))
-
     # Obtain the details
-    details = Event.objects.filter(id=id).values('event_status__status','event_email__email_id')
+    details = Event.objects.filter(id=id).values(
+                                                'event_status__status',
+                                                'event_email__email_id',
+                                                'event_time__end'
+                                                )
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
@@ -498,7 +500,6 @@ def i_update(request):
           'form':form,
           'emails':emails,
           'notifications':notifications,
-          'time_now':time_now,
           'instr_incident_update':instr_incident_update
        },
        context_instance=RequestContext(request)
@@ -589,7 +590,7 @@ def maintenance(request):
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
 
             # Create the event and obtain the ID                                     
-            e = Event.objects.create(type_id=2)
+            e = Event.objects.create(type=2)
             event_id = e.pk
             
             # Save the description

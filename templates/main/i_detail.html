@@ -31,8 +31,8 @@
   <div class="large-12 columns">
     <p>Incident Status: 
       <b>
-      {% if detail.0.closed %}
-      CLOSED ({{detail.0.closed|date:"Y-m-d H:i:s"}})
+      {% if detail.0.event_time__end %}
+      CLOSED ({{detail.0.event_time__end|date:"Y-m-d H:i:s"}})
       {% else %}
       OPEN
       {% endif %}

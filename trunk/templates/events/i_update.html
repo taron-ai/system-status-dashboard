@@ -20,6 +20,25 @@
 
 {% block content %}
 
+<script type="text/javascript">
+
+   // Date Pickers
+   $(function() {
+
+      //Date
+      $("#date").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //Time
+      $("#time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
+
+   });
+   
+</script>
+
+{{details.0.event_time__end}}
 <form method="POST" name="i_update" action="/i_update">
 {% csrf_token %}
 
@@ -83,6 +102,31 @@
           {% for error in form.closed.errors %}{{error}}{% endfor %}
         </small>
         {% endif %} 
+      </div>
+    </div>
+
+    <div class="spacer_medium"></div>
+
+    <div class="row">
+      <div class="large-2 columns {% if form.date.errors %}error{% endif %}">
+        <span class="radius secondary label">Date/Time</span><br><br>
+        <input type="text" name="date" id="date" class="date" value="{% if form.date.data %}{{form.date.data}}{% else %}{% if details.0.event_time__end %}{{details.0.event_time__end|date:"Y-m-d"}}{% endif %}{% endif %}"/>
+        {% if form.date.errors %}
+          <small class="error">
+            {% for error in form.date.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-2 columns {% if form.time.errors %}error{% endif %}">
+        <input type="text" name="time" id="time" class="date" value="{% if form.time.data %}{{form.time.data}}{% else %}{% if details.0.event_time__end %}{{details.0.event_time__end|date:"H:i"}}{% endif %}{% endif %}"/>
+        {% if form.time.errors %}
+          <small class="error">
+            {% for error in form.time.errors %}{{error}}{% endfor %}
+          </small>
+        {% endif %}            
       </div>
     </div>
 

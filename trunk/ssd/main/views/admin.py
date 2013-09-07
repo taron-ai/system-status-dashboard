@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-
+from django import get_version
 
 @login_required
 @staff_member_required
@@ -36,6 +36,7 @@ def index(request):
        'admin/index.html',
        {
           'title':'System Status Dashboard | Admin',
+          'version':get_version,
           'breadcrumbs':{'Admin':'/admin'}
        },
        context_instance=RequestContext(request)

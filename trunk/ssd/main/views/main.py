@@ -25,46 +25,11 @@ import re
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
-from django.db.models import Count
 from django.utils import timezone as jtz
 from ssd.main.models import Event
-from ssd.main.models import Escalation
 from ssd.main.models import Service
-from ssd.main.forms import DetailForm
 from ssd.main import notify
 from ssd.main import config_value
-
-
-def system_message(request,status,message):
-    """Error Page
-
-    Return a system message
-      - confirmation that something has happened
-      - an error message
-      - on error, write to the Apache log
-      - on error, status should be set to True
-    """
-
-    # If its an error, print the error to the Apache log
-    if status:
-        print message
-
-    # Create the response object
-    response = render_to_response(
-     'events/system_message.html',
-      {
-        'title':'System Status Dashboard | System Message',
-        'status':status,
-        'message':message
-      },
-      context_instance=RequestContext(request)
-    )
-
-    # Give the response back
-    return response
 
 
 def index(request):
@@ -196,12 +161,13 @@ def index(request):
                                  'type':event['type'],
                                  'id':event['id'],
                                  'open':event_date,
-                                 'closed':end_date
+                                 'closed':end_date,
+                                 'status':event['event_status__status']
                                  }
                         row_event.append(e)
             
                     # If this is an incident and it's still open, set the status
-                    # Incidents over-ride anything for setting the status of the service
+                    # Incidents over-ride everything for setting the status of the service
                     if event['type'] == 1 and event['event_status__status'] == 1:
                         row[0]['status'] = 1
 
@@ -316,7 +282,7 @@ def index(request):
     # Obtain all timezones
     timezones = pytz.all_timezones
 
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
+    # Set the timezone to the user's requested timezone (otherwise TIME_ZONE will be used)
     jtz.activate(set_timezone)
 
     # Print the page
@@ -337,199 +303,5 @@ def index(request):
        },
        context_instance=RequestContext(request)
     )
-
-
-def i_detail(request):
-    """Incident Detail View
-
-    Show all available information on an incident
-
-    """
-
-    form = DetailForm(request.GET)
-
-    if form.is_valid():
-        # Obtain the cleaned data
-        id = form.cleaned_data['id']
-
-    # Bad form
-    else:
-        return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
-    # Which services were impacted
-    services = Event.objects.filter(id=id).values('event_service__service__service_name')
-
-    # Obain the incident detail
-    detail = Event.objects.filter(id=id).values(
-                                                'event_time__start',
-                                                'event_time__end',
-                                                'event_description__description',
-                                                'event_email__email__email',
-                                                'event_user__user__first_name',
-                                                'event_user__user__last_name'
-                                                )
-
-    # Obain any incident updates
-    updates = Event.objects.filter(id=id).values(
-                                                'event_update__id',
-                                                'event_update__date',
-                                                'event_update__update',
-                                                'event_update__user__first_name',
-                                                'event_update__user__last_name'
-                                                ).order_by('event_update__id')
-    # If there are no updates, set to None
-    if len(updates) == 1 and updates[0]['event_update__date'] == None:
-        updates = None
-
-    # See if an email address is selected
-    email_selected = Event.objects.filter(event_email__event_id=id).values('event_email__email__email')
-
-    # See if the timezone is set, if not, give them the server timezone
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-
-    # See if email notifications are enabled
-    notifications = int(cv.value('notify'))
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
-    # Print the page
-    return render_to_response(
-       'main/i_detail.html',
-       {
-          'title':'System Status Dashboard | Incident Detail',
-          'services':services,
-          'id':id,
-          'detail':detail,
-          'updates':updates,
-          'notifications':notifications,
-          'email_selected':email_selected,
-          'breadcrumbs':{'Admin':'/admin','Update Detail':'i_detail'}
-       },
-       context_instance=RequestContext(request)
-    )
-
-
-def m_detail(request):
-    """Maintenance Detail View
-
-    Show all available information on a scheduled maintenance
-
-    """
-
-    form = DetailForm(request.GET)
-
-    if form.is_valid():
-        # Obtain the cleaned data
-        id = form.cleaned_data['id']
-
-    # Bad form
-    else:
-        return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
-    # Which services were impacted
-    services = Event.objects.filter(id=id).values('event_service__service__service_name')
-
-    # Obain the incident detail
-    detail = Event.objects.filter(id=id).values(
-                                                'event_time__start',
-                                                'event_time__end',
-                                                'event_status__status',
-                                                'event_description__description',
-                                                'event_impact__impact',
-                                                'event_coordinator__coordinator',
-                                                'event_email__email__email',
-                                                'event_user__user__first_name',
-                                                'event_user__user__last_name'
-                                                )
-
-    # Obain any incident updates
-    updates = Event.objects.filter(id=id).values(
-                                                'event_update__id',
-                                                'event_update__date',
-                                                'event_update__update',
-                                                'event_update__user__first_name',
-                                                'event_update__user__last_name'
-                                                ).order_by('event_update__id')
-    # If there are no updates, set to None
-    if len(updates) == 1 and updates[0]['event_update__date'] == None:
-        updates = None
-
-    # See if an email address is selected
-    email_selected = Event.objects.filter(event_email__event_id=id).values('event_email__email__email')
-
-
-    # See if the timezone is set, if not, give them the server timezone
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-
-    # See if email notifications are enabled
-    notifications = int(cv.value('notify'))
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
-    # Print the page
-    return render_to_response(
-       'main/m_detail.html',
-       {
-          'title':'System Status Dashboard | Scheduled Maintenance Detail',
-          'services':services,
-          'id':id,
-          'detail':detail,
-          'updates':updates,
-          'notifications':notifications,
-          'email_selected':email_selected
-       },
-       context_instance=RequestContext(request)
-    )
-
-
-def escalation(request):
-    """Escalation page
-
-    Print an escalation page should a user want additional information
-    on who to contact when incidents occur
-
-    """
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
-    # If this functionality is disabled in the admin, let the user know
-    if int(cv.value('escalation_display')) == 0:
-        return system_message(request,True,'Your system administrator has disabled this functionality')
-
-    # Obtain the escalation contacts
-    contacts = Escalation.objects.filter(hidden=False).values('id','name','contact_details').order_by('order')
-
-    # Help message
-    help = cv.value('help_escalation')
-
-    # Print the page
-    return render_to_response(
-       'main/escalation.html',
-       {
-          'title':'System Status Dashboard | Escalation Path',
-          'contacts':contacts,
-          'help':help
-       },
-       context_instance=RequestContext(request)
-    )
-
-
-
-
     
    

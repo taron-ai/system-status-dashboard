@@ -48,7 +48,7 @@ from ssd.main.forms import UpdateIncidentForm
 from ssd.main.forms import DetailForm
 from ssd.main import notify
 from ssd.main import config_value
-from ssd.main.views.main import system_message
+from ssd.main.views.system import system_message
 
 
 @login_required
@@ -90,7 +90,6 @@ def incident(request):
             detail = form.cleaned_data['detail']
             broadcast = form.cleaned_data['broadcast']
             email_id = form.cleaned_data['email_id']
-            closed = form.cleaned_data['closed']
 
             # Combine the dates and times into datetime objects and set the timezones
             tz = pytz.timezone(set_timezone)
@@ -112,8 +111,8 @@ def incident(request):
             # Save the description
             Event_Description(event_id=event_id,description=detail).save()
 
-            # If the incident is already closed, then status will be 2 (closed), otherwise 1 (open)
-            if closed:
+            # If an end date/time are provided, then the incident is already closed
+            if end:
                 Event_Status(event_id=event_id,status=2).save()
             else:
                 Event_Status(event_id=event_id,status=1).save()
@@ -240,7 +239,6 @@ def i_update(request):
             update = form.cleaned_data['update']
             broadcast = form.cleaned_data['broadcast']
             email_id = form.cleaned_data['email_id']
-            closed = form.cleaned_data['closed']
 
             # Combine the dates and times into datetime objects and set the timezones
             tz = pytz.timezone(set_timezone)
@@ -255,14 +253,21 @@ def i_update(request):
             # Get the user's ID
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
 
+            # If an end date/time are provided, then the incident is closed
+            if end:
+                Event_Status.objects.filter(event_id=id).update(status=2)
+            else:
+                Event_Status.objects.filter(event_id=id).update(status=1)
+
             # Update the times
             Event_Time.objects.filter(event_id=id).update(start=start,end=end)
 
-            # Add the update using the current time
-            # Create a datetime object for right now and add the server's timezone (whatever DJango has)
-            time_now = datetime.datetime.now()
-            time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-            Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
+            # Add the update, if there is one, using the current time
+            if update:
+                # Create a datetime object for right now and add the server's timezone (whatever DJango has)
+                time_now = datetime.datetime.now()
+                time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
+                Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
 
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
             # In both cases, delete the existing email (because it will be re-added)
@@ -283,12 +288,6 @@ def i_update(request):
                 # multiple checkboxes in the form
                 if re.match(r'^\d+$', service_id):
                     Event_Service(event_id=id,service_id=service_id).save()
-
-            # If the incident is already closed, then status will be 2 (closed), otherwise 1 (open)
-            if closed:
-                Event_Status.objects.filter(event_id=id).update(status=2)
-            else:
-                Event_Status.objects.filter(event_id=id).update(status=1)
 
             # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
             # allowed to be true if an email address is not defined.

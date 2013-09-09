@@ -54,7 +54,7 @@ class MultipleServiceField(forms.Field):
 
     def validate(self, value):
         if value is None or value == '':
-            raise forms.ValidationError('Select at least one item')
+            raise forms.ValidationError('Select at least one item.')
 
 
 ### FORMS ###
@@ -332,7 +332,9 @@ class AddIncidentForm(forms.Form):
             if start and end:
                 if start > end:
                     self._errors["s_date"] = self.error_class(['End date/time must be after start date/time'])
-                    self._errors["e_date"] = self.error_class(['End date/time must be after start date/time'])        
+                    self._errors["s_time"] = self.error_class(['End date/time must be after start date/time'])
+                    self._errors["e_date"] = self.error_class(['End date/time must be after start date/time'])
+                    self._errors["e_time"] = self.error_class(['End date/time must be after start date/time'])         
         
         # Return the full collection of cleaned data
         return cleaned_data
@@ -345,10 +347,9 @@ class UpdateIncidentForm(forms.Form):
     s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
     e_date = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
     e_time = forms.TimeField(required=False,input_formats=['%H:%M'])
-    update = forms.CharField(required=True)
+    update = forms.CharField(required=False)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
-    closed = forms.BooleanField(required=False)
     email_id = forms.IntegerField(required=False)
     id = forms.IntegerField()
 
@@ -398,7 +399,9 @@ class UpdateIncidentForm(forms.Form):
             if start and end:
                 if start > end:
                     self._errors["s_date"] = self.error_class(['End date/time must be after start date/time'])
-                    self._errors["e_date"] = self.error_class(['End date/time must be after start date/time'])   
+                    self._errors["s_time"] = self.error_class(['End date/time must be after start date/time'])
+                    self._errors["e_date"] = self.error_class(['End date/time must be after start date/time'])
+                    self._errors["e_time"] = self.error_class(['End date/time must be after start date/time'])    
                     
         # Return the full collection of cleaned data
         return cleaned_data
@@ -418,8 +421,8 @@ class AddMaintenanceForm(forms.Form):
     e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
     e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
     description = forms.CharField(required=True)
-    impact = forms.CharField(required=True)
-    coordinator = forms.CharField(required=True)
+    impact = forms.CharField(required=False)
+    coordinator = forms.CharField(required=False)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
     email_id = forms.IntegerField(required=False)
@@ -430,9 +433,6 @@ class AddMaintenanceForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(AddMaintenanceForm, self).clean()
-        impact = cleaned_data.get('impact')
-        coordinator = cleaned_data.get('coordinator')
-        description = cleaned_data.get('description')
         broadcast = cleaned_data.get('broadcast')
         email_id = cleaned_data.get('email_id')
         s_date = cleaned_data.get('s_date')
@@ -478,9 +478,9 @@ class UpdateMaintenanceForm(forms.Form):
     e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
     e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
     description = forms.CharField(required=True)
-    impact = forms.CharField(required=True)
-    coordinator = forms.CharField(required=True)
-    update = forms.CharField(required=True)
+    impact = forms.CharField(required=False)
+    coordinator = forms.CharField(required=False)
+    update = forms.CharField(required=False)
     service = MultipleServiceField()
     id = forms.IntegerField(required=True)
     started = forms.CharField(required=False)

@@ -36,7 +36,7 @@ from ssd.main.forms import RemoveServiceForm
 from ssd.main.forms import AddContactForm
 from ssd.main.forms import ModifyContactForm
 from ssd.main import config_value
-from ssd.main.views.main import system_message
+from ssd.main.views.system import system_message
 
 
 @login_required

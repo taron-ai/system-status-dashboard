@@ -21,14 +21,13 @@
 {% block content %}
 
 <div class="row">
-  <div class="large-9 columns">
+  <div class="large-8 columns">
     <p>This page contains all relevant information on this scheduled maintenance.  Check back here at any time to obtain current information on the status of this scheduled maintenance.</p>
   </div>
-  <div class="large-3 columns"></div>
 </div>
 
 <div class="row">
-  <div class="large-12 columns">
+  <div class="large-8 columns">
     <table>
       <thead>
         <tr>
@@ -41,10 +40,10 @@
           <td width="165">Maintenance Status</td>
           <td width="565">
             <b>
-            {% if detail.0.event_status__status == 2 %}
+            {% if detail.0.event_status__status == 4 %}
               COMPLETED
             {% else %}
-              {% if detail.0.event_status__status == 1 %}
+              {% if detail.0.event_status__status == 3 %}
                 STARTED
               {% else %}
                 NOT STARTED
@@ -78,14 +77,18 @@
           <td>Description</td>
           <td>{{detail.0.event_description__description|linebreaksbr}}</td>
         </tr>
+        {% if detail.0.event_impact__impact %}
         <tr>
           <td>Impact Analysis</td>
           <td>{{detail.0.event_impact__impact|linebreaksbr}}</td>
          </tr>
+        {% endif %}
+        {% if detail.0.event_coordinator__coordinator %}
         <tr>
           <td>Coordinator</td>
           <td>{{detail.0.event_coordinator__coordinator|linebreaksbr}}</td>
         </tr>
+        {% endif %}
         <tr>
           <td>Email Notifications:{% if not notifications == 1 %}<br><font class="disabled">(disabled)</font>{% endif %}</td>
           <td>{% if detail.0.email_address_id__email_address %}{{detail.0.email_address_id__email_address}}{% else %}No recipient defined{% endif %}</td>
@@ -99,7 +102,7 @@
 <div class="spacer_medium"></div>
 
 <div class="row">
-  <div class="large-12 columns">
+  <div class="large-8 columns">
     <table>
       <thead>
         <tr>
@@ -132,17 +135,17 @@
 <div class="row">
   <div class="large-4 columns">
     <div class="horiz_stack">
-      <form method="POST" action="/delete">
+      <form method="POST" action="/admin/m_delete">
         {% csrf_token %}
         <input type="hidden" name="id" value="{{id}}">      
         <input type="submit" class="small button secondary" value="delete"/>
       </form>
     </div>
     <div class="horiz_stack">
-      <a href="/m_update?id={{id}}" class="small button secondary">update</a>
+      <a href="/admin/m_update?id={{id}}" class="small button secondary">update</a>
     </div>
     <div class="horiz_stack">
-      <form method="POST" name="m_email" action="/m_email">
+      <form method="POST" name="m_email" action="/admin/m_email">
         {% csrf_token %}
         <input type="hidden" name="id" value="{{id}}">      
         {% if notifications %}<input type="submit" class="small button secondary" value="email reminder"/>{% endif %}

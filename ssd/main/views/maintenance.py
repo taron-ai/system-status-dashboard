@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-"""Views for the SSD Project that pertain to creating events (incidents, maintenance)
+"""Views for the SSD Project that pertain to managing maintenance events
 
 """
 
@@ -42,13 +42,14 @@ from ssd.main.models import Event_Impact
 from ssd.main.models import Event_Coordinator
 from ssd.main.models import Service
 from ssd.main.models import Email
+from ssd.main.forms import DetailForm
 from ssd.main.forms import DeleteEventForm
 from ssd.main.forms import UpdateMaintenanceForm
 from ssd.main.forms import EmailMaintenanceForm
 from ssd.main.forms import AddMaintenanceForm
 from ssd.main import notify
 from ssd.main import config_value
-from ssd.main.views.main import system_message
+from ssd.main.views.system import system_message
 
 
 @login_required
@@ -147,7 +148,7 @@ def maintenance(request):
                     email = notify.email()
                     email.maintenance(event_id,email_id,set_timezone,True)
 
-            # Send them to the incident detail page for this newly created
+            # Send them to the maintenance detail page for this newly created
             # maintenance
             return HttpResponseRedirect('/m_detail?id=%s' % event_id)
 
@@ -246,6 +247,8 @@ def m_update(request):
             update = form.cleaned_data['update']
             broadcast = form.cleaned_data['broadcast']
             email_id = form.cleaned_data['email_id']
+            started = form.cleaned_data['started']
+            completed = form.cleaned_data['completed']
 
             # Combine the dates and times into datetime objects
             start = datetime.datetime.combine(s_date, s_time)
@@ -268,20 +271,23 @@ def m_update(request):
             # Update the coordinator
             Event_Coordinator.objects.filter(event_id=id).update(coordinator=coordinator)
 
-            # Update the status
-            Event_Status.objects.filter(event_id=id).update(status=0)
+            # Update the status (form validation ensures the logic here)
+            if completed:
+                Event_Status.objects.filter(event_id=id).update(status=4)
+            elif started:
+                Event_Status.objects.filter(event_id=id).update(status=3)
+            else:
+                Event_Status.objects.filter(event_id=id).update(status=0)
 
             # Update the start/end times
             Event_Time.objects.filter(event_id=id).update(start=start,end=end)
 
-            # Add the update
-            # Obtain the time and add a timezone
-            # Create a datetime object for right now
-            time_now = datetime.datetime.now()
-            # Add the server's timezone (whatever DJango is set to)
-            time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-            # Add it
-            Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
+            # Add the update, if there is one, using the current time
+            if update:
+                # Create a datetime object for right now and add the server's timezone (whatever DJango has)
+                time_now = datetime.datetime.now()
+                time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
+                Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
 
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
             # In both cases, delete the existing email (because it will be re-added)
@@ -343,7 +349,7 @@ def m_update(request):
             else:
                 return system_message(request,True,'Improperly formatted id') 
         else:
-            return system_message(request,True,'No incident ID given')
+            return system_message(request,True,'No maintenance ID given')
 
         # In the case of a GET, we can acquire the proper services from the DB
         affected_svcs_tmp = Event.objects.filter(id=id).values('event_service__service_id')
@@ -353,7 +359,7 @@ def m_update(request):
         affected_svcs = list(affected_svcs)
 
         # Create a blank form
-        form = UpdateIncidentForm()
+        form = UpdateMaintenanceForm()
 
     # Obtain the id (this could have been a GET or a failed POST)
     if request.method == 'GET':
@@ -365,14 +371,14 @@ def m_update(request):
 
     # If we don't have the ID, then we have to give them an error
     if not id:
-        return system_message(request,True,'No incident ID given')
+        return system_message(request,True,'No maintenance ID given')
 
     # Make sure the ID is properly formed
     if not re.match(r'^\d+$', id):
         return system_message(request,True,'Improperly formatted ID: %s' % id)
 
     # Obtain the details
-    # Obain the incident detail
+    # Obain the maintenance detail
     details = Event.objects.filter(id=id).values(
                                                 'event_time__start',
                                                 'event_time__end',
@@ -426,8 +432,6 @@ def m_update(request):
           'services':services,
           'id':id,
           'form':form,
-          'start':start,
-          'end':end,
           's_date':s_date,
           's_time':s_time,
           'e_date':e_date,
@@ -466,7 +470,7 @@ def m_detail(request):
     # Which services were impacted
     services = Event.objects.filter(id=id).values('event_service__service__service_name')
 
-    # Obain the incident detail
+    # Obain the maintenance detail
     detail = Event.objects.filter(id=id).values(
                                                 'event_time__start',
                                                 'event_time__end',
@@ -479,7 +483,7 @@ def m_detail(request):
                                                 'event_user__user__last_name'
                                                 )
 
-    # Obain any incident updates
+    # Obain any maintenance updates
     updates = Event.objects.filter(id=id).values(
                                                 'event_update__id',
                                                 'event_update__date',
@@ -509,7 +513,7 @@ def m_detail(request):
 
     # Print the page
     return render_to_response(
-       'main/m_detail.html',
+       'maintenance/m_detail.html',
        {
           'title':'System Status Dashboard | Scheduled Maintenance Detail',
           'services':services,
@@ -590,7 +594,7 @@ def m_delete(request):
             # Obtain the cleaned data
             id = form.cleaned_data['id']
 
-            # Delete the incident
+            # Delete the maintenance
             Event.objects.filter(id=id).delete()
 
             # Redirect to the homepage

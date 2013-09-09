@@ -28,8 +28,7 @@ urlpatterns = patterns('',
     # Standard admin site
     url(r'^djadmin/',             include(admin.site.urls)),
 
-    # SSD Admin Site
-    url(r'^admin',              'ssd.main.views.admin.index'),
+
 
     # Main
     url(r'^$',                  'ssd.main.views.main.index'),
@@ -55,17 +54,27 @@ urlpatterns = patterns('',
     url(r'^prefs/jump$',        'ssd.main.views.prefs.jump'),
 
     # Incident Events
-    url(r'^i_delete$',          'ssd.main.views.incidents.i_delete'),
     url(r'^i_detail$',          'ssd.main.views.incidents.i_detail'),
-    url(r'^i_update$',          'ssd.main.views.incidents.i_update'),
-    url(r'^incident$',          'ssd.main.views.incidents.incident'),
-    
+
     # Maintenance Events
-    url(r'^i_delete$',          'ssd.main.views.maintenance.i_delete'),
     url(r'^m_detail$',          'ssd.main.views.maintenance.m_detail'),
-    url(r'^m_email$',           'ssd.main.views.maintenance.m_email'),
-    url(r'^m_update$',          'ssd.main.views.maintenance.m_update'),
-    url(r'^maintenance$',       'ssd.main.views.maintenance.maintenance'),
+
+
+    # -- from here down, it's all admin functionality -- #
+
+    # SSD Admin Homepage
+    url(r'^admin$',              'ssd.main.views.admin.index'),
+
+    # Incident Events (admin functionality)
+    url(r'^admin/incident$',          'ssd.main.views.incidents.incident'),
+    url(r'^admin/i_delete$',          'ssd.main.views.incidents.i_delete'),
+    url(r'^admin/i_update$',          'ssd.main.views.incidents.i_update'),
+    
+    # Maintenance Events (admin functionality)
+    url(r'^admin/maintenance$',       'ssd.main.views.maintenance.maintenance'),
+    url(r'^admin/m_delete$',          'ssd.main.views.maintenance.m_delete'),
+    url(r'^admin/m_email$',           'ssd.main.views.maintenance.m_email'),
+    url(r'^admin/m_update$',          'ssd.main.views.maintenance.m_update'),
     
     # Incident Reports
     url(r'^report$',            'ssd.main.views.report.report'),

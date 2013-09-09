@@ -104,9 +104,9 @@
 {% if user.is_authenticated %}
 <div class="row">
   <div class="large-4 columns">
-    <form method="POST" name="delete" action="/delete">
+    <form method="POST" action="/admin/i_delete">
       {% csrf_token %}
-      <a href="/i_update?id={{id}}" class="small button secondary">update</a>&nbsp;&nbsp;
+      <a href="/admin/i_update?id={{id}}" class="small button secondary">update</a>&nbsp;&nbsp;
       <input type="hidden" name="id" value="{{id}}">
       <input type="submit" class="small button secondary" value="delete"/>
     </form>

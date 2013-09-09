@@ -100,6 +100,23 @@ def index(request):
     forward = (ref + datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     forward_link = '/?ref=%s' % (forward)
 
+    # Determine if there are any active events (incidents or maintenances), regardless of the time range
+    # This will be used to set the main service status
+    active_incidents = Event.objects.filter(type=1,event_status__status=1).values('event_service__service__service_name')
+    active_maintenances = Event.objects.filter(type=2,event_status__status=3).values('event_service__service__service_name')
+    # Create an easy lookup table for later
+    events_lookup = {
+        'incident':{},
+        'maintenance':{}
+    }
+    if active_incidents:
+        for incident in active_incidents:
+            events_lookup['incident'][incident['event_service__service__service_name']] = ''
+    if active_maintenances:
+        for maintenance in active_maintenances:
+            events_lookup['maintenance'][maintenance['event_service__service__service_name']] = ''
+
+
     # We'll print 7 days of dates at any time
     # Construct a dictionary like this to pass to the template
     # [
@@ -130,11 +147,15 @@ def index(request):
         #   - 2 = active maintenance
         row = [{'service':service['service_name'],'status':0}]
 
+        # Set the status from our lookup table first
+        # Incidents over-ride everything for setting the status of the service
+        if service['service_name'] in events_lookup['incident']:
+            row[0]['status'] = 1
+        elif service['service_name'] in events_lookup['incident']:
+            row[0]['status'] = 2
+
         # Run through each date for each service
         for date in dates:
-
-            # If there is a match, append it, otherwise leave blank
-            match = False
 
             # Check each event to see if there is a match
             # There could be more than one event per day
@@ -154,9 +175,9 @@ def index(request):
                     if event['event_time__end']:
                         end_date = end_date.astimezone(pytz.timezone(set_timezone))
 
+                    # If this is our date, add it
                     if date.date() == event_date.date():
                         # This is our date so add the incident ID
-                        match = True
                         e = {
                                  'type':event['type'],
                                  'id':event['id'],
@@ -166,18 +187,10 @@ def index(request):
                                  }
                         row_event.append(e)
             
-                    # If this is an incident and it's still open, set the status
-                    # Incidents over-ride everything for setting the status of the service
-                    if event['type'] == 1 and event['event_status__status'] == 1:
-                        row[0]['status'] = 1
-
-                    # If it's a maintenance and it's still open, and there is no active incident,
-                    # set the status
-                    if event['type'] == 2 and event['event_status__status'] == 1 and not row[0]['event_status__status'] == 1:
-                        row[0]['status'] = 2
-
-            if match == False:
+            # If the row_event is empty, this indicates there were no incidents so mark this date/service as green
+            if not row_event:
                 row_event.append('green')
+                
 
             # Add the event row to the main row
             row.append(row_event)

@@ -28,9 +28,7 @@ urlpatterns = patterns('',
     # Standard admin site
     url(r'^djadmin/',             include(admin.site.urls)),
 
-
-
-    # Main
+    # Main Dashboard
     url(r'^$',                  'ssd.main.views.main.index'),
     
     # Escalation
@@ -40,10 +38,6 @@ urlpatterns = patterns('',
     url(r'^config$',            'ssd.main.views.config.config'),
     url(r'^contacts$',          'ssd.main.views.config.contacts'),
     url(r'^contacts_modify$',   'ssd.main.views.config.contacts_modify'),
-    url(r'^email$',             'ssd.main.views.config.email'),
-    url(r'^rm_email$',          'ssd.main.views.config.rm_email'),
-    url(r'^rm_services$',       'ssd.main.views.config.rm_services'),
-    url(r'^services$',          'ssd.main.views.config.services'),
 
     # Search
     #url(r'^search$',            'ssd.main.views.search.search'),
@@ -59,6 +53,9 @@ urlpatterns = patterns('',
     # Maintenance Events
     url(r'^m_detail$',          'ssd.main.views.maintenance.m_detail'),
 
+    # Incident Reports
+    url(r'^ireport$',            'ssd.main.views.ireport.ireport'),
+
 
     # -- from here down, it's all admin functionality -- #
 
@@ -68,15 +65,34 @@ urlpatterns = patterns('',
     # Incident Events (admin functionality)
     url(r'^admin/incident$',          'ssd.main.views.incidents.incident'),
     url(r'^admin/i_delete$',          'ssd.main.views.incidents.i_delete'),
+    url(r'^admin/i_list$',            'ssd.main.views.incidents.i_list'),
     url(r'^admin/i_update$',          'ssd.main.views.incidents.i_update'),
     
     # Maintenance Events (admin functionality)
-    url(r'^admin/maintenance$',       'ssd.main.views.maintenance.maintenance'),
-    url(r'^admin/m_delete$',          'ssd.main.views.maintenance.m_delete'),
-    url(r'^admin/m_email$',           'ssd.main.views.maintenance.m_email'),
-    url(r'^admin/m_update$',          'ssd.main.views.maintenance.m_update'),
-    
-    # Incident Reports
-    url(r'^report$',            'ssd.main.views.report.report'),
+    url(r'^admin/maintenance$',             'ssd.main.views.maintenance.maintenance'),
+    url(r'^admin/m_delete$',                'ssd.main.views.maintenance.m_delete'),
+    url(r'^admin/m_list$',                  'ssd.main.views.maintenance.m_list'),
+    url(r'^admin/m_email$',                 'ssd.main.views.maintenance.m_email'),
+    url(r'^admin/m_update$',                'ssd.main.views.maintenance.m_update'),
 
+    # Email Configuration (admin functionality)
+    url(r'^admin/email_config$',            'ssd.main.views.email.email_config'),
+    url(r'^admin/email_delete$',            'ssd.main.views.email.email_delete'),
+    url(r'^admin/email_recipients$',        'ssd.main.views.email.email_recipients'),
+ 
+    # Services configuration (admin functionality)
+    url(r'^admin/services$',                'ssd.main.views.services.services'),
+    url(r'^admin/services_delete$',         'ssd.main.views.services.services_delete'),
+
+    # Messages configuration (admin functionality)
+    url(r'^admin/messages_config$',         'ssd.main.views.messages.messages_config'),
+
+    # Logo configuration (admin functionality)
+    url(r'^admin/logo_config$',             'ssd.main.views.logo.logo_config'),
+
+    # Url configuration (admin functionality)
+    url(r'^admin/systemurl_config$',        'ssd.main.views.systemurl.systemurl_config'),
+
+    # Incident report configuration (admin functionality)
+    url(r'^admin/ireport_config$',          'ssd.main.views.ireport.ireport_config')
 )

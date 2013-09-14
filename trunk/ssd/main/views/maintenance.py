@@ -26,6 +26,8 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -128,8 +130,7 @@ def maintenance(request):
             Event_User(event_id=event_id,user_id=user_id).save()
 
             # Add the email recipient, if requested.
-            # Form validation ensures that a valid email is selected if broadcast is selected.  
-            if broadcast: 
+            if email_id: 
                 Event_Email(event_id=event_id,email_id=email_id).save()
 
             # Find out which services this impacts and associate the services with the event
@@ -152,9 +153,8 @@ def maintenance(request):
             # maintenance
             return HttpResponseRedirect('/m_detail?id=%s' % event_id)
 
-        # Invalid Form
         else:
-            print 'Invalid form: AddMaintenanceForm: %s' % form.errors
+            messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')
 
     # Not a POST so create a blank form
     else:
@@ -197,7 +197,10 @@ def maintenance(request):
           'notifications':notifications,
           'instr_maintenance_description':instr_maintenance_description,
           'instr_maintenance_impact':instr_maintenance_impact,
-          'instr_maintenance_coordinator':instr_maintenance_coordinator
+          'instr_maintenance_coordinator':instr_maintenance_coordinator,
+          'breadcrumbs':{'Admin':'/admin','Create Maintenance':'maintenance'},
+          'nav_section':'event',
+          'nav_sub':'maintenance'
        },
        context_instance=RequestContext(request)
     )
@@ -292,7 +295,7 @@ def m_update(request):
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
             # In both cases, delete the existing email (because it will be re-added)
             Event_Email.objects.filter(event_id=id).delete()
-            if broadcast: 
+            if email_id:
                 Event_Email(event_id=id,email_id=email_id).save()
 
             # Check if we are starting/completing
@@ -332,12 +335,15 @@ def m_update(request):
                     email = notify.email()
                     email.maintenance(event_id,email_id,set_timezone,True)
 
+            # Set a success message
+            messages.add_message(request, messages.SUCCESS, 'Maintenance successfully updated')
+
             # All done so redirect to the maintenance detail page so
             # the new data can be seen.
             return HttpResponseRedirect('/m_detail?id=%s' % id)
     
         else:
-            print 'Invalid form: UpdateMaintenanceForm: %s' % form.errors
+            messages.add_message(request, messages.ERROR, 'Error updating maintenance')
 
     # Not a POST
     else:
@@ -386,7 +392,7 @@ def m_update(request):
                                                 'event_description__description',
                                                 'event_impact__impact',
                                                 'event_coordinator__coordinator',
-                                                'event_email__email__email',
+                                                'event_email__email__id',
                                                 'event_user__user__first_name',
                                                 'event_user__user__last_name'
                                                 )
@@ -442,6 +448,9 @@ def m_update(request):
           'instr_maintenance_impact':instr_maintenance_impact,
           'instr_maintenance_coordinator':instr_maintenance_coordinator,
           'instr_maintenance_update':instr_maintenance_update,
+          'breadcrumbs':{'Admin':'/admin','List Maintenance':'m_list'},
+          'nav_section':'event',
+          'nav_sub':'m_update'
        },
        context_instance=RequestContext(request)
     )
@@ -541,37 +550,35 @@ def m_email(request):
     else:
         set_timezone = request.COOKIES.get('timezone')
 
-    # We will only accept POSTs
-    if request.method == 'POST':
+    # Check the form elements
+    form = EmailMaintenanceForm(request.GET)
 
-        # Check the form elements
-        form = EmailMaintenanceForm(request.POST)
+    if form.is_valid():
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
 
-        if form.is_valid():
-            # Obtain the cleaned data
-            id = form.cleaned_data['id']
+        # Obtain the email address id
+        recipient_id = Event.objects.filter(id=id).values('event_email__email__id')[0]['event_email__email__id']
 
-            # Obtain the email address id
-            recipient_id = Maintenance.objects.filter(id=id).values('email_address_id')[0]['email_address_id']
+        # If there is no recipient defined, give them an error message and send back to the list view
+        if not recipient_id:
+            messages.add_message(request, messages.ERROR, 'There is no recipient defined for maintenance id:%s.  Please add one before sending email notifications.' % id)
 
-            # If there is no recipient defined, give them an error
-            if not recipient_id:
-                return system_message(request,True,'There is no recipient defined for this maintenance.  Please go back and add one.')
+        if int(cv.value('notify')) == 1:
+            email = notify.email()
+            email_status = email.maintenance(id,recipient_id,set_timezone,False)
 
-            if int(cv.value('notify')) == 1:
-                email = notify.email()
-                email_status = email.maintenance(id,recipient_id,set_timezone,False)
-
-                if email_status == 'success':
-                    return system_message(request,False,'Email successfully sent')
-                else:
-                    return system_message(request,True,'Email failed: %s' % email_status)
+            if email_status == 'success':
+                messages.add_message(request, messages.SUCCESS, 'Email successfully sent for maintenance id:%s.' % id)
             else:
-                return system_message(request,True,'Email functionality is disabled')
-       
-    # Not a POST or a failed form submit
+                messages.add_message(request, messages.ERROR, 'Email failed for maintenance id:%s.  Error message: %s' % (id,email_status))
+        else:
+            messages.add_message(request, messages.ERROR, 'Email functionality is disabled.')
     else:
-        return system_message(request,True,'Invalid request - please go back and try again.')
+        messages.add_message(request, messages.ERROR, 'Request failed.')
+
+    # Redirect to the open incidents page
+    return HttpResponseRedirect('/admin/m_list')
 
 
 @login_required
@@ -583,7 +590,7 @@ def m_delete(request):
 
     """
 
-    # We only accept posts
+    # If it's a POST, then we are going to delete it after confirmation
     if request.method == 'POST':
         
         # Check the form elements
@@ -594,14 +601,84 @@ def m_delete(request):
             # Obtain the cleaned data
             id = form.cleaned_data['id']
 
-            # Delete the maintenance
+            # Delete the incident
             Event.objects.filter(id=id).delete()
 
-            # Redirect to the homepage
-            return HttpResponseRedirect('/')
+            # Set a message that the delete was successful
+            messages.add_message(request, messages.SUCCESS, 'Message id:%s successfully deleted' % id)
 
-    # If processing got this far, its either not a POST
-    # or its an invalid form submit.  Either way, give an error        
-    return system_message(request,True,'Invalid delete request')
+            # Redirect to the open incidents page
+            return HttpResponseRedirect('/admin/m_list')
+
+        # Invalid form submit
+        else:
+            # Set a message that the delete was not successful
+            messages.add_message(request, messages.ERROR, 'Message id:%s not deleted' % id)
+
+            # Redirect to the open incidents page
+            return HttpResponseRedirect('/admin/m_list')
+
+    # If we get this far, it's a GET
    
+    # Make sure we have an ID
+    form = DeleteEventForm(request.GET)
+    if form.is_valid():
+
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+
+        # Print the page (confirm they want to delete the incident)
+        return render_to_response(
+           'maintenance/m_delete.html',
+           {
+              'title':'System Status Dashboard | Confirm Delete',
+              'id':id,
+              'breadcrumbs':{'Admin':'/admin','List Open Maintenance':'m_list'},
+              'nav_section':'event',
+              'nav_sub':'m_delete'
+           },
+           context_instance=RequestContext(request)
+        )
+
+        # Redirect to the open incidents page
+        return HttpResponseRedirect('/admin/m_list')
+
+    # Invalid request
+    else:
+        # Redirect to the open incidents page
+        return HttpResponseRedirect('/admin/m_list')
    
+
+@login_required
+@staff_member_required   
+def m_list(request):
+    """Maintenance List View
+
+    Show all open maintenances
+
+    """
+
+    # Obtain all open incidents
+    maintenances = Event.objects.filter(Q(type=2,event_status__status=0) | Q(type=2,event_status__status=3)).values('id','event_time__start','event_description__description','event_email__email__email')
+
+    # See if the timezone is set, if not, give them the server timezone
+    if request.COOKIES.get('timezone') == None:
+        set_timezone = settings.TIME_ZONE
+    else:
+        set_timezone = request.COOKIES.get('timezone')
+
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
+    jtz.activate(set_timezone)
+
+    # Print the page
+    return render_to_response(
+       'maintenance/m_list.html',
+       {
+          'title':'System Status Dashboard | Open Maintenance',
+          'maintenances':maintenances,
+          'breadcrumbs':{'Admin':'/admin','List Open Maintenance':'m_list'},
+          'nav_section':'event',
+          'nav_sub':'m_list'
+       },
+       context_instance=RequestContext(request)
+    )

@@ -30,7 +30,7 @@
 </script>
 
 <div class="row">
-  <div class="large-11 columns">
+  <div class="large-12 columns">
     <p>{{information|safe}}</p>
   </div>
 </div>
@@ -39,7 +39,7 @@
 
 {% if alert %}
 <div class="row">
-  <div class="large-10 large-centered columns">
+  <div class="large-12 large-centered columns">
     <div class="panel callout radius" style="background: #D45757;">
       {{alert}}
     </div>
@@ -141,7 +141,7 @@
 </div>
 
 <div class="row">
-  <div class="large-11 columns">
+  <div class="large-12 columns">
     <form name="prefs_jump" action="/prefs/jump" method="post">
      {% csrf_token %}
     <input type="text" class="jump_to" name="jump_to" id="jump_to" placeholder="Jump to date" onchange='this.form.submit()'/>
@@ -150,7 +150,7 @@
 </div>
 
 <div class="row">
-  <div class="large-11 columns">
+  <div class="large-12 columns">
     <br><br><br>
     <font class="heading">Detailed Service Disruption Timeline:</font><hr>
     <p>
@@ -166,7 +166,7 @@
 </div>
 
 <div class="row">
-  <div class="large-11 columns">
+  <div class="large-12 columns">
     <br><br><br>
     <font class="heading">Detailed Maintenance Timeline:</font><hr>
     <p>
@@ -182,7 +182,7 @@
 </div>
 
 <div class="row">
-  <div class="large-11 columns">
+  <div class="large-12 columns">
     <br><br><br>
     <font class="heading">Historical Summary Status:</font><hr>
   </div>
@@ -277,14 +277,20 @@ $(function () {
 });
 </script>
 <script type="text/javascript" src="/html/js/highcharts.js"></script>
-<div class="row left hide-for-small">
+
+<div class="row hide-for-small">
   <div class="large-12 columns">
     <div id="graph" style="width: 905px;"></div>
     <br><br>
   </div>
 </div>
+
 {% else %}
-<p><font class="all_good">No incidents or maintenance have occurred in the past 30 days and no maintenance is planned for the next 30 days.</font></p><br><br>
+<div class="row">
+  <div class="large-12 columns">
+    <p><font class="all_good">No incidents or maintenance have occurred in the past 30 days and no maintenance is planned for the next 30 days.</font></p><br><br>
+  </div>
+</div>
 {% endif %}
 
 {% endblock %}

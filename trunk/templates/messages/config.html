@@ -1,0 +1,141 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+		
+<form method="POST" action="/admin/messages_config">
+{% csrf_token %}
+
+<div class="row">
+	{# This is a large-3 side nav #}
+	{% include "admin/side_nav.html" %}
+
+	<div class="large-9 columns">
+
+    <div class="row">
+      <div class="large-12 columns">
+        <h4>Messages Configuration</h4>
+        <p>Complete the relevant fields below to display a message to your users above the dashboard, or to display a prominent alert message.</p>
+        <hr>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        {# If there are messages in the queue, then show them.  There should only be one message #}
+        {% if messages %}
+          {% for message in messages %}
+            {% if message.tags %}
+              {% if message.tags == 'success' %}
+                <font class="success">{{message}}</font>
+              {% else %}
+                {% if message.tags == 'error' %}
+                  <font class="error">{{message}}</font>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          <br><br>
+        {% else %}
+        <br><br>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">System Message</span><br><br>
+      </div>
+    </div>
+		
+		<div class="row">
+			<div class="large-12 columns {% if form.main.errors %}error{% endif %}">
+		 		<textarea name="main" class="config_messages" placeholder="Enter a system message" maxlength="1000">{% if form.main.data %}{{form.main.data}}{% else %}{{messages_config.0.main}}{% endif %}</textarea>
+		    {% if form.main.errors %}
+		      <p class="error">
+		        {% for error in form.main.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+		  </div>
+		</div>
+		
+		<div class="row">
+			<div class="large-12 columns">
+       <label><input type="checkbox" name="main_enabled" {% if messages_config.0.main_enabled %}checked{% endif %} />
+        Enabled</label>
+        {% if form.main_enabled.errors %}
+        <p class="error">
+          {% for error in form.main_enabled.errors %}{{error}}{% endfor %}
+        </p>
+        {% endif %}
+			</div>
+		</div>
+
+  	<div class="spacer_medium"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">System Alert</span><br><br>
+      </div>
+    </div>
+		
+		<div class="row">
+			<div class="large-12 columns {% if form.alert.errors %}error{% endif %}">
+		 		<textarea name="alert" class="config_messages" placeholder="Enter a system alert" maxlength="1000">{% if form.alert.data %}{{form.alert.data}}{% else %}{{messages_config.0.alert}}{% endif %}</textarea>
+		    {% if form.alert.errors %}
+		      <p class="error">
+		        {% for error in form.alert.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %}
+		  </div>
+		</div>
+		<div class="row">
+			<div class="large-12 columns">
+       <label><input type="checkbox" name="alert_enabled" {% if messages_config.0.alert_enabled %}checked{% endif %} />
+        Enabled</label>
+        {% if form.alert_enabled.errors %}
+        <p class="error">
+          {% for error in form.alert_enabled.errors %}{{error}}{% endfor %}
+        </p>
+        {% endif %}
+			</div>
+		</div>
+
+  	<div class="spacer_medium"></div>
+
+		<div class="row">
+		  <div class="large-11 columns">
+		    <input type="submit" class="small button secondary" value="Save"/>
+		  </div>
+		</div>
+
+		<div class="spacer_medium"></div>
+		
+	</div>
+</div>
+
+</form>
+
+{% endblock %}
+
+
+

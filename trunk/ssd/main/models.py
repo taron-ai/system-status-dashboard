@@ -205,3 +205,65 @@ class Escalation(models.Model):
 
     class Meta:
         unique_together = ['name','contact_details']
+
+
+
+
+
+#-- Configuration Models -- #
+
+class Config_Email(models.Model):
+    """Email Configuration
+        Email Format:
+            0 = text
+            1 = html
+
+    """
+
+    email_format = models.BooleanField(blank=False)
+    from_address = models.CharField(null=False,blank=False,max_length=100)
+    text_pager = models.CharField(null=False,blank=False,max_length=100)
+    incident_greeting = models.CharField(null=False,blank=False,max_length=1000)
+    incident_update = models.CharField(null=False,blank=False,max_length=1000)
+    maintenance_greeting = models.CharField(null=False,blank=False,max_length=1000)
+    maintenance_update = models.CharField(null=False,blank=False,max_length=1000)
+
+
+class Config_Message(models.Model):
+    """System Message Configuration
+
+    """
+
+    main = models.CharField(null=False,blank=False,max_length=1000)
+    main_enabled = models.BooleanField(blank=False)
+    alert = models.CharField(null=False,blank=False,max_length=1000)
+    alert_enabled = models.BooleanField(blank=False)
+
+
+class Config_Logo(models.Model):
+    """System Logo Configuration
+
+    """
+
+    url = models.CharField(null=False,blank=False,max_length=1000)
+    logo_enabled = models.BooleanField(blank=False)
+
+
+class Config_Systemurl(models.Model):
+    """System Url Configuration
+
+    """
+
+    url = models.CharField(null=False,blank=False,max_length=1000)
+    url_enabled = models.BooleanField(blank=False)
+
+
+class Config_Ireport(models.Model):
+    """System Incident Report Configuration
+
+    """
+
+    enabled = models.BooleanField(blank=False)
+    upload_enabled = models.BooleanField(blank=False)
+    upload_path = models.CharField(null=False,blank=False,max_length=500)
+    file_size = models.PositiveIntegerField(max_length=5)

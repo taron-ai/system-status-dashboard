@@ -21,9 +21,9 @@
 
 """
    
-
+from ssd.main.models import Config_Logo
+from ssd.main.models import Config_Ireport
 from django.conf import settings
-from ssd.main import config_value
 
 
 def prefs(request):
@@ -31,9 +31,6 @@ def prefs(request):
 
     # Hold the values we'll check in a dict
     values = {}
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
 
     # Application Version?
     # This one is in a settings file
@@ -48,45 +45,25 @@ def prefs(request):
     # The rest of the configs are in the database
     
     # Display the logo?
-    if int(cv.value('logo_display')) == 1:
+    if Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('logo_enabled')[0]['logo_enabled'] == 1:
         # Yes, display it, what's the url
-        logo_url = cv.value('logo_url')
+        logo_url = Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('url')[0]['url']
         values['logo'] = logo_url
     else:
         values['logo'] = False
 
-    # Display the nav?
-    if int(cv.value('nav_display')) == 1:
-        values['nav'] = True
-    else:
-        values['nav'] = False
-
-    # Display the escalation?
-    if int(cv.value('escalation_display')) == 1:
-        values['escalation'] = True
-    else:
-        values['escalation'] = False
-
     # Display the report incident?
-    if int(cv.value('report_incident_display')) == 1:
-        values['report_incident'] = True
+    if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
+        values['ireport'] = True
     else:
-        values['report_incident'] = False
+        values['ireport'] = False
 
-    # Display the login link?
-    if int(cv.value('login_display')) == 1:
-        values['login'] = True
-    else:
-        values['login'] = False
 
     # Return values to the template
     return {
             'app_version':values['app_version'],
             'logo':values['logo'],
-            'nav':values['nav'],
-            'escalation':values['escalation'],
-            'report_incident':values['report_incident'],
-            'login':values['login']
+            'ireport':values['ireport'],
            }
 
 

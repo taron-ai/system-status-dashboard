@@ -31,7 +31,8 @@
   <link rel="stylesheet" href="/html/css/normalize.css" />
   <link rel="stylesheet" href="/html/css/ssd-theme/jquery-ui-1.9.1.custom.min.css"  />
   <link rel="stylesheet" media="screen"  href="/html/css/responsive-tables.css" />
-  <link rel="StyleSheet" href="/html/css/app.css">
+  <link rel="StyleSheet" href="/html/css/genericons.css">
+  <link rel="stylesheet" href="/html/css/app.css">
 
   <script type="text/javascript" src="/html/js/vendor/custom.modernizr.js"></script>
   <script type="text/javascript" src="/html/js/jquery-1.8.2.js"></script>
@@ -44,7 +45,7 @@
  <body>
 
 <div class="row">
-  <div class="large-11 columns">
+  <div class="large-12 columns">
     <br>
     <table class="footer">
       <tr>
@@ -61,8 +62,16 @@
           &nbsp;|&nbsp;
         </td>
         <td>
-          <a href="/report">Report</a>
+          {% if ireport %}
+          <a href="/ireport">Report Incident</a>
+          &nbsp;|&nbsp;
+          {% endif %}
         </td>
+        {% if user.is_authenticated %}
+        <td>
+          <a href="/accounts/logout">Logout ({{user.username}})</a>
+        </td>
+        {% endif %}
       </tr>
     </table>
 
@@ -89,16 +98,11 @@
 </div>
   
       
-<div class="row">
-  <div class="large-12 large-centered columns">
-  {% block content %}
-
-  {% endblock %}
-  </div>
-</div>
+{# Source the content from the template #}
+{% block content %}{% endblock %}
 
 <div class="row">
-  <div class="large-11 columns">
+  <div class="large-12 columns">
     <br><br><br><br>
   </div>
 </div>
@@ -125,7 +129,7 @@
     </div>
 
     <div class="large-5 columns">
-      <font class="footer">Dashboard powered by OpStatus.io</font>
+      <font class="footer">Powered by <a href="http://www.system-status-dashboard.com">The System Status Dashboard</a></font>
     </div>
   </div>
 </div>

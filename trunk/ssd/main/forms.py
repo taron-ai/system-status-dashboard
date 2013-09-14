@@ -60,6 +60,132 @@ class MultipleServiceField(forms.Field):
 ### FORMS ###
 
 
+class EmailConfigForm(forms.Form):
+    """Form for modifying the admin email configuration
+
+        Email Format:
+            - 0 = text
+            - 1 = html
+    """
+
+    email_format = forms.BooleanField(required=False)
+    from_address = forms.EmailField(required=True)
+    text_pager = forms.EmailField(required=True)
+    incident_greeting = forms.CharField(required=True)
+    incident_update = forms.CharField(required=True)
+    maintenance_greeting = forms.CharField(required=True)
+    maintenance_update = forms.CharField(required=True)
+
+
+class MessagesConfigForm(forms.Form):
+    """Form for modifying the admin messages configuration"""
+
+    main = forms.CharField(required=False)
+    main_enabled = forms.BooleanField(required=False)
+    alert = forms.CharField(required=False)
+    alert_enabled = forms.BooleanField(required=False)
+
+
+    # Override the form clean method - there is some special logic to validate 
+
+    def clean(self):
+        cleaned_data = super(MessagesConfigForm, self).clean()
+        main = cleaned_data.get('main')
+        main_enabled = cleaned_data.get('main_enabled')
+        alert = cleaned_data.get('alert')
+        alert_enabled = cleaned_data.get('alert_enabled')
+
+
+        # Cannot enabled messages if there is no text
+        if main_enabled and not main:
+            # Make sure its an integer
+            self._errors["main"] = self.error_class(['Please enter a system message'])
+
+        if alert_enabled and not alert:
+            # Make sure its an integer
+            self._errors["alert"] = self.error_class(['Please enter a system alert'])
+     
+        # Return the full collection of cleaned data
+        return cleaned_data
+
+
+class LogoConfigForm(forms.Form):
+    """Form for modifying the admin logo configuration"""
+
+    url = forms.CharField(required=False)
+    logo_enabled = forms.BooleanField(required=False)
+
+
+    # Override the form clean method - there is some special logic to validate 
+
+    def clean(self):
+        cleaned_data = super(LogoConfigForm, self).clean()
+        url = cleaned_data.get('url')
+        logo_enabled = cleaned_data.get('logo_enabled')
+
+        # Cannot enabled the logo if there is no url
+        if logo_enabled and not url:
+            # Make sure its an integer
+            self._errors["url"] = self.error_class(['Please enter a logo url'])
+     
+        # Return the full collection of cleaned data
+        return cleaned_data
+
+
+class SystemurlConfigForm(forms.Form):
+    """Form for modifying the admin system url configuration"""
+
+    url = forms.CharField(required=False)
+    url_enabled = forms.BooleanField(required=False)
+
+
+    # Override the form clean method - there is some special logic to validate 
+
+    def clean(self):
+        cleaned_data = super(SystemurlConfigForm, self).clean()
+        url = cleaned_data.get('url')
+        url_enabled = cleaned_data.get('url_enabled')
+
+        # Cannot enabled the logo if there is no url
+        if url_enabled and not url:
+            # Make sure its an integer
+            self._errors["url"] = self.error_class(['Please enter a system url'])
+     
+        # Return the full collection of cleaned data
+        return cleaned_data
+
+
+class IreportConfigForm(forms.Form):
+    """Form for modifying the admin incident report configuration"""
+
+    enabled = forms.BooleanField(required=False)
+    upload_path = forms.CharField(required=False)
+    upload_enabled = forms.BooleanField(required=False)
+    file_size = forms.IntegerField(required=False)
+
+
+    # Override the form clean method - there is some special logic to validate 
+
+    def clean(self):
+        cleaned_data = super(IreportConfigForm, self).clean()
+        upload_path = cleaned_data.get('upload_path')
+        upload_enabled = cleaned_data.get('upload_enabled')
+        file_size = cleaned_data.get('file_size')
+
+        # Cannot enabled the logo if there is no url
+        if upload_enabled and not upload_path:
+            # Make sure its an integer
+            self._errors["upload_path"] = self.error_class(['Please enter a local upload path'])
+     
+        # File size needs to be larger than 0
+        if file_size and file_size == 0:
+            # Make sure its an integer
+            self._errors["file_size"] = self.error_class(['Please enter a file size of at least 1'])
+
+        # Return the full collection of cleaned data
+        return cleaned_data
+
+
 class DetailForm(forms.Form):
     """Form for obtaining the detail about an existing event (incident or maintenance)"""
 

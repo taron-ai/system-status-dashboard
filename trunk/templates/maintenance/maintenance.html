@@ -50,160 +50,199 @@
 <form method="POST" naction="/admin/maintenance">
 {% csrf_token %}
 
-
 <div class="row">
-  <div class="large-6 columns">
-    <span class="radius secondary label">Start Date/Time</span><br><br>
-  </div>
-</div>
+  {# This is a large-3 side nav #}
+  {% include "admin/side_nav.html" %}
 
-<div class="row">
-  <div class="large-6 columns {% if form.s_date.errors %}error{% endif %}">
-    <input type="text" name="s_date" id="s_date" class="date" placeholder="Enter date" value="{% if form.s_date.data %}{{form.s_date.data}}{% endif %}"/>
-    {% if form.s_date.errors %}
-      <p class="error">
-        {% for error in form.s_date.errors %}{{error}}{% endfor %}
-      </p>
-    {% endif %}  
-  </div>
-</div>
+  <div class="large-9 columns">
 
-<div class="row">
-  <div class="large-6 columns {% if form.s_time.errors %}error{% endif %}">
-    <input type="text" name="s_time" id="s_time" class="date" placeholder="Enter time" value="{% if form.s_time.data %}{{form.s_time.data}}{% endif %}"/>
-    {% if form.s_time.errors %}
-      <p class="error">
-        {% for error in form.s_time.errors %}{{error}}{% endfor %}
-      </p>
-    {% endif %} 
-  </div>
-</div>
+    <div class="row">
+      <div class="large-12 columns">
+        <h4>Create Maintenance</h4>
+        <p>Ensure that you provide all information that your users or customers will require about this planned maintenance activity.</p>
+        <hr>
+      </div>
+    </div>
 
-<div class="spacer_medium"></div>
+    <div class="row">
+      <div class="large-12 columns">
+        {# If there are messages in the queue, then show them.  There should only be one message #}
+        {% if messages %}
+          {% for message in messages %}
+            {% if message.tags %}
+              {% if message.tags == 'success' %}
+                <font class="success">{{message}}</font>
+              {% else %}
+                {% if message.tags == 'error' %}
+                  <font class="error">{{message}}</font>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          <br><br>
+        {% else %}
+        <br><br>
+        {% endif %}
+      </div>
+    </div>
 
-<div class="row">
-  <div class="large-6 columns">
-    <span class="radius secondary label">End Date/Time</span><br><br>
-  </div>
-</div>
+    <div class="row">
+      <div class="large-3 columns">
+        <div class="row">
+          <div class="large-12 columns">
+            <span class="radius secondary label">Start Date/Time</span><br><br>
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-12 columns {% if form.s_date.errors %}error{% endif %}">
+            <input type="text" name="s_date" id="s_date" class="date" placeholder="Enter date" value="{% if form.s_date.data %}{{form.s_date.data}}{% endif %}"/>
+            {% if form.s_date.errors %}
+              <p class="error">
+                {% for error in form.s_date.errors %}{{error}}{% endfor %}
+              </p>
+            {% endif %}  
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-12 columns {% if form.s_time.errors %}error{% endif %}">
+            <input type="text" name="s_time" id="s_time" class="date" placeholder="Enter time" value="{% if form.s_time.data %}{{form.s_time.data}}{% endif %}"/>
+            {% if form.s_time.errors %}
+              <p class="error">
+                {% for error in form.s_time.errors %}{{error}}{% endfor %}
+              </p>
+            {% endif %} 
+          </div>
+        </div>
+      </div>
 
-<div class="row">
-  <div class="large-6 columns {% if form.e_date.errors %}error{% endif %}">
-    <input type="text" name="e_date" id="e_date" class="date" placeholder="Enter date" value="{% if form.e_date.data %}{{form.e_date.data}}{% endif %}"/>
-    {% if form.s_date.errors %}
-      <p class="error">
-        {% for error in form.e_date.errors %}{{error}}{% endfor %}
-      </p>
-    {% endif %}  
-  </div>
-</div>
+      <div class="large-3 columns">
+        <div class="row">
+          <div class="large-12 columns">
+            <span class="radius secondary label">End Date/Time</span><br><br>
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-12 columns {% if form.e_date.errors %}error{% endif %}">
+            <input type="text" name="e_date" id="e_date" class="date" placeholder="Enter date" value="{% if form.e_date.data %}{{form.e_date.data}}{% endif %}"/>
+            {% if form.s_date.errors %}
+              <p class="error">
+                {% for error in form.e_date.errors %}{{error}}{% endfor %}
+              </p>
+            {% endif %}  
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-12 columns {% if form.e_time.errors %}error{% endif %}">
+            <input type="text" name="e_time" id="e_time" class="date" placeholder="Enter time" value="{% if form.e_time.data %}{{form.e_time.data}}{% endif %}"/>
+            {% if form.e_time.errors %}
+              <p class="error">
+                {% for error in form.e_time.errors %}{{error}}{% endfor %}
+              </p>
+            {% endif %} 
+          </div>
+        </div>
+      </div>
+      <div class="large 6 columns"></div>
+    </div>
 
-<div class="row">
-  <div class="large-6 columns {% if form.e_time.errors %}error{% endif %}">
-    <input type="text" name="e_time" id="e_time" class="date" placeholder="Enter time" value="{% if form.e_time.data %}{{form.e_time.data}}{% endif %}"/>
-    {% if form.e_time.errors %}
-      <p class="error">
-        {% for error in form.e_time.errors %}{{error}}{% endfor %}
-      </p>
-    {% endif %} 
-  </div>
-</div>
+    <div class="spacer_medium"></div>
 
-<div class="spacer_medium"></div>
+    <div class="row">
+      <div class="large-6 columns {% if form.description.errors %}error{% endif %}">
+        <span class="radius secondary label">Maintenance Description</span><br><br>
+        <textarea name="description" placeholder="{{instr_maintenance_description}}" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% endif %}</textarea>
+        {% if form.description.errors %}
+        <p class="error">
+          {% for error in form.description.errors %}{{error}}{% endfor %}
+        </p>
+        {% endif %}
+      </div>
+    </div>
 
-<div class="row">
-  <div class="large-6 columns {% if form.description.errors %}error{% endif %}">
-    <span class="radius secondary label">Maintenance Description</span><br><br>
-    <textarea name="description" placeholder="{{instr_maintenance_description}}" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% endif %}</textarea>
-    {% if form.description.errors %}
-    <p class="error">
-      {% for error in form.description.errors %}{{error}}{% endfor %}
-    </p>
-    {% endif %}
-  </div>
-</div>
+    <div class="spacer_medium"></div>
 
-<div class="spacer_medium"></div>
+    <div class="row">
+      <div class="large-6 columns {% if form.impact.errors %}error{% endif %}">
+        <span class="radius secondary label">Impact Analysis</span><br><br>
+        <textarea name="impact" placeholder="{{instr_maintenance_impact}}" maxlength="1000">{% if form.impact.data %}{{form.impact.data}}{% endif %}</textarea>
+        {% if form.impact.errors %}
+        <p class="error">
+          {% for error in form.impact.errors %}{{error}}{% endfor %}
+        </p>
+        {% endif %}
+      </div>
+    </div>
 
-<div class="row">
-  <div class="large-6 columns {% if form.impact.errors %}error{% endif %}">
-    <span class="radius secondary label">Impact Analysis</span><br><br>
-    <textarea name="impact" placeholder="{{instr_maintenance_impact}}" maxlength="1000">{% if form.impact.data %}{{form.impact.data}}{% endif %}</textarea>
-    {% if form.impact.errors %}
-    <p class="error">
-      {% for error in form.impact.errors %}{{error}}{% endfor %}
-    </p>
-    {% endif %}
-  </div>
-</div>
+    <div class="spacer_medium"></div>
 
-<div class="spacer_medium"></div>
+    <div class="row">
+      <div class="large-6 columns {% if form.coordinator.errors %}error{% endif %}">
+        <span class="radius secondary label">Maintenance Coordinator</span><br><br>
+        <textarea name="coordinator" placeholder="{{instr_maintenance_coordinator}}" maxlength="1000">{% if form.coordinator.data %}{{form.coordinator.data}}{% endif %}</textarea>
+        {% if form.coordinator.errors %}
+        <p class="error">
+          {% for error in form.coordinator.errors %}{{error}}{% endfor %}
+        </p>
+        {% endif %}
+      </div>
+    </div>
 
-<div class="row">
-  <div class="large-6 columns {% if form.coordinator.errors %}error{% endif %}">
-    <span class="radius secondary label">Maintenance Coordinator</span><br><br>
-    <textarea name="coordinator" placeholder="{{instr_maintenance_coordinator}}" maxlength="1000">{% if form.coordinator.data %}{{form.coordinator.data}}{% endif %}</textarea>
-    {% if form.coordinator.errors %}
-    <p class="error">
-      {% for error in form.coordinator.errors %}{{error}}{% endfor %}
-    </p>
-    {% endif %}
-  </div>
-</div>
+    <div class="spacer_medium"></div>
 
-<div class="spacer_medium"></div>
+    <div class="row">
+      <div class="large-6 columns">
+        <span class="radius secondary label">Email</span>&nbsp;{% if not notifications == 1 %}<font class="disabled">(disabled)</font>{% endif %}<br><br>
 
-<div class="row">
-  <div class="large-6 columns">
-    <span class="radius secondary label">Email</span>&nbsp;{% if not notifications == 1 %}<font class="disabled">(disabled)</font>{% endif %}<br><br>
+        <label><input type="checkbox" {% if not notifications == 1 %}disabled{% endif %} name="broadcast" {% if form.broadcast.data %}checked{% endif %} />
+        Broadcast Email On Submit</label>
+        {% if form.broadcast.errors %}
+        <p class="error">
+          {% for error in form.broadcast.errors %}{{error}}{% endfor %}
+        </p>
+        {% endif %}
 
-    <label><input type="checkbox" {% if not notifications == 1 %}disabled{% endif %} name="broadcast" {% if form.broadcast.data %}checked{% endif %} />
-    Broadcast Email</label>
-    {% if form.broadcast.errors %}
-    <p class="error">
-      {% for error in form.broadcast.errors %}{{error}}{% endfor %}
-    </p>
-    {% endif %}
+        <select name="email_id" class="email" {% if not notifications == 1 %}disabled{% endif %}>
+          <option value="">-</option>
+         {% for email in emails %}
+          {% if form.email_id.data|slugify == email.id|slugify %}
+          <option value="{{email.id}}" selected="true">{{email.email}}</option>
+          {% else %} 
+          <option value="{{email.id}}">{{email.email}}</option>
+          {% endif %}
+         {% endfor %}
+         </select>
+       </div>
+    </div>
 
-    <select name="email_id" class="email" {% if not notifications == 1 %}disabled{% endif %}>
-      <option value="">-</option>
-     {% for email in emails %}
-      {% if form.email_id.data|slugify == email.id|slugify %}
-      <option value="{{email.id}}" selected="true">{{email.email}}</option>
-      {% else %} 
-      <option value="{{email.id}}">{{email.email}}</option>
-      {% endif %}
-     {% endfor %}
-     </select>
-   </div>
-</div>
+    <div class="spacer_medium"></div>
 
-<div class="spacer_medium"></div>
+    <div class="row">
+      <div class="large-6 columns">
+        <span class="radius secondary label">Services Impacted</span><br><br>
+        {% for row in services %}
+          {# See if this service was previously selected and this is a failed form submit #}
+          <label><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %} />
+          {{row.service_name}}</label>
+        {% endfor %}
+        {% if form.service.errors %}
+          <p class="error">
+            {% for error in form.service.errors %}{{error}}{% endfor %}
+          </p>
+        {% endif %}
+      </div>
+    </div>
 
-<div class="row">
-  <div class="large-6 columns">
-    <span class="radius secondary label">Services Impacted</span><br><br>
-    {% for row in services %}
-      {# See if this service was previously selected and this is a failed form submit #}
-      <label><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %} />
-      {{row.service_name}}</label>
-    {% endfor %}
-    {% if form.service.errors %}
-      <p class="error">
-        {% for error in form.service.errors %}{{error}}{% endfor %}
-      </p>
-    {% endif %}
-  </div>
-</div>
+    <div class="spacer_medium"></div>
 
-<div class="spacer_medium"></div>
-
-<div class="row">
-  <div class="large-6 columns">
-    <input type="submit" class="small button secondary" value="submit"/>
-  </div>
-</div>
+    <div class="row">
+      <div class="large-6 columns">
+        <input type="submit" class="small button secondary" value="submit"/>
+      </div>
+    </div>
     
+  </div>
+</div>
+
 </form>
 
 {% endblock %}

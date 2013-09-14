@@ -22,6 +22,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django import get_version
+from ssd.main.models import Config_Email
 
 @login_required
 @staff_member_required
@@ -29,7 +30,6 @@ def index(request):
     """Main admin index view
  
     """
-
 
     # Print the page
     return render_to_response(

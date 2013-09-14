@@ -26,6 +26,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -149,9 +150,8 @@ def incident(request):
             # incident
             return HttpResponseRedirect('/i_detail?id=%s' % event_id)
 
-        # Bad form validation
         else:
-            print 'Invalid form: %s.  Errors: %s' % ('AddIncidentForm',form.errors)
+            messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')
 
     # Not a POST so create a blank form
     else:
@@ -190,7 +190,9 @@ def incident(request):
           'help':help,
           'notifications':notifications,
           'instr_incident_description':instr_incident_description,
-          'breadcrumbs':{'Admin':'/admin','Log Incident':'incident'}
+          'breadcrumbs':{'Admin':'/admin','Create Incident':'incident'},
+          'nav_section':'event',
+          'nav_sub':'incident'
 
        },
        context_instance=RequestContext(request)
@@ -272,7 +274,7 @@ def i_update(request):
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
             # In both cases, delete the existing email (because it will be re-added)
             Event_Email.objects.filter(event_id=id).delete()
-            if broadcast: 
+            if email_id: 
                 Event_Email(event_id=id,email_id=email_id).save()
 
             # See if we are adding or subtracting services
@@ -297,18 +299,15 @@ def i_update(request):
                     email = notify.email()
                     email.incident(id,email_id,set_timezone,False)
             
-                # If broadcast is not selected, turn off emails
-                else:
-                    Event_Email.objects.filter(event_id=id).delete()
-
+            # Set a success message
+            messages.add_message(request, messages.SUCCESS, 'Incident successfully updated')
 
             # All done so redirect to the incident detail page so
             # the new data can be seen.
             return HttpResponseRedirect('/i_detail?id=%s' % id)
         
-        # Bad form validation
         else:
-            print 'Invalid form: %s.  Errors: %s' % ('UpdateIncidentForm',form.errors)
+            messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')
 
             # Obtain the id so we can print the update page again
             if 'id' in request.POST: 
@@ -343,7 +342,7 @@ def i_update(request):
     # Obtain the details
     details = Event.objects.filter(id=id).values(
                                                 'event_status__status',
-                                                'event_email__email_id',
+                                                'event_email__email__id',
                                                 'event_time__start',
                                                 'event_time__end',
                                                 'event_status__status'
@@ -376,7 +375,10 @@ def i_update(request):
           'form':form,
           'emails':emails,
           'notifications':notifications,
-          'instr_incident_update':instr_incident_update
+          'instr_incident_update':instr_incident_update,
+          'breadcrumbs':{'Admin':'/admin','Update Incident':'incident'},
+          'nav_section':'event',
+          'nav_sub':'i_update'
        },
        context_instance=RequestContext(request)
     )
@@ -391,7 +393,7 @@ def i_delete(request):
 
     """
 
-    # We only accept posts
+    # If it's a POST, then we are going to delete it after confirmation
     if request.method == 'POST':
         
         # Check the form elements
@@ -405,12 +407,49 @@ def i_delete(request):
             # Delete the incident
             Event.objects.filter(id=id).delete()
 
-            # Redirect to the homepage
-            return HttpResponseRedirect('/')
+            # Set a message that the delete was successful
+            messages.add_message(request, messages.SUCCESS, 'Message id:%s successfully deleted' % id)
 
-    # If processing got this far, its either not a POST
-    # or its an invalid form submit.  Either way, give an error        
-    return system_message(request,True,'Invalid delete request')
+            # Redirect to the open incidents page
+            return HttpResponseRedirect('/admin/i_list')
+
+        # Invalid form submit
+        else:
+            # Set a message that the delete was not successful
+            messages.add_message(request, messages.ERROR, 'Message id:%s not deleted' % id)
+            
+            # Redirect to the open incidents page
+            return HttpResponseRedirect('/admin/i_list')
+
+    # If we get this far, it's a GET
+   
+    # Make sure we have an ID
+    form = DeleteEventForm(request.GET)
+    if form.is_valid():
+
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+
+        # Print the page (confirm they want to delete the incident)
+        return render_to_response(
+           'incidents/i_delete.html',
+           {
+              'title':'System Status Dashboard | Confirm Delete',
+              'id':id,
+              'breadcrumbs':{'Admin':'/admin','List Open Incidents':'i_list'},
+              'nav_section':'event',
+              'nav_sub':'i_delete'
+           },
+           context_instance=RequestContext(request)
+        )
+
+        # Redirect to the open incidents page
+        return HttpResponseRedirect('/admin/i_list')
+
+    # Invalid request
+    else:
+        # Redirect to the open incidents page
+        return HttpResponseRedirect('/admin/i_list')
 
 
 def i_detail(request):
@@ -490,4 +529,37 @@ def i_detail(request):
     )
 
 
+@login_required
+@staff_member_required
+def i_list(request):
+    """Incident List View
+
+    Show all open incidents
+
+    """
+
+    # Obtain all open incidents
+    incidents = Event.objects.filter(type=1,event_status__status=1).values('id','event_time__start','event_description__description')
+
+    # See if the timezone is set, if not, give them the server timezone
+    if request.COOKIES.get('timezone') == None:
+        set_timezone = settings.TIME_ZONE
+    else:
+        set_timezone = request.COOKIES.get('timezone')
+
+    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
+    jtz.activate(set_timezone)
+
+    # Print the page
+    return render_to_response(
+       'incidents/i_list.html',
+       {
+          'title':'System Status Dashboard | Open Incidents',
+          'incidents':incidents,
+          'breadcrumbs':{'Admin':'/admin','List Open Incidents':'i_list'},
+          'nav_section':'event',
+          'nav_sub':'i_list'
+       },
+       context_instance=RequestContext(request)
+    )
 

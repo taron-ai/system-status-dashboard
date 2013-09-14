@@ -1,0 +1,220 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+		
+<form method="POST" action="/admin/email_config">
+{% csrf_token %}
+
+<div class="row">
+	{# This is a large-3 side nav #}
+	{% include "admin/side_nav.html" %}
+
+	<div class="large-9 columns">
+
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <h4>Email Configuration</h4>
+	      <p>If you plan to notify your users via email, please complete the relevant fields below and don't forget to save your changes.</p>
+	      <hr>
+	    </div>
+	  </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        {# If there are messages in the queue, then show them.  There should only be one message #}
+        {% if messages %}
+          {% for message in messages %}
+            {% if message.tags %}
+              {% if message.tags == 'success' %}
+                <font class="success">{{message}}</font>
+              {% else %}
+                {% if message.tags == 'error' %}
+                  <font class="error">{{message}}</font>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          <br><br>
+        {% else %}
+        <br><br>
+        {% endif %}
+      </div>
+    </div>
+    
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <span class="radius secondary label">Email Format</span><br><br>
+	    </div>
+	  </div>
+		
+		<div class="row">
+			<div class="large-11 columns">
+		      <select name="email_format" class="config_email">
+		        {% if email_config.0.email_format %}
+			        <option value="1" selected="true">html</option>
+			        <option value="">text</option>
+		        {% else %}
+			        <option value="1">html</option>
+			        <option value="" selected="true">text</option>
+						{% endif %}
+		      </select>
+			</div>
+		</div>
+
+		<div class="spacer_medium"></div>
+
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <span class="radius secondary label">From Address</span><br><br>
+	    </div>
+	  </div>
+			
+		<div class="row">
+			<div class="large-11 columns {% if form.from_address.errors %}error{% endif %}">
+				<input type="text" name="from_address" class="email" value="{% if form.from_address.data %}{{form.from_address.data}}{% else %}{{email_config.0.from_address}}{% endif %}" />
+		    {% if form.from_address.errors %}
+		      <p class="error">
+		        {% for error in form.from_address.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+			</div>
+		</div>
+
+		<div class="spacer_medium"></div>
+
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <span class="radius secondary label">Text Pager Recipient</span><br><br>
+	    </div>
+	  </div>
+			
+		<div class="row">
+			<div class="large-11 columns {% if form.text_pager.errors %}error{% endif %}">
+				<input type="text" name="text_pager" class="email" value="{% if form.text_pager.data %}{{form.text_pager.data}}{% else %}{{email_config.0.text_pager}}{% endif %}" />
+		    {% if form.text_pager.errors %}
+		      <p class="error">
+		        {% for error in form.text_pager.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+			</div>
+		</div>
+
+		<div class="spacer_medium"></div>
+
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <span class="radius secondary label">Incident Greeting Text</span><br><br>
+	    </div>
+	  </div>
+			
+		<div class="row">
+			<div class="large-11 columns {% if form.incident_greeting.errors %}error{% endif %}">
+		 		<textarea name="incident_greeting" class="config_email" placeholder="test" maxlength="1000">{% if form.incident_greeting.data %}{{form.incident_greeting.data}}{% else %}{{email_config.0.incident_greeting}}{% endif %}</textarea>
+		    {% if form.incident_greeting.errors %}
+		      <p class="error">
+		        {% for error in form.incident_greeting.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+			</div>
+		</div>
+
+		<div class="spacer_medium"></div>
+
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <span class="radius secondary label">Incident Update Text</span><br><br>
+	    </div>
+	  </div>
+			
+		<div class="row">
+			<div class="large-11 columns {% if form.incident_update.errors %}error{% endif %}">
+		 		<textarea name="incident_update" class="config_email" placeholder="test" maxlength="1000">{% if form.incident_update.data %}{{form.incident_update.data}}{% else %}{{email_config.0.incident_update}}{% endif %}</textarea>
+		    {% if form.incident_update.errors %}
+		      <p class="error">
+		        {% for error in form.incident_update.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+			</div>
+		</div>
+
+		<div class="spacer_medium"></div>
+
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <span class="radius secondary label">Maintenance Greeting Text</span><br><br>
+	    </div>
+	  </div>
+
+		<div class="row">
+			<div class="large-11 columns {% if form.maintenance_greeting.errors %}error{% endif %}">
+		 		<textarea name="maintenance_greeting" class="config_email" placeholder="test" maxlength="1000">{% if form.maintenance_greeting.data %}{{form.maintenance_greeting.data}}{% else %}{{email_config.0.maintenance_greeting}}{% endif %}</textarea>
+		    {% if form.maintenance_greeting.errors %}
+		      <p class="error">
+		        {% for error in form.maintenance_greeting.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+			</div>
+		</div>
+
+		<div class="spacer_medium"></div>
+
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <span class="radius secondary label">Maintenance Update Text</span><br><br>
+	    </div>
+	  </div>
+		
+		<div class="row">
+			<div class="large-11 columns {% if form.maintenance_update.errors %}error{% endif %}">
+		 		<textarea name="maintenance_update" class="config_email" placeholder="test" maxlength="1000">{% if form.maintenance_update.data %}{{form.maintenance_update.data}}{% else %}{{email_config.0.maintenance_update}}{% endif %}</textarea>
+		    {% if form.maintenance_update.errors %}
+		      <p class="error">
+		        {% for error in form.maintenance_update.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+			</div>
+		</div>
+
+		<div class="spacer_medium"></div>
+
+		<div class="row">
+		  <div class="large-11 columns">
+		    <input type="submit" class="small button secondary" value="Save"/>
+		  </div>
+		</div>
+
+		<div class="spacer_medium"></div>
+		
+	</div>
+</div>
+
+</form>
+
+{% endblock %}
+
+
+

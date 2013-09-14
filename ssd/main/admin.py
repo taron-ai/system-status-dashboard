@@ -16,7 +16,7 @@
 
 """DJango admin configuration for the SSD Project
 
-   Any models are now managed through custom admin pages within SSD.
+   All models are now managed through custom admin pages within SSD.
 
 """
 

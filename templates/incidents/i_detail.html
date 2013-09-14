@@ -20,6 +20,35 @@
 
 {% block content %}
 
+{# If there are messages in the queue, then show them.  There should only be one message #}
+{% if messages %}
+<div class="row">
+  <div class="large-12 columns">
+    {% for message in messages %}
+      {% if message.tags %}
+        {% if message.tags == 'success' %}
+          <font class="success">{{message}}</font>
+        {% else %}
+          {% if message.tags == 'error' %}
+            <font class="error">{{message}}</font>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    <br><br>
+  </div>
+</div>
+{% endif %}
+
+{% if user.is_authenticated %}
+<div class="row">
+  <div class="large-4 columns">
+    <a href="/admin/i_update?id={{id}}"><div class="genericon genericon-edit genericon_container"></div></a>
+  </div>
+</div>
+<div class="spacer_medium"></div>
+{% endif %} 
+
 <div class="row">
   <div class="large-9 columns">
     <p>This page contains all relevant information on this incident.  Check back here at any time to obtain current information on the status of this incident.</p>
@@ -32,7 +61,7 @@
     <p>Incident Status: 
       <b>
       {% if detail.0.event_time__end %}
-      CLOSED ({{detail.0.event_time__end|date:"Y-m-d H:i:s"}})
+      CLOSED ({{detail.0.event_time__end|date:"Y-m-d H:i:s e"}})
       {% else %}
       OPEN
       {% endif %}
@@ -100,18 +129,6 @@
   </div>
 </div>
 
- 
-{% if user.is_authenticated %}
-<div class="row">
-  <div class="large-4 columns">
-    <form method="POST" action="/admin/i_delete">
-      {% csrf_token %}
-      <a href="/admin/i_update?id={{id}}" class="small button secondary">update</a>&nbsp;&nbsp;
-      <input type="hidden" name="id" value="{{id}}">
-      <input type="submit" class="small button secondary" value="delete"/>
-    </form>
-  </div>
-</div>
-{% endif %} 
+<div class="spacer_medium"></div>
 
 {% endblock %}

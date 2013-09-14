@@ -20,6 +20,9 @@ System Status Dashboard Stylesheets
 */
 
 
+/*
+
+
 
 /* GLOBAL FONT */
 * {
@@ -71,6 +74,16 @@ font.heading {
 }
 font.all_good {
    color: #16AF48;
+}
+font.success {
+   color: #16AF48;
+   font-weight: bold;
+   font-size: 12px;
+}
+font.error {
+   font-size: 12px;
+   font-weight: bold;
+   color: red;
 }
 font.footer {
    font-size: 10px;
@@ -174,6 +187,7 @@ table.jump_to td {
 
 
 
+
 /* DIVS AND SPACERS */
 div.border {
 	border: 1px solid #B0C5D0;
@@ -200,7 +214,11 @@ div.graph_container {
    border-color: #B0C5D0;
    border-radius:5px;
 }
-
+/* Genericon containers (vertical center)*/
+div.genericon_container {
+   display: table-cell; 
+   vertical-align: top;
+}
 
 
 /* TEXTAREAS */
@@ -209,6 +227,18 @@ textarea {
 }
 textarea.small {
 	height: 85px;
+}
+textarea.config {
+   height: 85px;
+   width: 300px;
+}
+textarea.config_messages {
+   height: 85px;
+   width: 500px;
+}
+textarea.config_email {
+   height: 85px;
+   width: 500px;
 }
 
 
@@ -267,11 +297,23 @@ input.date {
 input.service {
    width: 300px;
 }
-select.email {
-   width: 250px;
-}
 input.email {
    width: 250px;
+}
+select.config_email {
+   width: 100px;
+}
+input.config_logo {
+   width: 400px;
+}
+input.config_systemurl {
+   width: 400px;
+}
+input.config_ireport_size {
+   width: 75px;
+}
+input.config_ireport_path {
+   width: 400px;
 }
 
 
@@ -287,6 +329,12 @@ input.email {
     padding: 20px 0 1em;
 }
 
+
+
+/* Genericons */
+.genericon {
+   font-size: 25px;
+}
 
 
 

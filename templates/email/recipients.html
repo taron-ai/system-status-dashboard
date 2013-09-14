@@ -1,0 +1,118 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<div class="row">
+  {# This is a large-3 side nav #}
+  {% include "admin/side_nav.html" %}
+
+  <div class="large-9 columns">
+
+    <div class="row">
+      <div class="large-12 columns">
+        <h4>Email Recipients</h4>
+        <p>Use this form to add email recipients, which will then be available when sending notifications about incidents or scheduled maintenance.</p>
+        <hr>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        {# If there are messages in the queue, then show them.  There should only be one message #}
+        {% if messages %}
+          {% for message in messages %}
+            {% if message.tags %}
+              {% if message.tags == 'success' %}
+                <font class="success">{{message}}</font>
+              {% else %}
+                {% if message.tags == 'error' %}
+                  <font class="error">{{message}}</font>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          <br><br>
+        {% else %}
+        <br><br>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">Email Addresses</span><br><br>
+        <form method="POST" action="/admin/email_delete">
+        {% csrf_token %}
+
+          {% if emails %}
+          <table>
+           <tr>
+            <th>Delete</th>
+            <th>Email Address</th>
+           </tr>
+              
+           {% for row in emails %}
+           <tr>
+            <td valign="top" style="text-align: center;"><input type="checkbox" name="id" value="{{row.id}}" /></td>
+            <td valign="top">{{row.email}}</td>
+           </tr>
+           {% endfor %}
+          </table>
+          
+          <input type="submit" class="small button secondary" value="delete"/>
+          {% if form.id.errors %}
+            <p class="error">{% for error in form.id.errors %}{{error}}{% endfor %}</p>
+          {% endif %}
+        </form>
+        
+        {% else %}
+        No email recipients defined
+        {% endif %}
+        </fieldset>
+        </form>
+      </div>
+    </div>
+
+    <div class="spacer_medium"></div>  
+
+    <div class="row">
+      <div class="large-12 columns {% if form.email.errors %}error{% endif %}">
+
+        <span class="radius secondary label">Add Email Address</span><br><br>
+        <form method="POST" action="/admin/email_recipients">
+         {% csrf_token %}
+            
+          <input name="email" type="text" class="email" placeholder="Enter a valid email address" value="{% if form.recipient.data %}{{form.recipient.data}}{% endif %}">
+          {% if form.email.errors %}
+          <p class="error">
+            {% for error in form.email.errors %}{{error}}{% endfor %}
+          </p><br>
+          {% endif %}
+
+          <input type="submit" class="small button secondary" value="add"/>
+        </form> 
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

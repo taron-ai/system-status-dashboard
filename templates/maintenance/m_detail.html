@@ -20,6 +20,35 @@
 
 {% block content %}
 
+{# If there are messages in the queue, then show them.  There should only be one message #}
+{% if messages %}
+<div class="row">
+  <div class="large-12 columns">
+    {% for message in messages %}
+      {% if message.tags %}
+        {% if message.tags == 'success' %}
+          <font class="success">{{message}}</font>
+        {% else %}
+          {% if message.tags == 'error' %}
+            <font class="error">{{message}}</font>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    <br><br>
+  </div>
+</div>
+{% endif %}
+
+{% if user.is_authenticated %}
+<div class="row">
+  <div class="large-4 columns">
+    <a href="/admin/m_update?id={{id}}"><div class="genericon genericon-edit genericon_container"></div></a>
+  </div>
+</div>
+<div class="spacer_medium"></div>
+{% endif %} 
+
 <div class="row">
   <div class="large-8 columns">
     <p>This page contains all relevant information on this scheduled maintenance.  Check back here at any time to obtain current information on the status of this scheduled maintenance.</p>
@@ -134,16 +163,6 @@
 
 <div class="row">
   <div class="large-4 columns">
-    <div class="horiz_stack">
-      <form method="POST" action="/admin/m_delete">
-        {% csrf_token %}
-        <input type="hidden" name="id" value="{{id}}">      
-        <input type="submit" class="small button secondary" value="delete"/>
-      </form>
-    </div>
-    <div class="horiz_stack">
-      <a href="/admin/m_update?id={{id}}" class="small button secondary">update</a>
-    </div>
     <div class="horiz_stack">
       <form method="POST" name="m_email" action="/admin/m_email">
         {% csrf_token %}

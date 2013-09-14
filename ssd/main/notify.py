@@ -83,8 +83,7 @@ class email:
         # Instantiate the configuration value getter
         cv = config_value.config_value()
 
-        # Which services were impacted
-        services = Event.objects.filter(id=id).values('event_service__service__service_name')
+
 
         # Obain the incident detail
         detail = Event.objects.filter(id=id).values(
@@ -95,6 +94,9 @@ class email:
                                                     'event_user__user__first_name',
                                                     'event_user__user__last_name'
                                                     )
+
+        # Which services were impacted
+        services = Event.objects.filter(id=id).values('event_service__service__service_name')
 
         # Obain any incident updates
         updates = Event.objects.filter(id=id).values(
@@ -184,25 +186,32 @@ class email:
         cv = config_value.config_value()
 
         # Obain the incident detail
-        detail = Maintenance.objects.filter(id=id).values('start','end','description','impact','coordinator','started','completed')
+        detail = Event.objects.filter(id=id).values(
+                                                    'event_time__start',
+                                                    'event_time__end',
+                                                    'event_description__description',
+                                                    'event_impact__impact',
+                                                    'event_coordinator__coordinator',
+                                                    'event_status__status'
+                                                    )
 
         # Which services were impacted
-        services = Service_Maintenance.objects.filter(maintenance_id=id).values('service_name_id__service_name')
+        services = Event.objects.filter(id=id).values('event_service__service__service_name')
 
         # Obain any incident updates
-        updates = Maintenance_Update.objects.filter(maintenance_id=id).values(
-                                                                              'id',
-                                                                              'date',
-                                                                              'user_id__first_name',
-                                                                              'user_id__last_name',
-                                                                              'detail'
-                                                                             ).order_by('id')
+        updates = Event.objects.filter(id=id).values(
+                                                    'event_update__id',
+                                                    'event_update__date',
+                                                    'event_update__update',
+                                                    'event_update__user__first_name',
+                                                    'event_update__user__last_name'
+                                                    ).order_by('event_update__id')
 
         # Obtain the recipient or company name
         recipient_name = cv.value('recipient_name')
 
         # Obtain the recipient email address
-        recipient_maintenance = Recipient.objects.filter(id=email_id).values('email_address')[0]['email_address']
+        recipient_maintenance = Email.objects.filter(id=email_id).values('email')[0]['email']
 
         # Obtain the sender email address
         email_from = cv.value('email_from')

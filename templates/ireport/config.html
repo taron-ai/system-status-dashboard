@@ -1,0 +1,158 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<form method="POST" action="/admin/ireport_config">
+{% csrf_token %}
+
+<div class="row">
+	{# This is a large-3 side nav #}
+	{% include "admin/side_nav.html" %}
+
+	<div class="large-9 columns">
+
+    <div class="row">
+      <div class="large-12 columns">
+        <h4>Incident Report Configuration</h4>
+        <p>Complete the relevant fields below to enable your users to submit incident reports.</p>
+        <hr>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        {# If there are messages in the queue, then show them.  There should only be one message #}
+        {% if messages %}
+          {% for message in messages %}
+            {% if message.tags %}
+              {% if message.tags == 'success' %}
+                <font class="success">{{message}}</font>
+              {% else %}
+                {% if message.tags == 'error' %}
+                  <font class="error">{{message}}</font>
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          <br><br>
+        {% else %}
+        <br><br>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">Enable Incident Reports</span><br><br>
+      </div>
+    </div>
+
+		<div class="row">
+			<div class="large-12 columns">
+       <label><input type="checkbox" name="enabled" {% if ireport_config.0.enabled %}checked{% endif %} />
+        Enabled</label>
+        {% if form.enabled.errors %}
+        <p class="error">
+          {% for error in form.enabled.errors %}{{error}}{% endfor %}
+        </p>
+        {% endif %}
+			</div>
+		</div>
+
+  	<div class="spacer_medium"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">Enable File Uploads</span><br><br>
+      </div>
+    </div>
+
+		<div class="row">
+			<div class="large-12 columns">
+       <label><input type="checkbox" name="upload_enabled" {% if form.upload_enabled.data %}checked{% else %}{% if ireport_config.0.upload_enabled %}checked{% endif %}{% endif %} />
+        Enabled</label>
+        {% if form.upload_enabled.errors %}
+        <p class="error">
+          {% for error in form.upload_enabled.errors %}{{error}}{% endfor %}
+        </p>
+        {% endif %}
+			</div>
+		</div>
+
+  	<div class="spacer_medium"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">File Upload Path</span><br><br>
+      </div>
+    </div>
+		
+		<div class="row">
+			<div class="large-12 columns {% if form.upload_path.errors %}error{% endif %}">
+		 		<input type="text" name="upload_path" class="config_ireport_path" placeholder="Enter a valid file system path" value="{% if form.upload_path.data %}{{form.upload_path.data}}{% else %}{{ireport_config.0.upload_path}}{% endif %}" />
+		    {% if form.upload_path.errors %}
+		      <p class="error">
+		        {% for error in form.upload_path.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+		  </div>
+		</div>
+
+  	<div class="spacer_medium"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">Uploaded File Size</span><br><br>
+      </div>
+    </div>
+
+		<div class="row">
+			<div class="large-12 columns {% if form.file_size.errors %}error{% endif %}">
+		 		<input type="text" name="file_size" class="config_ireport_size" placeholder="1024" value="{% if form.file_size.data %}{{form.file_size.data}}{% else %}{{ireport_config.0.file_size}}{% endif %}" />
+		    {% if form.file_size.errors %}
+		      <p class="error">
+		        {% for error in form.file_size.errors %}{{error}}{% endfor %}
+		        <br><br>
+		      </p>
+		    {% endif %} 
+		  </div>
+		</div>
+		
+  	<div class="spacer_medium"></div>
+
+    <div class="row">
+		  <div class="large-11 columns">
+		    <input type="submit" class="small button secondary" value="Save"/>
+		  </div>
+		</div>
+
+		<div class="spacer_medium"></div>
+		
+	</div>
+</div>
+
+</form>
+
+{% endblock %}
+
+
+

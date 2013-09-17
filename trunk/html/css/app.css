@@ -75,16 +75,6 @@ font.heading {
 font.all_good {
    color: #16AF48;
 }
-font.success {
-   color: #16AF48;
-   font-weight: bold;
-   font-size: 12px;
-}
-font.error {
-   font-size: 12px;
-   font-weight: bold;
-   color: red;
-}
 font.footer {
    font-size: 10px;
 }
@@ -214,11 +204,42 @@ div.graph_container {
    border-color: #B0C5D0;
    border-radius:5px;
 }
-/* Genericon containers (vertical center)*/
-div.genericon_container {
-   display: table-cell; 
-   vertical-align: top;
+/* Input containers to provide padding b/t label */
+div.input_container {
+   padding-top: 5px;
 }
+/* Block container for descriptive content that will be displayed under descriptive labels 
+These will usually contain sublabel spans */
+div.sublabel_container {
+   padding-top: 5px;
+   padding-bottom: 8px;
+}
+
+
+
+/* SPANs */
+/* inline element for displaying text under descriptive labels, usually in forms */
+span.sublabel {
+   font-size: 12px;
+   color: black;
+}
+/* inline element for displaying success messages */
+span.success {
+   color: #16AF48;
+   font-weight: bold;
+   font-size: 12px;
+}
+/* inline element for displaying error messages */
+span.error {
+   font-size: 12px;
+   font-weight: bold;
+   color: red;
+}
+/* Genericon containers within tables (vertical center)*/
+span.genericon_container {
+   display: table-cell;
+}
+
 
 
 /* TEXTAREAS */
@@ -240,6 +261,10 @@ textarea.config_email {
    height: 85px;
    width: 500px;
 }
+textarea.ireport_desc {
+   height: 50px;
+}
+
 
 
 
@@ -310,7 +335,7 @@ input.config_systemurl {
    width: 400px;
 }
 input.config_ireport_size {
-   width: 75px;
+   width: 100px;
 }
 input.config_ireport_path {
    width: 400px;
@@ -331,11 +356,24 @@ input.config_ireport_path {
 
 
 
-/* Genericons */
+/* GENERICONS */
 .genericon {
    font-size: 25px;
 }
+.genericon.caution {
+   font-size: 22px;
+   color: red;
+}
 
 
+
+/* SIDE NAV */
+.side-nav li.active a:first-child {
+      color: #005596;
+}
+.side-nav li a {
+   color: black;
+   font-size: 12px;
+}
 
 

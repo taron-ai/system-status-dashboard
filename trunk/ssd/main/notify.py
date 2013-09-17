@@ -21,13 +21,14 @@
 """
 
 
-from ssd.main.models import Config
-from ssd.main.models import Email
-from ssd.main.models import Event
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
 from django.template import Context
 from django.utils import timezone as jtz
+from ssd.main.models import Config
+from ssd.main.models import Email
+from ssd.main.models import Event
+from ssd.main.models import Config_Email
 from ssd.main import config_value
 
 
@@ -56,11 +57,11 @@ class email:
         cv = config_value.config_value()
 
         # Obtain the recipient email address
-        recipient_pager = cv.value('recipient_pager')
+        text_pager = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('text_pager')[0]['text_pager']
 
         # Obtain the sender email address and instantiate the message
-        email_from = cv.value('email_from')
-        pager = EmailMessage('Incident Alert',message,email_from,[recipient_pager],None,None,None)
+        from_address = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('from_address')[0]['from_address']
+        pager = EmailMessage('Incident Alert',message,from_address,[text_pager],None,None,None)
 
         # If there is an issue, the user will be notified
         try:

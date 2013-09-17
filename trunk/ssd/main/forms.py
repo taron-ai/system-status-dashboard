@@ -22,11 +22,14 @@
 
 """
 
+import os
 import datetime
 import re
 from django import forms
 from django.conf import settings
 from ssd.main.models import Config
+from ssd.main.models import Config_Ireport
+
 
 
 ### VALIDATORS ###
@@ -35,10 +38,10 @@ def file_size(value):
     """Ensure file size is below the maximum allowed"""
 
     # Obtain the max file size
-    file_upload_size = Config.objects.filter(config_name='file_upload_size').values('config_value')[0]['config_value']
+    file_size = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('file_size')[0]['file_size']
 
-    if value.size > file_upload_size:
-        raise forms.ValidationError('File too large - please reduce the size of the upload to below %s bytes.' % file_upload_size)
+    if value.size > file_size:
+        raise forms.ValidationError('File too large (%s bytes) - please reduce the size of the upload to below %s bytes.' % (value.size,file_size))
 
 
 ### FIELDS ###
@@ -100,10 +103,12 @@ class MessagesConfigForm(forms.Form):
         if main_enabled and not main:
             # Make sure its an integer
             self._errors["main"] = self.error_class(['Please enter a system message'])
+            self._errors["main_enabled"] = self.error_class(['Cannot enable the system message without defining one'])
 
         if alert_enabled and not alert:
             # Make sure its an integer
             self._errors["alert"] = self.error_class(['Please enter a system alert'])
+            self._errors["alert_enabled"] = self.error_class(['Cannot enable the system alert without defining one'])
      
         # Return the full collection of cleaned data
         return cleaned_data
@@ -127,6 +132,7 @@ class LogoConfigForm(forms.Form):
         if logo_enabled and not url:
             # Make sure its an integer
             self._errors["url"] = self.error_class(['Please enter a logo url'])
+            self._errors["logo_enabled"] = self.error_class(['Cannot enable the logo without a logo defined'])
      
         # Return the full collection of cleaned data
         return cleaned_data
@@ -135,7 +141,7 @@ class LogoConfigForm(forms.Form):
 class SystemurlConfigForm(forms.Form):
     """Form for modifying the admin system url configuration"""
 
-    url = forms.CharField(required=False)
+    url = forms.URLField(required=False)
     url_enabled = forms.BooleanField(required=False)
 
 
@@ -150,6 +156,7 @@ class SystemurlConfigForm(forms.Form):
         if url_enabled and not url:
             # Make sure its an integer
             self._errors["url"] = self.error_class(['Please enter a system url'])
+            self._errors["url_enabled"] = self.error_class(['Cannot enable the system url without a url defined'])
      
         # Return the full collection of cleaned data
         return cleaned_data
@@ -159,6 +166,7 @@ class IreportConfigForm(forms.Form):
     """Form for modifying the admin incident report configuration"""
 
     enabled = forms.BooleanField(required=False)
+    email_enabled = forms.BooleanField(required=False)
     upload_path = forms.CharField(required=False)
     upload_enabled = forms.BooleanField(required=False)
     file_size = forms.IntegerField(required=False)
@@ -172,15 +180,28 @@ class IreportConfigForm(forms.Form):
         upload_enabled = cleaned_data.get('upload_enabled')
         file_size = cleaned_data.get('file_size')
 
-        # Cannot enabled the logo if there is no url
+        # Cannot enable uploads w/o an upload path
         if upload_enabled and not upload_path:
-            # Make sure its an integer
             self._errors["upload_path"] = self.error_class(['Please enter a local upload path'])
+            self._errors["upload_enabled"] = self.error_class(['Cannot enable file uploads without defining an upload path'])
      
         # File size needs to be larger than 0
-        if file_size and file_size == 0:
-            # Make sure its an integer
+        if file_size == 0:
             self._errors["file_size"] = self.error_class(['Please enter a file size of at least 1'])
+
+        if file_size and file_size < 0:
+            # Make sure its a positive integer
+            self._errors["file_size"] = self.error_class(['Please enter a positive integer'])
+
+        # If the upload path is defined and does not exist or is not writable, that's an error
+        if upload_path:
+            # Writable?
+            if not os.access(upload_path, os.W_OK):
+                self._errors["upload_path"] = self.error_class(['This location is not writable by the Apache user'])
+
+            # Exists?
+            if not os.path.exists(upload_path):
+                self._errors["upload_path"] = self.error_class(['This location does not exist'])
 
         # Return the full collection of cleaned data
         return cleaned_data
@@ -258,6 +279,12 @@ class AddEmailForm(forms.Form):
     """Form for adding email recipients"""
 
     email = forms.EmailField(required=True)
+
+
+class IncidentReportListForm(forms.Form):
+    """Form for querying incident reports"""
+
+    page = forms.IntegerField(required=False)
 
 
 class RemoveEmailForm(forms.Form):

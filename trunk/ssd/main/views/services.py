@@ -107,7 +107,7 @@ def services_delete(request):
 
                 # Part of any incidents or maintenances?
                 if Event_Service.objects.filter(service_id=id):
-                    return system_message(request,True,'At least one of the services you are attempting to delete is currently part of an incident or maintenance.  Please remove the service from the incident/maintenance, or delete the incident/maintenance and then delete the service.')
+                    return system_message(request,True,'At least one of the services you are attempting to delete is currently part of an event.  Please remove the service from the event, or delete the event and then delete the service.')
                 # Ok, remove it
                 else:
                     Service.objects.filter(id=id).delete()

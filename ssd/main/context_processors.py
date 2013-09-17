@@ -20,7 +20,8 @@
    display characteristics of the header (e.g. don't show the top nav)
 
 """
-   
+
+import pytz
 from ssd.main.models import Config_Logo
 from ssd.main.models import Config_Ireport
 from django.conf import settings
@@ -95,3 +96,12 @@ def redirect(request):
     # them back to the home page after login
     else:
         return{'next':'/'}
+
+
+def timezones(request):
+    """Populate the timezones in the sticky footer timezone picker"""
+
+    # Obtain all timezones (put this in a context processor)
+    timezones = pytz.all_timezones
+
+    return {'timezones': timezones }

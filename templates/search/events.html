@@ -20,28 +20,8 @@
 
 {% block content %}
 
-<div class="row">
-  <div class="large-10 large-centered columns">
-
-    <div class="panel">
-      {% if status %}
-        <p class="error" style="font-size: 14px;">
-          {{message}}
-        </p>
-      {% else %}
-        <p style="color: green; font-weight:bold;">{{message}}</p>
-      {% endif %}
-
-      <br>
-
-      <script>
-        if (document.referrer != '') {
-          document.write('<a href="' + document.referrer + '">Go back</a>');
-        }
-      </script>
-
-    </div>
-  </div>
-</div>
 
 {% endblock %}
+
+
+

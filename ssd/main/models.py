@@ -165,35 +165,6 @@ class Event_User(models.Model):
     user = models.ForeignKey(User)
 
 
-class Report(models.Model):
-    """User reported issues"""
-
-    # Obtain the custom upload location
-    fs = FileSystemStorage(Config.objects.filter(config_name='upload_path').values('config_value')[0]['config_value'])
-
-    def _upload_to(instance, filename):
-        """Rename uploaded images to a random (standard) name"""
-
-        # Setup the file path to be unique so we don't fill up directories
-        file_path = time.strftime('%Y/%m/%d')
-
-        # Create a unique filename
-        file_name = uuid.uuid4().hex
-
-        # Save the original extension, if its there
-        extension = os.path.splitext(filename)[1]
-
-        # Return the path and file
-        return 'uploads/screenshots/%s/%s%s' % (file_path,file_name,extension)
-
-    date = models.DateTimeField(null=False,blank=False)
-    name = models.CharField(null=False,blank=False,max_length=50)
-    email = models.CharField(null=False,blank=False,max_length=50)
-    detail = models.CharField(null=False,blank=False,max_length=160)
-    extra = models.CharField(null=True,blank=True,max_length=1000)
-    screenshot1 = models.ImageField(storage=fs,upload_to=_upload_to)
-    screenshot2 = models.ImageField(storage=fs,upload_to=_upload_to)
-
 
 class Escalation(models.Model):
     """Escalation Contacts"""
@@ -264,6 +235,40 @@ class Config_Ireport(models.Model):
     """
 
     enabled = models.BooleanField(blank=False)
+    email_enabled = models.BooleanField(blank=False)
     upload_enabled = models.BooleanField(blank=False)
-    upload_path = models.CharField(null=False,blank=False,max_length=500)
-    file_size = models.PositiveIntegerField(max_length=5)
+    upload_path = models.CharField(null=False,blank=True,max_length=500)
+    file_size = models.IntegerField(null=False,blank=True,max_length=5)
+
+
+class Ireport(models.Model):
+    """User reported issues"""
+
+    # Obtain the user defined upload location
+    # This needs to match the wsgi.conf staticly served location or else images will not be viewable
+    fs = FileSystemStorage(Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('upload_path')[0]['upload_path'])
+
+    def _upload_to(instance, filename):
+        """Rename uploaded images to a random (standard) name"""
+
+        # Setup the file path to be unique so we don't fill up directories
+        file_path = time.strftime('%Y/%m/%d')
+
+        # Create a unique filename
+        file_name = uuid.uuid4().hex
+
+        # Save the original extension, if its there
+        extension = os.path.splitext(filename)[1]
+
+        # Return the path and file
+        return '%s/%s%s' % (file_path,file_name,extension)
+
+    date = models.DateTimeField(null=False,blank=False)
+    name = models.CharField(null=False,blank=False,max_length=50)
+    email = models.CharField(null=False,blank=False,max_length=50)
+    detail = models.CharField(null=False,blank=False,max_length=160)
+    extra = models.CharField(null=True,blank=True,max_length=1000)
+    screenshot1 = models.ImageField(storage=fs,upload_to=_upload_to)
+    screenshot2 = models.ImageField(storage=fs,upload_to=_upload_to)
+
+    

@@ -16,24 +16,25 @@
 
 """This module contains all of the incident report functions of ssd"""
 
+import os
 import datetime
 import pytz
-from django.utils import timezone as jtz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from ssd.main.models import Config_Ireport
 from ssd.main.forms import IreportConfigForm
-from ssd.main.models import Report
-from ssd.main.models import Service
-from ssd.main.models import Email
+from ssd.main.models import Ireport
 from ssd.main.forms import ReportIncidentForm
+from ssd.main.forms import IncidentReportListForm
+from ssd.main.forms import DeleteEventForm
+from ssd.main.forms import DetailForm
 from ssd.main import notify
-from ssd.main import config_value
 from ssd.main.views.system import system_message
 
 
@@ -44,12 +45,12 @@ def ireport(request):
 
     """
 
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
     # If this functionality is disabled in the admin, let the user know
-    if int(cv.value('report_incident_display')) == 0:
+    if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 0:
         return system_message(request,True,'Your system administrator has disabled this functionality')
+
+    # See if file uploads are anabled
+    enable_uploads = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('upload_enabled')[0]['upload_enabled']
 
     # If this is a POST, then check the input params and perform the
     # action, otherwise print the index page
@@ -72,7 +73,7 @@ def ireport(request):
 
             # Save the data
             # If file uploads are disabled but the user included them somehow, ignore them
-            if int(cv.value('enable_uploads')) == 1:
+            if enable_uploads == 1:
                 if 'screenshot1' in request.FILES:
                     screenshot1 = request.FILES['screenshot1']
                 else:
@@ -90,32 +91,31 @@ def ireport(request):
             
             # Save the data (if the admin has not setup the upload directory, it'll fail)
             try:
-                Report(date=report_time,
-                       name=name,
-                       email=email,
-                       detail=detail,
-                       extra=extra,
-                       screenshot1=screenshot1,
-                       screenshot2=screenshot2,
-                      ).save()
+                Ireport(date=report_time,
+                        name=name,
+                        email=email,
+                        detail=detail,
+                        extra=extra,
+                        screenshot1=screenshot1,
+                        screenshot2=screenshot2,
+                       ).save()
             except Exception as e:
                 return system_message(request,True,e)
 
             # If notifications are turned on, report the issue to the pager address
             # and save the return value for the confirmation page
             # If notifications are turned off, give the user a positive confirmation
-            
-            if int(cv.value('notify')) == 1:
+            if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('email_enabled')[0]['email_enabled'] == 1:
                 pager = notify.email()
                 pager_status = pager.page(detail)
             else:
                 pager_status = 'success'
 
             if pager_status == 'success':
-                message = cv.value('message_success')
+                message = 'Your message was successfully received and processed.'
                 return system_message(request,False,message)
             else:
-                message = cv.value('message_error')
+                message = 'There was an error processing your message'
                 message = '%s: %s' % (message,pager_status)
                 return system_message(request,True,message)
 
@@ -124,28 +124,12 @@ def ireport(request):
         form = ReportIncidentForm()
 
     # Print the page
-    # On a POST, the form will give back error values for printing in the template
-
-    # Help message
-    help = cv.value('help_report_incident')
-
-    # Obtain the default maintenance textfield text
-    instr_report_name = cv.value('instr_report_name')
-    instr_report_email = cv.value('instr_report_email')
-    instr_report_detail= cv.value('instr_report_detail')
-    instr_report_extra= cv.value('instr_report_extra')
-    
     return render_to_response(
        'ireport/ireport.html',
        {
           'title':'System Status Dashboard | Report Incident',
           'form':form,
-          'help':help,
-          'instr_report_name':instr_report_name,
-          'instr_report_email':instr_report_email,
-          'instr_report_detail':instr_report_detail,
-          'instr_report_extra':instr_report_extra,
-          'enable_uploads':int(cv.value('enable_uploads'))
+          'enable_uploads':enable_uploads
        },
        context_instance=RequestContext(request)
     )
@@ -167,6 +151,7 @@ def ireport_config(request):
         if form.is_valid():
             # Obtain the cleaned data
             enabled = form.cleaned_data['enabled']
+            email_enabled = form.cleaned_data['email_enabled']
             upload_path = form.cleaned_data['upload_path']
             upload_enabled = form.cleaned_data['upload_enabled']
             file_size = form.cleaned_data['file_size']
@@ -174,6 +159,7 @@ def ireport_config(request):
             # There should only ever be one record in this table
             Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).update(
                                                   enabled=enabled,
+                                                  email_enabled=email_enabled,
                                                   upload_path=upload_path,
                                                   upload_enabled=upload_enabled,
                                                   file_size=file_size
@@ -189,8 +175,7 @@ def ireport_config(request):
         form = IreportConfigForm
 
     # Obtain the email config
-
-    ireport_config = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled','upload_path','upload_enabled','file_size')
+    ireport_config = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled','email_enabled','upload_path','upload_enabled','file_size')
 
     # Print the page
     return render_to_response(
@@ -202,6 +187,184 @@ def ireport_config(request):
           'breadcrumbs':{'Admin':'/admin','Incident Report Configuration':'ireport_config'},
           'nav_section':'ireport',
           'nav_sub':'ireport_config'
+       },
+       context_instance=RequestContext(request)
+    )
+
+
+@login_required
+@staff_member_required
+def ireport_list(request):
+    """Incident Report List View
+
+    Show all incident reports
+
+    """
+
+    form = IncidentReportListForm(request.GET)
+
+    # Check the params
+    if form.is_valid():
+
+        page = form.cleaned_data['page']
+
+        # Obtain all open incidents
+        ireports_all = Ireport.objects.values('id','date','name','email','detail','extra','screenshot1','screenshot2').order_by('id')
+
+        # Create a paginator and paginate the list w/ 10 messages per page
+        paginator = Paginator(ireports_all, 10)
+
+        # Paginate them
+        try:
+            ireports = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, or is not given deliver first page.
+            ireports = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            ireports = paginator.page(paginator.num_pages)
+
+        # Print the page
+        return render_to_response(
+           'ireport/ireport_list.html',
+           {
+              'title':'System Status Dashboard | Incident Report List',
+              'ireports':ireports,
+              'breadcrumbs':{'Admin':'/admin','List Open Incident Reports':'ireport_list'},
+              'nav_section':'ireport',
+              'nav_sub':'ireport_list'
+           },
+           context_instance=RequestContext(request)
+        )
+
+    # Invalid form
+    else:
+        messages.add_message(request, messages.ERROR, 'Invalid request, please submit your request again.')
+        return HttpResponseRedirect('/admin/ireport_list')
+
+
+@login_required
+@staff_member_required
+def ireport_delete(request):
+    """Delete Incident Report Page
+
+    Delete an incident report given an id
+
+    """
+
+    # If it's a POST, then we are going to delete it after confirmation
+    if request.method == 'POST':
+        
+        # Check the form elements
+        form = DeleteEventForm(request.POST)
+
+        if form.is_valid():
+
+            # Obtain the cleaned data
+            id = form.cleaned_data['id']
+
+            # First, delete any screenshots
+            # Obtain the local uploads location
+            upload_path = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('upload_path')[0]['upload_path']
+            # Get any screenshots
+            screenshots = Ireport.objects.filter(id=id).values('screenshot1','screenshot2')
+            for screenshot in screenshots:
+                for name,file_path in screenshot.items():
+                    if file_path:
+                        # Remove the file
+                        try:
+                            os.remove('%s/%s' % (upload_path,file_path))
+                        except OSError:
+                            pass
+
+
+            # Delete the incident
+            Ireport.objects.filter(id=id).delete()
+
+            # Set a message that the delete was successful
+            messages.add_message(request, messages.SUCCESS, 'Incident report id:%s successfully deleted' % id)
+
+            # Redirect to the incident reports page
+            return HttpResponseRedirect('/admin/ireport_list')
+
+        # Invalid form submit
+        else:
+            # Set a message that the delete was not successful
+            messages.add_message(request, messages.ERROR, 'Incident report id:%s not deleted' % id)
+            
+            # Redirect to the incident reports page
+            return HttpResponseRedirect('/admin/ireport_list')
+
+    # If we get this far, it's a GET and we're looking for confirmation of the delete
+   
+    # Make sure we have an ID
+    form = DeleteEventForm(request.GET)
+    if form.is_valid():
+
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+
+        # Print the page (confirm they want to delete the incident)
+        return render_to_response(
+           'ireport/ireport_delete.html',
+           {
+              'title':'System Status Dashboard | Confirm Incident Report Delete',
+              'id':id,
+              'breadcrumbs':{'Admin':'/admin','List Open Incident Reports':'ireport_list'},
+              'nav_section':'ireport',
+              'nav_sub':'ireport_delete'
+           },
+           context_instance=RequestContext(request)
+        )
+
+        # Redirect to the incident reports page
+        return HttpResponseRedirect('/admin/ireport_list')
+
+    # Invalid request
+    else:
+        # Redirect to the incident reports page
+        return HttpResponseRedirect('/admin/ireport_list')
+
+
+def ireport_detail(request):
+    """Incident Report Detail View
+
+    Show all available information on an incident report
+
+    """
+
+    form = DetailForm(request.GET)
+
+    if form.is_valid():
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+
+    # Bad form
+    else:
+        # Redirect to the admin reports page
+        return HttpResponseRedirect('/admin')
+
+    # Obain the incident report detail
+    detail = Ireport.objects.filter(id=id).values(
+                                                'id',
+                                                'date',
+                                                'name',
+                                                'email',
+                                                'detail',
+                                                'extra',
+                                                'screenshot1',
+                                                'screenshot2'
+                                                )
+
+    # Print the page
+    return render_to_response(
+       'ireport/ireport_detail.html',
+       {
+          'title':'System Status Dashboard | Incident Report Detail',
+          'detail':detail,
+          'breadcrumbs':{'Admin':'/admin','Incident Report Detail':'ireport_list'},
+          'nav_section':'ireport',
+          'nav_sub':'ireport_detail'
        },
        context_instance=RequestContext(request)
     )

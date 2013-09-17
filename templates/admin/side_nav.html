@@ -1,4 +1,5 @@
 
+{# This is the side navigation pane that accompanies all admin pages #}
 <div class="large-3 columns">
     <div class="docs section-container accordion" data-section="accordion" data-options="one_up: false">
 	  <section class="section {% if nav_section == 'services' %}active{% endif %}">
@@ -58,6 +59,7 @@
 	    <div class="content">
 	      <ul class="side-nav">
 	        <li {% if nav_sub == 'ireport_config' %}class="active"{% endif %}><a href="/admin/ireport_config">Configuration</a></li>
+			<li {% if nav_sub == 'ireport_list' or nav_sub == 'ireport_delete' or nav_sub == 'ireport_detail' %}class="active"{% endif %}><a href="/admin/ireport_list">List/Delete Incident Reports</a></li>
 	      </ul>
 	    </div>
 	  </section>

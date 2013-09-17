@@ -111,17 +111,14 @@
   <div class="row">
     <div class="large-6 columns">
       <font class="footer">
-        Set your timezone:
+        Timezone: {{TIME_ZONE}}
         <br>
         <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post">
          {% csrf_token %}
            <select name="timezone" id="timezone" onchange='this.form.submit()'>
+             <option disabled selected>-- Change Timezone --</option>
            {% for timezone in timezones %}
-            {% if timezone == TIME_ZONE %}
-             <option value="{{timezone}}" selected="true">{{timezone}}</option>
-            {% else %}
              <option value="{{timezone}}">{{timezone}}</option>
-            {% endif %}
            {% endfor %}
            </select>
         </form>

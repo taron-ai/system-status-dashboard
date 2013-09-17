@@ -37,31 +37,13 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="large-12 columns">
-        {# If there are messages in the queue, then show them.  There should only be one message #}
-        {% if messages %}
-          {% for message in messages %}
-            {% if message.tags %}
-              {% if message.tags == 'success' %}
-                <font class="success">{{message}}</font>
-              {% else %}
-                {% if message.tags == 'error' %}
-                  <font class="error">{{message}}</font>
-                {% endif %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          <br><br>
-        {% else %}
-        <br><br>
-        {% endif %}
-      </div>
-    </div>
+    {# This is row consisting of 12 columns that will display all messages passed in the request #}
+    {% include "admin/messages.html" %}
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">System Message</span><br><br>
+        <span class="radius secondary label">System Message</span><br>
+        <div class="sublabel_container"><span class="sublabel">A message that will be displayed above the main dashboard.  It is suggested that you use this message as a greeting to your users and potentially, to direct them about how to report incidents or escalate issues.</span></div>
       </div>
     </div>
 		
@@ -69,22 +51,26 @@
 			<div class="large-12 columns {% if form.main.errors %}error{% endif %}">
 		 		<textarea name="main" class="config_messages" placeholder="Enter a system message" maxlength="1000">{% if form.main.data %}{{form.main.data}}{% else %}{{messages_config.0.main}}{% endif %}</textarea>
 		    {% if form.main.errors %}
-		      <p class="error">
-		        {% for error in form.main.errors %}{{error}}{% endfor %}
-		        <br><br>
-		      </p>
+        <br><span class="error">{% for error in form.main.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
 		  </div>
 		</div>
-		
+
+    <div class="spacer_medium"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">System Message Enabled</span><br>
+        <div class="sublabel_container"><span class="sublabel">Enable the system message.</span></div>
+      </div>
+    </div>		
+
 		<div class="row">
-			<div class="large-12 columns">
-       <label><input type="checkbox" name="main_enabled" {% if messages_config.0.main_enabled %}checked{% endif %} />
+			<div class="large-12 columns {% if form.main_enabled.errors %}error{% endif %}">
+       <label><input type="checkbox" name="main_enabled" {% if form.main_enabled.data %}checked{% else %}{% if messages_config.0.main_enabled %}checked{% endif %}{% endif %} />
         Enabled</label>
         {% if form.main_enabled.errors %}
-        <p class="error">
-          {% for error in form.main_enabled.errors %}{{error}}{% endfor %}
-        </p>
+        <span class="error">{% for error in form.main_enabled.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
 			</div>
 		</div>
@@ -93,7 +79,8 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">System Alert</span><br><br>
+        <span class="radius secondary label">System Alert</span><br>
+        <div class="sublabel_container"><span class="sublabel">A prominent red message that will be displayed above the main dashboard.</span></div>
       </div>
     </div>
 		
@@ -101,26 +88,31 @@
 			<div class="large-12 columns {% if form.alert.errors %}error{% endif %}">
 		 		<textarea name="alert" class="config_messages" placeholder="Enter a system alert" maxlength="1000">{% if form.alert.data %}{{form.alert.data}}{% else %}{{messages_config.0.alert}}{% endif %}</textarea>
 		    {% if form.alert.errors %}
-		      <p class="error">
-		        {% for error in form.alert.errors %}{{error}}{% endfor %}
-		        <br><br>
-		      </p>
+        <br><span class="error">{% for error in form.alert.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %}
 		  </div>
 		</div>
+
+    <div class="spacer_medium"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">System Alert Enabled</span><br>
+        <div class="sublabel_container"><span class="sublabel">Enable the System Alert.  You may activate this message when you need to send an urgent message to your users.</span></div>
+      </div>
+    </div>
+
 		<div class="row">
-			<div class="large-12 columns">
-       <label><input type="checkbox" name="alert_enabled" {% if messages_config.0.alert_enabled %}checked{% endif %} />
+			<div class="large-12 columns {% if form.alert_enabled.errors %}error{% endif %}">
+       <label><input type="checkbox" name="alert_enabled" {% if form.alert_enabled.data %}checked{% else %}{% if messages_config.0.alert_enabled %}checked{% endif %}{% endif %} />
         Enabled</label>
         {% if form.alert_enabled.errors %}
-        <p class="error">
-          {% for error in form.alert_enabled.errors %}{{error}}{% endfor %}
-        </p>
+        <span class="error">{% for error in form.alert_enabled.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
 			</div>
 		</div>
 
-  	<div class="spacer_medium"></div>
+  	<div class="spacer_small"></div>
 
 		<div class="row">
 		  <div class="large-11 columns">

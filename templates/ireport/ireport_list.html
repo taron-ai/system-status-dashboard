@@ -1,0 +1,102 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+
+<div class="row">
+  {# This is a large-3 side nav #}
+  {% include "admin/side_nav.html" %}
+
+  <div class="large-9 columns">
+
+    <div class="row">
+      <div class="large-12 columns">
+        <h4>Incident Report List</h4>
+        <p>Listed below are all incident report events.</p>
+        <hr>
+      </div>
+    </div>
+
+    {# This is row consisting of 12 columns that will display all messages passed in the request #}
+    {% include "admin/messages.html" %}
+
+    {% if ireports %}
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="navigation">
+          {% if ireports.has_previous %}
+            <a href="?page={{ ireports.previous_page_number }}">&laquo;</a>
+          {% endif %}
+
+          <span>Page {{ ireports.number }} of {{ ireports.paginator.num_pages }}</span>
+
+          {% if ireports.has_next %}
+            <a href="?page={{ ireports.next_page_number }}">&raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    <div class="spacer_small"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <table>
+          <tr>
+            <th>ID</th>
+            <th width="190">Date/Time</th>
+            <th>Email</th>
+            <th>Description</th>
+            <th>Full Details</th>
+            <th>Delete</th>
+          </tr>
+          {% for ireport in ireports %}
+          <tr>
+            <td>{{ireport.id}}</td>
+            <td>{{ireport.date|date:"Y-m-d H:i:s e"}}</td>
+            <td>{{ireport.email}}</td>
+            <td>{{ireport.detail}}</td>
+            <td><a href="/admin/ireport_detail?id={{ireport.id}}"><span class="genericon genericon-summary genericon_container"></span></a></td>
+            <td><a href="/admin/ireport_delete?id={{ireport.id}}"><span class="genericon genericon-trash genericon_container"></span></a></td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="row">
+      <div class="large-12 columns">
+      <p>There are currently no incident reports.</p>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+
+{% endblock %}
+
+
+

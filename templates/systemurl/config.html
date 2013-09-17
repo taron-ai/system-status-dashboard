@@ -32,36 +32,18 @@
     <div class="row">
       <div class="large-12 columns">
         <h4>System Url Configuration</h4>
-        <p>Complete the relevant fields below to display a system url on any communication that SSD sends out.  The url should be a full url path.</p>
+        <p>Complete the relevant fields below to display a system url on any communication that SSD sends out.</p>
         <hr>
       </div>
     </div>
 
-    <div class="row">
-      <div class="large-12 columns">
-        {# If there are messages in the queue, then show them.  There should only be one message #}
-        {% if messages %}
-          {% for message in messages %}
-            {% if message.tags %}
-              {% if message.tags == 'success' %}
-                <font class="success">{{message}}</font>
-              {% else %}
-                {% if message.tags == 'error' %}
-                  <font class="error">{{message}}</font>
-                {% endif %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          <br><br>
-        {% else %}
-        <br><br>
-        {% endif %}
-      </div>
-    </div>
+    {# This is row consisting of 12 columns that will display all messages passed in the request #}
+    {% include "admin/messages.html" %}
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">System Url</span><br><br>
+        <span class="radius secondary label">System Url</span><br>
+        <div class="sublabel_container"><span class="sublabel">The system url should be a fully qualified domain name (e.g. www.domain.com).</span></div>
       </div>
     </div>
 		
@@ -69,22 +51,26 @@
 			<div class="large-12 columns {% if form.url.errors %}error{% endif %}">
 		 		<input type="text" name="url" class="config_systemurl" placeholder="Enter a system url" value="{% if form.url.data %}{{form.url.data}}{% else %}{{systemurl_config.0.url}}{% endif %}" />
 		    {% if form.url.errors %}
-		      <p class="error">
-		        {% for error in form.url.errors %}{{error}}{% endfor %}
-		        <br><br>
-		      </p>
+        <span class="error">{% for error in form.url.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
 		  </div>
 		</div>
-		
+
+    <div class="spacer_medium"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">System Url Enabled</span><br>
+        <div class="sublabel_container"><span class="sublabel">If enabled, the system url will be included in any communication that SSD sends out so that users will be directed back to the dashboard.</span></div>
+      </div>
+    </div>
+
 		<div class="row">
-			<div class="large-12 columns">
-       <label><input type="checkbox" name="url_enabled" {% if systemurl_config.0.url_enabled %}checked{% endif %} />
+			<div class="large-12 columns {% if form.url_enabled.errors %}error{% endif %}">
+       <label><input type="checkbox" name="url_enabled" {% if form.url_enabled.data %}checked{% else %}{% if systemurl_config.0.url_enabled %}checked{% endif %}{% endif %} />
         Enabled</label>
         {% if form.url_enabled.errors %}
-        <p class="error">
-          {% for error in form.url_enabled.errors %}{{error}}{% endfor %}
-        </p>
+        <span class="error">{% for error in form.url_enabled.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
 			</div>
 		</div>
@@ -97,7 +83,7 @@
 		  </div>
 		</div>
 
-		<div class="spacer_medium"></div>
+		<div class="spacer_small"></div>
 		
 	</div>
 </div>

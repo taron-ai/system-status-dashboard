@@ -292,12 +292,6 @@ def index(request):
     # Obtain the information text
     information = cv.value('information_main')
 
-    # Obtain all timezones
-    timezones = pytz.all_timezones
-
-    # Set the timezone to the user's requested timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
     # Print the page
     return render_to_response(
        'main/index.html',
@@ -309,7 +303,6 @@ def index(request):
           'alert':alert,
           'information':information,
           'count_data':count_data,
-          'timezones':timezones,
           'incident_timeline':incident_timeline,
           'maintenance_timeline':maintenance_timeline,
           'show_graph':show_graph

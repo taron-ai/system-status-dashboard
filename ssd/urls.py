@@ -80,19 +80,22 @@ urlpatterns = patterns('',
     url(r'^admin/email_delete$',            'ssd.main.views.email.email_delete'),
     url(r'^admin/email_recipients$',        'ssd.main.views.email.email_recipients'),
  
-    # Services configuration (admin functionality)
+    # Services Configuration (admin functionality)
     url(r'^admin/services$',                'ssd.main.views.services.services'),
     url(r'^admin/services_delete$',         'ssd.main.views.services.services_delete'),
 
-    # Messages configuration (admin functionality)
+    # Messages Configuration (admin functionality)
     url(r'^admin/messages_config$',         'ssd.main.views.messages.messages_config'),
 
-    # Logo configuration (admin functionality)
+    # Logo Configuration (admin functionality)
     url(r'^admin/logo_config$',             'ssd.main.views.logo.logo_config'),
 
-    # Url configuration (admin functionality)
+    # Url Configuration (admin functionality)
     url(r'^admin/systemurl_config$',        'ssd.main.views.systemurl.systemurl_config'),
 
-    # Incident report configuration (admin functionality)
-    url(r'^admin/ireport_config$',          'ssd.main.views.ireport.ireport_config')
+    # Incident Reports (admin functionality)
+    url(r'^admin/ireport_config$',          'ssd.main.views.ireport.ireport_config'),
+    url(r'^admin/ireport_detail$',          'ssd.main.views.ireport.ireport_detail'),
+    url(r'^admin/ireport_delete$',          'ssd.main.views.ireport.ireport_delete'),
+    url(r'^admin/ireport_list$',            'ssd.main.views.ireport.ireport_list')
 )

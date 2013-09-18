@@ -196,16 +196,20 @@
     <div class="row">
       <div class="large-6 columns">
         <span class="radius secondary label">Services Impacted</span><br><br>
-        {% for row in services %}
-          {# See if this service was previously selected and this is a failed form submit #}
-          <label><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %} />
-          {{row.service_name}}</label>
-          
-        {% endfor %}
-        {% if form.service.errors %}
-          <p class="error">
-            {% for error in form.service.errors %}{{error}}{% endfor %}
-          </p>
+        {% if services %}
+          {% for row in services %}
+            {# See if this service was previously selected and this is a failed form submit #}
+            <label><input type="checkbox" name="service" value="{{row.id}}" {% if row.id|slugify in affected_svcs %}checked{% endif %} />
+            {{row.service_name}}</label>
+            
+          {% endfor %}
+          {% if form.service.errors %}
+            <p class="error">
+              {% for error in form.service.errors %}{{error}}{% endfor %}
+            </p>
+          {% endif %}
+        {% else %}
+          <span class="error">No services defined, please <a href="/admin/services">add</a> some.</span>
         {% endif %}
       </div>
     </div>

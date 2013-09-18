@@ -32,50 +32,35 @@
 	  <div class="row">
 	    <div class="large-12 columns">
 	      <h4>Email Configuration</h4>
-	      <p>If you plan to notify your users via email, please complete the relevant fields below and don't forget to save your changes.</p>
+	      <p>If you plan to notify your users via email, please complete the relevant fields below.</p>
 	      <hr>
 	    </div>
 	  </div>
 
-    <div class="row">
-      <div class="large-12 columns">
-        {# If there are messages in the queue, then show them.  There should only be one message #}
-        {% if messages %}
-          {% for message in messages %}
-            {% if message.tags %}
-              {% if message.tags == 'success' %}
-                <font class="success">{{message}}</font>
-              {% else %}
-                {% if message.tags == 'error' %}
-                  <font class="error">{{message}}</font>
-                {% endif %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          <br><br>
-        {% else %}
-        <br><br>
-        {% endif %}
-      </div>
-    </div>
+    {# This is row consisting of 12 columns that will display all messages passed in the request #}
+    {% include "admin/messages.html" %}
     
 	  <div class="row">
 	    <div class="large-12 columns">
-	      <span class="radius secondary label">Email Format</span><br><br>
+        <span class="radius secondary label">Email Format</span><br>
+        <div class="sublabel_container"><span class="sublabel">Select the format for email messages sent from SSD.</span></div>
 	    </div>
 	  </div>
 		
 		<div class="row">
-			<div class="large-11 columns">
-		      <select name="email_format" class="config_email">
-		        {% if email_config.0.email_format %}
-			        <option value="1" selected="true">html</option>
-			        <option value="">text</option>
-		        {% else %}
-			        <option value="1">html</option>
-			        <option value="" selected="true">text</option>
-						{% endif %}
-		      </select>
+			<div class="large-11 columns {% if form.email_format.errors %}error{% endif %}">
+	      <select name="email_format" class="config_email">
+	        {% if email_config.0.email_format %}
+		        <option value="1" selected="true">html</option>
+		        <option value="">text</option>
+	        {% else %}
+		        <option value="1">html</option>
+		        <option value="" selected="true">text</option>
+					{% endif %}
+	      </select>
+		    {% if form.email_format.errors %}
+				<span class="error">{% for error in form.email_format.errors %}{{error}}<br>{% endfor %}<br></span>
+		    {% endif %}
 			</div>
 		</div>
 
@@ -83,18 +68,16 @@
 
 	  <div class="row">
 	    <div class="large-12 columns">
-	      <span class="radius secondary label">From Address</span><br><br>
+        <span class="radius secondary label">From Address</span><br>
+        <div class="sublabel_container"><span class="sublabel">Enter the email address that messages from SSD will originate from.</span></div>
 	    </div>
 	  </div>
 			
 		<div class="row">
 			<div class="large-11 columns {% if form.from_address.errors %}error{% endif %}">
-				<input type="text" name="from_address" class="email" value="{% if form.from_address.data %}{{form.from_address.data}}{% else %}{{email_config.0.from_address}}{% endif %}" />
+				<input type="text" name="from_address" class="email" placeholder="Enter a valid email address" value="{% if form.from_address.data %}{{form.from_address.data}}{% else %}{{email_config.0.from_address}}{% endif %}" />
 		    {% if form.from_address.errors %}
-		      <p class="error">
-		        {% for error in form.from_address.errors %}{{error}}{% endfor %}
-		        <br><br>
-		      </p>
+				<span class="error">{% for error in form.from_address.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
 			</div>
 		</div>
@@ -103,18 +86,16 @@
 
 	  <div class="row">
 	    <div class="large-12 columns">
-	      <span class="radius secondary label">Text Pager Recipient</span><br><br>
+        <span class="radius secondary label">From Address</span><br>
+        <div class="sublabel_container"><span class="sublabel">Enter the email address that alerts sent from SSD will be sent to (this is typically a text pager address).</span></div>
 	    </div>
 	  </div>
 			
 		<div class="row">
 			<div class="large-11 columns {% if form.text_pager.errors %}error{% endif %}">
-				<input type="text" name="text_pager" class="email" value="{% if form.text_pager.data %}{{form.text_pager.data}}{% else %}{{email_config.0.text_pager}}{% endif %}" />
+				<input type="text" name="text_pager" class="email" placeholder="Enter a valid email address" value="{% if form.text_pager.data %}{{form.text_pager.data}}{% else %}{{email_config.0.text_pager}}{% endif %}" />
 		    {% if form.text_pager.errors %}
-		      <p class="error">
-		        {% for error in form.text_pager.errors %}{{error}}{% endfor %}
-		        <br><br>
-		      </p>
+				<span class="error">{% for error in form.text_pager.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
 			</div>
 		</div>

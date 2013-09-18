@@ -81,6 +81,42 @@
 
     <div class="row">
       <div class="large-12 columns">
+        <span class="radius secondary label">Instructions</span><br>
+        <div class="sublabel_container"><span class="sublabel">A message that will be displayed on the report incident page.  Use this message to instruct your users about the type of data you require when submitting an incident report.</span></div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="large-12 columns {% if form.instructions.errors %}error{% endif %}">
+        <textarea name="instructions" class="config_messages" placeholder="Enter instructions" maxlength="1000">{% if form.instructions.data %}{{form.instructions.data}}{% else %}{{messages_config.0.instructions}}{% endif %}</textarea>
+        {% if form.instructions.errors %}
+        <br><span class="error">{% for error in form.instructions.errors %}{{error}}<br>{% endfor %}<br></span>
+        {% endif %} 
+      </div>
+    </div>
+
+    <div class="spacer_small"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="radius secondary label">Submit Message</span><br>
+        <div class="sublabel_container"><span class="sublabel">A message that will be displayed to the submitting user after their message has been received.  Use this message to let your users know what to expect as a next step.</span></div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="large-12 columns {% if form.submit_message.errors %}error{% endif %}">
+        <textarea name="submit_message" class="config_messages" placeholder="Enter a submit message" maxlength="1000">{% if form.submit_message.data %}{{form.submit_message.data}}{% else %}{{messages_config.0.submit_message}}{% endif %}</textarea>
+        {% if form.submit_message.errors %}
+        <br><span class="error">{% for error in form.submit_message.errors %}{{error}}<br>{% endfor %}<br></span>
+        {% endif %} 
+      </div>
+    </div>
+
+    <div class="spacer_small"></div>
+
+    <div class="row">
+      <div class="large-12 columns">
         <span class="radius secondary label">Enable File Uploads</span><br>
         <div class="sublabel_container"><span class="sublabel">If enabled, users will have the ability to attach up to 2 image files (most likely screenshots) to an incident report.  These images will be available for viewing by administrators.</span></div>
       </div>

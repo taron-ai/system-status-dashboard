@@ -67,7 +67,7 @@ def email_config(request):
                                                         maintenance_update=maintenance_update
                                                     )
 
-            messages.add_message(request, messages.SUCCESS, 'Recipient saved successfully')
+            messages.add_message(request, messages.SUCCESS, 'Email configuration saved successfully')
         else:
             messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')
 

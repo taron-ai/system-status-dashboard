@@ -29,46 +29,31 @@
     <div class="row">
       <div class="large-12 columns">
         <h4>Email Recipients</h4>
-        <p>Use this form to add email recipients, which will then be available when sending notifications about incidents or scheduled maintenance.</p>
+        <p>Use this form to manage email recipients.</p>
         <hr>
       </div>
     </div>
 
+    {# This is row consisting of 12 columns that will display all messages passed in the request #}
+    {% include "admin/messages.html" %}
+
     <div class="row">
       <div class="large-12 columns">
-        {# If there are messages in the queue, then show them.  There should only be one message #}
-        {% if messages %}
-          {% for message in messages %}
-            {% if message.tags %}
-              {% if message.tags == 'success' %}
-                <font class="success">{{message}}</font>
-              {% else %}
-                {% if message.tags == 'error' %}
-                  <font class="error">{{message}}</font>
-                {% endif %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          <br><br>
-        {% else %}
-        <br><br>
-        {% endif %}
+        <span class="radius secondary label">Email Addresses</span><br>
+        <div class="sublabel_container"><span class="sublabel">Email addresses listed below will be available for sending immediate alerts when creating incidents or maintenance events.</span></div>
       </div>
     </div>
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Email Addresses</span><br><br>
         <form method="POST" action="/admin/email_delete">
         {% csrf_token %}
-
           {% if emails %}
           <table>
            <tr>
             <th>Delete</th>
             <th>Email Address</th>
            </tr>
-              
            {% for row in emails %}
            <tr>
             <td valign="top" style="text-align: center;"><input type="checkbox" name="id" value="{{row.id}}" /></td>
@@ -76,13 +61,11 @@
            </tr>
            {% endfor %}
           </table>
-          
           <input type="submit" class="small button secondary" value="delete"/>
           {% if form.id.errors %}
-            <p class="error">{% for error in form.id.errors %}{{error}}{% endfor %}</p>
+            <span class="error">{% for error in form.id.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}
         </form>
-        
         {% else %}
         No email recipients defined
         {% endif %}
@@ -94,19 +77,20 @@
     <div class="spacer_medium"></div>  
 
     <div class="row">
-      <div class="large-12 columns {% if form.email.errors %}error{% endif %}">
+      <div class="large-12 columns">
+        <span class="radius secondary label">Add Email Address</span><br>
+        <div class="sublabel_container"><span class="sublabel">Enter a valid email address into the field below to make it available for selection.</span></div>
+      </div>
+    </div>
 
-        <span class="radius secondary label">Add Email Address</span><br><br>
+    <div class="row">
+      <div class="large-12 columns {% if form.email.errors %}error{% endif %}">
         <form method="POST" action="/admin/email_recipients">
          {% csrf_token %}
-            
           <input name="email" type="text" class="email" placeholder="Enter a valid email address" value="{% if form.recipient.data %}{{form.recipient.data}}{% endif %}">
           {% if form.email.errors %}
-          <p class="error">
-            {% for error in form.email.errors %}{{error}}{% endfor %}
-          </p><br>
+            <span class="error">{% for error in form.email.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}
-
           <input type="submit" class="small button secondary" value="add"/>
         </form> 
       </div>

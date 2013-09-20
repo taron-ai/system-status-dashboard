@@ -20,7 +20,7 @@
 
 """
 
-
+import logging
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
 from django.template import Context
@@ -30,6 +30,10 @@ from ssd.main.models import Email
 from ssd.main.models import Event
 from ssd.main.models import Config_Email
 from ssd.main import config_value
+
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
 
 
 class email:
@@ -68,12 +72,8 @@ class email:
             pager.send()
         except Exception, e:
             # Log to the error log and return the error to the caller
-            print e
-            return e
+            logger.error('Error sending text page: %s' % e)
         
-        # All good
-        return 'success'
-
     
     def incident(self,id,email_id,set_timezone,new):
         """

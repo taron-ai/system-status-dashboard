@@ -18,6 +18,7 @@
 
 import os
 import datetime
+import logging
 import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -28,6 +29,7 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from ssd.main.models import Config_Ireport
+from ssd.main.models import Config_Email
 from ssd.main.forms import IreportConfigForm
 from ssd.main.models import Ireport
 from ssd.main.forms import ReportIncidentForm
@@ -36,6 +38,10 @@ from ssd.main.forms import DeleteEventForm
 from ssd.main.forms import DetailForm
 from ssd.main import notify
 from ssd.main.views.system import system_message
+
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
 
 
 def ireport(request):
@@ -102,22 +108,16 @@ def ireport(request):
             except Exception as e:
                 return system_message(request,True,e)
 
-            # If notifications are turned on, report the issue to the pager address
-            # and save the return value for the confirmation page
-            # If notifications are turned off, give the user a positive confirmation
-            if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('email_enabled')[0]['email_enabled'] == 1:
-                pager = notify.email()
-                pager_status = pager.page(detail)
-            else:
-                pager_status = 'success'
+            # If email is enabled and report notifications are turned on, send an email to the pager address
+            if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
+                if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('email_enabled')[0]['email_enabled'] == 1:
+                    pager = notify.email()
+                    pager.page(detail)
 
-            if pager_status == 'success':
-                message = 'Your message was successfully received and processed.'
-                return system_message(request,False,message)
-            else:
-                message = 'There was an error processing your message'
-                message = '%s: %s' % (message,pager_status)
-                return system_message(request,True,message)
+            # Give the user a thank you and let them know what to expect
+            message = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('submit_message')[0]['submit_message']
+            return system_message(request,False,message)
+
 
     # Ok, its a GET or an invalid form so create a blank form
     else:
@@ -129,7 +129,8 @@ def ireport(request):
        {
           'title':'System Status Dashboard | Report Incident',
           'form':form,
-          'enable_uploads':enable_uploads
+          'enable_uploads':enable_uploads,
+          'instructions':Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('instructions')[0]['instructions']
        },
        context_instance=RequestContext(request)
     )
@@ -152,6 +153,8 @@ def ireport_config(request):
             # Obtain the cleaned data
             enabled = form.cleaned_data['enabled']
             email_enabled = form.cleaned_data['email_enabled']
+            instructions = form.cleaned_data['instructions']
+            submit_message = form.cleaned_data['submit_message']
             upload_path = form.cleaned_data['upload_path']
             upload_enabled = form.cleaned_data['upload_enabled']
             file_size = form.cleaned_data['file_size']
@@ -160,6 +163,8 @@ def ireport_config(request):
             Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).update(
                                                   enabled=enabled,
                                                   email_enabled=email_enabled,
+                                                  instructions=instructions,
+                                                  submit_message=submit_message,
                                                   upload_path=upload_path,
                                                   upload_enabled=upload_enabled,
                                                   file_size=file_size
@@ -175,7 +180,7 @@ def ireport_config(request):
         form = IreportConfigForm
 
     # Obtain the email config
-    ireport_config = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled','email_enabled','upload_path','upload_enabled','file_size')
+    ireport_config = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled','email_enabled','instructions','submit_message','upload_path','upload_enabled','file_size')
 
     # Print the page
     return render_to_response(
@@ -184,6 +189,7 @@ def ireport_config(request):
           'title':'System Status Dashboard | Incident Report Configuration',
           'ireport_config':ireport_config,
           'form':form,
+          'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
           'breadcrumbs':{'Admin':'/admin','Incident Report Configuration':'ireport_config'},
           'nav_section':'ireport',
           'nav_sub':'ireport_config'
@@ -209,7 +215,7 @@ def ireport_list(request):
         page = form.cleaned_data['page']
 
         # Obtain all open incidents
-        ireports_all = Ireport.objects.values('id','date','name','email','detail','extra','screenshot1','screenshot2').order_by('id')
+        ireports_all = Ireport.objects.values('id','date','name','email','detail','extra','screenshot1','screenshot2').order_by('-id')
 
         # Create a paginator and paginate the list w/ 10 messages per page
         paginator = Paginator(ireports_all, 10)

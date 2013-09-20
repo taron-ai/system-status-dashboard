@@ -30,7 +30,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.utils import timezone as jtz
 from ssd.main.models import Event
 from ssd.main.models import Event_Description
 from ssd.main.models import Event_Service
@@ -43,12 +42,12 @@ from ssd.main.models import Event_Impact
 from ssd.main.models import Event_Coordinator
 from ssd.main.models import Service
 from ssd.main.models import Email
+from ssd.main.models import Config_Email
 from ssd.main.forms import AddIncidentForm
 from ssd.main.forms import DeleteEventForm
 from ssd.main.forms import UpdateIncidentForm
 from ssd.main.forms import DetailForm
 from ssd.main import notify
-from ssd.main import config_value
 from ssd.main.views.system import system_message
 
 
@@ -61,15 +60,6 @@ def incident(request):
 
     """
 
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
-    # Obtain the timezone (or set to the default DJango server timezone)
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-    
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually
     if request.method == 'POST':
@@ -93,7 +83,7 @@ def incident(request):
             email_id = form.cleaned_data['email_id']
 
             # Combine the dates and times into datetime objects and set the timezones
-            tz = pytz.timezone(set_timezone)
+            tz = pytz.timezone(request.timezone)
             start = datetime.datetime.combine(s_date, s_time)
             start = tz.localize(start)
             if e_date and e_time:
@@ -139,12 +129,10 @@ def incident(request):
 
 
             # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
-            # allowed to be true if an email address is not defined.
-            # Don't send an email if notifications are disabled
-            if int(cv.value('notify')) == 1:
-                if broadcast:
-                    email = notify.email()
-                    email.incident(event_id,email_id,set_timezone,True)
+            # allowed to be true if an email address is not defined or if global email is disabled.
+            if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
+                email = notify.email()
+                email.incident(event_id,email_id,request.timezone,True)
 
             # Send them to the incident detail page for this newly created
             # incident
@@ -158,25 +146,14 @@ def incident(request):
         # There are no affected services selected yet
         affected_svcs = []
 
+        # Create a blank form
         form = AddIncidentForm()
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
 
-    # Obtain all current email addresses
+    # Obtain all current email addresses for the selector
     emails = Email.objects.values('id','email')
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
-    # Help message
-    help = cv.value('help_create_incident')
-
-    # See if email notifications are enabled
-    notifications = int(cv.value('notify'))
-
-    # Obtain the incident description text
-    instr_incident_description = cv.value('instr_incident_description')
 
     # Print the page
     return render_to_response(
@@ -187,9 +164,7 @@ def incident(request):
           'emails':emails,
           'affected_svcs':tuple(affected_svcs),
           'form':form,
-          'help':help,
-          'notifications':notifications,
-          'instr_incident_description':instr_incident_description,
+          'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
           'breadcrumbs':{'Admin':'/admin','Create Incident':'incident'},
           'nav_section':'event',
           'nav_sub':'incident'
@@ -208,15 +183,6 @@ def i_update(request):
 
     """
 
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
-    # Obtain the timezone (or set to the default DJango server timezone)
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually (service
     # addition/subtraction
@@ -234,6 +200,7 @@ def i_update(request):
 
             # Obtain the cleaned data
             id = form.cleaned_data['id']
+            detail = form.cleaned_data['detail']
             s_date = form.cleaned_data['s_date']
             s_time = form.cleaned_data['s_time']
             e_date = form.cleaned_data['e_date']
@@ -243,7 +210,7 @@ def i_update(request):
             email_id = form.cleaned_data['email_id']
 
             # Combine the dates and times into datetime objects and set the timezones
-            tz = pytz.timezone(set_timezone)
+            tz = pytz.timezone(request.timezone)
             start = datetime.datetime.combine(s_date, s_time)
             start = tz.localize(start)
             if e_date and e_time:
@@ -260,6 +227,9 @@ def i_update(request):
                 Event_Status.objects.filter(event_id=id).update(status=2)
             else:
                 Event_Status.objects.filter(event_id=id).update(status=1)
+
+            # Update the detail
+            Event_Description.objects.filter(event_id=id).update(description=detail)
 
             # Update the times
             Event_Time.objects.filter(event_id=id).update(start=start,end=end)
@@ -292,12 +262,10 @@ def i_update(request):
                     Event_Service(event_id=id,service_id=service_id).save()
 
             # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
-            # allowed to be true if an email address is not defined.
-            # Don't send an email if notifications are disabled
-            if int(cv.value('notify')) == 1:
-                if broadcast:
-                    email = notify.email()
-                    email.incident(id,email_id,set_timezone,False)
+            # allowed to be true if an email address is not defined or if global email is disabled.
+            if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
+                email = notify.email()
+                email.incident(id,email_id,request.timezone,False)
             
             # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Incident successfully updated')
@@ -341,6 +309,7 @@ def i_update(request):
 
     # Obtain the details
     details = Event.objects.filter(id=id).values(
+                                                'event_description__description',
                                                 'event_status__status',
                                                 'event_email__email__id',
                                                 'event_time__start',
@@ -354,15 +323,6 @@ def i_update(request):
     # Obtain all current email addresses
     emails = Email.objects.values('id','email')
 
-    # See if email notifications are enabled
-    notifications = int(cv.value('notify'))
-
-    # Obtain the incident update text
-    instr_incident_update = cv.value('instr_incident_update')
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
     # Print the page
     return render_to_response(
        'incidents/i_update.html',
@@ -374,8 +334,7 @@ def i_update(request):
           'id':id,
           'form':form,
           'emails':emails,
-          'notifications':notifications,
-          'instr_incident_update':instr_incident_update,
+          'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
           'breadcrumbs':{'Admin':'/admin','Update Incident':'incident'},
           'nav_section':'event',
           'nav_sub':'i_update'
@@ -469,9 +428,6 @@ def i_detail(request):
     else:
         return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
 
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
     # Which services were impacted
     services = Event.objects.filter(id=id).values('event_service__service__service_name')
 
@@ -480,7 +436,6 @@ def i_detail(request):
                                                 'event_time__start',
                                                 'event_time__end',
                                                 'event_description__description',
-                                                'event_email__email__email',
                                                 'event_user__user__first_name',
                                                 'event_user__user__last_name'
                                                 )
@@ -497,21 +452,6 @@ def i_detail(request):
     if len(updates) == 1 and updates[0]['event_update__date'] == None:
         updates = None
 
-    # See if an email address is selected
-    email_selected = Event.objects.filter(event_email__event_id=id).values('event_email__email__email')
-
-    # See if the timezone is set, if not, give them the server timezone
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-
-    # See if email notifications are enabled
-    notifications = int(cv.value('notify'))
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
     # Print the page
     return render_to_response(
        'incidents/i_detail.html',
@@ -521,8 +461,6 @@ def i_detail(request):
           'id':id,
           'detail':detail,
           'updates':updates,
-          'notifications':notifications,
-          'email_selected':email_selected,
           'breadcrumbs':{'Admin':'/admin','Update Detail':'i_detail'}
        },
        context_instance=RequestContext(request)
@@ -540,15 +478,6 @@ def i_list(request):
 
     # Obtain all open incidents
     incidents = Event.objects.filter(type=1,event_status__status=1).values('id','event_time__start','event_description__description')
-
-    # See if the timezone is set, if not, give them the server timezone
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
 
     # Print the page
     return render_to_response(

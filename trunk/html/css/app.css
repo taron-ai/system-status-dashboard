@@ -214,6 +214,14 @@ div.sublabel_container {
    padding-top: 5px;
    padding-bottom: 8px;
 }
+/* Genericon containers within tables (vertical center)*/
+div.genericon_container {
+   display: table-cell;
+}
+/* Page Navigation */
+div.navigation {
+   font-size: 14px;
+}
 
 
 
@@ -234,10 +242,6 @@ span.error {
    font-size: 12px;
    font-weight: bold;
    color: red;
-}
-/* Genericon containers within tables (vertical center)*/
-span.genericon_container {
-   display: table-cell;
 }
 
 
@@ -323,6 +327,9 @@ input.service {
    width: 300px;
 }
 input.email {
+   width: 250px;
+}
+select.email {
    width: 250px;
 }
 select.config_email {

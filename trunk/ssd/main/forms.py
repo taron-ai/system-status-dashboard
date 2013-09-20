@@ -28,6 +28,7 @@ import re
 from django import forms
 from django.conf import settings
 from ssd.main.models import Config
+from ssd.main.models import Config_Email
 from ssd.main.models import Config_Ireport
 
 
@@ -71,14 +72,70 @@ class EmailConfigForm(forms.Form):
             - 1 = html
     """
 
+    enabled = forms.BooleanField(required=False)
     email_format = forms.BooleanField(required=False)
-    from_address = forms.EmailField(required=True)
-    text_pager = forms.EmailField(required=True)
-    incident_greeting = forms.CharField(required=True)
-    incident_update = forms.CharField(required=True)
-    maintenance_greeting = forms.CharField(required=True)
-    maintenance_update = forms.CharField(required=True)
+    from_address = forms.EmailField(required=False)
+    text_pager = forms.EmailField(required=False)
+    incident_greeting = forms.CharField(required=False)
+    incident_update = forms.CharField(required=False)
+    maintenance_greeting = forms.CharField(required=False)
+    maintenance_update = forms.CharField(required=False)
 
+    # Override the form clean method - there is some special logic to validate 
+
+    def clean(self):
+        cleaned_data = super(EmailConfigForm, self).clean()
+        enabled = cleaned_data.get('enabled')
+        from_address = cleaned_data.get('from_address')
+        text_pager = cleaned_data.get('text_pager')
+        incident_greeting = cleaned_data.get('incident_greeting')
+        incident_update = cleaned_data.get('incident_update')
+        maintenance_greeting = cleaned_data.get('maintenance_greeting')
+        maintenance_update = cleaned_data.get('maintenance_update')
+
+
+        # Cannot enabled email functionality without defining all values
+        if enabled and not from_address:
+            # Make sure its an integer
+            self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
+            self._errors["from_address"] = self.error_class(['This field is required.'])
+
+        if enabled and not incident_greeting:
+            # Make sure its an integer
+            self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
+            self._errors["incident_greeting"] = self.error_class(['This field is required.'])
+
+        if enabled and not incident_update:
+            # Make sure its an integer
+            self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
+            self._errors["incident_update"] = self.error_class(['This field is required.'])
+
+        if enabled and not maintenance_greeting:
+            # Make sure its an integer
+            self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
+            self._errors["maintenance_greeting"] = self.error_class(['This field is required.'])
+
+        if enabled and not maintenance_update:
+            # Make sure its an integer
+            self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
+            self._errors["maintenance_update"] = self.error_class(['This field is required.'])
+
+
+        # If incident reports are enabled, and email notifications for incident reports are enabled, then a text pager 
+        # recipient must be defined
+        ireport_config = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled','email_enabled')
+        # If email is being enabled without a text pager address and incident reports with email are turned on, error
+        if enabled and not text_pager and ireport_config[0]['enabled'] == 1 and ireport_config[0]['email_enabled'] == 1:
+            self._errors["text_pager"] = self.error_class(['A text pager email address must be provided if incident reports with email notifications are enabled'])
+        # If email is being disabled, see if incident reports and associated emails are enabled
+        if not enabled:
+            if ireport_config[0]['enabled'] == 1 and ireport_config[0]['email_enabled'] == 1:
+                # Yes they are, so cannot disable email notification
+                self._errors["enabled"] = self.error_class(['Cannot disable email functionality if incident reports with email notifications are enabled.'])
+
+
+        # Return the full collection of cleaned data
+        return cleaned_data
 
 class MessagesConfigForm(forms.Form):
     """Form for modifying the admin messages configuration"""
@@ -90,7 +147,6 @@ class MessagesConfigForm(forms.Form):
 
 
     # Override the form clean method - there is some special logic to validate 
-
     def clean(self):
         cleaned_data = super(MessagesConfigForm, self).clean()
         main = cleaned_data.get('main')
@@ -122,7 +178,6 @@ class LogoConfigForm(forms.Form):
 
 
     # Override the form clean method - there is some special logic to validate 
-
     def clean(self):
         cleaned_data = super(LogoConfigForm, self).clean()
         url = cleaned_data.get('url')
@@ -146,7 +201,6 @@ class SystemurlConfigForm(forms.Form):
 
 
     # Override the form clean method - there is some special logic to validate 
-
     def clean(self):
         cleaned_data = super(SystemurlConfigForm, self).clean()
         url = cleaned_data.get('url')
@@ -167,44 +221,60 @@ class IreportConfigForm(forms.Form):
 
     enabled = forms.BooleanField(required=False)
     email_enabled = forms.BooleanField(required=False)
+    instructions = forms.CharField(required=True)
+    submit_message = forms.CharField(required=True)
     upload_path = forms.CharField(required=False)
     upload_enabled = forms.BooleanField(required=False)
     file_size = forms.IntegerField(required=False)
 
 
     # Override the form clean method - there is some special logic to validate 
-
     def clean(self):
         cleaned_data = super(IreportConfigForm, self).clean()
+        email_enabled = cleaned_data.get('email_enabled')
         upload_path = cleaned_data.get('upload_path')
         upload_enabled = cleaned_data.get('upload_enabled')
         file_size = cleaned_data.get('file_size')
 
         # Cannot enable uploads w/o an upload path
         if upload_enabled and not upload_path:
-            self._errors["upload_path"] = self.error_class(['Please enter a local upload path'])
-            self._errors["upload_enabled"] = self.error_class(['Cannot enable file uploads without defining an upload path'])
+            self._errors["upload_path"] = self.error_class(['Please enter a local upload path.'])
+            self._errors["upload_enabled"] = self.error_class(['Cannot enable file uploads without defining an upload path.'])
      
         # File size needs to be larger than 0
         if file_size == 0:
-            self._errors["file_size"] = self.error_class(['Please enter a file size of at least 1'])
+            self._errors["file_size"] = self.error_class(['Please enter a file size of at least 1.'])
 
         if file_size and file_size < 0:
             # Make sure its a positive integer
-            self._errors["file_size"] = self.error_class(['Please enter a positive integer'])
+            self._errors["file_size"] = self.error_class(['Please enter a positive integer.'])
 
         # If the upload path is defined and does not exist or is not writable, that's an error
         if upload_path:
             # Writable?
             if not os.access(upload_path, os.W_OK):
-                self._errors["upload_path"] = self.error_class(['This location is not writable by the Apache user'])
+                self._errors["upload_path"] = self.error_class(['This location is not writable by the Apache user.'])
 
             # Exists?
             if not os.path.exists(upload_path):
-                self._errors["upload_path"] = self.error_class(['This location does not exist'])
+                self._errors["upload_path"] = self.error_class(['This location does not exist.'])
+
+        # Email notifications cannot be enabled if global email is disabled
+        global_email_config = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled','text_pager')
+        if email_enabled:
+            if not global_email_config[0]['enabled']:
+                self._errors["email_enabled"] = self.error_class(['Global email must be enabled to enable this option.'])
+            if not global_email_config[0]['text_pager'] :
+                self._errors["email_enabled"] = self.error_class(['A text pager recipient must be defined within the global email options in order to enable this option.'])
 
         # Return the full collection of cleaned data
         return cleaned_data
+
+
+class EscalationConfigForm(forms.Form):
+    """Form for modifying the admin escalation configuration"""
+
+    enabled = forms.BooleanField(required=False)
 
 
 class DetailForm(forms.Form):
@@ -496,15 +566,16 @@ class AddIncidentForm(forms.Form):
 class UpdateIncidentForm(forms.Form):
     """Form for updating an existing incident"""
 
+    id = forms.IntegerField()
     s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
     s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
     e_date = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
     e_time = forms.TimeField(required=False,input_formats=['%H:%M'])
+    detail = forms.CharField(required=True)
     update = forms.CharField(required=False)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
     email_id = forms.IntegerField(required=False)
-    id = forms.IntegerField()
 
     # Override the form clean method - there is some special logic to 
     # creating an incident and we need access to multiple values
@@ -662,7 +733,6 @@ class UpdateMaintenanceForm(forms.Form):
         # If its completed, make sure its started
         if completed and not started:
             # Set custom error messages
-            self._errors['started'] = self.error_class(['Maintenance cannot be completed if not started.'])
             self._errors['completed'] = self.error_class(['Maintenance cannot be completed if not started.'])
 
         # Ensure the end date/time is not before the start date/time

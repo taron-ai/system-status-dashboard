@@ -63,5 +63,15 @@
 	      </ul>
 	    </div>
 	  </section>
+	  <section class="section {% if nav_section == 'escalation' %}active{% endif %}">
+	    <p class="title"><a href="#">Escalation Path</a></p>
+	    <div class="content">
+	      <ul class="side-nav">
+	        <li {% if nav_sub == 'escalation_config' %}class="active"{% endif %}><a href="/admin/escalation_config">Configuration</a></li>
+			<li {% if nav_sub == 'escalation_contacts' %}class="active"{% endif %}><a href="/admin/escalation_contacts">Manage Escalation Contacts</a></li>
+	      </ul>
+	    </div>
+	  </section>
 	</div>
+	<div class="spacer_medium"></div>
 </div>

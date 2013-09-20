@@ -47,6 +47,7 @@ def email_config(request):
 
         if form.is_valid():
             # Obtain the cleaned data
+            enabled = form.cleaned_data['enabled']
             email_format = form.cleaned_data['email_format']
             from_address = form.cleaned_data['from_address']
             text_pager = form.cleaned_data['text_pager']
@@ -58,6 +59,7 @@ def email_config(request):
 
             # There should only ever be one record in this table
             Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).update(
+                                                        enabled=enabled,
                                                         email_format=email_format,
                                                         from_address=from_address,
                                                         text_pager=text_pager,
@@ -81,6 +83,7 @@ def email_config(request):
     # Obtain the email config
 
     email_config = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values(
+                                                                                    'enabled',
                                                                                     'email_format',
                                                                                     'from_address',
                                                                                     'text_pager',

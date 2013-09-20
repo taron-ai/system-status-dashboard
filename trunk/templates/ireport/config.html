@@ -58,18 +58,18 @@
 			</div>
 		</div>
 
-  	<div class="spacer_small"></div>
+  	<div class="spacer_medium"></div>
 
     <div class="row">
       <div class="large-12 columns">
         <span class="radius secondary label">Enable Email Notifications</span><br>
-        <div class="sublabel_container"><span class="sublabel">If enabled, when users submit incident reports, an email will be sent to the text pager email address.  If you enable this option, ensure that you also enter a Text Pager Recipient address in the <a href="/admin/email_config">email administration console</a>.</span></div>
+        <div class="sublabel_container"><span class="sublabel">If enabled, when users submit incident reports, an email will be sent to the text pager email address.{% if not email_enabled %}  Before you enable this option, you must enable global email functionality and also define a text pager recipient in the <a href="/admin/email_config">email administration console</a>.{% endif %}</span></div>
       </div>
     </div>
 
     <div class="row">
       <div class="large-12 columns">
-       <label><input type="checkbox" name="email_enabled" {% if form.email_enabled.data %}checked{% else %}{% if ireport_config.0.email_enabled %}checked{% endif %}{% endif %} />
+       <label><input type="checkbox" name="email_enabled" {% if email_enabled %}{% if form.email_enabled.data %}checked{% else %}{% if ireport_config.0.email_enabled %}checked{% endif %}{% endif %}{% else %}disabled{% endif %} />
         Enabled</label>
         {% if form.email_enabled.errors %}
         <span class="error">{% for error in form.email_enabled.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -77,7 +77,7 @@
       </div>
     </div>
 
-    <div class="spacer_small"></div>
+    <div class="spacer_medium"></div>
 
     <div class="row">
       <div class="large-12 columns">
@@ -88,14 +88,14 @@
     
     <div class="row">
       <div class="large-12 columns {% if form.instructions.errors %}error{% endif %}">
-        <textarea name="instructions" class="config_messages" placeholder="Enter instructions" maxlength="1000">{% if form.instructions.data %}{{form.instructions.data}}{% else %}{{messages_config.0.instructions}}{% endif %}</textarea>
+        <textarea name="instructions" class="config_messages" placeholder="Enter instructions" maxlength="1000">{% if form.instructions.data %}{{form.instructions.data}}{% else %}{{ireport_config.0.instructions}}{% endif %}</textarea>
         {% if form.instructions.errors %}
         <br><span class="error">{% for error in form.instructions.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %} 
       </div>
     </div>
 
-    <div class="spacer_small"></div>
+    <div class="spacer_medium"></div>
 
     <div class="row">
       <div class="large-12 columns">
@@ -106,14 +106,14 @@
     
     <div class="row">
       <div class="large-12 columns {% if form.submit_message.errors %}error{% endif %}">
-        <textarea name="submit_message" class="config_messages" placeholder="Enter a submit message" maxlength="1000">{% if form.submit_message.data %}{{form.submit_message.data}}{% else %}{{messages_config.0.submit_message}}{% endif %}</textarea>
+        <textarea name="submit_message" class="config_messages" placeholder="Enter a submit message" maxlength="1000">{% if form.submit_message.data %}{{form.submit_message.data}}{% else %}{{ireport_config.0.submit_message}}{% endif %}</textarea>
         {% if form.submit_message.errors %}
         <br><span class="error">{% for error in form.submit_message.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %} 
       </div>
     </div>
 
-    <div class="spacer_small"></div>
+    <div class="spacer_medium"></div>
 
     <div class="row">
       <div class="large-12 columns">
@@ -132,7 +132,7 @@
 			</div>
 		</div>
 
-  	<div class="spacer_small"></div>
+  	<div class="spacer_medium"></div>
 
     <div class="row">
       <div class="large-12 columns">
@@ -150,7 +150,7 @@
 		  </div>
 		</div>
 
-  	<div class="spacer_small"></div>
+  	<div class="spacer_medium"></div>
 
     <div class="row">
       <div class="large-12 columns">

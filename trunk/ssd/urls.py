@@ -31,13 +31,11 @@ urlpatterns = patterns('',
     # Main Dashboard
     url(r'^$',                  'ssd.main.views.main.index'),
     
-    # Escalation
+    # Escalation Path
     url(r'^escalation$',        'ssd.main.views.escalation.escalation'),
 
     # Configuration
     url(r'^config$',            'ssd.main.views.config.config'),
-    url(r'^contacts$',          'ssd.main.views.config.contacts'),
-    url(r'^contacts_modify$',   'ssd.main.views.config.contacts_modify'),
 
     # Search
     #url(r'^search$',            'ssd.main.views.search.search'),
@@ -97,5 +95,10 @@ urlpatterns = patterns('',
     url(r'^admin/ireport_config$',          'ssd.main.views.ireport.ireport_config'),
     url(r'^admin/ireport_detail$',          'ssd.main.views.ireport.ireport_detail'),
     url(r'^admin/ireport_delete$',          'ssd.main.views.ireport.ireport_delete'),
-    url(r'^admin/ireport_list$',            'ssd.main.views.ireport.ireport_list')
+    url(r'^admin/ireport_list$',            'ssd.main.views.ireport.ireport_list'),
+
+    # Escalation
+    url(r'^admin/escalation_config$',       'ssd.main.views.escalation.escalation_config'),
+    url(r'^admin/escalation_contacts$',     'ssd.main.views.escalation.escalation_contacts'),
+    url(r'^admin/escalation_modify$',       'ssd.main.views.escalation.escalation_modify'),
 )

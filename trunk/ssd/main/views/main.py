@@ -28,7 +28,6 @@ from django.template import RequestContext
 from django.utils import timezone as jtz
 from ssd.main.models import Event
 from ssd.main.models import Service
-from ssd.main import notify
 from ssd.main import config_value
 
 

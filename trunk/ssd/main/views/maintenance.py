@@ -31,7 +31,6 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.utils import timezone as jtz
 from ssd.main.models import Event
 from ssd.main.models import Event_Description
 from ssd.main.models import Event_Service
@@ -44,13 +43,13 @@ from ssd.main.models import Event_Impact
 from ssd.main.models import Event_Coordinator
 from ssd.main.models import Service
 from ssd.main.models import Email
+from ssd.main.models import Config_Email
 from ssd.main.forms import DetailForm
 from ssd.main.forms import DeleteEventForm
 from ssd.main.forms import UpdateMaintenanceForm
 from ssd.main.forms import EmailMaintenanceForm
 from ssd.main.forms import AddMaintenanceForm
 from ssd.main import notify
-from ssd.main import config_value
 from ssd.main.views.system import system_message
 
 
@@ -60,15 +59,6 @@ def maintenance(request):
     """Schedule maintenance page
 
     """
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
-    # Obtain the timezone (or set to the default DJango server timezone)
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
 
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually
@@ -99,7 +89,7 @@ def maintenance(request):
             end = datetime.datetime.combine(e_date, e_time)
 
             # Set the timezone
-            tz = pytz.timezone(set_timezone)
+            tz = pytz.timezone(request.timezone)
             start = tz.localize(start)
             end = tz.localize(end)
             
@@ -141,13 +131,11 @@ def maintenance(request):
                 if re.match(r'^\d+$', service_id):
                     Event_Service(service_id=service_id,event_id=event_id).save()
 
-            # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
-            # allowed to be true if an email address is not defined.
-            # Don't send an email if notifications are disabled
-            if int(cv.value('notify')) == 1:
-                if broadcast:
-                    email = notify.email()
-                    email.maintenance(event_id,email_id,set_timezone,True)
+            # Send an email notification to the appropriate list about this maintenance, if requested.  Broadcast won't be
+            # allowed to be true if an email address is not defined or if global email is disabled.
+            if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
+                email = notify.email()
+                email.maintenance(event_id,email_id,request.timezone,True)
 
             # Send them to the maintenance detail page for this newly created
             # maintenance
@@ -164,26 +152,12 @@ def maintenance(request):
         
         form = AddMaintenanceForm() 
     
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
     # Obtain all current email addresses
     emails = Email.objects.values('id','email')
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
     
-    # Help message
-    help = cv.value('help_sched_maint')
-
-    # See if email notifications are enabled
-    notifications = int(cv.value('notify'))
-
-    # Obtain the default maintenance textfield text
-    instr_maintenance_description = cv.value('instr_maintenance_description')
-    instr_maintenance_impact = cv.value('instr_maintenance_impact')
-    instr_maintenance_coordinator= cv.value('instr_maintenance_coordinator')
-
     # Print the page
     return render_to_response(
        'maintenance/maintenance.html',
@@ -194,10 +168,7 @@ def maintenance(request):
           'services':services,
           'affected_svcs':tuple(affected_svcs),
           'emails':emails,
-          'notifications':notifications,
-          'instr_maintenance_description':instr_maintenance_description,
-          'instr_maintenance_impact':instr_maintenance_impact,
-          'instr_maintenance_coordinator':instr_maintenance_coordinator,
+          'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
           'breadcrumbs':{'Admin':'/admin','Create Maintenance':'maintenance'},
           'nav_section':'event',
           'nav_sub':'maintenance'
@@ -214,15 +185,6 @@ def m_update(request):
     Accept input to update the scheduled maintenance
 
     """
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
-    # Obtain the timezone (or set to the default DJango server timezone)
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
 
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually (service
@@ -258,7 +220,7 @@ def m_update(request):
             end = datetime.datetime.combine(e_date, e_time)
 
             # Set the timezone
-            tz = pytz.timezone(set_timezone)
+            tz = pytz.timezone(request.timezone)
             start = tz.localize(start)
             end = tz.localize(end)
 
@@ -327,13 +289,11 @@ def m_update(request):
                     Event_Service(event_id=id,service_id=service_id).save()
       
             
-            # Send an email notification to the appropriate list about this issue if requested.  Broadcast won't be
-            # allowed to be true if an email address is not defined.
-            # Don't send an email if notifications are disabled
-            if int(cv.value('notify')) == 1:
-                if broadcast:
-                    email = notify.email()
-                    email.maintenance(event_id,email_id,set_timezone,True)
+            # Send an email notification to the appropriate list about this maintenance, if requested.  Broadcast won't be
+            # allowed to be true if an email address is not defined or if global email is disabled.
+            if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
+                email = notify.email()
+                email.maintenance(id,email_id,request.timezone,True)
 
             # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Maintenance successfully updated')
@@ -407,26 +367,14 @@ def m_update(request):
     end = details[0]['event_time__end']
 
     # Set the timezone
-    start = start.astimezone(pytz.timezone(set_timezone))
-    end = end.astimezone(pytz.timezone(set_timezone))
+    start = start.astimezone(pytz.timezone(request.timezone))
+    end = end.astimezone(pytz.timezone(request.timezone))
     
     # Format the start/end date/time
     s_date = start.strftime("%Y-%m-%d")   
     s_time = start.strftime("%H:%M")
     e_date = end.strftime("%Y-%m-%d")
     e_time = end.strftime("%H:%M")
-
-    # See if email notifications are enabled
-    notifications = int(cv.value('notify'))
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
-    # Obtain the default maintenance textfield text
-    instr_maintenance_description = cv.value('instr_maintenance_description')
-    instr_maintenance_impact = cv.value('instr_maintenance_impact')
-    instr_maintenance_coordinator= cv.value('instr_maintenance_coordinator')
-    instr_maintenance_update= cv.value('instr_maintenance_update')
 
     # Print the page
     return render_to_response(
@@ -443,11 +391,7 @@ def m_update(request):
           'e_date':e_date,
           'e_time':e_time,
           'emails':emails,
-          'notifications':notifications,
-          'instr_maintenance_description':instr_maintenance_description,
-          'instr_maintenance_impact':instr_maintenance_impact,
-          'instr_maintenance_coordinator':instr_maintenance_coordinator,
-          'instr_maintenance_update':instr_maintenance_update,
+          'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
           'breadcrumbs':{'Admin':'/admin','List Maintenance':'m_list'},
           'nav_section':'event',
           'nav_sub':'m_update'
@@ -472,9 +416,6 @@ def m_detail(request):
     # Bad form
     else:
         return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
 
     # Which services were impacted
     services = Event.objects.filter(id=id).values('event_service__service__service_name')
@@ -504,22 +445,6 @@ def m_detail(request):
     if len(updates) == 1 and updates[0]['event_update__date'] == None:
         updates = None
 
-    # See if an email address is selected
-    email_selected = Event.objects.filter(event_email__event_id=id).values('event_email__email__email')
-
-
-    # See if the timezone is set, if not, give them the server timezone
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-
-    # See if email notifications are enabled
-    notifications = int(cv.value('notify'))
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
     # Print the page
     return render_to_response(
        'maintenance/m_detail.html',
@@ -529,8 +454,6 @@ def m_detail(request):
           'id':id,
           'detail':detail,
           'updates':updates,
-          'notifications':notifications,
-          'email_selected':email_selected
        },
        context_instance=RequestContext(request)
     )
@@ -540,15 +463,6 @@ def m_detail(request):
 @staff_member_required
 def m_email(request):
     """Send an Email Notification about a Maintenance"""
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
-    # Obtain the timezone (or set to the default DJango server timezone)
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
 
     # Check the form elements
     form = EmailMaintenanceForm(request.GET)
@@ -564,9 +478,9 @@ def m_email(request):
         if not recipient_id:
             messages.add_message(request, messages.ERROR, 'There is no recipient defined for maintenance id:%s.  Please add one before sending email notifications.' % id)
 
-        if int(cv.value('notify')) == 1:
+        if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
             email = notify.email()
-            email_status = email.maintenance(id,recipient_id,set_timezone,False)
+            email_status = email.maintenance(id,recipient_id,request.timezone,False)
 
             if email_status == 'success':
                 messages.add_message(request, messages.SUCCESS, 'Email successfully sent for maintenance id:%s.' % id)
@@ -622,6 +536,7 @@ def m_delete(request):
    
     # Make sure we have an ID
     form = DeleteEventForm(request.GET)
+    
     if form.is_valid():
 
         # Obtain the cleaned data
@@ -661,21 +576,13 @@ def m_list(request):
     # Obtain all open incidents
     maintenances = Event.objects.filter(Q(type=2,event_status__status=0) | Q(type=2,event_status__status=3)).values('id','event_time__start','event_description__description','event_email__email__email')
 
-    # See if the timezone is set, if not, give them the server timezone
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-
-    # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-    jtz.activate(set_timezone)
-
     # Print the page
     return render_to_response(
        'maintenance/m_list.html',
        {
           'title':'System Status Dashboard | Open Maintenance',
           'maintenances':maintenances,
+          'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
           'breadcrumbs':{'Admin':'/admin','List Open Maintenance':'m_list'},
           'nav_section':'event',
           'nav_sub':'m_list'

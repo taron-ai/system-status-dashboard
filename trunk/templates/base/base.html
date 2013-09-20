@@ -67,6 +67,12 @@
           &nbsp;|&nbsp;
           {% endif %}
         </td>
+        <td>
+          {% if escalation %}
+          <a href="/escalation">Escalate</a>
+          &nbsp;|&nbsp;
+          {% endif %}
+        </td>
         {% if user.is_authenticated %}
         <td>
           <a href="/accounts/logout">Logout ({{user.username}})</a>

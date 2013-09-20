@@ -21,48 +21,53 @@
 {% block content %}
 
 <div class="row">
-  <div class="large-8 large-centered columns">
+  <div class="large-12 columns">
     {{help|safe}}
-    <hr>
   </div>
 </div>
 
 <div class="spacer_medium"></div>
 
-{% if contacts %}
-  {% for contact in contacts %}
-    <div class="row">
-      <div class="large-5 large-centered columns">
-        <div class="panel">
-          {{contact.name}}
-   	      <br>
-   	      {{contact.contact_details|linebreaksbr}}
+<div class="row">
+  <div class="large-5 columns">
+    {% if contacts %}
+      {% for contact in contacts %}
+        <div class="row">
+          <div class="large-12 columns">
+            <div class="panel">
+              {{contact.name}}
+       	      <br>
+       	      {{contact.contact_details|linebreaksbr}}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  
-   {# Don't add the arrow on the last one #}
-   {% if not forloop.last %} 
-    <div class="row">
-      <div class="large-3 large-centered columns">
-        <center><img src="/html/images/arrow_down.png"></center>
-      </div>
-    </div>
+      
+       {# Don't add the arrow on the last one #}
+       {% if not forloop.last %} 
+        <div class="row">
+          <div class="large-12 large-centered columns">
+            <center><div class="genericon genericon-downarrow genericon_container"></div></center>
+            <center><div class="genericon genericon-downarrow genericon_container"></div></center>
+          </div>
+        </div>
 
-    <div class="row">
-      <div class="large-3 large-centered columns" style="height: 25px;">
-      </div>
-    </div>
-   {% endif %}
-  {% endfor %}
+        <div class="row">
+          <div class="spacer_small"></div>
+        </div>
+       {% endif %}
+      {% endfor %}
 
-{% else %}
-    <div class="row">
-      <div class="large-5 large-centered columns">
-        <p>THERE ARE CURRENTLY NO ESCALATION CONTACTS DEFINED.</p>
-      </div>
-    </div>
-{% endif %}
+    {% else %}
+        <div class="row">
+          <div class="large-12 large-centered columns">
+            <p>THERE ARE CURRENTLY NO ESCALATION CONTACTS DEFINED.</p>
+          </div>
+        </div>
+    {% endif %}
 
+  </div>
+</div>
+
+<div class="spacer_medium"></div>
 {% endblock %}
 

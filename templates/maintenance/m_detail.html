@@ -20,43 +20,17 @@
 
 {% block content %}
 
-{# If there are messages in the queue, then show them.  There should only be one message #}
-{% if messages %}
+{# This is row consisting of 12 columns that will display all messages passed in the request #}
+{% include "admin/messages.html" %}
+
 <div class="row">
   <div class="large-12 columns">
-    {% for message in messages %}
-      {% if message.tags %}
-        {% if message.tags == 'success' %}
-          <font class="success">{{message}}</font>
-        {% else %}
-          {% if message.tags == 'error' %}
-            <font class="error">{{message}}</font>
-          {% endif %}
-        {% endif %}
-      {% endif %}
-    {% endfor %}
-    <br><br>
-  </div>
-</div>
-{% endif %}
-
-{% if user.is_authenticated %}
-<div class="row">
-  <div class="large-4 columns">
-    <a href="/admin/m_update?id={{id}}"><div class="genericon genericon-edit genericon_container"></div></a>
-  </div>
-</div>
-<div class="spacer_medium"></div>
-{% endif %} 
-
-<div class="row">
-  <div class="large-8 columns">
     <p>This page contains all relevant information on this scheduled maintenance.  Check back here at any time to obtain current information on the status of this scheduled maintenance.</p>
   </div>
 </div>
 
 <div class="row">
-  <div class="large-8 columns">
+  <div class="large-12 columns">
     <table>
       <thead>
         <tr>
@@ -118,10 +92,6 @@
           <td>{{detail.0.event_coordinator__coordinator|linebreaksbr}}</td>
         </tr>
         {% endif %}
-        <tr>
-          <td>Email Notifications:{% if not notifications == 1 %}<br><font class="disabled">(disabled)</font>{% endif %}</td>
-          <td>{% if detail.0.email_address_id__email_address %}{{detail.0.email_address_id__email_address}}{% else %}No recipient defined{% endif %}</td>
-        </tr>
       </tbody>
     </table>
   </div>
@@ -131,7 +101,7 @@
 <div class="spacer_medium"></div>
 
 <div class="row">
-  <div class="large-8 columns">
+  <div class="large-12 columns">
     <table>
       <thead>
         <tr>
@@ -158,20 +128,13 @@
 </div>
 {% endif %}
  
-
 {% if user.is_authenticated %}
-
 <div class="row">
   <div class="large-4 columns">
-    <div class="horiz_stack">
-      <form method="POST" name="m_email" action="/admin/m_email">
-        {% csrf_token %}
-        <input type="hidden" name="id" value="{{id}}">      
-        {% if notifications %}<input type="submit" class="small button secondary" value="email reminder"/>{% endif %}
-      </form>
-    </div>
+    <a href="/admin/m_update?id={{id}}"><div class="genericon genericon-edit genericon_container"></div></a>
   </div>
 </div>
-{% endif %}
+<div class="spacer_medium"></div>
+{% endif %} 
 
 {% endblock %}

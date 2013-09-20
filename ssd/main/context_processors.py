@@ -24,6 +24,7 @@
 import pytz
 from ssd.main.models import Config_Logo
 from ssd.main.models import Config_Ireport
+from ssd.main.models import Config_Escalation
 from django.conf import settings
 
 
@@ -59,12 +60,18 @@ def prefs(request):
     else:
         values['ireport'] = False
 
+    # Display the escalation path?
+    if Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
+        values['escalation'] = True
+    else:
+        values['escalation'] = False
 
     # Return values to the template
     return {
             'app_version':values['app_version'],
             'logo':values['logo'],
             'ireport':values['ireport'],
+            'escalation':values['escalation'],
            }
 
 

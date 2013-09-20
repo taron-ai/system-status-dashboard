@@ -39,8 +39,14 @@ def timezone(request):
             # Obtain the cleaned data
             timezone = form.cleaned_data['timezone']
 
-            # Set the timezone in a cookie and redirect to the homepage
-            response = HttpResponseRedirect('/')
+            # Set the timezone in a cookie and redirect
+            # If the referer is set, use that, otherwise the homepage
+            if 'HTTP_REFERER' in request.META:
+                response = HttpResponseRedirect(request.META['HTTP_REFERER'])
+            else:
+                response = HttpResponseRedirect('/')
+
+            # Set the cookie
             response.set_cookie('timezone',
                                 timezone,
                                 max_age=157680000,
@@ -51,9 +57,7 @@ def timezone(request):
                                 httponly=False)
             return response
 
-    # Either its not a POST, or the form was not valid
-    # Redirect to the homepage and they'll get the server timezone if they
-    # are not already cookied
+    # Not a POST or an invalid form.  In either case, redirect them to the homepage.
     return HttpResponseRedirect('/')
 
 

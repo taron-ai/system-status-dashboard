@@ -191,6 +191,7 @@ class Config_Email(models.Model):
 
     """
 
+    enabled = models.BooleanField(blank=False)
     email_format = models.BooleanField(blank=False)
     from_address = models.CharField(null=False,blank=False,max_length=100)
     text_pager = models.CharField(null=False,blank=False,max_length=100)
@@ -220,6 +221,14 @@ class Config_Logo(models.Model):
     logo_enabled = models.BooleanField(blank=False)
 
 
+class Config_Escalation(models.Model):
+    """Escalation Path Configuration
+
+    """
+
+    enabled = models.BooleanField(blank=False)
+
+
 class Config_Systemurl(models.Model):
     """System Url Configuration
 
@@ -236,6 +245,8 @@ class Config_Ireport(models.Model):
 
     enabled = models.BooleanField(blank=False)
     email_enabled = models.BooleanField(blank=False)
+    instructions = models.CharField(null=False,blank=True,max_length=500)
+    submit_message = models.CharField(null=False,blank=True,max_length=500)
     upload_enabled = models.BooleanField(blank=False)
     upload_path = models.CharField(null=False,blank=True,max_length=500)
     file_size = models.IntegerField(null=False,blank=True,max_length=5)

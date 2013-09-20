@@ -20,40 +20,13 @@
 
 {% block content %}
 
-{# If there are messages in the queue, then show them.  There should only be one message #}
-{% if messages %}
+{# This is row consisting of 12 columns that will display all messages passed in the request #}
+{% include "admin/messages.html" %}
+
 <div class="row">
   <div class="large-12 columns">
-    {% for message in messages %}
-      {% if message.tags %}
-        {% if message.tags == 'success' %}
-          <font class="success">{{message}}</font>
-        {% else %}
-          {% if message.tags == 'error' %}
-            <font class="error">{{message}}</font>
-          {% endif %}
-        {% endif %}
-      {% endif %}
-    {% endfor %}
-    <br><br>
-  </div>
-</div>
-{% endif %}
-
-{% if user.is_authenticated %}
-<div class="row">
-  <div class="large-4 columns">
-    <a href="/admin/i_update?id={{id}}"><div class="genericon genericon-edit genericon_container"></div></a>
-  </div>
-</div>
-<div class="spacer_medium"></div>
-{% endif %} 
-
-<div class="row">
-  <div class="large-9 columns">
     <p>This page contains all relevant information on this incident.  Check back here at any time to obtain current information on the status of this incident.</p>
   </div>
-  <div class="large-3 columns"></div>
 </div>
 
 <div class="row">
@@ -89,19 +62,6 @@
 
 <div class="row">
   <div class="large-12 columns">
-    <p>
-      Email Notifications{% if not notifications == 1 %} <font class="disabled">(disabled)</font>{% endif %}:
-    {% if email_selected.0.event_email__email__email %}
-    <b>{{email_selected.0.event_email__email__email}}</b>
-    {% else %}
-    No recipient defined
-    {% endif %}
-    </p>
-  </div>
-</div>
-
-<div class="row">
-  <div class="large-12 columns">
    <table>
     <tr>
      <th width="200">Time</th>
@@ -128,6 +88,15 @@
 
   </div>
 </div>
+
+{% if user.is_authenticated %}
+<div class="row">
+  <div class="large-4 columns">
+    <a href="/admin/i_update?id={{id}}"><div class="genericon genericon-edit genericon_container"></div></a>
+  </div>
+</div>
+<div class="spacer_medium"></div>
+{% endif %} 
 
 <div class="spacer_medium"></div>
 

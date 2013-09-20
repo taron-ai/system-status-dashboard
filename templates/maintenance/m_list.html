@@ -37,27 +37,10 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="large-12 columns">
-        {# If there are messages in the queue, then show them.  There should only be one message #}
-        {% if messages %}
-          {% for message in messages %}
-            {% if message.tags %}
-              {% if message.tags == 'success' %}
-                <font class="success">{{message}}</font>
-              {% else %}
-                {% if message.tags == 'error' %}
-                  <font class="error">{{message}}</font>
-                {% endif %}
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          <br><br>
-        {% else %}
-        <br><br>
-        {% endif %}
-      </div>
-    </div>
+    {# This is row consisting of 12 columns that will display all messages passed in the request #}
+    {% include "admin/messages.html" %}
+
+    <div class="spacer_medium"></div>
 
     <div class="row">
       <div class="large-12 columns">
@@ -79,7 +62,7 @@
             <td>{{maintenance.event_description__description}}</td>
             <td><a href="/m_detail?id={{maintenance.id}}"><div class="genericon genericon-summary genericon_container"></div></a></td>
             <td><a href="/admin/m_delete?id={{maintenance.id}}"><div class="genericon genericon-trash genericon_container"></div></a></td>
-            <td>{% if maintenance.event_email__email__email %}<a href="/admin/m_email?id={{maintenance.id}}" title="Send email reminder to {{maintenance.event_email__email__email}}"><div class="genericon genericon-mail genericon_container"></div></a>{% endif %}</td>
+            <td>{% if maintenance.event_email__email__email and email_enabled %}<a href="/admin/m_email?id={{maintenance.id}}" title="Send email reminder to {{maintenance.event_email__email__email}}"><div class="genericon genericon-mail genericon_container"></div></a>{% endif %}</td>
             <td><a href="/admin/m_update?id={{maintenance.id}}"><div class="genericon genericon-edit genericon_container"></div></a></td>
           </tr>
           {% endfor %}

@@ -39,6 +39,24 @@
 
     {# This is row consisting of 12 columns that will display all messages passed in the request #}
     {% include "admin/messages.html" %}
+
+	  <div class="row">
+	    <div class="large-12 columns">
+        <span class="radius secondary label">Enable Email Functionality</span><br>
+        <div class="sublabel_container"><span class="sublabel">Select the checkbox to enable global email functionality in SSD.  This includes sending notifications/updates about incidents/maintenances and also notifications to staff about incident reports.</span></div>
+	    </div>
+	  </div>
+
+	  <div class="row">
+	    <div class="large-12 columns">
+				<label><input type="checkbox" name="enabled" {% if form.enabled.data %}checked{% else %}{% if email_config.0.enabled == 1 %}checked{% endif %}{% endif %} />&nbsp;Enabled</label>
+	   		{% if form.enabled.errors %}
+				<span class="error">{% for error in form.enabled.errors %}{{error}}<br>{% endfor %}<br></span>
+		    {% endif %} 
+			</div>
+		</div>
+
+		<div class="spacer_medium"></div>
     
 	  <div class="row">
 	    <div class="large-12 columns">
@@ -86,7 +104,7 @@
 
 	  <div class="row">
 	    <div class="large-12 columns">
-        <span class="radius secondary label">From Address</span><br>
+        <span class="radius secondary label">Text Pager Address</span><br>
         <div class="sublabel_container"><span class="sublabel">Enter the email address that alerts sent from SSD will be sent to (this is typically a text pager address).</span></div>
 	    </div>
 	  </div>
@@ -111,7 +129,7 @@
 			
 		<div class="row">
 			<div class="large-11 columns {% if form.incident_greeting.errors %}error{% endif %}">
-		 		<textarea name="incident_greeting" class="config_email" placeholder="test" maxlength="1000">{% if form.incident_greeting.data %}{{form.incident_greeting.data}}{% else %}{{email_config.0.incident_greeting}}{% endif %}</textarea>
+		 		<textarea name="incident_greeting" class="config_email" placeholder="Enter Incident Greeting" maxlength="1000">{% if form.incident_greeting.data %}{{form.incident_greeting.data}}{% else %}{{email_config.0.incident_greeting}}{% endif %}</textarea>
 		    {% if form.incident_greeting.errors %}
 				<br><span class="error">{% for error in form.incident_greeting.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -129,7 +147,7 @@
 			
 		<div class="row">
 			<div class="large-11 columns {% if form.incident_update.errors %}error{% endif %}">
-		 		<textarea name="incident_update" class="config_email" placeholder="test" maxlength="1000">{% if form.incident_update.data %}{{form.incident_update.data}}{% else %}{{email_config.0.incident_update}}{% endif %}</textarea>
+		 		<textarea name="incident_update" class="config_email" placeholder="Enter Incident Update" maxlength="1000">{% if form.incident_update.data %}{{form.incident_update.data}}{% else %}{{email_config.0.incident_update}}{% endif %}</textarea>
 		    {% if form.incident_update.errors %}
 				<br><span class="error">{% for error in form.incident_update.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -147,7 +165,7 @@
 
 		<div class="row">
 			<div class="large-11 columns {% if form.maintenance_greeting.errors %}error{% endif %}">
-		 		<textarea name="maintenance_greeting" class="config_email" placeholder="test" maxlength="1000">{% if form.maintenance_greeting.data %}{{form.maintenance_greeting.data}}{% else %}{{email_config.0.maintenance_greeting}}{% endif %}</textarea>
+		 		<textarea name="maintenance_greeting" class="config_email" placeholder="Enter Maintenance Greeting" maxlength="1000">{% if form.maintenance_greeting.data %}{{form.maintenance_greeting.data}}{% else %}{{email_config.0.maintenance_greeting}}{% endif %}</textarea>
 		    {% if form.maintenance_greeting.errors %}
 				<br><span class="error">{% for error in form.maintenance_greeting.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -165,7 +183,7 @@
 		
 		<div class="row">
 			<div class="large-11 columns {% if form.maintenance_update.errors %}error{% endif %}">
-		 		<textarea name="maintenance_update" class="config_email" placeholder="test" maxlength="1000">{% if form.maintenance_update.data %}{{form.maintenance_update.data}}{% else %}{{email_config.0.maintenance_update}}{% endif %}</textarea>
+		 		<textarea name="maintenance_update" class="config_email" placeholder="Enter Maintenance Update" maxlength="1000">{% if form.maintenance_update.data %}{{form.maintenance_update.data}}{% else %}{{email_config.0.maintenance_update}}{% endif %}</textarea>
 		    {% if form.maintenance_update.errors %}
 				<br><span class="error">{% for error in form.maintenance_update.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 

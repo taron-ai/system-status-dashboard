@@ -26,10 +26,10 @@
     <div class="panel">
       {% if status %}
         <p class="error" style="font-size: 14px;">
-          {{message}}
+          {{emssage|linebreaksbr}}
         </p>
       {% else %}
-        <p style="color: green; font-weight:bold;">{{message}}</p>
+        <p style="color: green; font-weight:bold;">{{message|linebreaksbr}}</p>
       {% endif %}
 
       <br>

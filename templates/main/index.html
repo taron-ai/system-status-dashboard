@@ -74,17 +74,22 @@
            {# Set the status colors next to the service and print the service #}
            {% if forloop.first %}
              <td>
-             {% if column.status == 1 %}
-             <!--<img src="/html/images/incident_red.png">-->
-             <span class="genericon genericon-dot" style="color: red; font-size: 32px;"></span>
-             {% else %}
-              {% if column.status == 2 %}
-               <img src="/html/images/incident_blue.png">
-              {% else %}
-               <img src="/html/images/incident_green.png">
-              {% endif %}
-             {% endif %}
-             {{column.service}}
+              <div>
+                <div style="display: inline-block; vertical-align: middle; text-align: center;">
+                   {% if column.status == 1 %}
+                     <div class="genericon genericon-dot" style="position: relative; bottom: 14px; right: 6px; font-size: 42px; color: red;"></div>
+                   {% else %}
+                    {% if column.status == 2 %}
+                     <div class="genericon genericon-dot" style="position: relative; bottom: 14px; right: 6px; font-size: 42px; color: blue;"></div>
+                    {% else %}
+                     <div class="genericon genericon-dot" style="position: relative; bottom: 14px; right: 6px; font-size: 42px; color: green;"></div>
+                    {% endif %}
+                   {% endif %}
+                </div>
+                <div style="display: inline-block;">
+                  &nbsp;&nbsp;{{column.service}}
+                </div>
+              </div>
              </td>
            {% else %}
 

@@ -106,47 +106,15 @@ label {
 
 
 /* TABLES */
-/* Standard Table Setup */
-table.standard {
-   font-family: Tahoma, Arial, Helvetica, sans-serif;
-   border-collapse:collapse;
+/* Service/Status container */
+table.service_container {
+   border: 1;
+   background: transparent; 
 }
-table.standard th {
-   border: 1px solid #B0C5D0;
-   background-color: #C8DAE4;
-   color: #616161;
-   font-size: 14px;
-   padding: 10px 10px 10px 10px;
-   text-align: center;
-   font-weight: bold;
-}
-table.standard td {
-   border: 1px solid #B0C5D0;
-   vertical-align: top;
-   font-size: 14px;
-   padding: 10px 10px 10px 10px;
-   color: black;
+table.service_container tr td {
+   padding: 0px 0px 0px 0px;
 }
 /* Homepage table with no border on the bottom cells */
-table.border_top {
-	border: 0;
-}
-table.border_top td {
-   border: 1px solid #B0C5D0;
-   vertical-align: top;
-   font-size: 14px;
-   padding: 10px 10px 10px 10px;
-   color: black;
-}
-table.border_top th {
-   border: 1px solid #B0C5D0;
-   background-color: #C8DAE4;
-   color: #616161;
-   font-size: 14px;
-   padding: 10px 10px 10px 10px;
-   text-align: center;
-   font-weight: bold;
-}
 td.td_border_top {
 	border-left: 0 !important;
 	border-right: 0 !important;
@@ -221,6 +189,10 @@ div.genericon_container {
 /* Page Navigation */
 div.navigation {
    font-size: 14px;
+}
+/* Genericon containers within tables (vertical center)*/
+span.genericon_container {
+   display: table-cell;
 }
 
 

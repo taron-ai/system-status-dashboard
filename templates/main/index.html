@@ -75,7 +75,8 @@
            {% if forloop.first %}
              <td>
              {% if column.status == 1 %}
-             <img src="/html/images/incident_red.png">
+             <!--<img src="/html/images/incident_red.png">-->
+             <span class="genericon genericon-dot" style="color: red; font-size: 32px;"></span>
              {% else %}
               {% if column.status == 2 %}
                <img src="/html/images/incident_blue.png">

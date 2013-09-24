@@ -227,6 +227,7 @@ class Config_Escalation(models.Model):
     """
 
     enabled = models.BooleanField(blank=False)
+    instructions = models.CharField(null=False,blank=False,max_length=1000)
 
 
 class Config_Systemurl(models.Model):
@@ -245,8 +246,8 @@ class Config_Ireport(models.Model):
 
     enabled = models.BooleanField(blank=False)
     email_enabled = models.BooleanField(blank=False)
-    instructions = models.CharField(null=False,blank=True,max_length=500)
-    submit_message = models.CharField(null=False,blank=True,max_length=500)
+    instructions = models.CharField(null=False,blank=False,max_length=500)
+    submit_message = models.CharField(null=False,blank=False,max_length=500)
     upload_enabled = models.BooleanField(blank=False)
     upload_path = models.CharField(null=False,blank=True,max_length=500)
     file_size = models.IntegerField(null=False,blank=True,max_length=5)

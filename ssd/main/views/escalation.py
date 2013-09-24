@@ -27,10 +27,9 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.db.models import F
 from django.contrib import messages
-from ssd.main.models import Config_Escalation
-from ssd.main.models import Escalation
+from ssd.main.models import Config_Escalation, Escalation
 from ssd.main.forms import AddContactForm, EscalationConfigForm, ModifyContactForm
-from ssd.main import config_value
+from ssd.main.views.system import system_message
 
 
 def escalation(request):
@@ -41,18 +40,12 @@ def escalation(request):
 
     """
 
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-
     # If this functionality is disabled in the admin, let the user know
-    if int(cv.value('escalation_display')) == 0:
+    if Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 0:
         return system_message(request,True,'Your system administrator has disabled this functionality')
 
     # Obtain the escalation contacts
     contacts = Escalation.objects.filter(hidden=False).values('id','name','contact_details').order_by('order')
-
-    # Help message
-    help = cv.value('help_escalation')
 
     # Print the page
     return render_to_response(
@@ -60,7 +53,7 @@ def escalation(request):
        {
           'title':'System Status Dashboard | Escalation Path',
           'contacts':contacts,
-          'help':help
+          'instructions':Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('instructions')[0]['instructions']
        },
        context_instance=RequestContext(request)
     )
@@ -82,9 +75,10 @@ def escalation_config(request):
         if form.is_valid():
             # Obtain the cleaned data
             enabled = form.cleaned_data['enabled']
+            instructions = form.cleaned_data['instructions']
 
             # There should only ever be one record in this table
-            Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).update(enabled=enabled)
+            Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).update(enabled=enabled,instructions=instructions)
 
             messages.add_message(request, messages.SUCCESS, 'Escalation configuration saved successfully')
         else:
@@ -97,7 +91,7 @@ def escalation_config(request):
         form = EscalationConfigForm
 
     # Obtain the escalation config
-    escalation_config = Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')
+    escalation_config = Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled','instructions')
 
     # Print the page
     return render_to_response(
@@ -120,9 +114,6 @@ def escalation_contacts(request):
     """View and Add Escalation Contacts
  
     """
-
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
 
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
@@ -166,10 +157,6 @@ def escalation_contacts(request):
     # Obtain all current email addresses
     contacts = Escalation.objects.values('id','order','name','hidden').order_by('order')
    
-    # Obtain the default maintenance textfield text
-    instr_escalation_name = cv.value('instr_escalation_name')
-    instr_escalation_details = cv.value('instr_escalation_details') 
-
     # Print the page
     return render_to_response(
        'escalation/contacts.html',
@@ -201,29 +188,72 @@ def escalation_modify(request):
             id = form.cleaned_data['id']
             action = form.cleaned_data['action']    
 
-            # Obtain all id's and orders and put into a dictionar
+            # Obtain all id's and orders and put into a dictionary
             orders = Escalation.objects.values('id','order').order_by('order')
-            contacts = {}
-            for contact in orders:
-                contacts[contact['id']] = contact['order']
+            
+            # Run through the orders and see if we need to change anything
+            # If we are moving up, switch places with the previous
+            # If we are moving down, switch places with the next
+            # If we are deleting, remove and then reorder everything
+            # If we are hiding, remove the order
+            # If we are unhiding, add to the end
 
-            print contacts
+            
+            # Move this up, meaning decrease the order (only if greater than 1)
+            if action == 'up':
 
-            # Perform the action
-            
-            # Delete
-            if action == 'delete':
-                Escalation.objects.filter(id=id).delete()
-            
-            # Move up
-            elif action == 'down':
-                Escalation.objects.filter(id=id).update(order=F('order')+1)
-            
-            # Move down (only if greater than 1)
-            elif action == 'up':
-                if Escalation.objects.filter(id=id).values('order')[0]['order'] > 1:
+                # Get the order
+                id_order = Escalation.objects.filter(id=id).values('order')[0]['order']
+                
+                # If the order if greater than 1, move it
+                if id_order > 1:
+                    
+                    # Get the id of the one before this one so we can switch places with it
+                    after_order = id_order - 1
+                    after_id = Escalation.objects.filter(order=after_order).values('id')[0]['id']
+
+                    # Switch places
                     Escalation.objects.filter(id=id).update(order=F('order')-1)
+                    Escalation.objects.filter(id=after_id).update(order=F('order')+1)
+            
+            # Move this down, meaning increase the order
+            elif action == "down": 
 
+                # Get the order
+                id_order = Escalation.objects.filter(id=id).values('order')[0]['order']
+
+                # If it's already at the bottom, don't do anything
+                # Get a count of contacts
+                contacts_count = Escalation.objects.count()
+                
+                # If the order is less than the total, move it down (otherwise it's already at the bottom)
+                if id_order < contacts_count:
+                    
+                    # Get the id of the one after this one so we can switch places with it
+                    after_order = id_order + 1
+                    after_id = Escalation.objects.filter(order=after_order).values('id')[0]['id']
+
+                    # Switch places
+                    Escalation.objects.filter(id=id).update(order=F('order')+1)
+                    Escalation.objects.filter(id=after_id).update(order=F('order')-1)
+
+            # Delete
+            elif action == 'delete':
+
+                # Delete the object and then re-order what's left
+                Escalation.objects.filter(id=id).delete()
+
+                # Get the orders
+                orders = Escalation.objects.values('id','order').order_by('order')
+
+                # If there's more than 1, re-order
+                if orders > 1:
+                    # Start a counter at 1 and reset the orders
+                    counter = 1
+                    for contact in orders:
+                        Escalation.objects.filter(id=contact['id']).update(order=counter)
+                        counter += 1
+            
             # Hide
             elif action == 'hide':
                 Escalation.objects.filter(id=id).update(hidden=True)

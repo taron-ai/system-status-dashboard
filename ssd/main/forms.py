@@ -275,6 +275,7 @@ class EscalationConfigForm(forms.Form):
     """Form for modifying the admin escalation configuration"""
 
     enabled = forms.BooleanField(required=False)
+    instructions = forms.CharField(required=True)
 
 
 class DetailForm(forms.Form):

@@ -22,7 +22,7 @@
 
 <div class="row">
   <div class="large-12 columns">
-    {{help|safe}}
+    {{instructions|safe}}
   </div>
 </div>
 
@@ -31,43 +31,29 @@
 <div class="row">
   <div class="large-5 columns">
     {% if contacts %}
+    <div class="section-container auto" data-section>
       {% for contact in contacts %}
-        <div class="row">
-          <div class="large-12 columns">
-            <div class="panel">
-              {{contact.name}}
-       	      <br>
-       	      {{contact.contact_details|linebreaksbr}}
-            </div>
-          </div>
+      <section {% if forloop.first %}class="active"{% endif %}>
+        <p class="title" data-section-title><a href="#panel1">Escalate&nbsp;<span class="genericon genericon-rightarrow"></span></a></p>
+        <div class="content" data-section-content>
+          <p> 
+           {{contact.name}}
+           <br>
+           {{contact.contact_details|linebreaksbr}}
+         </p>
         </div>
-      
-       {# Don't add the arrow on the last one #}
-       {% if not forloop.last %} 
-        <div class="row">
-          <div class="large-12 large-centered columns">
-            <center><div class="genericon genericon-downarrow genericon_container"></div></center>
-            <center><div class="genericon genericon-downarrow genericon_container"></div></center>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="spacer_small"></div>
-        </div>
-       {% endif %}
+      </section>
       {% endfor %}
-
+    </div>
     {% else %}
-        <div class="row">
-          <div class="large-12 large-centered columns">
-            <p>THERE ARE CURRENTLY NO ESCALATION CONTACTS DEFINED.</p>
-          </div>
-        </div>
+    <p>THERE ARE CURRENTLY NO ESCALATION CONTACTS DEFINED.</p>
     {% endif %}
-
   </div>
 </div>
 
 <div class="spacer_medium"></div>
+
 {% endblock %}
+
+
 

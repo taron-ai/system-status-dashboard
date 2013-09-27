@@ -30,6 +30,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.cache import cache
 from ssd.main.models import Event
 from ssd.main.models import Event_Description
 from ssd.main.models import Event_Service
@@ -134,6 +135,9 @@ def incident(request):
                 email = notify.email()
                 email.incident(event_id,email_id,request.timezone,True)
 
+            # Clear the cache b/c this will update the homepage
+            cache.clear()
+            
             # Send them to the incident detail page for this newly created
             # incident
             return HttpResponseRedirect('/i_detail?id=%s' % event_id)
@@ -307,8 +311,8 @@ def i_update(request):
         # Create a blank form
         form = UpdateIncidentForm()
 
-    # Obtain the details
-    details = Event.objects.filter(id=id).values(
+    # Obtain the details (and make sure it's an incident)
+    details = Event.objects.filter(id=id,type=1).values(
                                                 'event_description__description',
                                                 'event_status__status',
                                                 'event_email__email__id',
@@ -316,6 +320,10 @@ def i_update(request):
                                                 'event_time__end',
                                                 'event_status__status'
                                                 )
+    # If nothing was returned, send back to the home page
+    if not details:
+        messages.add_message(request, messages.ERROR, 'Invalid request: no such incident id.')
+        return HttpResponseRedirect('/')
 
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
@@ -428,17 +436,21 @@ def i_detail(request):
     else:
         return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
 
-    # Which services were impacted
-    services = Event.objects.filter(id=id).values('event_service__service__service_name')
-
-    # Obain the incident detail
-    detail = Event.objects.filter(id=id).values(
+    # Obain the incident detail (and make sure it's an incident)
+    detail = Event.objects.filter(id=id,type=1).values(
                                                 'event_time__start',
                                                 'event_time__end',
                                                 'event_description__description',
                                                 'event_user__user__first_name',
                                                 'event_user__user__last_name'
                                                 )
+    # If nothing was returned, send back to the home page
+    if not detail:
+        messages.add_message(request, messages.ERROR, 'Invalid request: no such incident id.')
+        return HttpResponseRedirect('/')
+
+    # Which services were impacted
+    services = Event.objects.filter(id=id).values('event_service__service__service_name')
 
     # Obain any incident updates
     updates = Event.objects.filter(id=id).values(

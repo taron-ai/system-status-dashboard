@@ -26,14 +26,14 @@ from ssd.main.models import Config_Email
 
 @login_required
 @staff_member_required
-def index(request):
+def main(request):
     """Main admin index view
  
     """
 
     # Print the page
     return render_to_response(
-       'admin/index.html',
+       'admin/main.html',
        {
           'title':'System Status Dashboard | Admin',
           'version':get_version,

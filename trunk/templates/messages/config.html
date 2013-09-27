@@ -49,7 +49,7 @@
 		
 		<div class="row">
 			<div class="large-12 columns {% if form.main.errors %}error{% endif %}">
-		 		<textarea name="main" class="config_messages" placeholder="Enter a system message" maxlength="1000">{% if form.main.data %}{{form.main.data}}{% else %}{{messages_config.0.main}}{% endif %}</textarea>
+		 		<textarea name="main" placeholder="Enter a system message" maxlength="1000">{% if form.main.data %}{{form.main.data}}{% else %}{{messages_config.0.main}}{% endif %}</textarea>
 		    {% if form.main.errors %}
         <br><span class="error">{% for error in form.main.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -86,7 +86,7 @@
 		
 		<div class="row">
 			<div class="large-12 columns {% if form.alert.errors %}error{% endif %}">
-		 		<textarea name="alert" class="config_messages" placeholder="Enter a system alert" maxlength="1000">{% if form.alert.data %}{{form.alert.data}}{% else %}{{messages_config.0.alert}}{% endif %}</textarea>
+		 		<textarea name="alert" placeholder="Enter a system alert" maxlength="1000">{% if form.alert.data %}{{form.alert.data}}{% else %}{{messages_config.0.alert}}{% endif %}</textarea>
 		    {% if form.alert.errors %}
         <br><span class="error">{% for error in form.alert.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %}

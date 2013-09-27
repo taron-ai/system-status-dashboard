@@ -326,12 +326,13 @@ class SearchForm(forms.Form):
     text = forms.CharField(required=False)
 
 
-class IGSearchForm(forms.Form):
+class GSearchForm(forms.Form):
     """Form for searching through incidents from the summary graph
 
     """
 
     date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    type = forms.IntegerField(required=True)
 
 
 class MSearchForm(forms.Form):

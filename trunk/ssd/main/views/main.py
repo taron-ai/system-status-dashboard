@@ -23,12 +23,10 @@ import datetime
 import pytz
 import re
 from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils import timezone as jtz
-from ssd.main.models import Event
-from ssd.main.models import Service
-from ssd.main import config_value
+from ssd.main.models import Event, Service, Config_Message
 
 
 def index(request):
@@ -38,15 +36,6 @@ def index(request):
 
     """
     
-    # Instantiate the configuration value getter
-    cv = config_value.config_value()
-    
-    # See if the timezone is set, if not, give them the server timezone
-    if request.COOKIES.get('timezone') == None:
-        set_timezone = settings.TIME_ZONE
-    else:
-        set_timezone = request.COOKIES.get('timezone')
-
     # Get the reference date (if its not given, then its today)
     try:
         ref = request.GET['ref']
@@ -59,7 +48,7 @@ def index(request):
         ref = pytz.timezone(settings.TIME_ZONE).localize(ref)
 
         # Now convert to the requested timezone
-        ref = ref.astimezone(pytz.timezone(set_timezone))
+        ref = ref.astimezone(pytz.timezone(request.timezone))
 
         # Format for just the year, month, day.  We'll add the entire day later
         ref = ref.strftime("%Y-%m-%d")
@@ -69,14 +58,14 @@ def index(request):
     # because the query needs to go through 23:59:59
     ref_q = ref + ' 23:59:59'
     ref_q = datetime.datetime.strptime(ref_q,'%Y-%m-%d %H:%M:%S') 
-    ref_q = pytz.timezone(set_timezone).localize(ref_q)
+    ref_q = pytz.timezone(request.timezone).localize(ref_q)
 
     # The reference date is the last date displayed in the calendar
     # so add that and create a datetime object in the user's timezone
     # (or the server timezone if its not set)
     ref += ' 00:00:00'
     ref = datetime.datetime.strptime(ref,'%Y-%m-%d %H:%M:%S') 
-    ref = pytz.timezone(set_timezone).localize(ref)
+    ref = pytz.timezone(request.timezone).localize(ref)
 
     # Obtain the current 7 days
     dates = []
@@ -101,6 +90,7 @@ def index(request):
 
     # Determine if there are any active events (incidents or maintenances), regardless of the time range
     # This will be used to set the main service status
+
     active_incidents = Event.objects.filter(type=1,event_status__status=1).values('event_service__service__service_name')
     active_maintenances = Event.objects.filter(type=2,event_status__status=3).values('event_service__service__service_name')
     # Create an easy lookup table for later
@@ -167,12 +157,12 @@ def index(request):
                     # This event affected our service
                     # Convert to the requested timezone
                     event_date = event['event_time__start']
-                    event_date = event_date.astimezone(pytz.timezone(set_timezone))
+                    event_date = event_date.astimezone(pytz.timezone(request.timezone))
 
                     # If the event closed date is there, make sure the time zone is correct
                     end_date = event['event_time__end']
                     if event['event_time__end']:
-                        end_date = end_date.astimezone(pytz.timezone(set_timezone))
+                        end_date = end_date.astimezone(pytz.timezone(request.timezone))
 
                     # If this is our date, add it
                     if date.date() == event_date.date():
@@ -254,13 +244,13 @@ def index(request):
 
         # Check for incidents that match this date
         for row in incident_count:
-            if row['event_time__start'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
+            if row['event_time__start'].astimezone(pytz.timezone(request.timezone)).strftime("%Y-%m-%d") == day:
                 t['incidents'] += 1
                 show_graph = True
 
         # Check for maintenances that match this date
         for row in maintenance_count:
-            if row['event_time__start'].astimezone(pytz.timezone(set_timezone)).strftime("%Y-%m-%d") == day:
+            if row['event_time__start'].astimezone(pytz.timezone(request.timezone)).strftime("%Y-%m-%d") == day:
                 t['maintenances'] += 1
                 show_graph = True
 
@@ -282,14 +272,25 @@ def index(request):
                                                                                      ).order_by('-id')
     # ------------------ #
 
-    # Obtain the alert text (if it's being shown)
-    if int(cv.value('display_alert')):
-        alert = cv.value('alert')
+
+    # ------------------ #
+    # Alert and information text
+    alerts = cache.get('alerts')
+    if alerts == None:
+        alerts = Config_Message.objects.filter(id=Config_Message.objects.values('id')[0]['id']).values('alert_enabled','alert','main_enabled','main')
+        cache.set('alerts', alerts)
+
+    # If we are showing the alert, obtain the alert text
+    if alerts[0]['alert_enabled']:
+        alert = alerts[0]['alert']
     else:
         alert = None
 
-    # Obtain the information text
-    information = cv.value('information_main')
+    # If we are showing the information message, obtain the text
+    if alerts[0]['main_enabled']:
+        information = alerts[0]['main']
+    else:
+        information = None
 
     # Print the page
     return render_to_response(

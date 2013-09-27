@@ -16,55 +16,58 @@
 
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from ssd.main.views import main
 admin.autodiscover()
 
 urlpatterns = patterns('',
-   # User login
-    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
 
-    # User logout
-    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',{'next_page': '/'}),
-
-    # Standard admin site
-    url(r'^djadmin/',             include(admin.site.urls)),
-
-    # Main Dashboard
-    url(r'^$',                  'ssd.main.views.main.index'),
+    # Main Dashboard (cache this page for 60 seconds)
+    url(r'^$',                              'ssd.main.views.main.index'),
     
     # Escalation Path
-    url(r'^escalation$',        'ssd.main.views.escalation.escalation'),
+    url(r'^escalation$',                    'ssd.main.views.escalation.escalation'),
 
     # Configuration
-    url(r'^config$',            'ssd.main.views.config.config'),
+    url(r'^config$',                        'ssd.main.views.config.config'),
 
     # Search
-    #url(r'^search$',            'ssd.main.views.search.search'),
-    url(r'^igsearch$',          'ssd.main.views.search.igsearch'),
+    #url(r'^search$',                       'ssd.main.views.search.search'),
+    url(r'^gsearch$',                       'ssd.main.views.search.gsearch'),
 
     # Preferences
-    url(r'^prefs/timezone$',    'ssd.main.views.prefs.timezone'),
-    url(r'^prefs/jump$',        'ssd.main.views.prefs.jump'),
+    url(r'^prefs/timezone$',                'ssd.main.views.prefs.timezone'),
+    url(r'^prefs/jump$',                    'ssd.main.views.prefs.jump'),
 
     # Incident Events
-    url(r'^i_detail$',          'ssd.main.views.incidents.i_detail'),
+    url(r'^i_detail$',                      'ssd.main.views.incidents.i_detail'),
 
     # Maintenance Events
-    url(r'^m_detail$',          'ssd.main.views.maintenance.m_detail'),
+    url(r'^m_detail$',                      'ssd.main.views.maintenance.m_detail'),
 
     # Incident Reports
-    url(r'^ireport$',            'ssd.main.views.ireport.ireport'),
+    url(r'^ireport$',                       'ssd.main.views.ireport.ireport'),
+
 
 
     # -- from here down, it's all admin functionality -- #
 
+   # User login
+    url(r'^accounts/login/$',               'django.contrib.auth.views.login'),
+
+    # User logout
+    url(r'^accounts/logout/$',              'django.contrib.auth.views.logout',{'next_page': '/'}),
+
+    # Standard Django admin site
+    url(r'^djadmin/',                       include(admin.site.urls)),
+
     # SSD Admin Homepage
-    url(r'^admin$',              'ssd.main.views.admin.index'),
+    url(r'^admin$',                         'ssd.main.views.admin.main'),
 
     # Incident Events (admin functionality)
-    url(r'^admin/incident$',          'ssd.main.views.incidents.incident'),
-    url(r'^admin/i_delete$',          'ssd.main.views.incidents.i_delete'),
-    url(r'^admin/i_list$',            'ssd.main.views.incidents.i_list'),
-    url(r'^admin/i_update$',          'ssd.main.views.incidents.i_update'),
+    url(r'^admin/incident$',                'ssd.main.views.incidents.incident'),
+    url(r'^admin/i_delete$',                'ssd.main.views.incidents.i_delete'),
+    url(r'^admin/i_list$',                  'ssd.main.views.incidents.i_list'),
+    url(r'^admin/i_update$',                'ssd.main.views.incidents.i_update'),
     
     # Maintenance Events (admin functionality)
     url(r'^admin/maintenance$',             'ssd.main.views.maintenance.maintenance'),

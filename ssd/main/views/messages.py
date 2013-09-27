@@ -19,6 +19,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
+from django.core.cache import cache
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -55,6 +56,10 @@ def messages_config(request):
                                                         alert_enabled=alert_enabled
                                                     )
 
+            # Clear the cache
+            cache.delete('alerts')
+
+            # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Preferences saved successfully')
         else:
             messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')

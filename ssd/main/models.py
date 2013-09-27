@@ -64,7 +64,6 @@ class Event(models.Model):
         Event Types:
             1 = incident
             2 = maintenance
-            3 = incident report
 
     """
 

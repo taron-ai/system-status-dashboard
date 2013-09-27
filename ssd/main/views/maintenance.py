@@ -356,6 +356,10 @@ def m_update(request):
                                                 'event_user__user__first_name',
                                                 'event_user__user__last_name'
                                                 )
+    # If nothing was returned, send back to the home page
+    if not details:
+        messages.add_message(request, messages.ERROR, 'Invalid request: no such maintenance id.')
+        return HttpResponseRedirect('/')
 
     # Obtain all current email addresses
     emails = Email.objects.values('id','email')
@@ -417,11 +421,8 @@ def m_detail(request):
     else:
         return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
 
-    # Which services were impacted
-    services = Event.objects.filter(id=id).values('event_service__service__service_name')
-
-    # Obain the maintenance detail
-    detail = Event.objects.filter(id=id).values(
+    # Obain the maintenance detail (and make sure it's a maintenance)
+    detail = Event.objects.filter(id=id,type=2).values(
                                                 'event_time__start',
                                                 'event_time__end',
                                                 'event_status__status',
@@ -432,6 +433,13 @@ def m_detail(request):
                                                 'event_user__user__first_name',
                                                 'event_user__user__last_name'
                                                 )
+    # If nothing was returned, send back to the home page
+    if not detail:
+        messages.add_message(request, messages.ERROR, 'Invalid request: no such maintenance id.')
+        return HttpResponseRedirect('/')
+
+    # Which services were impacted
+    services = Event.objects.filter(id=id).values('event_service__service__service_name')
 
     # Obain any maintenance updates
     updates = Event.objects.filter(id=id).values(

@@ -22,20 +22,15 @@
 
 <script type="text/javascript">
 
-   // Date
+   // Jump To
    $(function() {
       $("#jump_to").datepicker({dateFormat: 'yy-mm-dd'});
    });
 
 </script>
 
-<div class="row">
-  <div class="large-12 columns">
-    <p>{{information|safe}}</p>
-  </div>
-</div>
-
-<div class="spacer_small"></div>
+{# This is row consisting of 12 columns that will display all messages passed in the request #}
+{% include "admin/messages.html" %}
 
 {% if alert %}
 <div class="row">
@@ -47,11 +42,43 @@
 </div>
 {% endif %}
 
+{% if alert %}
+<div class="row">
+  <div class="large-12 columns">
+    <p>{{information|safe}}</p>
+  </div>
+</div>
+{% endif %}
+
+<div class="spacer_small"></div>
+
 <div class="row">
   <div class="large-6 columns">
     <font class="heading">System Status as of {% now "Y-m-d H:i:s e" %}:</font><br><br>
   </div>
 </div>
+
+<div class="row">
+  <div class="large-2 columns">
+    <a href="{{backward_link}}" title="Move back one week"><span class="genericon genericon-rewind genericon_container_nav"></span></a>
+    &nbsp;&nbsp;
+    <a href="{{forward_link}}" title="Move forward one week"><span class="genericon genericon-fastforward genericon_container_nav"></span></a>
+    &nbsp;&nbsp;
+    <span id="calselector" class="genericon genericon-day genericon_container_nav" title="Jump to a specific date"></span>
+
+    <form name="prefs_jump" action="/prefs/jump" method="post">
+    {% csrf_token %}
+      <input type="text" class="jump_to" name="jump_to" id="jump_to" onchange='this.form.submit()'/>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Interact with datepicker through genericon icon
+  $("#calselector").click(function() {
+      $("#jump_to").datepicker('show');
+  });
+</script>
 
 <div class="row">
   <div class="large-12 large-centered columns">
@@ -77,18 +104,18 @@
               <div>
                 <div style="display: inline-block; vertical-align: middle; text-align: center;">
                    {% if column.status == 1 %}
-                     <div class="genericon genericon-dot" style="position: relative; bottom: 14px; right: 6px; font-size: 42px; color: red;"></div>
+                     <span class="genericon genericon-dot genericon_container_red"></span>
                    {% else %}
                     {% if column.status == 2 %}
-                     <div class="genericon genericon-dot" style="position: relative; bottom: 14px; right: 6px; font-size: 42px; color: blue;"></div>
+                     <span class="genericon genericon-dot genericon_container_blue"></span>
                     {% else %}
-                     <div class="genericon genericon-dot" style="position: relative; bottom: 14px; right: 6px; font-size: 42px; color: green;"></div>
+                     <span class="genericon genericon-dot genericon_container_green"></span>
                     {% endif %}
                    {% endif %}
                 </div>
-                <div style="display: inline-block;">
+                <span>
                   &nbsp;&nbsp;{{column.service}}
-                </div>
+                </span>
               </div>
              </td>
            {% else %}
@@ -148,17 +175,8 @@
 
 <div class="row">
   <div class="large-12 columns">
-    <form name="prefs_jump" action="/prefs/jump" method="post">
-     {% csrf_token %}
-    <input type="text" class="jump_to" name="jump_to" id="jump_to" placeholder="Jump to date" onchange='this.form.submit()'/>
-    </form>
-  </div>
-</div>
-
-<div class="row">
-  <div class="large-12 columns">
     <br><br><br>
-    <font class="heading">Detailed Service Disruption Timeline:</font><hr>
+    <font class="heading">Detailed Service Disruption Timeline:</font><div class="hr"></div>
     <p>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
@@ -174,7 +192,7 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <font class="heading">Detailed Maintenance Timeline:</font><hr>
+    <font class="heading">Detailed Maintenance Timeline:</font><div class="hr"></div>
     <p>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
@@ -190,7 +208,9 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <font class="heading">Historical Summary Status:</font><hr>
+    <font class="heading">Historical Summary Status:</font>&nbsp;
+    <span data-tooltip class="has-tip tip-bottom" title="Historical summary status shows the past 30 days (incidents and maintenance) and future 30 days (scheduled maintenance).  Click on any of the event indicators to review detailed information about events.  Remove a data series from the graph by clicking its legend icon."><span class="genericon genericon-help"></span></span>
+    <div class="hr"></div>
   </div>
 </div>
 
@@ -256,7 +276,7 @@ $(function () {
                       y: {{row.incidents}},
                       events: {
                         click: function() {
-                          window.open('/igsearch?date={{row.date}}');
+                          window.open('/gsearch?date={{row.date}}&type=1', '_self');
                         }
                       }
                     }
@@ -265,7 +285,7 @@ $(function () {
                       y: {{row.incidents}},
                       events: {
                         click: function() {
-                          window.open('/igsearch?date={{row.date}}');
+                          window.open('/gsearch?date={{row.date}}&type=1', '_self');
                         }
                       }
                     },
@@ -276,7 +296,31 @@ $(function () {
                 color: '#FDBE08'
             }, {
                 name: 'Maintenance',
-                data: [{% for row in count_data %}{% if forloop.last %}{{row.maintenances}}{% else %}{{row.maintenances}},{% endif %}{% endfor %}],
+                data: [
+
+                  {% for row in count_data %}
+                    {% if forloop.last %}
+                    {
+                      y: {{row.maintenances}},
+                      events: {
+                        click: function() {
+                          window.open('/gsearch?date={{row.date}}&type=2', '_self');
+                        }
+                      }
+                    }
+                    {% else %}
+                    {  
+                      y: {{row.maintenances}},
+                      events: {
+                        click: function() {
+                          window.open('/gsearch?date={{row.date}}&type=2', '_self');
+                        }
+                      }
+                    },
+                    {% endif %}
+                  {% endfor %}
+
+                ],
                 color: '#4F84D1'
             }]
         });

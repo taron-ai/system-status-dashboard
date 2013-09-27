@@ -25,32 +25,23 @@
 
   {% if results %}
 
-    <table class="responsive standard">
+    <table class="responsive">
       <thead>
         <tr>
-         <th>ID</th>
-         <th>Date Submitted</th>
-         <th>Submitted By</th>
-         <th>Email</th>
+         <th>Start Date/Time</th>
+         <th>End Date/Time</th>
          <th>Description</th>
-         <th>Additional Information</th>
-         <th>Screenshots</th>
+         <th>Detail</th>
         </tr>
       </thead>
   
       <tbody>
       {% for row in results %}
         <tr>
-         <td>{{row.id}}</a></td>
-         <td>{{row.date|date:"Y-m-d H:i:s e"}}</td>
-         <td>{{row.name}}</td>
-         <td>{{row.email}}</td>
-         <td>{{row.detail|linebreaksbr}}</td>
-         <td>{{row.extra|linebreaksbr}}</td>
-         <td>
-          {% if row.screenshot1 %}<a href="{{row.screenshot1}}"><img src="{{row.screenshot1}}" width="35" height="35"></a>{% endif %}
-          {% if row.screenshot2 %}<a href="{{row.screenshot2}}"><img src="{{row.screenshot2}}" width="35" height="35"></a>{% endif %}
-         </td>
+         <td>{{row.event_time__end|date:"Y-m-d H:i:s e"}}</td>
+         <td>{{row.event_time__start|date:"Y-m-d H:i:s e"}}</td>
+         <td>{{row.event_description__description}}</td>
+         <td>{% if row.type == 1 %}<a href="/i_detail?id={{row.id}}">{% else %}{% if row.type == 2 %}<a href="/m_detail?id={{row.id}}">{% endif %}{% endif %}<div class="genericon genericon-summary genericon_container"></div></a></td>
         </tr>
         {% endfor %}
       </tbody>

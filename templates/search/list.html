@@ -45,20 +45,64 @@
 {# This is row consisting of 12 columns that will display all messages passed in the request #}
 {% include "admin/messages.html" %}
 
-<div class="spacer_medium"></div>
+<form method="GET" action="/events">
+<div class="row">
+  <div class="large-5 columns">
+    <div class="panel" id="search" style="display: none;">
+      <div class="row">
+        <div class="large-6 columns {% if form.start.errors %}error{% endif %}">
+          Date From:
+          <input type="text" name="start" id="start" class="date" value="{% if form.start.data %}{{form.start.data}}{% else %}{{start}}{% endif %}"/>
+          {% if form.start.errors %}
+          <span class="error">{% for error in form.start.errors %}{{error}}<br>{% endfor %}<br></span>
+          {% endif %}            
+        </div>
+        <div class="large-6 columns left {% if form.end.errors %}error{% endif %}">
+          Date To:
+          <input type="text" name="end" id="end" class="date" value="{% if form.end.data %}{{form.end.data}}{% else %}{{end}}{% endif %}"/>
+          {% if form.end.errors %}
+          <span class="error">{% for error in form.end.errors %}{{error}}<br>{% endfor %}<br></span>
+          {% endif %}            
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-6 columns {% if form.type.errors %}error{% endif %}">
+          Event Type:
+          <select name="type">
+            <option disabled selected>Select Type</option>
+            <option value="incident">incidents</option>
+            <option value="maintenance">maintenance</option>
+          </select>       
+        </div>
+        <div class="large-6 columns left">
+          Search Text:
+          <input type="text" name="text" placeholder="Enter search text" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="large-12 columns left">
+          <input type="submit" class="small button secondary" value="search"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
 
 <div class="row">
   <div class="large-12 columns">
     <span class="navigation">
       {% if events.has_previous %}
-        <a href="?page={{events.previous_page_number}}">&laquo;</a>
+        <a href="?page={{events.previous_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&laquo;</a>
       {% endif %}
 
       <span>Page {{events.number}} of {{events.paginator.num_pages}}</span>
 
       {% if events.has_next %}
-        <a href="?page={{events.next_page_number}}">&raquo;</a>
+        <a href="?page={{events.next_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&raquo;</a>
       {% endif %}
+
+      &nbsp;&nbsp;&nbsp;<span id="search_button" class="genericon genericon-search genericon_container_search" title="Search for specific events"></span>
     </span>
   </div>
 </div>
@@ -98,55 +142,6 @@
 
 <div class="spacer_medium"></div>
 
-<div class="row">
-  <div class="large-12 columns">
-    <span id="search_button" class="genericon genericon-search genericon_container" title="Search for specific events"></span>
-  </div>
-</div>
-
-<div class="spacer_medium"></div>
-
-<form method="GET" action="/events">
-
-<div class="row">
-  <div class="large-11 columns">
-
-    <div class="panel" id="search" style="display: none;">
-
-      <div class="large-2 columns {% if form.s_date.errors %}error{% endif %}">
-        <input type="text" name="start" id="start" class="date" value="{% if form.start.data %}{{form.start.data}}{% else %}{{start}}{% endif %}"/>
-        {% if form.start.errors %}
-        <span class="error">{% for error in form.start.errors %}{{error}}<br>{% endfor %}<br></span>
-        {% endif %}            
-      </div>
-
-      <div class="large-2 columns {% if form.s_date.errors %}error{% endif %}">
-        <input type="text" name="end" id="end" class="date" value="{% if form.end.data %}{{form.end.data}}{% else %}{{start}}{% endif %}"/>
-        {% if form.end.errors %}
-        <span class="error">{% for error in form.end.errors %}{{error}}<br>{% endfor %}<br></span>
-        {% endif %}            
-      </div>
-
-      <div class="large-2 columns {% if form.s_date.errors %}error{% endif %}">
-        <select name="type">
-          <option disabled selected>Select Type</option>
-          <option value="incident">incidents</option>
-          <option value="maintenance">maintenance</option>
-        </select>       
-      </div>
-
-      <div class="large-3 columns left">
-        <input type="text" name="search" placeholder="Enter search text" />
-      </div>
-
-      <div class="large-2 columns left">
-        <input type="submit" class="small button secondary" value="search"/>
-      </div>
-
-    </div>
-  </div>
-</div>
-</form>
 {% endblock %}
 
 

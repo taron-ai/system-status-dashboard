@@ -390,6 +390,15 @@ class ModifyContactForm(forms.Form):
     action = forms.CharField(required=True)
 
 
+class SearchForm(forms.Form):
+    """Form for performing a custom search"""
+    start = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
+    end = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
+    type = forms.CharField(required=False)
+    text = forms.CharField(required=False)
+    page = forms.IntegerField(required=False)
+
+
 class AddIncidentForm(forms.Form):
     """Form for adding a new incident (by an administrator)"""
 

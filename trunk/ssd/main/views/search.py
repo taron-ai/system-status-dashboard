@@ -26,7 +26,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from ssd.main.models import Event
-from ssd.main.forms import SearchForm, GSearchForm, ListForm
+from ssd.main.forms import SearchForm, GSearchForm, SearchForm
 
 
 def gsearch(request):
@@ -89,12 +89,16 @@ def events(request):
 
     """
 
-    form = ListForm(request.GET)
+    form = SearchForm(request.GET)
 
     # Check the params
     if form.is_valid():
 
         page = form.cleaned_data['page']
+        start = form.cleaned_data['start']
+        end = form.cleaned_data['end']
+        text = form.cleaned_data['text']
+        type = form.cleaned_data['type']
 
         # Obtain all incidents
         events_all = Event.objects.values('id','status__status','type__type','start','end','description').order_by('-id')
@@ -112,12 +116,31 @@ def events(request):
             # If page is out of range (e.g. 9999), deliver last page of results.
             events = paginator.page(paginator.num_pages)
 
+        # Put together the query params
+        query_params = None
+        if start and end:
+            query_params = 'start=%s&end=%s' % (start,end)
+
+        if text:
+            if query_params:
+                query_params += '&text=%s' % text
+            else:
+                query_params = 'text=%s' % text
+
+        if type:
+            if query_params:
+                query_params += '&type=%s' % type
+            else:
+                query_params = 'type=%s' % type
+
         # Print the page
         return render_to_response(
            'search/list.html',
            {
               'title':'System Status Dashboard | List Events',
               'events':events,
+              'page':page,
+              'query_params':query_params
            },
            context_instance=RequestContext(request)
         )

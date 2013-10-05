@@ -258,6 +258,12 @@ span.genericon_container_nav {
    font-size: 25px; 
    color: #DDDDDD;
 }
+/* Search icon */
+span.genericon_container_search {
+   position: relative; 
+   bottom: 1px; 
+   font-size: 25px; 
+}
 
 
 

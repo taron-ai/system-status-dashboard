@@ -151,6 +151,31 @@ INSTALLED_APPS = (
     'ssd.main'
 )
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(threadName)s %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'logfile': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'filename': '$__app_dir__$/log/ssd.log',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'ssd': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+    }
+}
+
+
 # Login URL
 LOGIN_URL = '/accounts/login'
 

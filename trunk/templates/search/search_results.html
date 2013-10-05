@@ -38,10 +38,10 @@
       <tbody>
       {% for row in results %}
         <tr>
-         <td>{{row.event_time__end|date:"Y-m-d H:i:s e"}}</td>
-         <td>{{row.event_time__start|date:"Y-m-d H:i:s e"}}</td>
-         <td>{{row.event_description__description}}</td>
-         <td>{% if row.type == 1 %}<a href="/i_detail?id={{row.id}}">{% else %}{% if row.type == 2 %}<a href="/m_detail?id={{row.id}}">{% endif %}{% endif %}<div class="genericon genericon-summary genericon_container"></div></a></td>
+         <td>{{row.start|date:"Y-m-d H:i:s e"}}</td>
+         <td>{{row.end|date:"Y-m-d H:i:s e"}}</td>
+         <td>{{row.description}}</td>
+         <td>{% if row.type__type == 'incident' %}<a href="/i_detail?id={{row.id}}">{% else %}{% if row.type__type == 'maintenance' %}<a href="/m_detail?id={{row.id}}">{% endif %}{% endif %}<div class="genericon genericon-summary genericon_container"></div></a></td>
         </tr>
         {% endfor %}
       </tbody>

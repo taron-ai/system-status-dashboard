@@ -91,8 +91,8 @@ def index(request):
     # Determine if there are any active events (incidents or maintenances), regardless of the time range
     # This will be used to set the main service status
 
-    active_incidents = Event.objects.filter(type=1,event_status__status=1).values('event_service__service__service_name')
-    active_maintenances = Event.objects.filter(type=2,event_status__status=3).values('event_service__service__service_name')
+    active_incidents = Event.objects.filter(type__type='incident',status__status='open').values('event_service__service__service_name')
+    active_maintenances = Event.objects.filter(type__type='maintenance',status__status='started').values('event_service__service__service_name')
     # Create an easy lookup table for later
     events_lookup = {
         'incident':{},
@@ -117,13 +117,18 @@ def index(request):
     # Put together the first row, which are the headings
     data = []
     data.append(headings)
+
+    # Grab all services
     services = Service.objects.values('service_name').order_by('service_name')
-    events = Event.objects.filter(event_time__start__range=[dates[0],ref_q]).values('id',
-                                                                                    'type',
-                                                                                    'event_time__start',
-                                                                                    'event_time__end',
-                                                                                    'event_service__service__service_name',
-                                                                                    'event_status__status').order_by('id')
+
+    # Grab all events within the time range requested
+    events = Event.objects.filter(start__range=[dates[0],ref_q]).values('id',
+                                                                        'type__type',
+                                                                        'start',
+                                                                        'end',
+                                                                        'event_service__service__service_name',
+                                                                        'status__status'
+                                                                        ).order_by('id')
 
     # Run through each service and see if it had an incident during the time range
     for service in services:
@@ -140,7 +145,7 @@ def index(request):
         # Incidents over-ride everything for setting the status of the service
         if service['service_name'] in events_lookup['incident']:
             row[0]['status'] = 1
-        elif service['service_name'] in events_lookup['incident']:
+        elif service['service_name'] in events_lookup['maintenance']:
             row[0]['status'] = 2
 
         # Run through each date for each service
@@ -156,23 +161,23 @@ def index(request):
 
                     # This event affected our service
                     # Convert to the requested timezone
-                    event_date = event['event_time__start']
+                    event_date = event['start']
                     event_date = event_date.astimezone(pytz.timezone(request.timezone))
 
                     # If the event closed date is there, make sure the time zone is correct
-                    end_date = event['event_time__end']
-                    if event['event_time__end']:
+                    end_date = event['end']
+                    if event['end']:
                         end_date = end_date.astimezone(pytz.timezone(request.timezone))
 
                     # If this is our date, add it
                     if date.date() == event_date.date():
                         # This is our date so add the incident ID
                         e = {
-                                 'type':event['type'],
+                                 'type':event['type__type'],
                                  'id':event['id'],
                                  'open':event_date,
                                  'closed':end_date,
-                                 'status':event['event_status__status']
+                                 'status':event['status__status']
                                  }
                         row_event.append(e)
             
@@ -221,10 +226,10 @@ def index(request):
     forward_date = ref_q + forward
     
     # Obtain a count of incidents, per day
-    incident_count = Event.objects.filter(event_time__start__range=[back_date,forward_date],type=1).values('event_time__start')
+    incident_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='incident').values('start')
     
     # Obtain a count of maintenances, per day
-    maintenance_count = Event.objects.filter(event_time__start__range=[back_date,forward_date],type=2).values('event_time__start')
+    maintenance_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='maintenance').values('start')
 
     # Iterate through the graph_dates and find matching incidents/maintenances/reports
     # This data structure will look like this:
@@ -244,13 +249,13 @@ def index(request):
 
         # Check for incidents that match this date
         for row in incident_count:
-            if row['event_time__start'].astimezone(pytz.timezone(request.timezone)).strftime("%Y-%m-%d") == day:
+            if row['start'].astimezone(pytz.timezone(request.timezone)).strftime("%Y-%m-%d") == day:
                 t['incidents'] += 1
                 show_graph = True
 
         # Check for maintenances that match this date
         for row in maintenance_count:
-            if row['event_time__start'].astimezone(pytz.timezone(request.timezone)).strftime("%Y-%m-%d") == day:
+            if row['start'].astimezone(pytz.timezone(request.timezone)).strftime("%Y-%m-%d") == day:
                 t['maintenances'] += 1
                 show_graph = True
 
@@ -260,16 +265,16 @@ def index(request):
 
 
     # ------------------ #
-    # Obtain the incident and maintenance timelines (open incidents)
-    incident_timeline = Event.objects.filter(event_status__status=1,type=1).values('id',
-                                                                                   'event_time__start',
-                                                                                   'event_description__description',
-                                                                                   ).order_by('-id')
+    # Obtain the incident (open) and maintenance (started) timelines
+    incident_timeline = Event.objects.filter(status__status='open',type__type='incident').values('id',
+                                                                                                 'start',
+                                                                                                 'description',
+                                                                                                ).order_by('-id')
     
-    maintenance_timeline = Event.objects.filter(event_status__status=1,type=2).values('id',
-                                                                                      'event_time__start',
-                                                                                      'event_description__description',
-                                                                                     ).order_by('-id')
+    maintenance_timeline = Event.objects.filter(status__status='started',type__type='maintenance').values('id',
+                                                                                                       'start',
+                                                                                                       'description',
+                                                                                                       ).order_by('-id')
     # ------------------ #
 
 
@@ -291,6 +296,10 @@ def index(request):
         information = alerts[0]['main']
     else:
         information = None
+    # End alert and information text
+    # ------------------ #
+
+
 
     # Print the page
     return render_to_response(

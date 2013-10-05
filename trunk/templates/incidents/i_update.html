@@ -93,10 +93,10 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns {% if form.detail.errors %}error{% endif %}">
-        <textarea name="detail" placeholder="Enter incident description" maxlength="1000">{% if form.detail.data %}{{form.detail.data}}{% else %}{% if details.0.event_description__description %}{{details.0.event_description__description}}{% endif %}{% endif %}</textarea>
+      <div class="large-12 columns {% if form.description.errors %}error{% endif %}">
+        <textarea name="description" placeholder="Enter incident description" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% else %}{% if details.0.description %}{{details.0.description}}{% endif %}{% endif %}</textarea>
         {% if form.detail.errors %}
-        <br><span class="error">{% for error in form.detail.errors %}{{error}}<br>{% endfor %}<br></span>
+        <br><span class="error">{% for error in form.description.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
       </div>
     </div>
@@ -113,7 +113,7 @@
         </div>
         <div class="row">
           <div class="large-12 columns {% if form.s_date.errors %}error{% endif %}">
-            <input type="text" name="s_date" id="s_date" class="date" placeholder="Enter date" value="{% if form.s_date.data %}{{form.s_date.data}}{% else %}{{details.0.event_time__start|date:"Y-m-d"}}{% endif %}"/>
+            <input type="text" name="s_date" id="s_date" class="date" placeholder="Enter date" value="{% if form.s_date.data %}{{form.s_date.data}}{% else %}{{details.0.start|date:"Y-m-d"}}{% endif %}"/>
             {% if form.s_date.errors %}
             <span class="error">{% for error in form.s_date.errors %}{{error}}<br>{% endfor %}<br></span>
             {% endif %}  
@@ -121,7 +121,7 @@
         </div>
         <div class="row">
           <div class="large-12 columns {% if form.s_time.errors %}error{% endif %}">
-            <input type="text" name="s_time" id="s_time" class="date" placeholder="Enter time" value="{% if form.s_time.data %}{{form.s_time.data}}{% else %}{{details.0.event_time__start|date:"H:i"}}{% endif %}"/>
+            <input type="text" name="s_time" id="s_time" class="date" placeholder="Enter time" value="{% if form.s_time.data %}{{form.s_time.data}}{% else %}{{details.0.start|date:"H:i"}}{% endif %}"/>
             {% if form.s_time.errors %}
             <span class="error">{% for error in form.s_time.errors %}{{error}}<br>{% endfor %}<br></span>
             {% endif %} 
@@ -138,7 +138,7 @@
         </div>
         <div class="row">
           <div class="large-12 columns {% if form.e_date.errors %}error{% endif %}">
-            <input type="text" name="e_date" id="e_date" class="date" placeholder="Enter date" value="{% if form.e_date.data %}{{form.e_date.data}}{% else %}{{details.0.event_time__end|date:"Y-m-d"}}{% endif %}"/>
+            <input type="text" name="e_date" id="e_date" class="date" placeholder="Enter date" value="{% if form.e_date.data %}{{form.e_date.data}}{% else %}{{details.0.end|date:"Y-m-d"}}{% endif %}"/>
             {% if form.e_date.errors %}
             <span class="error">{% for error in form.e_date.errors %}{{error}}<br>{% endfor %}<br></span>
             {% endif %}  
@@ -146,7 +146,7 @@
         </div>
         <div class="row">
           <div class="large-12 columns {% if form.e_time.errors %}error{% endif %}">
-            <input type="text" name="e_time" id="e_time" class="date" placeholder="Enter time" value="{% if form.e_time.data %}{{form.e_time.data}}{% else %}{{details.0.event_time__end|date:"H:i"}}{% endif %}"/>
+            <input type="text" name="e_time" id="e_time" class="date" placeholder="Enter time" value="{% if form.e_time.data %}{{form.e_time.data}}{% else %}{{details.0.end|date:"H:i"}}{% endif %}"/>
             {% if form.e_time.errors %}
             <span class="error">{% for error in form.e_date.errors %}{{error}}<br>{% endfor %}<br></span>
             {% endif %} 

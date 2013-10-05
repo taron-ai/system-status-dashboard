@@ -167,7 +167,7 @@
 
     <div class="row">
       <div class="large-12 columns {% if form.coordinator.errors %}error{% endif %}">
-        <textarea name="coordinator" placeholder="{{instr_maintenance_coordinator}}" maxlength="1000">{% if form.coordinator.data %}{{form.coordinator.data}}{% endif %}</textarea>
+        <textarea name="coordinator" placeholder="Enter maintenance coordinator" maxlength="1000">{% if form.coordinator.data %}{{form.coordinator.data}}{% endif %}</textarea>
         {% if form.coordinator.errors %}
         <span class="error">{% for error in form.coordinator.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}

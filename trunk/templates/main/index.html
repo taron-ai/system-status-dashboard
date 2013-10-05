@@ -42,7 +42,7 @@
 </div>
 {% endif %}
 
-{% if alert %}
+{% if information %}
 <div class="row">
   <div class="large-12 columns">
     <p>{{information|safe}}</p>
@@ -99,6 +99,7 @@
          {% for column in row %}
            
            {# Set the status colors next to the service and print the service #}
+           {# 1 is active incident and 2 is active maintenance #}
            {% if forloop.first %}
              <td>
               <div>
@@ -127,14 +128,14 @@
                  {# We have some events to show #}
                  {# See if we have a maintenance or an incident #}
 
-                 {% if event.type == 1 %}
-                   {% if event.status == 1 %}
+                 {% if event.type == 'incident' %}
+                   {% if event.status == 'open' %}
                      <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_red.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~"></a>
                    {% else %}
                      <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_orange.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~ {{event.closed|date:"Y-m-d H:i:s"}}"></a>
                    {% endif %}
                  {% else %}
-                   {% if event.type == 2 %}
+                   {% if event.type == 'maintenance' %}
                      <a href="/m_detail?id={{event.id}}"><img src="/html/images/incident_blue.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~ {{event.closed|date:"Y-m-d H:i:s"}}"></a>
                    {% endif %}
                  {% endif %}
@@ -180,7 +181,7 @@
     <p>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
-       {{row.event_time__start|date:"Y-m-d H:i:s e"}} - {{row.event_description__description}} <a href="/i_detail?id={{row.id}}">more detail...</a><br>
+       {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}} <a href="/i_detail?id={{row.id}}">more detail...</a><br>
       {% endfor %}
     {% else %}
       <font class="all_good">No current service disruptions.</font>
@@ -196,7 +197,7 @@
     <p>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
-       {{row.event_time__start|date:"Y-m-d H:i:s e"}} - {{row.event_description__description}} <a href="/m_detail?id={{row.id}}">more detail...</a><br>
+       {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}} <a href="/m_detail?id={{row.id}}">more detail...</a><br>
       {% endfor %}
     {% else %}
       <font class="all_good">No planned maintenance is occurring.</font>
@@ -276,7 +277,7 @@ $(function () {
                       y: {{row.incidents}},
                       events: {
                         click: function() {
-                          window.open('/gsearch?date={{row.date}}&type=1', '_self');
+                          window.open('/gsearch?date={{row.date}}&type=incident', '_self');
                         }
                       }
                     }
@@ -285,7 +286,7 @@ $(function () {
                       y: {{row.incidents}},
                       events: {
                         click: function() {
-                          window.open('/gsearch?date={{row.date}}&type=1', '_self');
+                          window.open('/gsearch?date={{row.date}}&type=incident', '_self');
                         }
                       }
                     },
@@ -304,7 +305,7 @@ $(function () {
                       y: {{row.maintenances}},
                       events: {
                         click: function() {
-                          window.open('/gsearch?date={{row.date}}&type=2', '_self');
+                          window.open('/gsearch?date={{row.date}}&type=maintenance', '_self');
                         }
                       }
                     }
@@ -313,7 +314,7 @@ $(function () {
                       y: {{row.maintenances}},
                       events: {
                         click: function() {
-                          window.open('/gsearch?date={{row.date}}&type=2', '_self');
+                          window.open('/gsearch?date={{row.date}}&type=maintenance', '_self');
                         }
                       }
                     },

@@ -131,10 +131,10 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns {% if form.detail.errors %}error{% endif %}">
-        <textarea name="detail" placeholder="Enter incident description" maxlength="1000">{% if form.detail.data %}{{form.detail.data}}{% endif %}</textarea>
-        {% if form.detail.errors %}
-        <br><span class="error">{% for error in form.detail.errors %}{{error}}<br>{% endfor %}<br></span>
+      <div class="large-12 columns {% if form.description.errors %}error{% endif %}">
+        <textarea name="description" placeholder="Enter incident description" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% endif %}</textarea>
+        {% if form.description.errors %}
+        <br><span class="error">{% for error in form.description.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
       </div>
     </div>

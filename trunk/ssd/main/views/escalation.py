@@ -29,7 +29,6 @@ from django.db.models import F
 from django.contrib import messages
 from ssd.main.models import Config_Escalation, Escalation
 from ssd.main.forms import AddContactForm, EscalationConfigForm, ModifyContactForm
-from ssd.main.views.system import system_message
 
 
 def escalation(request):
@@ -42,7 +41,8 @@ def escalation(request):
 
     # If this functionality is disabled in the admin, let the user know
     if Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 0:
-        return system_message(request,True,'Your system administrator has disabled this functionality')
+        messages.add_message(request, messages.ERROR, 'Your system administrator has disabled the escalation path functionality')
+        return HttpResponseRedirect('/')
 
     # Obtain the escalation contacts
     contacts = Escalation.objects.filter(hidden=False).values('id','name','contact_details').order_by('order')

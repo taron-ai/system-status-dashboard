@@ -75,8 +75,8 @@
     </div>
 
     <div class="row">
-      <div class="large-6 columns {% if form.update.errors %}error{% endif %}">
-        <textarea name="update" placeholder="{{instr_maintenance_update}}" maxlength="1000">{% if form.update.data %}{{form.update.data}}{% endif %}</textarea>
+      <div class="large-12 columns {% if form.update.errors %}error{% endif %}">
+        <textarea name="update" placeholder="Enter an update" maxlength="1000">{% if form.update.data %}{{form.update.data}}{% endif %}</textarea>
         {% if form.update.errors %}
         <br><span class="error">{% for error in form.update.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
@@ -149,7 +149,7 @@
 
     <div class="row">
       <div class="large-12 columns {% if form.description.errors %}error{% endif %}">
-        <textarea name="description" placeholder="{{instr_maintenance_description}}" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% else %}{{details.0.event_description__description}}{% endif %}</textarea>
+        <textarea name="description" placeholder="Enter maintenance description" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% else %}{{details.0.description}}{% endif %}</textarea>
         {% if form.description.errors %}
         <br><span class="error">{% for error in form.description.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
@@ -167,7 +167,7 @@
 
     <div class="row">
       <div class="large-12 columns {% if form.impact.errors %}error{% endif %}">
-        <textarea name="impact" placeholder="{{instr_maintenance_impact}}" maxlength="1000">{% if form.impact.data %}{{form.impact.data}}{% else %}{{details.0.event_impact__impact}}{% endif %}</textarea>
+        <textarea name="impact" placeholder="Enter maintenance impact analysis" maxlength="1000">{% if form.impact.data %}{{form.impact.data}}{% else %}{% if details.0.event_impact__impact %}{{details.0.event_impact__impact}}{% endif %}{% endif %}</textarea>
         {% if form.impact.errors %}
         <br><span class="error">{% for error in form.impact.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
@@ -185,7 +185,7 @@
 
     <div class="row">
       <div class="large-12 columns {% if form.coordinator.errors %}error{% endif %}">
-        <textarea name="coordinator" placeholder="{{instr_maintenance_coordinator}}" maxlength="1000">{% if form.coordinator.data %}{{form.coordinator.data}}{% else %}{{details.0.event_coordinator__coordinator}}{% endif %}</textarea>
+        <textarea name="coordinator" placeholder="Enter maintenance coordinator" maxlength="1000">{% if form.coordinator.data %}{{form.coordinator.data}}{% else %}{% if details.0.event_coordinator__coordinator %}{{details.0.event_coordinator__coordinator}}{% endif %}{% endif %}</textarea>
         {% if form.coordinator.errors %}
         <br><span class="error">{% for error in form.coordinator.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
@@ -203,7 +203,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <label><input type="checkbox" name="started" {% if form.started.data %}checked="on"{% else %}{% if details.0.event_status__status == 3 or details.0.event_status__status == 4 %}checked="on"{% endif %}{% endif %}/>
+        <label><input type="checkbox" name="started" {% if form.started.data %}checked="on"{% else %}{% if details.0.status__status == 'started' %}checked="on"{% endif %}{% endif %}/>
         Started</label>
         {% if form.started.errors %}
         <span class="error">{% for error in form.started.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -213,7 +213,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <label><input type="checkbox" name="completed" {% if form.completed.data %}checked="on"{% else %}{% if details.0.event_status__status == 4 %}checked="on"{% endif %}{% endif %}/>
+        <label><input type="checkbox" name="completed" {% if form.completed.data %}checked="on"{% else %}{% if details.0.status__status == 4 %}checked="on"{% endif %}{% endif %}/>
         Completed</label>
         {% if form.completed.errors %}
         <span class="error">{% for error in form.completed.errors %}{{error}}<br>{% endfor %}<br></span>

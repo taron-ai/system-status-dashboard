@@ -44,13 +44,13 @@
       <div class="large-12 columns">
         <span class="navigation">
           {% if ireports.has_previous %}
-            <a href="?page={{ ireports.previous_page_number }}">&laquo;</a>
+            <a href="?page={{ireports.previous_page_number}}">&laquo;</a>
           {% endif %}
 
-          <span>Page {{ ireports.number }} of {{ ireports.paginator.num_pages }}</span>
+          <span>Page {{ireports.number}} of {{ireports.paginator.num_pages}}</span>
 
           {% if ireports.has_next %}
-            <a href="?page={{ ireports.next_page_number }}">&raquo;</a>
+            <a href="?page={{ireports.next_page_number}}">&raquo;</a>
           {% endif %}
         </span>
       </div>

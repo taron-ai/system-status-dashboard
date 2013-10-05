@@ -25,11 +25,9 @@ from django.core.mail import EmailMessage
 from django.template.loader import get_template
 from django.template import Context
 from django.utils import timezone as jtz
-from ssd.main.models import Config
 from ssd.main.models import Email
 from ssd.main.models import Event
 from ssd.main.models import Config_Email
-from ssd.main import config_value
 
 
 # Get an instance of the ssd logger
@@ -57,9 +55,6 @@ class email:
           
         """
 
-        # Instantiate the configuration value getter
-        cv = config_value.config_value()
-
         # Obtain the recipient email address
         text_pager = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('text_pager')[0]['text_pager']
 
@@ -80,10 +75,6 @@ class email:
         Send an email message in HTML format about a new or existing incident
            - If there is an error, the user will not be notified but an Apache error log will be generated
         """
-
-        # Instantiate the configuration value getter
-        cv = config_value.config_value()
-
 
 
         # Obain the incident detail
@@ -108,36 +99,29 @@ class email:
                                                     'event_update__user__last_name'
                                                     ).order_by('event_update__id')
 
-        # Obtain the recipient or company name
-        recipient_name = cv.value('recipient_name')
-
         # Obtain the recipient email address
         recipient_incident = Email.objects.filter(id=email_id).values('email')[0]['email']
 
         # Obtain the sender email address
-        email_from = cv.value('email_from')
+        email_from = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('from_address')[0]['from_address']
 
         # Obtain the ssd url
-        ssd_url = cv.value('ssd_url')
+        ssd_url = Config_Systemurl.objects.filter(id=Config_Systemurl.objects.values('id')[0]['id']).values('url')[0]['url']
 
         # HTML (true) or text (false) formatting
-        format = int(cv.value('email_format_incident'))
+        format = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('email_format')[0]['email_format']
 
         # Obtain the greeting
         if new == True:
-            greeting = cv.value('greeting_incident_new')
-            email_subject_incident = cv.value('email_subject_incident')
+            greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('incident_greeting')[0]['incident_greeting']
+            email_subject_incident = 'Incident Notification'
         else:
-            greeting = cv.value('greeting_incident_update')
-            email_subject_incident = '%s - Update' % cv.value('email_subject_incident')
-
-        # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-        jtz.activate(set_timezone)
+            greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('incident_update')[0]['incident_update']
+            email_subject_incident = 'Incident Update'
 
         # Interpolate values for the template
         d = Context({ 
                      'detail':detail,
-                     'recipient_name':recipient_name,
                      'greeting':greeting,
                      'services':services,
                      'updates':updates,
@@ -183,9 +167,6 @@ class email:
            - If there is an error, the user will not be notified but an Apache error log will be generated
         """
 
-        # Instantiate the configuration value getter
-        cv = config_value.config_value()
-
         # Obain the incident detail
         detail = Event.objects.filter(id=id).values(
                                                     'event_time__start',
@@ -208,36 +189,29 @@ class email:
                                                     'event_update__user__last_name'
                                                     ).order_by('event_update__id')
 
-        # Obtain the recipient or company name
-        recipient_name = cv.value('recipient_name')
-
         # Obtain the recipient email address
-        recipient_maintenance = Email.objects.filter(id=email_id).values('email')[0]['email']
+        recipient_incident = Email.objects.filter(id=email_id).values('email')[0]['email']
 
         # Obtain the sender email address
-        email_from = cv.value('email_from')
+        email_from = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('from_address')[0]['from_address']
 
         # Obtain the ssd url
-        ssd_url = cv.value('ssd_url')
+        ssd_url = Config_Systemurl.objects.filter(id=Config_Systemurl.objects.values('id')[0]['id']).values('url')[0]['url']
 
         # HTML (true) or text (false) formatting
-        format = int(cv.value('email_format_maintenance'))
+        format = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('email_format')[0]['email_format']
 
         # Obtain the greeting
         if new == True:
-            greeting = cv.value('greeting_maintenance_new')
-            email_subject_maintenance = cv.value('email_subject_maintenance')
+            greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_greeting')[0]['maintenance_greeting']
+            email_subject_incident = 'Maintenance Notification'
         else:
-            greeting = cv.value('greeting_maintenance_update')
-            email_subject_maintenance = '%s - Update' % cv.value('email_subject_maintenance')
-
-        # Set the timezone to the user's timezone (otherwise TIME_ZONE will be used)
-        jtz.activate(set_timezone)
+            greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_update')[0]['incident_update']
+            email_subject_incident = 'Maintenance Update'
 
         # Interpolate the values
         d = Context({ 
                      'detail':detail,
-                     'recipient_name':recipient_name,
                      'greeting':greeting,
                      'services':services,
                      'updates':updates,

@@ -27,11 +27,9 @@ urlpatterns = patterns('',
     # Escalation Path
     url(r'^escalation$',                    'ssd.main.views.escalation.escalation'),
 
-    # Configuration
-    url(r'^config$',                        'ssd.main.views.config.config'),
-
     # Search
-    #url(r'^search$',                       'ssd.main.views.search.search'),
+    url(r'^events$',                        'ssd.main.views.search.events'),
+    url(r'^search$',                        'ssd.main.views.search.search'),
     url(r'^gsearch$',                       'ssd.main.views.search.gsearch'),
 
     # Preferences

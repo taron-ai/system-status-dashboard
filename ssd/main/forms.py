@@ -27,7 +27,6 @@ import datetime
 import re
 from django import forms
 from django.conf import settings
-from ssd.main.models import Config
 from ssd.main.models import Config_Email
 from ssd.main.models import Config_Ireport
 
@@ -332,7 +331,7 @@ class GSearchForm(forms.Form):
     """
 
     date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    type = forms.IntegerField(required=True)
+    type = forms.CharField(required=True)
 
 
 class MSearchForm(forms.Form):
@@ -353,8 +352,8 @@ class AddEmailForm(forms.Form):
     email = forms.EmailField(required=True)
 
 
-class IncidentReportListForm(forms.Form):
-    """Form for querying incident reports"""
+class ListForm(forms.Form):
+    """Form for querying lists of reports"""
 
     page = forms.IntegerField(required=False)
 
@@ -391,114 +390,6 @@ class ModifyContactForm(forms.Form):
     action = forms.CharField(required=True)
 
 
-class ConfigAdminForm(forms.ModelForm):
-    """DJango form for creating a larger textarea to make it easier
-       to create/edit the configs
-
-    """
-
-    config_value = forms.CharField(widget=forms.Textarea)
-    class Meta:
-        model = Config
-
-
-class ConfigForm(forms.Form):
-    """Form for updating configs"""
-
-    recipient_name = forms.CharField(required=False)
-    greeting_incident_new = forms.CharField(required=False)
-    greeting_incident_update = forms.CharField(required=False)
-    email_format_maintenance = forms.IntegerField(required=False)
-    email_format_incident = forms.IntegerField(required=False)
-    email_from = forms.EmailField(required=False)
-    email_subject_incident = forms.CharField(required=False)
-    email_subject_maintenance = forms.CharField(required=False)
-    greeting_maintenance_new = forms.CharField(required=False)
-    greeting_maintenance_update = forms.CharField(required=False)
-    recipient_pager = forms.EmailField(required=False)
-    message_success = forms.CharField(required=False)
-    message_error = forms.CharField(required=False)
-    notify = forms.IntegerField(required=False)
-    instr_incident_description = forms.CharField(required=False)
-    instr_incident_update = forms.CharField(required=False)
-    instr_maintenance_impact = forms.CharField(required=False)
-    instr_maintenance_coordinator = forms.CharField(required=False)
-    instr_maintenance_update = forms.CharField(required=False)
-    instr_maintenance_description = forms.CharField(required=False)    
-    instr_report_name = forms.CharField(required=False)
-    instr_report_email = forms.CharField(required=False)
-    instr_report_detail = forms.CharField(required=False)
-    instr_report_extra = forms.CharField(required=False)
-    instr_escalation_name = forms.CharField(required=False)
-    instr_escalation_details = forms.CharField(required=False)
-    logo_display = forms.IntegerField(required=False)
-    logo_url = forms.CharField(required=False)
-    nav_display = forms.IntegerField(required=False)
-    escalation_display = forms.IntegerField(required=False)
-    report_incident_display = forms.IntegerField(required=False)
-    login_display = forms.IntegerField(required=False)
-    display_alert = forms.CharField(required=False)
-    alert = forms.CharField(required=False)
-    help_sched_maint = forms.CharField(required=False)
-    help_report_incident = forms.CharField(required=False)
-    help_create_incident = forms.CharField(required=False)
-    help_escalation = forms.CharField(required=False)    
-    enable_uploads = forms.IntegerField(required=False)
-    upload_path = forms.CharField(required=False)
-    enable_uploads = forms.IntegerField(required=False)
-    upload_path = forms.CharField(required=False)
-    file_upload_size = forms.CharField(required=False)
-    ssd_url = forms.CharField(required=False)
-    escalation = forms.CharField(required=False)
-    information_main = forms.CharField(required=False)    
-
-    filter = forms.CharField(required=False)
-
-    # We need access to some of the update_ values, but only some.
-    update_enable_uploads = forms.BooleanField(required=False)
-    update_file_upload_size = forms.BooleanField(required=False)
-    update_upload_path = forms.BooleanField(required=False)
-
-    # Override the form clean method - there is some special logic to validate 
-
-    def clean(self):
-        cleaned_data = super(ConfigForm, self).clean()
-        enable_uploads = cleaned_data.get('enable_uploads')
-        update_enable_uploads = cleaned_data.get('update_enable_uploads')
-        upload_path = cleaned_data.get('upload_path')
-        update_upload_path = cleaned_data.get('update_upload_path')
-        file_upload_size = cleaned_data.get('file_upload_size')
-        update_file_upload_size = cleaned_data.get('update_file_upload_size')
-
-        # File uploads must be an integer, not be blank, and be at least 100
-        # This is only relevant when the value is being updated (its set at install time at 1024)
-        if update_file_upload_size:
-            # Make sure its an integer
-            if re.match(r'^\d+$', file_upload_size):
-                if int(file_upload_size) < 100:
-                    self._errors["file_upload_size"] = self.error_class(['File size must be at least 100.'])
-            else:
-                self._errors["file_upload_size"] = self.error_class(['Please enter a whole number.'])    
-     
-        # If we are enabling uploads (as in they are not enabled), then make sure the upload path is set
-        if update_enable_uploads and enable_uploads and not upload_path:
-            # A new upload path is not being set but maybe its already set in the DB
-            d_upload_path = Config.objects.filter(config_name='upload_path').values('config_value')[0]['config_value']
-            if not d_upload_path:
-                self._errors["upload_path"] = self.error_class(['You must set a file upload path if uploads are enabled.'])
-
-        # If we are removing the upload path, make sure file uploads are not enabled
-        if update_upload_path and not enable_uploads and not upload_path:
-            # We are not enabling uploads at the same time, maybe its already set in the DB
-            d_enable_uploads = int(Config.objects.filter(config_name='enable_uploads').values('config_value')[0]['config_value'])
-            if d_enable_uploads:
-                self._errors["upload_path"] = self.error_class(['You must set a file upload path if uploads are enabled.'])
-
-
-        # Return the full collection of cleaned data
-        return cleaned_data
-
-
 class AddIncidentForm(forms.Form):
     """Form for adding a new incident (by an administrator)"""
 
@@ -506,7 +397,7 @@ class AddIncidentForm(forms.Form):
     s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
     e_date = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
     e_time = forms.TimeField(required=False,input_formats=['%H:%M'])
-    detail = forms.CharField(required=True)
+    description = forms.CharField(required=True)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
     email_id = forms.IntegerField(required=False)
@@ -573,7 +464,7 @@ class UpdateIncidentForm(forms.Form):
     s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
     e_date = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
     e_time = forms.TimeField(required=False,input_formats=['%H:%M'])
-    detail = forms.CharField(required=True)
+    description = forms.CharField(required=True)
     update = forms.CharField(required=False)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)

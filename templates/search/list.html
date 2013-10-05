@@ -1,0 +1,153 @@
+{% extends "base/base.html" %}
+
+{% comment %}
+
+ Copyright 2013 - Tom Alessi
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+
+{% endcomment %}
+
+{% block content %}
+
+<script type="text/javascript">
+
+   // Date Pickers and Submit
+   $(function() {
+
+      //Start Date
+      $("#start").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //End Date
+      $("#end").datepicker({dateFormat: 'yy-mm-dd'});
+
+     // Settings Slider
+     $(function() {
+        $("#search_button").click(function () {
+          $("#search").slideToggle("slow");
+        });
+      });
+
+   });
+
+</script>
+
+{# This is row consisting of 12 columns that will display all messages passed in the request #}
+{% include "admin/messages.html" %}
+
+<div class="spacer_medium"></div>
+
+<div class="row">
+  <div class="large-12 columns">
+    <span class="navigation">
+      {% if events.has_previous %}
+        <a href="?page={{events.previous_page_number}}">&laquo;</a>
+      {% endif %}
+
+      <span>Page {{events.number}} of {{events.paginator.num_pages}}</span>
+
+      {% if events.has_next %}
+        <a href="?page={{events.next_page_number}}">&raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+</div>
+
+<div class="spacer_small"></div>
+
+<div class="row">
+  <div class="large-12 columns">
+    {% if events %}
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th width="150">Start Time</th>
+        <th width="150">End Time</th>
+        <th>Status</th>
+        <th>Description</th>
+        <th>Detail</th>
+      </tr>
+      {% for event in events %}
+      <tr>
+        <td>{{event.id}}</td>
+        <td>{{event.type__type}}</td>
+        <td>{{event.start|date:"Y-m-d H:i:s e"}}</td>
+        <td>{{event.end|date:"Y-m-d H:i:s e"}}</td>
+        <td>{{event.status__status}}</td>
+        <td>{{event.description|linebreaksbr}}</td>
+        <td>{% if event.type__type = 'incident' %}<a href="/i_detail?id={{event.id}}"><div class="genericon genericon-summary genericon_container"></div></a>{% else %}{% if event.type__type = 'maintenance' %}<a href="/m_detail?id={{event.id}}"><div class="genericon genericon-summary genericon_container"></div></a>{% endif %}{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    There are no events to display
+    {% endif %}
+  </div>
+</div>
+
+<div class="spacer_medium"></div>
+
+<div class="row">
+  <div class="large-12 columns">
+    <span id="search_button" class="genericon genericon-search genericon_container" title="Search for specific events"></span>
+  </div>
+</div>
+
+<div class="spacer_medium"></div>
+
+<form method="GET" action="/events">
+
+<div class="row">
+  <div class="large-11 columns">
+
+    <div class="panel" id="search" style="display: none;">
+
+      <div class="large-2 columns {% if form.s_date.errors %}error{% endif %}">
+        <input type="text" name="start" id="start" class="date" value="{% if form.start.data %}{{form.start.data}}{% else %}{{start}}{% endif %}"/>
+        {% if form.start.errors %}
+        <span class="error">{% for error in form.start.errors %}{{error}}<br>{% endfor %}<br></span>
+        {% endif %}            
+      </div>
+
+      <div class="large-2 columns {% if form.s_date.errors %}error{% endif %}">
+        <input type="text" name="end" id="end" class="date" value="{% if form.end.data %}{{form.end.data}}{% else %}{{start}}{% endif %}"/>
+        {% if form.end.errors %}
+        <span class="error">{% for error in form.end.errors %}{{error}}<br>{% endfor %}<br></span>
+        {% endif %}            
+      </div>
+
+      <div class="large-2 columns {% if form.s_date.errors %}error{% endif %}">
+        <select name="type">
+          <option disabled selected>Select Type</option>
+          <option value="incident">incidents</option>
+          <option value="maintenance">maintenance</option>
+        </select>       
+      </div>
+
+      <div class="large-3 columns left">
+        <input type="text" name="search" placeholder="Enter search text" />
+      </div>
+
+      <div class="large-2 columns left">
+        <input type="submit" class="small button secondary" value="search"/>
+      </div>
+
+    </div>
+  </div>
+</div>
+</form>
+{% endblock %}
+
+
+

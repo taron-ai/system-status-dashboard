@@ -33,11 +33,10 @@ from ssd.main.models import Config_Email
 from ssd.main.forms import IreportConfigForm
 from ssd.main.models import Ireport
 from ssd.main.forms import ReportIncidentForm
-from ssd.main.forms import IncidentReportListForm
+from ssd.main.forms import ListForm
 from ssd.main.forms import DeleteEventForm
 from ssd.main.forms import DetailForm
 from ssd.main import notify
-from ssd.main.views.system import system_message
 
 
 # Get an instance of the ssd logger
@@ -53,7 +52,8 @@ def ireport(request):
 
     # If this functionality is disabled in the admin, let the user know
     if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 0:
-        return system_message(request,True,'Your system administrator has disabled this functionality')
+        messages.add_message(request, messages.ERROR, 'Your system administrator has disabled incident reports')
+        return HttpResponseRedirect('/')
 
     # See if file uploads are anabled
     enable_uploads = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('upload_enabled')[0]['upload_enabled']
@@ -106,7 +106,8 @@ def ireport(request):
                         screenshot2=screenshot2,
                        ).save()
             except Exception as e:
-                return system_message(request,True,e)
+                messages.add_message(request, messages.ERROR, e)
+                return HttpResponseRedirect('/')
 
             # If email is enabled and report notifications are turned on, send an email to the pager address
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
@@ -116,7 +117,8 @@ def ireport(request):
 
             # Give the user a thank you and let them know what to expect
             message = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('submit_message')[0]['submit_message']
-            return system_message(request,False,message)
+            messages.add_message(request, messages.SUCCESS, message)
+            return HttpResponseRedirect('/')
 
 
     # Ok, its a GET or an invalid form so create a blank form
@@ -207,7 +209,7 @@ def ireport_list(request):
 
     """
 
-    form = IncidentReportListForm(request.GET)
+    form = ListForm(request.GET)
 
     # Check the params
     if form.is_valid():

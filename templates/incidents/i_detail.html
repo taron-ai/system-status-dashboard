@@ -25,79 +25,98 @@
 
 <div class="row">
   <div class="large-12 columns">
-    <p>This page contains all relevant information on this incident.  Check back here at any time to obtain current information on the status of this incident.</p>
-  </div>
-</div>
-
-<div class="row">
-  <div class="large-12 columns">
-    <p>Incident Status: 
-      <b>
-      {% if detail.0.event_time__end %}
-      CLOSED ({{detail.0.event_time__end|date:"Y-m-d H:i:s e"}})
-      {% else %}
-      OPEN
-      {% endif %}
-      </b>
-    </p>
-  </div>
-</div>
-
-<div class="row">
-  <div class="large-12 columns">
-    <p>
-      The following services have been impacted by this incident:
-      <br>
-    {% if services %}
-    {% for row in services %}
-    <b>- {{row.event_service__service__service_name}}</b>
-      <br>
-    {% endfor %}
-    {% else %}
-    <b><font color="red">- NO SERVICES DEFINED</font></b>
-    {% endif %}
-    </p>
-  </div>
-</div>
-
-<div class="row">
-  <div class="large-12 columns">
-   <table>
-    <tr>
-     <th width="200">Time</th>
-     <th>Logged By</th>
-     <th width="500px">Detail</th>
-    </tr>
-    <tr>
-     <td>{{detail.0.event_time__start|date:"Y-m-d H:i:s e"}}</td>
-     <td>{{detail.0.event_user__user__first_name}} {{detail.0.event_user__user__last_name}}</td>
-     <td>{{detail.0.event_description__description|linebreaksbr}}</td>
-    </tr>
-
-    {% if updates %}
-     {% for row in updates %}
-      <tr>
-       <td>{{row.event_update__date|date:"Y-m-d H:i:s"}}</td>
-       <td>{{row.event_update__user__first_name}} {{row.event_update__user__last_name}}</td>
-       <td>{{row.event_update__update|linebreaksbr}}</td>
-      </tr>
-     {% endfor %}
-    {% endif %}
-   
-   </table>
-
+    <p>This page contains all relevant information on this scheduled maintenance.  Check back here at any time to obtain current information on the status of this scheduled maintenance.</p>
   </div>
 </div>
 
 {% if user.is_authenticated %}
 <div class="row">
   <div class="large-4 columns">
-    <a href="/admin/i_update?id={{id}}"><div class="genericon genericon-edit genericon_container"></div></a>
+    <a href="/admin/i_update?id={{id}}" title="edit"><span class="genericon genericon-edit"></span></a>
+    &nbsp;&nbsp;
+    <a href="/admin/i_delete?id={{id}}" title="delete"><span class="genericon genericon-trash"></span></a>
   </div>
 </div>
-<div class="spacer_medium"></div>
+<div class="spacer_small"></div>
 {% endif %} 
 
+<div class="row">
+  <div class="large-12 columns">
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Incident Details</th>
+        </tr>
+      </thead>
+       
+      <tbody>
+        <tr>
+          <td width="165">Incident Status</td>
+          <td width="565">
+            <b>
+              {{details.0.status__status}}
+            </b>
+          </td>
+        </tr>
+        <tr>       
+          <td>Services Impacted</td>
+          <td>
+           {% if services %}
+           {% for row in services %}
+           {{row.event_service__service__service_name}}
+            <br>
+           {% endfor %}
+           {% else %}
+           <b><font color="red">- NO SERVICES DEFINED</font></b>
+           {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td>Start Time</td>
+          <td>{{details.0.start|date:"Y-m-d H:i e"}}</td>
+        </tr>
+        <tr>
+          <td>End Time</td>
+          <td>{{details.0.end|date:"Y-m-d H:i e"}}</td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td>{{details.0.description|linebreaksbr}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if updates %}
 <div class="spacer_medium"></div>
 
+<div class="row">
+  <div class="large-12 columns">
+    <table>
+      <thead>
+        <tr>
+          <th colspan="3">Incident Updates</th>
+        </tr>
+        <tr>
+          <th width="200">Time</th>
+          <th width="165">Logged By</th>
+          <th width="400px">Detail</th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {% for row in updates %}
+        <tr>
+         <td>{{row.event_update__date|date:"Y-m-d H:i:s e"}}</td>
+         <td>{{row.event_update__user__first_name}} {{row.event_update__user__last_name}}</td>
+         <td>{{row.event_update__update|linebreaksbr}}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+ 
 {% endblock %}

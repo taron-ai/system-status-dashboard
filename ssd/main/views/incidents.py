@@ -31,25 +31,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.cache import cache
-from ssd.main.models import Event
-from ssd.main.models import Event_Description
-from ssd.main.models import Event_Service
-from ssd.main.models import Event_Status
-from ssd.main.models import Event_Time
-from ssd.main.models import Event_User
-from ssd.main.models import Event_Update
-from ssd.main.models import Event_Email
-from ssd.main.models import Event_Impact
-from ssd.main.models import Event_Coordinator
-from ssd.main.models import Service
-from ssd.main.models import Email
-from ssd.main.models import Config_Email
-from ssd.main.forms import AddIncidentForm
-from ssd.main.forms import DeleteEventForm
-from ssd.main.forms import UpdateIncidentForm
-from ssd.main.forms import DetailForm
+from ssd.main.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email, Config_Email
+from ssd.main.forms import AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm
 from ssd.main import notify
-from ssd.main.views.system import system_message
 
 
 @login_required
@@ -79,7 +63,7 @@ def incident(request):
             s_time = form.cleaned_data['s_time']
             e_date = form.cleaned_data['e_date']
             e_time = form.cleaned_data['e_time']
-            detail = form.cleaned_data['detail']
+            description = form.cleaned_data['description']
             broadcast = form.cleaned_data['broadcast']
             email_id = form.cleaned_data['email_id']
 
@@ -90,30 +74,21 @@ def incident(request):
             if e_date and e_time:
                 end = datetime.datetime.combine(e_date, e_time)
                 end = tz.localize(end)
+                # If there is an end date, the status is now closed
+                status = 'closed'
             else:
                 end = None
-
-            # Get the user's ID
-            user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
+                # Status is still open
+                status='open'
 
             # Create the event and obtain the ID                                     
-            e = Event.objects.create(type=1)
+            e = Event.objects.create(type_id=Type.objects.filter(type='incident').values('id')[0]['id'],
+                                     description=description,
+                                     status_id=Status.objects.filter(status=status).values('id')[0]['id'],
+                                     start=start,
+                                     end=end,
+                                     user_id=User.objects.filter(username=request.user.username).values('id')[0]['id'])
             event_id = e.pk
-            
-            # Save the description
-            Event_Description(event_id=event_id,description=detail).save()
-
-            # If an end date/time are provided, then the incident is already closed
-            if end:
-                Event_Status(event_id=event_id,status=2).save()
-            else:
-                Event_Status(event_id=event_id,status=1).save()
-
-            # Save the times
-            Event_Time(event_id=event_id,start=start,end=end).save()
-
-            # Add the user
-            Event_User(event_id=event_id,user_id=user_id).save()
 
             # Add the email recipient, if requested.
             # Form validation ensures that a valid email is selected if broadcast is selected.  
@@ -135,7 +110,7 @@ def incident(request):
                 email = notify.email()
                 email.incident(event_id,email_id,request.timezone,True)
 
-            # Clear the cache b/c this will update the homepage
+            # Clear the cache b/c this will update the homepage (need to be specific about what cache to clear!)
             cache.clear()
             
             # Send them to the incident detail page for this newly created
@@ -204,7 +179,7 @@ def i_update(request):
 
             # Obtain the cleaned data
             id = form.cleaned_data['id']
-            detail = form.cleaned_data['detail']
+            description = form.cleaned_data['description']
             s_date = form.cleaned_data['s_date']
             s_time = form.cleaned_data['s_time']
             e_date = form.cleaned_data['e_date']
@@ -220,30 +195,31 @@ def i_update(request):
             if e_date and e_time:
                 end = datetime.datetime.combine(e_date, e_time)
                 end = tz.localize(end)
+                # If there is an end date, the status is now closed
+                status = 'closed'
             else:
                 end = None
+                # Status is still open
+                status='open'
 
-            # Get the user's ID
-            user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
-
-            # If an end date/time are provided, then the incident is closed
-            if end:
-                Event_Status.objects.filter(event_id=id).update(status=2)
-            else:
-                Event_Status.objects.filter(event_id=id).update(status=1)
-
-            # Update the detail
-            Event_Description.objects.filter(event_id=id).update(description=detail)
-
-            # Update the times
-            Event_Time.objects.filter(event_id=id).update(start=start,end=end)
-
+            # Update the event                                     
+            Event.objects.filter(id=id).update(
+                                     description=description,
+                                     status=Status.objects.filter(status=status).values('id')[0]['id'],
+                                     start=start,
+                                     end=end)
+            
             # Add the update, if there is one, using the current time
             if update:
                 # Create a datetime object for right now and add the server's timezone (whatever DJango has)
                 time_now = datetime.datetime.now()
                 time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-                Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
+                Event_Update(
+                    event_id=id,
+                    date=time_now,
+                    update=update,
+                    user_id=User.objects.filter(username=request.user.username).values('id')[0]['id']
+                ).save()
 
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
             # In both cases, delete the existing email (because it will be re-added)
@@ -286,9 +262,11 @@ def i_update(request):
                 if re.match(r'^\d+$', request.POST['id']):
                     id = request.POST['id']
                 else:
-                    return system_message(request,True,'Improperly formatted id') 
+                    messages.add_message(request, messages.ERROR, 'Improperly formatted incident ID - cannot update incident')
+                    return HttpResponseRedirect('/admin') 
             else:
-                return system_message(request,True,'No incident ID given') 
+                messages.add_message(request, messages.ERROR, 'No incident ID given - cannot update incident') 
+                return HttpResponseRedirect('/admin')
 
     # Not a POST so create a blank form
     else:
@@ -297,9 +275,11 @@ def i_update(request):
             if re.match(r'^\d+$', request.GET['id']):
                 id = request.GET['id']
             else:
-                return system_message(request,True,'Improperly formatted id') 
+                messages.add_message(request, messages.ERROR, 'Improperly formatted incident ID - cannot update incident')
+                return HttpResponseRedirect('/admin')
         else:
-            return system_message(request,True,'No incident ID given')
+            messages.add_message(request, messages.ERROR, 'No incident ID given - cannot update incident') 
+            return HttpResponseRedirect('/admin')
 
         # In the case of a GET, we can acquire the proper services from the DB
         affected_svcs_tmp = Event.objects.filter(id=id).values('event_service__service_id')
@@ -313,12 +293,12 @@ def i_update(request):
 
     # Obtain the details (and make sure it's an incident)
     details = Event.objects.filter(id=id,type=1).values(
-                                                'event_description__description',
-                                                'event_status__status',
+                                                'description',
+                                                'status__status',
                                                 'event_email__email__id',
-                                                'event_time__start',
-                                                'event_time__end',
-                                                'event_status__status'
+                                                'start',
+                                                'end',
+                                                'status__status'
                                                 )
     # If nothing was returned, send back to the home page
     if not details:
@@ -434,18 +414,20 @@ def i_detail(request):
 
     # Bad form
     else:
-        return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
+        messages.add_message(request, messages.ERROR, 'Improperly formatted incident ID, cannot display incident detail') 
+        return HttpResponseRedirect('/')
 
     # Obain the incident detail (and make sure it's an incident)
-    detail = Event.objects.filter(id=id,type=1).values(
-                                                'event_time__start',
-                                                'event_time__end',
-                                                'event_description__description',
-                                                'event_user__user__first_name',
-                                                'event_user__user__last_name'
+    details = Event.objects.filter(id=id,type=1).values(
+                                                'status__status',
+                                                'start',
+                                                'end',
+                                                'description',
+                                                'user_id__first_name',
+                                                'user_id__last_name'
                                                 )
     # If nothing was returned, send back to the home page
-    if not detail:
+    if not details:
         messages.add_message(request, messages.ERROR, 'Invalid request: no such incident id.')
         return HttpResponseRedirect('/')
 
@@ -471,7 +453,7 @@ def i_detail(request):
           'title':'System Status Dashboard | Incident Detail',
           'services':services,
           'id':id,
-          'detail':detail,
+          'details':details,
           'updates':updates,
           'breadcrumbs':{'Admin':'/admin','Update Detail':'i_detail'}
        },
@@ -489,7 +471,7 @@ def i_list(request):
     """
 
     # Obtain all open incidents
-    incidents = Event.objects.filter(type=1,event_status__status=1).values('id','event_time__start','event_description__description')
+    incidents = Event.objects.filter(type__type='incident',status__status='open').values('id','start','description')
 
     # Print the page
     return render_to_response(

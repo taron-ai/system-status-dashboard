@@ -31,26 +31,9 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from ssd.main.models import Event
-from ssd.main.models import Event_Description
-from ssd.main.models import Event_Service
-from ssd.main.models import Event_Status
-from ssd.main.models import Event_Time
-from ssd.main.models import Event_User
-from ssd.main.models import Event_Update
-from ssd.main.models import Event_Email
-from ssd.main.models import Event_Impact
-from ssd.main.models import Event_Coordinator
-from ssd.main.models import Service
-from ssd.main.models import Email
-from ssd.main.models import Config_Email
-from ssd.main.forms import DetailForm
-from ssd.main.forms import DeleteEventForm
-from ssd.main.forms import UpdateMaintenanceForm
-from ssd.main.forms import EmailMaintenanceForm
-from ssd.main.forms import AddMaintenanceForm
+from ssd.main.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email,Config_Email
+from ssd.main.forms import DetailForm, DeleteEventForm,UpdateMaintenanceForm, EmailMaintenanceForm, AddMaintenanceForm
 from ssd.main import notify
-from ssd.main.views.system import system_message
 
 
 @login_required
@@ -97,29 +80,23 @@ def maintenance(request):
             user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
 
             # Create the event and obtain the ID                                     
-            e = Event.objects.create(type=2)
+            e = Event.objects.create(type_id=Type.objects.filter(type='maintenance').values('id')[0]['id'],
+                                     description=description,
+                                     status_id=Status.objects.filter(status='planning').values('id')[0]['id'],
+                                     start=start,
+                                     end=end,
+                                     user_id=User.objects.filter(username=request.user.username).values('id')[0]['id'])
             event_id = e.pk
-            
-            # Save the description
-            Event_Description(event_id=event_id,description=description).save()
 
             # Save the impact analysis
-            Event_Impact(event_id=event_id,impact=impact).save()
+            if impact:
+                Event_Impact(event_id=event_id,impact=impact).save()
 
-            # Save the coordinator
-            Event_Coordinator(event_id=event_id,coordinator=coordinator).save()
+            # Save the coordinator, if requested
+            if coordinator:
+                Event_Coordinator(event_id=event_id,coordinator=coordinator).save()
 
-            # Save the status
-            # Initially, the status will be inactive (not started and not completed)
-            Event_Status(event_id=event_id,status=0).save()
-
-            # Save the start time
-            Event_Time(event_id=event_id,start=start,end=end).save()
-
-            # Add the user
-            Event_User(event_id=event_id,user_id=user_id).save()
-
-            # Add the email recipient, if requested.
+            # Add the email recipient, if requested
             if email_id: 
                 Event_Email(event_id=event_id,email_id=email_id).save()
 
@@ -224,35 +201,46 @@ def m_update(request):
             start = tz.localize(start)
             end = tz.localize(end)
 
-            # Get the user's ID
-            user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
-
-            # Update the description
-            Event_Description.objects.filter(event_id=id).update(description=description)
-
-            # Update the impact analysis
-            Event_Impact.objects.filter(event_id=id).update(impact=impact)
-
-            # Update the coordinator
-            Event_Coordinator.objects.filter(event_id=id).update(coordinator=coordinator)
-
-            # Update the status (form validation ensures the logic here)
+            # Determine the status (form validation ensures the logic here)
             if completed:
-                Event_Status.objects.filter(event_id=id).update(status=4)
+                status='completed'
             elif started:
-                Event_Status.objects.filter(event_id=id).update(status=3)
+                status='started'
             else:
-                Event_Status.objects.filter(event_id=id).update(status=0)
+                status='planning'
 
-            # Update the start/end times
-            Event_Time.objects.filter(event_id=id).update(start=start,end=end)
+            # Update the event                                     
+            Event.objects.filter(id=id).update(
+                                     description=description,
+                                     status=Status.objects.filter(status=status).values('id')[0]['id'],
+                                     start=start,
+                                     end=end)
+
+            # Update the impact analysis (if it's present, update it, otherwise save)
+            if impact:
+                if Event_Impact.objects.filter(event_id=id):
+                    Event_Impact.objects.filter(event_id=id).update(impact=impact)
+                else:
+                    Event_Impact(event_id=id,impact=impact).save()
+
+            # Update the coordinator (if it's present, update it, otherwise save)
+            if coordinator:
+                if Event_Coordinator.objects.filter(event_id=id):
+                    Event_Coordinator.objects.filter(event_id=id).update(coordinator=coordinator)
+                else:
+                    Event_Coordinator(event_id=id,coordinator=coordinator).save()
 
             # Add the update, if there is one, using the current time
             if update:
                 # Create a datetime object for right now and add the server's timezone (whatever DJango has)
                 time_now = datetime.datetime.now()
                 time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-                Event_Update(event_id=id,date=time_now,update=update,user_id=user_id).save()
+                Event_Update(
+                    event_id=id,
+                    date=time_now,
+                    update=update,
+                    user_id=User.objects.filter(username=request.user.username).values('id')[0]['id']
+                ).save()
 
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
             # In both cases, delete the existing email (because it will be re-added)
@@ -260,19 +248,6 @@ def m_update(request):
             if email_id:
                 Event_Email(event_id=id,email_id=email_id).save()
 
-            # Check if we are starting/completing
-            # The logic of when these two can/cannot be done is handled
-            # in the form validation
-            if 'started' in request.POST:
-                started = 1
-            else:
-                started = 0
-
-            # Check if we are completing
-            if 'completed' in request.POST:
-                completed = 1
-            else:
-                completed = 0
 
             # See if we are adding or subtracting services
             # The easiest thing to do here is remove all affected  
@@ -303,7 +278,18 @@ def m_update(request):
             return HttpResponseRedirect('/m_detail?id=%s' % id)
     
         else:
-            messages.add_message(request, messages.ERROR, 'Error updating maintenance')
+            messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')
+
+            # Obtain the id so we can print the update page again
+            if 'id' in request.POST: 
+                if re.match(r'^\d+$', request.POST['id']):
+                    id = request.POST['id']
+                else:
+                    messages.add_message(request, messages.ERROR, 'Improperly formatted maintenance ID - cannot update maintenance')
+                    return HttpResponseRedirect('/admin') 
+            else:
+                messages.add_message(request, messages.ERROR, 'No maintenance ID given - cannot update maintenance') 
+                return HttpResponseRedirect('/admin')
 
     # Not a POST
     else:
@@ -313,9 +299,11 @@ def m_update(request):
             if re.match(r'^\d+$', request.GET['id']):
                 id = request.GET['id']
             else:
-                return system_message(request,True,'Improperly formatted id') 
+                messages.add_message(request, messages.ERROR, 'Improperly formatted maintenance ID - cannot update maintenance')
+                return HttpResponseRedirect('/admin') 
         else:
-            return system_message(request,True,'No maintenance ID given')
+            messages.add_message(request, messages.ERROR, 'No maintenance ID given - cannot update maintenance') 
+            return HttpResponseRedirect('/admin')
 
         # In the case of a GET, we can acquire the proper services from the DB
         affected_svcs_tmp = Event.objects.filter(id=id).values('event_service__service_id')
@@ -327,34 +315,18 @@ def m_update(request):
         # Create a blank form
         form = UpdateMaintenanceForm()
 
-    # Obtain the id (this could have been a GET or a failed POST)
-    if request.method == 'GET':
-        if 'id' in request.GET:
-            id = request.GET['id']
-    elif request.method == 'POST':
-        if 'id' in request.POST:
-            id = request.POST['id']
-
-    # If we don't have the ID, then we have to give them an error
-    if not id:
-        return system_message(request,True,'No maintenance ID given')
-
-    # Make sure the ID is properly formed
-    if not re.match(r'^\d+$', id):
-        return system_message(request,True,'Improperly formatted ID: %s' % id)
-
     # Obtain the details
     # Obain the maintenance detail
     details = Event.objects.filter(id=id).values(
-                                                'event_time__start',
-                                                'event_time__end',
-                                                'event_status__status',
-                                                'event_description__description',
+                                                'start',
+                                                'end',
+                                                'status__status',
+                                                'description',
                                                 'event_impact__impact',
                                                 'event_coordinator__coordinator',
                                                 'event_email__email__id',
-                                                'event_user__user__first_name',
-                                                'event_user__user__last_name'
+                                                'user__first_name',
+                                                'user__last_name'
                                                 )
     # If nothing was returned, send back to the home page
     if not details:
@@ -367,8 +339,8 @@ def m_update(request):
     # Obtain all services
     services = Service.objects.values('id','service_name').order_by('service_name')
 
-    start = details[0]['event_time__start']
-    end = details[0]['event_time__end']
+    start = details[0]['start']
+    end = details[0]['end']
 
     # Set the timezone
     start = start.astimezone(pytz.timezone(request.timezone))
@@ -422,19 +394,19 @@ def m_detail(request):
         return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
 
     # Obain the maintenance detail (and make sure it's a maintenance)
-    detail = Event.objects.filter(id=id,type=2).values(
-                                                'event_time__start',
-                                                'event_time__end',
-                                                'event_status__status',
-                                                'event_description__description',
+    details = Event.objects.filter(id=id,type=2).values(
+                                                'start',
+                                                'end',
+                                                'status__status',
+                                                'description',
                                                 'event_impact__impact',
                                                 'event_coordinator__coordinator',
                                                 'event_email__email__email',
-                                                'event_user__user__first_name',
-                                                'event_user__user__last_name'
+                                                'user__first_name',
+                                                'user__last_name'
                                                 )
     # If nothing was returned, send back to the home page
-    if not detail:
+    if not details:
         messages.add_message(request, messages.ERROR, 'Invalid request: no such maintenance id.')
         return HttpResponseRedirect('/')
 
@@ -460,7 +432,7 @@ def m_detail(request):
           'title':'System Status Dashboard | Scheduled Maintenance Detail',
           'services':services,
           'id':id,
-          'detail':detail,
+          'details':details,
           'updates':updates,
        },
        context_instance=RequestContext(request)
@@ -582,7 +554,7 @@ def m_list(request):
     """
 
     # Obtain all open incidents
-    maintenances = Event.objects.filter(Q(type=2,event_status__status=0) | Q(type=2,event_status__status=3)).values('id','event_time__start','event_description__description','event_email__email__email')
+    maintenances = Event.objects.filter(Q(type=2,status__status='planning') | Q(type=2,status__status='started')).values('id','start','description','event_email__email__email')
 
     # Print the page
     return render_to_response(

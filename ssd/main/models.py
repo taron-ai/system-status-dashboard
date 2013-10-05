@@ -16,8 +16,9 @@
 
 """Models for the SSD Project
 
-   Any models that will be displayed in the DJango admin will have unicode 
-   methods to display them properly in the admin
+    General Notes:
+        - All non-char/text fields will be stored as null in the DB when blank (null=True)
+        - All fields will be allowed to be blank (blank=true).  Form validation will confirm if the field is required
 
 """
 
@@ -29,21 +30,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from datetime import datetime
-
-
-class Config(models.Model):
-    """Configuration parameters
-
-    The config_value and description need to be sufficiently large to accommodate
-    enough help text to be useful
-    """
-
-    config_name = models.CharField(max_length=50, unique=True)
-    friendly_name = models.CharField(max_length=50, unique=True)
-    config_value = models.CharField(max_length=1000)
-    description = models.CharField(max_length=500,blank=False)
-    category = models.CharField(max_length=15,blank=False)
-    display = models.CharField(max_length=8,blank=False)
 
 
 class Service(models.Model):
@@ -58,33 +44,42 @@ class Email(models.Model):
     email = models.CharField(max_length=100,unique=True,null=False,blank=False)
 
 
+class Type(models.Model):
+    """Event Types
+
+        Current Types:
+        - incident
+        - maintenance
+    """
+
+    type = models.CharField(max_length=15, unique=True)
+
+
+class Status(models.Model):
+    """Event Status
+
+        Current Statuses:
+        - planning (maintenance only, when a maintenance is being planned but it's not started or completed)
+        - open (incident only)
+        - closed (incident only)
+        - started (maintenance only)
+        - completed (maintenance only)
+
+    """
+    
+    status = models.CharField(max_length=10, unique=True)
+
+
 class Event(models.Model):
-    """Events that have been logged
+    """Events that have been logged"""
 
-        Event Types:
-            1 = incident
-            2 = maintenance
-
-    """
-
+    type = models.ForeignKey(Type)
     date = models.DateTimeField(null=False,blank=False,auto_now=True)
-    type = models.IntegerField(max_length=2,null=False)
-
-
-class Event_Status(models.Model):
-    """Event Status (opened/closed, etc)
-        - only one entry allowed per event
-
-        - 0 = default (maintenance only)
-        - 1 = open (incident only)
-        - 2 = closed (incident only)
-        - 3 = started (maintenance only)
-        - 4 = completed (maintenance only)
-
-    """
-
-    event = models.ForeignKey(Event, unique=True)
-    status = models.IntegerField(max_length=2)
+    description = models.CharField(blank=False,max_length=1000)
+    start = models.DateTimeField(null=False)
+    end = models.DateTimeField(null=True)
+    status = models.ForeignKey(Status)
+    user = models.ForeignKey(User)
 
 
 class Event_Service(models.Model):
@@ -92,27 +87,6 @@ class Event_Service(models.Model):
 
     event = models.ForeignKey(Event)
     service = models.ForeignKey(Service)
-
-
-class Event_Time(models.Model):
-    """Event start/stop times
-        - only one entry allowed per event
-
-    """
-
-    event = models.ForeignKey(Event, unique=True)
-    start = models.DateTimeField(null=False)
-    end = models.DateTimeField(null=True)
-
-
-class Event_Description(models.Model):
-    """Event Descriptions
-        - only one entry allowed per event
-
-    """
-
-    event = models.ForeignKey(Event, unique=True)
-    description = models.CharField(blank=False,max_length=1000)
 
 
 class Event_Impact(models.Model):
@@ -154,17 +128,6 @@ class Event_Update(models.Model):
     user = models.ForeignKey(User)
 
 
-class Event_User(models.Model):
-    """Store the user who created the event
-        - only one entry allowed per event
-
-    """
-
-    event = models.ForeignKey(Event, unique=True)
-    user = models.ForeignKey(User)
-
-
-
 class Escalation(models.Model):
     """Escalation Contacts"""
 
@@ -175,8 +138,6 @@ class Escalation(models.Model):
 
     class Meta:
         unique_together = ['name','contact_details']
-
-
 
 
 

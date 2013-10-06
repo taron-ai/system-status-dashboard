@@ -45,6 +45,26 @@
 {# This is row consisting of 12 columns that will display all messages passed in the request #}
 {% include "admin/messages.html" %}
 
+<div class="row">
+  <div class="large-12 columns">
+    <span class="navigation">
+      {% if events.has_previous %}
+        <a href="?page={{events.previous_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&laquo;</a>
+      {% endif %}
+
+      <span>Page {{events.number}} of {{events.paginator.num_pages}}</span>
+
+      {% if events.has_next %}
+        <a href="?page={{events.next_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&raquo;</a>
+      {% endif %}
+
+      &nbsp;&nbsp;&nbsp;<a href="#" title="Search for specific events"><span id="search_button" class="genericon genericon-search genericon_container_search"></span></a>
+    </span>
+  </div>
+</div>
+
+<div class="spacer_micro"></div>
+
 <form method="GET" action="/events">
 <div class="row">
   <div class="large-5 columns">
@@ -86,24 +106,6 @@
   </div>
 </div>
 </form>
-
-<div class="row">
-  <div class="large-12 columns">
-    <span class="navigation">
-      {% if events.has_previous %}
-        <a href="?page={{events.previous_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&laquo;</a>
-      {% endif %}
-
-      <span>Page {{events.number}} of {{events.paginator.num_pages}}</span>
-
-      {% if events.has_next %}
-        <a href="?page={{events.next_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&raquo;</a>
-      {% endif %}
-
-      &nbsp;&nbsp;&nbsp;<a href="#" title="Search for specific events"><span id="search_button" class="genericon genericon-search genericon_container_search"></span></a>
-    </span>
-  </div>
-</div>
 
 <div class="spacer_small"></div>
 

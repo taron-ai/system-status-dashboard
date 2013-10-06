@@ -29,7 +29,6 @@ from ssd.main.forms import RemoveEmailForm
 from ssd.main.forms import EmailConfigForm
 from ssd.main.models import Config_Email
 from ssd.main.models import Event
-from ssd.main.views.system import system_message
 
 
 @login_required
@@ -183,7 +182,9 @@ def email_delete(request):
 
                 # Part of any incidents or maintenances?
                 if Event.objects.filter(event_email__email__id=id):
-                    return system_message(request,True,'At least one of the recipients you are attempting to delete is currently part of an incident or maintenance.  Please remove the recipient from the incident/maintenance, or delete the incident/maintenance and then delete the recipient.')
+                    messages.add_message(request, messages.ERROR, 'At least one of the recipients you are attempting to delete is currently part of an incident or maintenance.  Please remove the recipient from the incident/maintenance, or delete the incident/maintenance and then delete the recipient.')
+                    return HttpResponseRedirect('/admin/email_recipients')
+
                 # Ok, remove it
                 else:
                     Email.objects.filter(id=id).delete()

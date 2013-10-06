@@ -100,8 +100,39 @@ def events(request):
         text = form.cleaned_data['text']
         type = form.cleaned_data['type']
 
+        # Build the filter for the search query
+        filter = {}
+
+        # Start/End
+        if start and end:
+            # Combine the dates and times into datetime objects
+            start_tmp = datetime.datetime.combine(start, datetime.datetime.strptime('00:00:00','%H:%M:%S').time())
+            end_tmp = datetime.datetime.combine(end, datetime.datetime.strptime('23:59:59','%H:%M:%S').time())
+
+            # Set the timezone
+            tz = pytz.timezone(request.timezone)
+            start_tmp = tz.localize(start_tmp)
+            end_tmp = tz.localize(end_tmp)
+
+            filter['start__range'] = [start_tmp,end_tmp] 
+
+        # Type
+        if type:
+            filter['type__type'] = '%s' % type
+        
+        # Text
+        if text:
+            filter['description__contains'] = '%s' % text
+
+        print filter
+
+        # Obtain filtered incidents
+        if filter:
+            events_all = Event.objects.filter(**filter).values('id','status__status','type__type','start','end','description').order_by('-id')
+
         # Obtain all incidents
-        events_all = Event.objects.values('id','status__status','type__type','start','end','description').order_by('-id')
+        else:
+            events_all = Event.objects.values('id','status__status','type__type','start','end','description').order_by('-id')
 
         # Create a paginator and paginate the list w/ 10 messages per page
         paginator = Paginator(events_all, 10)
@@ -140,10 +171,24 @@ def events(request):
               'title':'System Status Dashboard | List Events',
               'events':events,
               'page':page,
+              'start':start,
+              'end':end,
+              'text':text,
+              'type':type,
               'query_params':query_params
            },
            context_instance=RequestContext(request)
         )
 
+    # Invalid form
+    else:
 
-    return HttpResponseRedirect('/') 
+        # Print the page
+        return render_to_response(
+           'search/list.html',
+           {
+              'title':'System Status Dashboard | List Events',
+              'form':form,
+           },
+           context_instance=RequestContext(request)
+        )

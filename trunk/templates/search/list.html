@@ -48,18 +48,17 @@
 <form method="GET" action="/events">
 <div class="row">
   <div class="large-5 columns">
-    <div class="panel" id="search" style="display: none;">
+    {# If a custom query is being performed, or there was an error in the custom search, expand #}
+    <div class="panel" id="search" style="background-color: white;{% if not form.errors and not query_params %} display: none;{% endif %}">
       <div class="row">
         <div class="large-6 columns {% if form.start.errors %}error{% endif %}">
-          Date From:
-          <input type="text" name="start" id="start" class="date" value="{% if form.start.data %}{{form.start.data}}{% else %}{{start}}{% endif %}"/>
+          <label>Date From:<input type="text" name="start" id="start" class="date" value="{% if form.start.data %}{{form.start.data}}{% else %}{{start|date:"Y-m-d"}}{% endif %}"/></label>
           {% if form.start.errors %}
           <span class="error">{% for error in form.start.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}            
         </div>
         <div class="large-6 columns left {% if form.end.errors %}error{% endif %}">
-          Date To:
-          <input type="text" name="end" id="end" class="date" value="{% if form.end.data %}{{form.end.data}}{% else %}{{end}}{% endif %}"/>
+          <label>Date To:<input type="text" name="end" id="end" class="date" value="{% if form.end.data %}{{form.end.data}}{% else %}{{end|date:"Y-m-d"}}{% endif %}"/></label>
           {% if form.end.errors %}
           <span class="error">{% for error in form.end.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}            
@@ -67,16 +66,15 @@
       </div>
       <div class="row">
         <div class="large-6 columns {% if form.type.errors %}error{% endif %}">
-          Event Type:
+          <label>Event Type:
           <select name="type">
             <option disabled selected>Select Type</option>
-            <option value="incident">incidents</option>
-            <option value="maintenance">maintenance</option>
-          </select>       
+            <option value="incident" {% if type == 'incident' %}selected{% endif %}>incidents</option>
+            <option value="maintenance" {% if type == 'maintenance' %}selected{% endif %}>maintenance</option>
+          </select></label>       
         </div>
         <div class="large-6 columns left">
-          Search Text:
-          <input type="text" name="text" placeholder="Enter search text" />
+          <label>Search Text:<input type="text" name="text" placeholder="Enter search text" value="{{text}}" /></label>
         </div>
       </div>
       <div class="row">
@@ -102,7 +100,7 @@
         <a href="?page={{events.next_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&raquo;</a>
       {% endif %}
 
-      &nbsp;&nbsp;&nbsp;<span id="search_button" class="genericon genericon-search genericon_container_search" title="Search for specific events"></span>
+      &nbsp;&nbsp;&nbsp;<a href="#" title="Search for specific events"><span id="search_button" class="genericon genericon-search genericon_container_search"></span></a>
     </span>
   </div>
 </div>

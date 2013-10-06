@@ -328,6 +328,10 @@ input, textarea, select {
    -webkit-box-shadow: inset 0 1px 1px
    transition: border linear .2s,box-shadow linear .2s;
 }
+/* Global Selects */
+select {
+   height: 26px;
+}
 /* Timezone form */
 #prefs_timezone {
    margin: 0px;

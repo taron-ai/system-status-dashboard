@@ -39,6 +39,32 @@ def terminate(e):
     exit(2)
 
 
+def create_log(app_dir,apache_uid):
+    """Create the SSD log directory and initialize the log file"""
+
+    # Create the directory
+    print 'Creating log directory:%s/log' % app_dir
+    if os.path.exists('%s/log' % app_dir):
+        print 'Log directory already exists, removing it before recreating.'
+        try:
+            shutil.rmtree('%s/log' % app_dir)
+        except Exception as e:
+            terminate(e)
+ 
+    try:
+        os.makedirs('%s/log' % app_dir)
+    except Exception as e:
+        terminate(e)
+
+    # Create the log file and set the permissions
+    print 'Creating the initial log file:%s/log/ssd.log' % app_dir
+    try:
+        fl = open('%s/log/ssd.log' % app_dir,'w')
+        os.chown('%s/log/ssd.log' % app_dir,int(apache_uid),-1)
+    except Exception as e:
+        terminate(e)
+
+
 def customize_settings(app_dir,dst_local):
     """Customize the SSD settings.tmpl file"""
 
@@ -360,6 +386,9 @@ def install():
     # Add 'ssd' to the app dir for the remainder of this script
     app_dir = app_dir + 'ssd'
 
+    # Setup the log directory and file
+    create_log(app_dir,apache_uid)
+
     # Source and Destination local directories
     src_local = app_dir + '/local.tmpl'
     dst_local = local_dir + '/ssd-local'
@@ -404,15 +433,20 @@ def upgrade():
 
     # LOCAL DIRECTORY
     default_local_dir = '/opt'
-    local_dir = raw_input('2: Enter the desired local directory location [%s]\n#>' % default_local_dir).strip()
+    local_dir = raw_input('2: Enter the existing local directory location [%s]\n#>' % default_local_dir).strip()
     local_dir = local_dir or default_local_dir
     print 'Local directory set to: %s\n' % local_dir
+
+    # APACHE UID
+    apache_uid=raw_input('3: Enter the uid of the Apache user\n#>').strip()
+    print 'Apache uid set to: %s\n' % apache_uid
 
     upgrade_text = """You have entered the following options:\n
             - SSD Source            : %s
             - Local Directory       : %s
+            - Apache UID            : %s
 
-         """ % (ssd_src,local_dir)
+         """ % (ssd_src,local_dir,apache_uid)
 
     print upgrade_text
     proceed=raw_input('Proceed with upgrade (y/n)\n#>').strip()
@@ -439,6 +473,9 @@ def upgrade():
 
     # Add 'ssd' to the app dir for the remainder of this script
     app_dir = app_dir + 'ssd'
+
+    # Setup the log directory and file
+    create_log(app_dir,apache_uid)
 
     # Customize settings.tmpl to add the path to the local_settings.py file
     customize_settings(app_dir,dst_local)

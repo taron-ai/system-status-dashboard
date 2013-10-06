@@ -27,7 +27,6 @@ from ssd.main.models import Service
 from ssd.main.models import Event_Service
 from ssd.main.forms import AddServiceForm
 from ssd.main.forms import RemoveServiceForm
-from ssd.main.views.system import system_message
 
 
 @login_required
@@ -107,7 +106,9 @@ def services_delete(request):
 
                 # Part of any incidents or maintenances?
                 if Event_Service.objects.filter(service_id=id):
-                    return system_message(request,True,'At least one of the services you are attempting to delete is currently part of an event.  Please remove the service from the event, or delete the event and then delete the service.')
+                    messages.add_message(request, messages.ERROR, 'At least one of the services you are attempting to delete is currently part of an event.  Please remove the service from the event, or delete the event and then delete the service.')
+                    return HttpResponseRedirect('/admin/services')
+
                 # Ok, remove it
                 else:
                     Service.objects.filter(id=id).delete()

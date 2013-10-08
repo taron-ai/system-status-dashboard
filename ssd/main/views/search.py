@@ -124,8 +124,6 @@ def events(request):
         if text:
             filter['description__contains'] = '%s' % text
 
-        print filter
-
         # Obtain filtered incidents
         if filter:
             events_all = Event.objects.filter(**filter).values('id','status__status','type__type','start','end','description').order_by('-id')

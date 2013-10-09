@@ -182,7 +182,6 @@
   <div class="large-12 columns">
     <br><br><br>
     <span class="heading">Detailed Service Disruption Timeline:</span><div class="hr"></div>
-    <p>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
        {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}} <a href="/i_detail?id={{row.id}}">more detail...</a><br>

@@ -58,45 +58,6 @@ p.small{
 
 
 
-/* FONTS */
-/* small fonts for disabled */
-font.disabled {
-   font-size: 12px;
-   font-weight: bold;
-   color: blue;
-}
-/* Index page heading */
-font.heading {
-   font-size: 15px;
-   font-weight: bold;
-   color: #616161;
-}
-font.all_good {
-   color: #16AF48;
-}
-font.footer {
-   font-size: 10px;
-}
-font.breadcrumb {
-   font-size: 11px;
-}
-
-
-
-/* TOOLTIPS */
-/* Background and border */
-.tooltip {
-   border-color: #B0C5D0;
-   background-color: #C8DAE4;
-   color: #616161;
-}
-/* Arrow color */
-.tooltip > .nub {
-   border-color: transparent transparent #C8DAE4 transparent;
- }
- 
-
-
 /* LABELS */
 label {
 	font-weight: bold;
@@ -215,6 +176,11 @@ div.login_window {
    border-radius: 5px;
    overflow: auto;
 }
+/* Header containers */
+div.header {
+   font-size: 11px;
+   display: inline-block;
+}
 
 
 
@@ -264,7 +230,7 @@ span.genericon_container_green {
    font-size: 42px; 
    color: #00B050;
 }
-/* Navigation links on table */
+/* Navigation links on the dashboard table */
 span.genericon_container_nav {
    position: relative; 
    bottom: 1px; 
@@ -277,8 +243,36 @@ span.genericon_container_search {
    bottom: 3px; 
    font-size: 25px; 
 }
+/* Help icons in the index page summary sections */
+span.genericon_container_help {
+   position: relative; 
+   bottom: 4px; 
+   font-size: 25px; 
+}
 /* Dashboard legend */
 span.legend {
+   font-size: 12px;
+}
+/* Breadcrumbs in header */
+span.breadcrumb {
+   font-size: 11px;
+}
+/* Footer styling */
+span.footer {
+   font-size: 10px;
+}
+/* Index page heading styling */
+span.heading {
+   font-size: 15px;
+   font-weight: bold;
+   color: #616161;
+}
+/* Index page messages when no incidents/maintenances */
+span.all_good {
+   color: #16AF48;
+}
+/* Help Dropdowns */
+span.help_drop {
    font-size: 12px;
 }
 
@@ -429,8 +423,18 @@ input.config_ireport_path {
 
 
 /* DROP DOWNS */
+/* Global Styling */
 .f-dropdown {
+   box-shadow: 0 0 5px 1px #ddd;
+}
+/* Dashboard table key */
+.f-dropdown.keydrop {
    min-width: 300px;
+}
+/* Historical summary status help */
+/* Navigation links on table */
+.f-dropdown.histsumdrop {
+   min-width: 350px;
 }
 
 

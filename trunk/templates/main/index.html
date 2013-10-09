@@ -54,7 +54,7 @@
 
 <div class="row">
   <div class="large-6 columns">
-    <font class="heading">System Status as of {% now "Y-m-d H:i:s e" %}:</font><br><br>
+    <span class="heading">System Status as of {% now "Y-m-d H:i:s e" %}:</span><br><br>
   </div>
 </div>
 
@@ -69,7 +69,7 @@
     &nbsp;&nbsp;
     <a href="#" data-dropdown="keydrop"><span class="genericon genericon-key genericon_container_nav" title="Dashboard color indicator key"></span></a>
 
-    <div id="keydrop" class="f-dropdown content" data-dropdown-content>
+    <div id="keydrop" class="f-dropdown content keydrop" data-dropdown-content>
       <div>
         <h5>Dashboard Key</h5>
         <div class="spacer_small"></div>
@@ -181,14 +181,14 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <font class="heading">Detailed Service Disruption Timeline:</font><div class="hr"></div>
+    <span class="heading">Detailed Service Disruption Timeline:</span><div class="hr"></div>
     <p>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
        {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}} <a href="/i_detail?id={{row.id}}">more detail...</a><br>
       {% endfor %}
     {% else %}
-      <font class="all_good">No current service disruptions.</font>
+      <span class="all_good">No current service disruptions.</span>
     {% endif %}
     </p>
   </div>
@@ -197,14 +197,14 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <font class="heading">Detailed Maintenance Timeline:</font><div class="hr"></div>
+    <span class="heading">Detailed Maintenance Timeline:</span><div class="hr"></div>
     <p>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
        {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}} <a href="/m_detail?id={{row.id}}">more detail...</a><br>
       {% endfor %}
     {% else %}
-      <font class="all_good">No planned maintenance is occurring.</font>
+      <span class="all_good">No planned maintenance is occurring.</span>
     {% endif %}
     </p>  
   </div>
@@ -213,8 +213,14 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <font class="heading">Historical Summary Status:</font>&nbsp;
-    <span data-tooltip class="has-tip tip-bottom" title="Historical summary status shows the past 30 days (incidents and maintenance) and future 30 days (scheduled maintenance).  Click on any of the event indicators to review detailed information about events.  Remove a data series from the graph by clicking its legend icon."><span class="genericon genericon-help"></span></span>
+    <span class="heading">Historical Summary Status:</span>
+    <a href="#" data-dropdown="histsumdrop"><span class="genericon genericon-help genericon_container_help" title="Dashboard color indicator key"></span></a>
+    <div id="histsumdrop" class="f-dropdown content histsumdrop" data-dropdown-content>
+      <h5>Historical Summary Status</h5><br>
+      <span class="help_drop">
+        Historical summary status shows the past 30 days (incidents and maintenance) and future 30 days (scheduled maintenance).<br><br>Click on any of the event indicators to review detailed information about events.<br><br>Remove a data series from the graph by clicking its legend icon.
+      </span>
+    </div>
     <div class="hr"></div>
   </div>
 </div>
@@ -343,7 +349,7 @@ $(function () {
 {% else %}
 <div class="row">
   <div class="large-12 columns">
-    <p><font class="all_good">No incidents or maintenance have occurred in the past 30 days and no maintenance is planned for the next 30 days.</font></p><br><br>
+    <span class="all_good">No incidents or maintenance have occurred in the past 30 days and no maintenance is planned for the next 30 days.</span><br><br>
   </div>
 </div>
 {% endif %}

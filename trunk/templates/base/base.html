@@ -47,62 +47,53 @@
 <div class="row">
   <div class="large-12 columns">
     <br>
-    <table class="footer">
-      <tr>
-        <td>
-          <a href="/">Home</a>
-          &nbsp;|&nbsp;
-        </td>
-        <td>
-          <a href="/events">Search Events</a>
-          &nbsp;|&nbsp;
-        </td>
-        <td>
-          <a href="/admin">Admin</a>
-          &nbsp;|&nbsp;
-        </td>
-        <td>
-          {% if ireport %}
-          <a href="/ireport">Report Incident</a>
-          &nbsp;|&nbsp;
-          {% endif %}
-        </td>
-        <td>
-          {% if escalation %}
-          <a href="/escalation">Escalate</a>
-          &nbsp;|&nbsp;
-          {% endif %}
-        </td>
-        {% if user.is_authenticated %}
-        <td>
-          <a href="/accounts/logout">Logout ({{user.username}})</a>
-        </td>
+    <div class="header"><a href="/">Home</a>&nbsp;|&nbsp;</div>
+    <div class="header"><a href="/events">Search Events</a>&nbsp;|&nbsp;</div>
+    <div class="header"><a href="/admin">Admin</a>&nbsp;|&nbsp;</div>
+    {% if ireport %}
+    <div class="header"><a href="/ireport">Report Incident</a>&nbsp;|&nbsp;</div>
+    {% endif %}
+    {% if escalation %}
+    <div class="header"><a href="/escalation">Escalate</a>&nbsp;|&nbsp;</div>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <div class="header"><a href="/accounts/logout">Logout ({{user.username}})</a></div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="spacer_small"></div>
+
+{% if logo %}
+<div class="row">
+  <div class="large-12 columns">
+    <img src="{{logo}}"><br>
+  </div>
+</div>
+{% endif %}
+    
+{% if breadcrumbs %}
+<div class="spacer_small"></div>
+<div class="row">
+  <div class="large-12 columns">
+    <span class="breadcrumb">
+      {% for item in breadcrumbs.items %}
+        {% if forloop.last %}
+          <a href="{{item.1}}">{{item.0}}</a>
+        {% else %}
+          <a href="{{item.1}}">{{item.0}}</a> &rarr;
         {% endif %}
-      </tr>
-    </table>
+      {% endfor %}
+    </span>
+  </div>
+</div>
+{% endif %}
 
-    {% if logo %}
-      <img src="{{logo}}"><br>
-    {% endif %}
-    
-    {% if breadcrumbs %}
-
-      <br>
-      <font class="breadcrumb">
-        {% for item in breadcrumbs.items %}
-          {% if forloop.last %}
-            <a href="{{item.1}}">{{item.0}}</a>
-          {% else %}
-            <a href="{{item.1}}">{{item.0}}</a> &rarr;
-          {% endif %}
-        {% endfor %}
-      </font>
-    {% endif %}
-    
+<div class="row">
+  <div class="large-12 columns">    
     <hr><br>
   </div>
 </div>
-  
       
 {# Source the content from the template #}
 {% block content %}{% endblock %}
@@ -116,23 +107,20 @@
 <div id="sticky_footer">
   <div class="row">
     <div class="large-6 columns">
-      <font class="footer">
-        Timezone: {{TIME_ZONE}}
-        <div class="spacer_micro"></div>
-        <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post">
-         {% csrf_token %}
-           <select name="timezone" id="timezone" onchange='this.form.submit()'>
-             <option disabled selected>-- Change Timezone --</option>
-           {% for timezone in timezones %}
-             <option value="{{timezone}}">{{timezone}}</option>
-           {% endfor %}
-           </select>
-        </form>
-      </font>
+      <span class="footer">Timezone: {{TIME_ZONE}}</span>
+      <div class="spacer_micro"></div>
+      <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post">
+       {% csrf_token %}
+         <select name="timezone" id="timezone" onchange='this.form.submit()'>
+           <option disabled selected>-- Change Timezone --</option>
+         {% for timezone in timezones %}
+           <option value="{{timezone}}">{{timezone}}</option>
+         {% endfor %}
+         </select>
+      </form>
     </div>
-
     <div class="large-5 columns">
-      <font class="footer">Powered by <a href="http://www.system-status-dashboard.com">The System Status Dashboard</a></font>
+      <span class="footer">Powered by <a href="http://www.system-status-dashboard.com">The System Status Dashboard</a></span>
     </div>
   </div>
 </div>

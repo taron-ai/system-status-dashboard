@@ -59,17 +59,43 @@
 </div>
 
 <div class="row">
-  <div class="large-2 columns">
+  <div class="large-6 columns">
     <a href="{{backward_link}}" title="Move back one week"><span class="genericon genericon-rewind genericon_container_nav"></span></a>
     &nbsp;&nbsp;
     <a href="{{forward_link}}" title="Move forward one week"><span class="genericon genericon-fastforward genericon_container_nav"></span></a>
     &nbsp;&nbsp;
     <span id="calselector" class="genericon genericon-day genericon_container_nav" title="Jump to a specific date"></span>
 
+    &nbsp;&nbsp;
+    <a href="#" data-dropdown="keydrop"><span class="genericon genericon-key genericon_container_nav" title="Dashboard color indicator key"></span></a>
+
+    <div id="keydrop" class="f-dropdown content" data-dropdown-content>
+      <div>
+        <h5>Dashboard Key</h5>
+        <div class="spacer_small"></div>
+      </div>
+      <div>
+        <span class="legend"><img src="/html/images/incident_green.png">&nbsp;Service Normal - the service is operating normally.</span>
+        <div class="spacer_small"></div>
+      </div>
+      <div>
+        <span class="legend"><img src="/html/images/incident_red.png">&nbsp;Service Disruption - the service is experiencing an active disruption.</span>
+        <div class="spacer_small"></div>      
+      </div>
+      <div>
+        <span class="legend"><img src="/html/images/incident_orange.png">&nbsp;Service Disruption (resolved) - a service disruption occurred, but has been resolved.</span>
+        <div class="spacer_small"></div>
+      </div>
+      <div>
+        <span class="legend"><img src="/html/images/incident_blue.png">&nbsp;Planned Maintenance - planned maintenance is occurring with the service.</span>
+      </div>
+    </div>
+
     <form name="prefs_jump" action="/prefs/jump" method="post">
     {% csrf_token %}
       <input type="text" class="jump_to" name="jump_to" id="jump_to" onchange='this.form.submit()'/>
     </form>
+
   </div>
 </div>
 
@@ -88,9 +114,9 @@
          <tr>
           {% for heading in row %}
            {% if forloop.first %}
-            <th style="min-width: 200px;">{{heading}}</th>
+            <th style="width: 200px;">{{heading}}</th>
            {% else %}
-            <th style="min-width: 100px;">{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
+            <th style="width: 100px;">{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
            {% endif %}
           {% endfor %}
          </tr>
@@ -101,16 +127,16 @@
            {# Set the status colors next to the service and print the service #}
            {# 1 is active incident and 2 is active maintenance #}
            {% if forloop.first %}
-             <td>
+             <td style="width: 200px;">
               <div>
                 <div style="display: inline-block; vertical-align: middle; text-align: center;">
                    {% if column.status == 1 %}
-                     <span class="genericon genericon-dot genericon_container_red"></span>
+                     <span><img src="/html/images/incident_red.png"></span>
                    {% else %}
                     {% if column.status == 2 %}
-                     <span class="genericon genericon-dot genericon_container_blue"></span>
+                     <span><img src="/html/images/incident_blue.png"></span>
                     {% else %}
-                     <span class="genericon genericon-dot genericon_container_green"></span>
+                     <span><img src="/html/images/incident_green.png"></span>
                     {% endif %}
                    {% endif %}
                 </div>
@@ -122,7 +148,7 @@
            {% else %}
 
              {# Check each date #}
-             <td style="text-align:center;">
+             <td style="width: 100px;">
              {% for event in column %}
                {% if not event == 'green' %}
                  {# We have some events to show #}
@@ -130,13 +156,13 @@
 
                  {% if event.type == 'incident' %}
                    {% if event.status == 'open' %}
-                     <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_red.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~"></a>
+                     <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_red.png" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></a>
                    {% else %}
-                     <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_orange.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~ {{event.closed|date:"Y-m-d H:i:s"}}"></a>
+                     <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_orange.png" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></a>
                    {% endif %}
                  {% else %}
                    {% if event.type == 'maintenance' %}
-                     <a href="/m_detail?id={{event.id}}"><img src="/html/images/incident_blue.png" title="ID: {{event.id}} : {{event.open|date:"Y-m-d H:i:s"}} ~ {{event.closed|date:"Y-m-d H:i:s"}}"></a>
+                     <a href="/m_detail?id={{event.id}}"><img src="/html/images/incident_blue.png" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></a>
                    {% endif %}
                  {% endif %}
                {% endif %}
@@ -148,28 +174,6 @@
         </tr>
        {% endif %}
      {% endfor %}
-
-         <tr>
-          <td class="td_border_top">
-            {% if backward_link %}
-            <a href="{{backward_link}}"><<< older</a>
-            {% endif %}
-
-            {% if forward_link %}
-            <a href="{{forward_link}}">newer >>></a>
-            {% endif %}
-          </td>
-          <td class="td_border_top" style="text-align: right; font-size: 12px;"><b>Key:</b></td>
-          <td class="td_border_top" colspan="6" style="min-width: 600px; font-size: 12px;">
-            <img src="/html/images/incident_green.png">&nbsp;Service Normal
-            &nbsp;&nbsp;
-            <img src="/html/images/incident_red.png">&nbsp;Service Disruption
-            &nbsp;&nbsp;
-            <img src="/html/images/incident_orange.png">&nbsp;Service Disruption (resolved)
-            &nbsp;&nbsp;
-            <img src="/html/images/incident_blue.png">&nbsp;Planned Maintenance
-          </td>
-        </tr>
     </table>
   </div>
 </div>

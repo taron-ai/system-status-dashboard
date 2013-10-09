@@ -22,66 +22,61 @@
 
 {% block content %}
 
-	<div class="row">
-	  <div class="large-5 large-centered columns">
-		<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
-		  {% csrf_token %}
+<div class="login_window">
 
-		  <fieldset>
-		    <legend>Login</legend>
+<div class="row">
+  <div class="large-12 columns">
+    <h4>Administrator Login</h4>
+    <p>Please enter your username/password.</p>
+  </div>
+</div>
 
-		    <div class="spacer_small"></div>
+<div class="spacer_small"></div>
 
-		    <div class="row">
-		      <div class="large-3 columns">
-				{{form.username.label_tag}}
-		      </div>
-		      <div class="large-7 columns left">
-				<span>{{form.username }}</span>
-              	{% if form.username.errors %}
-                <small class="error">
-                  {% for error in form.username.errors %}{{error}}{% endfor %}
-                </small>
-              	{% endif %}
-		      </div>
+<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+{% csrf_token %}
+<div class="row">
+  <div class="large-10 columns">
+		<label>{{form.username.label_tag}}<span>{{form.username }}</span></label>
+   	{% if form.username.errors %}
+    	<small class="error">
+      	{% for error in form.username.errors %}{{error}}{% endfor %}
+     	</small>
+    {% endif %}
+	</div>
+</div>
 
-		  	</div>
+<div class="row">
+	<div class="large-10 columns left">
+		<label>{{form.password.label_tag}}<span>{{form.password}}</span></label>
+  	{% if form.password.errors %}
+  		<small class="error">
+    		{% for error in form.password.errors %}{{error}}{% endfor %}
+    	</small>
+    {% endif %}
+  </div>
+</div>
 
-		  	<div class="row">
-		      <div class="large-3 columns">
-				{{ form.password.label_tag }}
-		      </div>
-		      <div class="large-7 columns left">
-				<span>{{form.password}}</span>
-              	{% if form.password.errors %}
-                <small class="error">
-                  {% for error in form.password.errors %}{{error}}{% endfor %}
-                </small>
-              	{% endif %}
-              </div>
-		  	</div>
+<div class="row">
+  <div class="large-3 columns">
+  	<input type="hidden" name="next" value="{{ next }}" />
+		<input type="submit" class="small button secondary" value="submit"/>
+  </div>
+</div>
 
-		  	<div class="row">
-		      <div class="large-10 columns">
-		      	<input type="hidden" name="next" value="{{ next }}" />
-				<input type="submit" class="small button" value="submit"/>
-		      </div>
-		  	</div>
+<div class="spacer_small"></div>
 
-		    <div class="spacer_small"></div>
+<div class="row">
+  <div class="large-12 columns">
+		{% if form.errors %}
+		 <p class="error">Errors were encountered validating your username/password.  Please ensure both values are correct and try again.</p>
+		{% endif %}
+   </div>
+</div>
 
-		  	<div class="row">
-		      <div class="large-10 columns">
-				{% if form.errors %}
-				 <p class="error">Errors were encountered validating your username/password.  Please ensure both values are correct and try again.</p>
-				{% endif %}
-              </div>
-		  	</div>
+</form>
 
-	  	  </fieldset>
-		</form>
-	  </div>
-    </div>
+</div>
 
 {% endblock %}
 

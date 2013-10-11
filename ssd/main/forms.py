@@ -383,6 +383,13 @@ class RemoveServiceForm(forms.Form):
     id = MultipleServiceField()
 
 
+class ModifyServiceForm(forms.Form):
+    """Form for modifying services"""
+
+    pk = forms.IntegerField(required=True)
+    value = forms.CharField(required=True)
+
+
 class ModifyContactForm(forms.Form):
     """Form for removing contacts"""
 

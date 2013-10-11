@@ -110,13 +110,17 @@
   <div class="large-12 large-centered columns">
     <table class="responsive">
      {% for row in data %}
-       {% if forloop.first %}
+       {% if forloop.counter == 1 %}
          <tr>
           {% for heading in row %}
-           {% if forloop.first %}
-            <th style="width: 200px;">{{heading}}</th>
+           {% if forloop.counter == 1 %}
+            <th style="width: 50px;">{{heading}}</th>
            {% else %}
-            <th style="width: 100px;">{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
+            {% if forloop.counter == 2 %}
+              <th style="width: 100px;">{{heading}}</th>
+            {% else %}
+              <th style="width: 100px;">{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
+            {% endif %}
            {% endif %}
           {% endfor %}
          </tr>
@@ -127,9 +131,9 @@
            {# Set the status colors next to the service and print the service #}
            {# 1 is active incident and 2 is active maintenance #}
            {% if forloop.first %}
-             <td style="width: 200px;">
+             <td style="width: 50px;">
               <div>
-                <div style="display: inline-block; vertical-align: middle; text-align: center;">
+                <div style="text-align: center;">
                    {% if column.status == 1 %}
                      <span><img src="/html/images/incident_red.png"></span>
                    {% else %}
@@ -140,9 +144,9 @@
                     {% endif %}
                    {% endif %}
                 </div>
-                <span>
-                  &nbsp;&nbsp;{{column.service}}
-                </span>
+              </td>
+              <td>
+                <span>{{column.service}}</span>
               </div>
              </td>
            {% else %}
@@ -156,7 +160,19 @@
 
                  {% if event.type == 'incident' %}
                    {% if event.status == 'open' %}
-                     <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_red.png" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></a>
+ 
+                    <a href="#" data-dropdown="idrop_{{event.id}}"><img src="/html/images/incident_red.png" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></a>
+
+                    <div id="idrop_{{event.id}}" class="f-dropdown content idrop" data-dropdown-content>
+                      <span class="incident_drop">eres una puta</span>
+                      <br>
+                      <a href="/i_detail?id={{event.id}}" title="admin">More Info</a>
+                    </div>
+
+
+
+
+
                    {% else %}
                      <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_orange.png" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></a>
                    {% endif %}
@@ -189,7 +205,6 @@
     {% else %}
       <span class="all_good">No current service disruptions.</span>
     {% endif %}
-    </p>
   </div>
 </div>
 
@@ -197,7 +212,6 @@
   <div class="large-12 columns">
     <br><br><br>
     <span class="heading">Detailed Maintenance Timeline:</span><div class="hr"></div>
-    <p>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
        {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}} <a href="/m_detail?id={{row.id}}">more detail...</a><br>
@@ -205,7 +219,6 @@
     {% else %}
       <span class="all_good">No planned maintenance is occurring.</span>
     {% endif %}
-    </p>  
   </div>
 </div>
 

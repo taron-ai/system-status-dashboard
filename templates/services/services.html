@@ -19,6 +19,9 @@
 {% endcomment %}
 
 {% block content %}
+<script>
+$.fn.editable.defaults.mode = 'inline';
+</script>
 
 <div class="row">
   {# This is a large-3 side nav #}
@@ -54,7 +57,24 @@
            {% for row in services %}
            <tr>
             <td><input type="checkbox" name="id" value="{{row.id}}" /></td>
-            <td>{{row.service_name}}</td>
+            <td>
+              <a href="#" id="service_{{row.id}}">{{row.service_name}}</a>
+              <script>
+              {# Put these all at the end? #}
+              $(document).ready(function() {
+                $('#service_{{row.id}}').editable({
+                      url: '/admin/services_modify',
+                      type: 'text',
+                      pk: {{row.id}},
+                      name: 'service_{{row.id}}',
+                      params: { csrfmiddlewaretoken: '{{csrf_token}}'},
+                      error: function(response, newValue) {
+                        return response.responseText;
+                      }
+                  });
+              });
+              </script>
+            </td>
            </tr>
            {% endfor %}
           </table>

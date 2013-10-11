@@ -69,7 +69,7 @@ def index(request):
 
     # Obtain the current 7 days
     dates = []
-    headings = ['Current Status']
+    headings = ['Status','Service']
     # Subtract successive days (the reference date is the first day)
     for i in [6,5,4,3,2,1]:
        delta = ref - datetime.timedelta(days=i)

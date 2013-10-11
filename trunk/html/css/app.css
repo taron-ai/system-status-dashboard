@@ -246,8 +246,9 @@ span.genericon_container_search {
 /* Help icons in the index page summary sections */
 span.genericon_container_help {
    position: relative; 
-   bottom: 4px; 
+   bottom: 2px; 
    font-size: 25px; 
+   color: #DDDDDD;
 }
 /* Dashboard legend */
 span.legend {
@@ -273,6 +274,10 @@ span.all_good {
 }
 /* Help Dropdowns */
 span.help_drop {
+   font-size: 12px;
+}
+/* Incident Indicator Dropdowns */
+span.incident_drop {
    font-size: 12px;
 }
 
@@ -413,7 +418,7 @@ input.config_ireport_path {
 
 /* SIDE NAV */
 .side-nav li.active a:first-child {
-      color: #005596;
+   color: #005596;
 }
 .side-nav li a {
    color: black;
@@ -431,10 +436,20 @@ input.config_ireport_path {
 .f-dropdown.keydrop {
    min-width: 300px;
 }
+/* Dashboard table incident indicators */
+.f-dropdown.idrop {
+   min-width: 300px;  
+   background-color: red;
+}
 /* Historical summary status help */
 /* Navigation links on table */
 .f-dropdown.histsumdrop {
    min-width: 350px;
 }
+
+.accordion {
+   box-shadow: 0 0 5px 1px #ddd;
+}
+
 
 

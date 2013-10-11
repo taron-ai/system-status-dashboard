@@ -16,17 +16,18 @@
 
 """This module contains all of the configuration functions of ssd"""
 
+
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.contrib import messages
 from ssd.main.models import Service
 from ssd.main.models import Event_Service
 from ssd.main.forms import AddServiceForm
-from ssd.main.forms import RemoveServiceForm
+from ssd.main.forms import RemoveServiceForm, ModifyServiceForm
 
 
 @login_required
@@ -116,3 +117,34 @@ def services_delete(request):
     # Not a POST or a failed POST
     # Send them back so they can see the newly updated services list
     return HttpResponseRedirect('/admin/services')
+
+
+
+@login_required
+@staff_member_required
+def services_modify(request):
+    """Modify the name of Services
+        - This occurs only via AJAX from the services view (it's a POST)
+
+    """
+
+    # If this is a POST, then validate the form and save the data, otherise do nothing
+    if request.method == 'POST':
+        
+        # Check the form elements
+        form = ModifyServiceForm(request.POST)
+
+        if form.is_valid():
+            pk = form.cleaned_data['pk']
+            value = form.cleaned_data['value']
+
+            # Update it
+            try:
+                Service.objects.filter(id=pk).update(service_name=value)
+            except Exception as e:
+                return HttpResponseBadRequest('Error saving update')
+
+            return HttpResponse('Value successfully modified')
+
+        else:
+            return HttpResponseBadRequest('Invalid request')

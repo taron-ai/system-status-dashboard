@@ -87,8 +87,8 @@ def services(request):
 
 @login_required
 @staff_member_required
-def services_delete(request):
-    """Remove Services"""
+def service_delete(request):
+    """Remove Service"""
 
     # If this is a POST, then validate the form and save the data, otherise send them
     # to the main services page
@@ -98,31 +98,31 @@ def services_delete(request):
         form = RemoveServiceForm(request.POST)
 
         if form.is_valid():
+            id = form.cleaned_data['id']
             # Remove the services
             
-            # If these services are currently tied to incidents or maintenances,
+            # If this service is currently tied to incidents or maintenances,
             # Do not allow them to be deleted w/o removing them from the relevant
             # services first
-            for id in request.POST.getlist('id'):
 
-                # Part of any incidents or maintenances?
-                if Event_Service.objects.filter(service_id=id):
-                    messages.add_message(request, messages.ERROR, 'At least one of the services you are attempting to delete is currently part of an event.  Please remove the service from the event, or delete the event and then delete the service.')
-                    return HttpResponseRedirect('/admin/services')
 
-                # Ok, remove it
-                else:
-                    Service.objects.filter(id=id).delete()
+            # Part of any incidents or maintenances?
+            if Event_Service.objects.filter(service_id=id):
+                messages.add_message(request, messages.ERROR, 'The service you are attempting to delete is currently part of an event.  Please remove the service from the event, or delete the event and then delete the service.')
+                return HttpResponseRedirect('/admin/services')
 
-    # Not a POST or a failed POST
-    # Send them back so they can see the newly updated services list
+            # Ok, remove it
+            else:
+                Service.objects.filter(id=id).delete()
+                messages.add_message(request, messages.SUCCESS, 'Service successfully removed.')
+
+    # Send them back so they can see the services list again
     return HttpResponseRedirect('/admin/services')
-
 
 
 @login_required
 @staff_member_required
-def services_modify(request):
+def service_modify(request):
     """Modify the name of Services
         - This occurs only via AJAX from the services view (it's a POST)
 

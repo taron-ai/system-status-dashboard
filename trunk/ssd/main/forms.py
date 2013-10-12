@@ -380,7 +380,7 @@ class AddServiceForm(forms.Form):
 class RemoveServiceForm(forms.Form):
     """Form for removing services"""
 
-    id = MultipleServiceField()
+    id = forms.IntegerField(required=True)
 
 
 class ModifyServiceForm(forms.Form):

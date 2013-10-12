@@ -87,8 +87,8 @@
     </div>
     
     <div class="row">
-      <div class="large-12 columns {% if form.instructions.errors %}error{% endif %}">
-        <textarea name="instructions" class="config_messages" placeholder="Enter instructions" maxlength="1000">{% if form.instructions.data %}{{form.instructions.data}}{% else %}{{ireport_config.0.instructions}}{% endif %}</textarea>
+      <div class="large-8 columns {% if form.instructions.errors %}error{% endif %}">
+        <textarea name="instructions" placeholder="Enter instructions" maxlength="1000">{% if form.instructions.data %}{{form.instructions.data}}{% else %}{{ireport_config.0.instructions}}{% endif %}</textarea>
         {% if form.instructions.errors %}
         <br><span class="error">{% for error in form.instructions.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %} 
@@ -105,8 +105,8 @@
     </div>
     
     <div class="row">
-      <div class="large-12 columns {% if form.submit_message.errors %}error{% endif %}">
-        <textarea name="submit_message" class="config_messages" placeholder="Enter a submit message" maxlength="1000">{% if form.submit_message.data %}{{form.submit_message.data}}{% else %}{{ireport_config.0.submit_message}}{% endif %}</textarea>
+      <div class="large-8 columns {% if form.submit_message.errors %}error{% endif %}">
+        <textarea name="submit_message" placeholder="Enter a submit message" maxlength="1000">{% if form.submit_message.data %}{{form.submit_message.data}}{% else %}{{ireport_config.0.submit_message}}{% endif %}</textarea>
         {% if form.submit_message.errors %}
         <br><span class="error">{% for error in form.submit_message.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %} 

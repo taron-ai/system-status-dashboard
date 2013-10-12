@@ -8,7 +8,7 @@
 	    <div class="content">
 	      <ul class="side-nav">
 	        <li {% if nav_sub == 'email_config' %}class="active"{% endif %}><a href="/admin/email_config">Email Configuration</a></li>
-	        <li {% if nav_sub == 'recipients' %}class="active"{% endif %}><a href="/admin/email_recipients">Manage Recipients</a></li>
+	        <li {% if nav_sub == 'recipients' or nav_sub == 'recipient_delete' %}class="active"{% endif %}><a href="/admin/email_recipients">Manage Recipients</a></li>
 	      </ul>
 	    </div>
 	  </section>
@@ -18,7 +18,7 @@
 	    <div class="content">
 	      <ul class="side-nav">
 	        <li {% if nav_sub == 'escalation_config' %}class="active"{% endif %}><a href="/admin/escalation_config">Configuration</a></li>
-			<li {% if nav_sub == 'escalation_contacts' %}class="active"{% endif %}><a href="/admin/escalation_contacts">Manage Escalation Contacts</a></li>
+			<li {% if nav_sub == 'escalation_contacts' or nav_sub == 'contact_delete' %}class="active"{% endif %}><a href="/admin/escalation_contacts">Manage Escalation Contacts</a></li>
 	      </ul>
 	    </div>
 	  </section>
@@ -28,9 +28,9 @@
 	    <div class="content">
 	      <ul class="side-nav">
 	        <li {% if nav_sub == 'incident' %}class="active"{% endif %}><a href="/admin/incident">Create Incident</a></li>
-	        <li {% if nav_sub == 'i_list' or nav_sub == 'i_update' or nav_sub == 'i_delete' %}class="active"{% endif %}><a href="/admin/i_list">List/Edit Incidents</a></li>
+	        <li {% if nav_sub == 'i_list' or nav_sub == 'i_update' or nav_sub == 'i_delete' %}class="active"{% endif %}><a href="/admin/i_list">List Open Incidents</a></li>
 	        <li {% if nav_sub == 'maintenance' %}class="active"{% endif %}><a href="/admin/maintenance">Create Maintenance</a></li>
-	        <li {% if nav_sub == 'm_list' or nav_sub == 'm_update' or nav_sub == 'm_delete' %}class="active"{% endif %}><a href="/admin/m_list">List/Edit Maintenance</a></li>
+	        <li {% if nav_sub == 'm_list' or nav_sub == 'm_update' or nav_sub == 'm_delete' %}class="active"{% endif %}><a href="/admin/m_list">List Open Maintenance</a></li>
 	      </ul>
 	    </div>
 	  </section>
@@ -58,7 +58,7 @@
 	    <p class="title"><a href="#">Services</a></p>
 	    <div class="content">
 	      <ul class="side-nav">
-	        <li {% if nav_sub == 'services' %}class="active"{% endif %}><a href="/admin/services">Manage Services</a></li>
+	        <li {% if nav_sub == 'services' or nav_sub == 'service_delete' %}class="active"{% endif %}><a href="/admin/services">Manage Services</a></li>
 	      </ul>
 	    </div>
 	  </section>

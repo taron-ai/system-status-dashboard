@@ -16,19 +16,22 @@
 
 """This module contains all of the email configuration functions of ssd"""
 
+import logging
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.contrib import messages
-from ssd.main.models import Email
-from ssd.main.forms import AddEmailForm
-from ssd.main.forms import RemoveEmailForm
-from ssd.main.forms import EmailConfigForm
-from ssd.main.models import Config_Email
-from ssd.main.models import Event
+from ssd.main.models import Config_Email, Email, Event
+from ssd.main.forms import AddRecipientForm, DeleteRecipientForm, ModifyRecipientForm, EmailConfigForm
+
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -38,11 +41,14 @@ def email_config(request):
  
     """
 
+    logger.debug('%s view being executed.' % 'email.email_config')
+
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
 
         # Check the form elements
         form = EmailConfigForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('EmailConfigForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -114,11 +120,14 @@ def email_recipients(request):
  
     """
 
+    logger.debug('%s view being executed.' % 'email.email_recipients')
+
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
        
         # Check the form elements
-        form = AddEmailForm(request.POST)
+        form = AddRecipientForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('AddRecipientForm',form))
 
         if form.is_valid():
             
@@ -130,7 +139,7 @@ def email_recipients(request):
             except IntegrityError:
                 pass
             
-            messages.add_message(request, messages.SUCCESS, 'Preferences saved successfully')
+            messages.add_message(request, messages.SUCCESS, 'Recipient saved successfully')
             
             # Send them back so they can see the newly created email addresses
             return HttpResponseRedirect('/admin/email_recipients')
@@ -140,14 +149,14 @@ def email_recipients(request):
     # Not a POST
     else:
         # Create a blank form
-        form = AddEmailForm()
+        form = AddRecipientForm()
     
     # Obtain all current email addresses
     emails = Email.objects.all()
     
     # Print the page
     return render_to_response(
-       'email/recipients.html',
+       'email/email_recipients.html',
        {
           'title':'System Status Dashboard | Manage Email Recipients',
           'form':form,
@@ -162,33 +171,122 @@ def email_recipients(request):
 
 @login_required
 @staff_member_required
-def email_delete(request):
+def recipient_delete(request):
     """Remove Email Recipients"""
+
+    logger.debug('%s view being executed.' % 'email.recipient_delete')
 
     # If this is a POST, then validate the form and save the data, otherise send them
     # to the main recipients page
     if request.method == 'POST':
         
         # Check the form elements
-        form = RemoveEmailForm(request.POST)
+        form = DeleteRecipientForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('DeleteRecipientForm',form))
 
         if form.is_valid():
-            # Remove the email recipients
 
-            # If these recipients are currently tied to incidents or maintenances,
-            # Do not allow them to be deleted w/o removing them from the relevant
-            # recipients first
-            for id in request.POST.getlist('id'):
+            # Remove the recipient
+            id = form.cleaned_data['id']
 
-                # Part of any incidents or maintenances?
-                if Event.objects.filter(event_email__email__id=id):
-                    messages.add_message(request, messages.ERROR, 'At least one of the recipients you are attempting to delete is currently part of an incident or maintenance.  Please remove the recipient from the incident/maintenance, or delete the incident/maintenance and then delete the recipient.')
-                    return HttpResponseRedirect('/admin/email_recipients')
+            # If this recipient is currently tied to incidents or maintenances,
+            # Do not allow it to be deleted w/o removing it from the relevant
+            # events first
+            if Event.objects.filter(event_email__email__id=id):
 
-                # Ok, remove it
-                else:
-                    Email.objects.filter(id=id).delete()
+                # Set a message that the delete failed
+                messages.add_message(request, messages.ERROR, 'The recipient you are attempting to delete is currently part of an incident or maintenance.  Please remove the recipient from the incident/maintenance, or delete the incident/maintenance and then delete the recipient.')
 
-    # Not a POST or a failed POST
-    # Send them back so they can see the newly updated services list
-    return HttpResponseRedirect('/admin/email_recipients')
+            # Ok, remove it
+            else:
+                Email.objects.filter(id=id).delete()
+
+                # Set a message that delete was successful
+                messages.add_message(request, messages.SUCCESS, 'Recipient successfully removed.')
+
+            # Redirect to the email recipients page
+            return HttpResponseRedirect('/admin/email_recipients')
+
+    # If we get this far, it's a GET
+
+    # Make sure we have an ID and we are confirming that the recipient should be removed
+    form = DeleteRecipientForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('DeleteRecipientForm',form))
+
+    if form.is_valid():
+
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+
+        # Obtain the email
+        email_name = Email.objects.filter(id=id).values('email')
+
+        # If someone already deleted it, set an error message and send back to the email recipient listing
+        if not email_name:
+            messages.add_message(request, messages.ERROR, 'That email recipient has already been removed, perhaps someone else deleted it?')
+            return HttpResponseRedirect('/admin/email_recipients')
+
+        # Print the page (confirm they want to delete the recipient)
+        return render_to_response(
+           'email/recipient_delete.html',
+           {
+              'title':'System Status Dashboard | Confirm Delete',
+              'id':id,
+              'email_name':email_name,
+              'breadcrumbs':{'Admin':'/admin','Manage Recipients':'email_recipients'},
+              'nav_section':'email',
+              'nav_sub':'recipient_delete'
+           },
+           context_instance=RequestContext(request)
+        )
+
+    # Invalid request
+    else:
+
+        # Set a message that the delete failed and send back to the services page
+        messages.add_message(request, messages.ERROR, 'Invalid request.')
+        return HttpResponseRedirect('/admin/email_recipients')
+
+
+@login_required
+@staff_member_required
+def recipient_modify(request):
+    """Modify an email recipient
+        - This occurs only via AJAX from the manage recipients view (it's a POST)
+
+    """
+
+    logger.debug('%s view being executed.' % 'email.recipient_modify')
+
+    # If this is a POST, then validate the form and save the data, otherise do nothing
+    if request.method == 'POST':
+        
+        # Check the form elements
+        form = ModifyRecipientForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('ModifyRecipientForm',form))
+
+        if form.is_valid():
+            pk = form.cleaned_data['pk']
+            value = form.cleaned_data['value']
+
+            # Make sure the email is value
+            try:
+                validate_email(value)
+            except ValidationError:
+                return HttpResponseBadRequest('Enter a valid email address.')
+
+            # Update it
+            try:
+                Email.objects.filter(id=pk).update(email=value)
+            except Exception as e:
+                logger.error('%s: Error saving update: %s' % ('email.recipient_modify',e))
+                return HttpResponseBadRequest('An error was encountered with this request.')
+
+            return HttpResponse('Value successfully modified')
+
+        else:
+            logger.error('%s: invalid form: %s' % ('email.recipient_modify',form.errors))
+            return HttpResponseBadRequest('Invalid request')
+    else:
+        logger.error('%s: Invalid request: GET received but only POST accepted.' % ('email.recipient_modify'))
+        return HttpResponseRedirect('/admin/email_recipients')     

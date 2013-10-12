@@ -71,7 +71,7 @@ def prefs(request):
             'app_version':values['app_version'],
             'logo':values['logo'],
             'ireport':values['ireport'],
-            'escalation':values['escalation'],
+            'escalation':values['escalation']
            }
 
 

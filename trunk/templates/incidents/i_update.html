@@ -75,7 +75,7 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns {% if form.update.errors %}error{% endif %}">
+      <div class="large-8 columns {% if form.update.errors %}error{% endif %}">
         <textarea name="update" placeholder="Enter Incident Update" maxlength="1000">{% if form.update.data %}{{form.update.data}}{% endif %}</textarea>
         {% if form.update.errors %}
         <br><span class="error">{% for error in form.s_date.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -93,7 +93,7 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns {% if form.description.errors %}error{% endif %}">
+      <div class="large-8 columns {% if form.description.errors %}error{% endif %}">
         <textarea name="description" placeholder="Enter incident description" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% else %}{% if details.0.description %}{{details.0.description}}{% endif %}{% endif %}</textarea>
         {% if form.detail.errors %}
         <br><span class="error">{% for error in form.description.errors %}{{error}}<br>{% endfor %}<br></span>

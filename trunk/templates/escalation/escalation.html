@@ -34,10 +34,9 @@
     <div class="section-container auto" data-section>
       {% for contact in contacts %}
       <section {% if forloop.first %}class="active"{% endif %}>
-        <p class="title" data-section-title><a href="#panel1">Escalate&nbsp;<span class="genericon genericon-rightarrow"></span></a></p>
+        <p class="title" data-section-title><a href="#panel1">Escalate:<br>{{contact.name}}&nbsp;<span class="genericon genericon-rightarrow"></span></a></p>
         <div class="content" data-section-content>
           <p> 
-           {{contact.name}}
            <br>
            {{contact.contact_details|linebreaksbr}}
          </p>

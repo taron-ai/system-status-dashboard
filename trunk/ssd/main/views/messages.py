@@ -16,6 +16,8 @@
 
 """This module contains all of the system messages configuration functions of ssd"""
 
+
+import logging
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
@@ -27,6 +29,10 @@ from ssd.main.models import Config_Message
 from ssd.main.forms import MessagesConfigForm
 
 
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
+
+
 @login_required
 @staff_member_required
 def messages_config(request):
@@ -34,11 +40,14 @@ def messages_config(request):
  
     """
 
+    logger.debug('%s view being executed.' % 'messages.messages_config')
+
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
 
         # Check the form elements
         form = MessagesConfigForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('MessagesConfigForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -72,7 +81,6 @@ def messages_config(request):
         form = MessagesConfigForm
 
     # Obtain the email config
-
     messages_config = Config_Message.objects.filter(id=Config_Message.objects.values('id')[0]['id']).values(
                                                                                     'main',
                                                                                     'main_enabled',

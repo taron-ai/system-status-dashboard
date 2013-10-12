@@ -16,9 +16,9 @@
 
 """This module contains all of the incident report functions of ssd"""
 
+import logging
 import os
 import datetime
-import logging
 import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -28,14 +28,8 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
-from ssd.main.models import Config_Ireport
-from ssd.main.models import Config_Email
-from ssd.main.forms import IreportConfigForm
-from ssd.main.models import Ireport
-from ssd.main.forms import ReportIncidentForm
-from ssd.main.forms import ListForm
-from ssd.main.forms import DeleteEventForm
-from ssd.main.forms import DetailForm
+from ssd.main.models import Config_Ireport, Config_Email, Ireport
+from ssd.main.forms import IreportConfigForm, ReportIncidentForm, ListForm, DeleteEventForm, DetailForm
 from ssd.main import notify
 
 
@@ -50,6 +44,8 @@ def ireport(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'ireport.ireport')
+
     # If this functionality is disabled in the admin, let the user know
     if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 0:
         messages.add_message(request, messages.ERROR, 'Your system administrator has disabled incident reports')
@@ -63,6 +59,7 @@ def ireport(request):
     if request.method == 'POST':
         # Check the form elements
         form = ReportIncidentForm(request.POST, request.FILES)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('ReportIncidentForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -145,11 +142,14 @@ def ireport_config(request):
  
     """
 
+    logger.debug('%s view being executed.' % 'ireport.ireport_config')
+
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
 
         # Check the form elements
         form = IreportConfigForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('IreportConfigForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -209,7 +209,10 @@ def ireport_list(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'ireport.ireport_list')
+
     form = ListForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('ListForm',form))
 
     # Check the params
     if form.is_valid():
@@ -260,11 +263,14 @@ def ireport_delete(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'ireport.ireport_delete')
+
     # If it's a POST, then we are going to delete it after confirmation
     if request.method == 'POST':
         
         # Check the form elements
         form = DeleteEventForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('DeleteEventForm',form))
 
         if form.is_valid():
 
@@ -307,6 +313,8 @@ def ireport_delete(request):
    
     # Make sure we have an ID
     form = DeleteEventForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('DeleteEventForm',form))
+
     if form.is_valid():
 
         # Obtain the cleaned data
@@ -341,7 +349,10 @@ def ireport_detail(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'ireport.ireport_detail')
+
     form = DetailForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('DetailForm',form))
 
     if form.is_valid():
         # Obtain the cleaned data

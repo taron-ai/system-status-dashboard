@@ -92,8 +92,8 @@
 	  </div>
 			
 		<div class="row">
-			<div class="large-11 columns {% if form.from_address.errors %}error{% endif %}">
-				<input type="text" name="from_address" class="email" placeholder="Enter a valid email address" value="{% if form.from_address.data %}{{form.from_address.data}}{% else %}{{email_config.0.from_address}}{% endif %}" />
+			<div class="large-8 columns {% if form.from_address.errors %}error{% endif %}">
+				<input type="text" name="from_address" placeholder="Enter a valid email address" value="{% if form.from_address.data %}{{form.from_address.data}}{% else %}{{email_config.0.from_address}}{% endif %}" />
 		    {% if form.from_address.errors %}
 				<span class="error">{% for error in form.from_address.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -110,8 +110,8 @@
 	  </div>
 			
 		<div class="row">
-			<div class="large-11 columns {% if form.text_pager.errors %}error{% endif %}">
-				<input type="text" name="text_pager" class="email" placeholder="Enter a valid email address" value="{% if form.text_pager.data %}{{form.text_pager.data}}{% else %}{{email_config.0.text_pager}}{% endif %}" />
+			<div class="large-8 columns {% if form.text_pager.errors %}error{% endif %}">
+				<input type="text" name="text_pager" placeholder="Enter a valid email address" value="{% if form.text_pager.data %}{{form.text_pager.data}}{% else %}{{email_config.0.text_pager}}{% endif %}" />
 		    {% if form.text_pager.errors %}
 				<span class="error">{% for error in form.text_pager.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -128,8 +128,8 @@
 	  </div>
 			
 		<div class="row">
-			<div class="large-11 columns {% if form.incident_greeting.errors %}error{% endif %}">
-		 		<textarea name="incident_greeting" class="config_email" placeholder="Enter Incident Greeting" maxlength="1000">{% if form.incident_greeting.data %}{{form.incident_greeting.data}}{% else %}{{email_config.0.incident_greeting}}{% endif %}</textarea>
+			<div class="large-8 columns {% if form.incident_greeting.errors %}error{% endif %}">
+		 		<textarea name="incident_greeting" placeholder="Enter Incident Greeting" maxlength="1000">{% if form.incident_greeting.data %}{{form.incident_greeting.data}}{% else %}{{email_config.0.incident_greeting}}{% endif %}</textarea>
 		    {% if form.incident_greeting.errors %}
 				<br><span class="error">{% for error in form.incident_greeting.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -146,8 +146,8 @@
 	  </div>
 			
 		<div class="row">
-			<div class="large-11 columns {% if form.incident_update.errors %}error{% endif %}">
-		 		<textarea name="incident_update" class="config_email" placeholder="Enter Incident Update" maxlength="1000">{% if form.incident_update.data %}{{form.incident_update.data}}{% else %}{{email_config.0.incident_update}}{% endif %}</textarea>
+			<div class="large-8 columns {% if form.incident_update.errors %}error{% endif %}">
+		 		<textarea name="incident_update" placeholder="Enter Incident Update" maxlength="1000">{% if form.incident_update.data %}{{form.incident_update.data}}{% else %}{{email_config.0.incident_update}}{% endif %}</textarea>
 		    {% if form.incident_update.errors %}
 				<br><span class="error">{% for error in form.incident_update.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -164,8 +164,8 @@
 	  </div>
 
 		<div class="row">
-			<div class="large-11 columns {% if form.maintenance_greeting.errors %}error{% endif %}">
-		 		<textarea name="maintenance_greeting" class="config_email" placeholder="Enter Maintenance Greeting" maxlength="1000">{% if form.maintenance_greeting.data %}{{form.maintenance_greeting.data}}{% else %}{{email_config.0.maintenance_greeting}}{% endif %}</textarea>
+			<div class="large-8 columns {% if form.maintenance_greeting.errors %}error{% endif %}">
+		 		<textarea name="maintenance_greeting" placeholder="Enter Maintenance Greeting" maxlength="1000">{% if form.maintenance_greeting.data %}{{form.maintenance_greeting.data}}{% else %}{{email_config.0.maintenance_greeting}}{% endif %}</textarea>
 		    {% if form.maintenance_greeting.errors %}
 				<br><span class="error">{% for error in form.maintenance_greeting.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -182,8 +182,8 @@
 	  </div>
 		
 		<div class="row">
-			<div class="large-11 columns {% if form.maintenance_update.errors %}error{% endif %}">
-		 		<textarea name="maintenance_update" class="config_email" placeholder="Enter Maintenance Update" maxlength="1000">{% if form.maintenance_update.data %}{{form.maintenance_update.data}}{% else %}{{email_config.0.maintenance_update}}{% endif %}</textarea>
+			<div class="large-8 columns {% if form.maintenance_update.errors %}error{% endif %}">
+		 		<textarea name="maintenance_update" placeholder="Enter Maintenance Update" maxlength="1000">{% if form.maintenance_update.data %}{{form.maintenance_update.data}}{% else %}{{email_config.0.maintenance_update}}{% endif %}</textarea>
 		    {% if form.maintenance_update.errors %}
 				<br><span class="error">{% for error in form.maintenance_update.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -193,7 +193,7 @@
 		<div class="spacer_medium"></div>
 
 		<div class="row">
-		  <div class="large-11 columns">
+		  <div class="large-12 columns">
 		    <input type="submit" class="small button secondary" value="Save"/>
 		  </div>
 		</div>

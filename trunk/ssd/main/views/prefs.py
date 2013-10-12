@@ -19,9 +19,14 @@
 """
 
 
+import logging
 from django.http import HttpResponseRedirect
-from ssd.main.forms import JumpToForm
-from ssd.main.forms import UpdateTZForm
+from django.contrib import messages
+from ssd.main.forms import JumpToForm, UpdateTZForm
+
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
 
 
 def timezone(request):
@@ -31,9 +36,12 @@ def timezone(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'prefs.timezone')
+
     if request.method == 'POST':
         # Check the form elements
         form = UpdateTZForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('UpdateTZForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -55,9 +63,18 @@ def timezone(request):
                                 domain=None,
                                 secure=None,
                                 httponly=False)
+
+            # Set a success message
+            messages.add_message(request, messages.SUCCESS, 'Timezone successfully updated.')
+
             return response
 
-    # Not a POST or an invalid form.  In either case, redirect them to the homepage.
+    # Not a POST 
+    else:
+        messages.add_message(request, messages.ERROR, 'Invalid request, cannot update timezone.')
+
+
+    # Redirect them to the homepage.
     return HttpResponseRedirect('/')
 
 
@@ -68,9 +85,12 @@ def jump(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'prefs.jump')
+
     if request.method == 'POST':
         # Check the form elements
         form = JumpToForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('JumpToForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -78,6 +98,10 @@ def jump(request):
 
             # Send to the specified date
             return HttpResponseRedirect('/?ref=%s' % jump_to)
+        else:
+            messages.add_message(request, messages.ERROR, 'Invalid request, cannot jump to date.')
+    else:
+        messages.add_message(request, messages.ERROR, 'Invalid request, cannot jump to date.')
 
     # Either its not a POST, or the form was not valid
     # Redirect to the homepage and they'll get the standard view

@@ -19,14 +19,21 @@
 """
 
 
+import logging
 import datetime
 import pytz
 import re
 from django.conf import settings
 from django.core.cache import cache
+from django.http import HttpResponseRedirect
+from django.contrib import messages
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from ssd.main.models import Event, Service, Config_Message
+
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -36,6 +43,8 @@ def index(request):
 
     """
     
+    logger.debug('%s view being executed.' % 'main.index')
+
     # Get the reference date (if its not given, then its today)
     try:
         ref = request.GET['ref']
@@ -57,7 +66,15 @@ def index(request):
     # is different than the reference date we use for the calendar
     # because the query needs to go through 23:59:59
     ref_q = ref + ' 23:59:59'
-    ref_q = datetime.datetime.strptime(ref_q,'%Y-%m-%d %H:%M:%S') 
+    # If the reference date is not in the proper form, provide an error and redirect to the 
+    # standard homepage
+    try:
+        ref_q = datetime.datetime.strptime(ref_q,'%Y-%m-%d %H:%M:%S')
+    except ValueError as e:
+        # Set an error message
+        messages.add_message(request, messages.ERROR, 'Improperly formatted reference date.')
+        # Redirect to the homepage
+        return HttpResponseRedirect('/') 
     ref_q = pytz.timezone(request.timezone).localize(ref_q)
 
     # The reference date is the last date displayed in the calendar
@@ -124,6 +141,7 @@ def index(request):
     # Grab all events within the time range requested
     events = Event.objects.filter(start__range=[dates[0],ref_q]).values('id',
                                                                         'type__type',
+                                                                        'description',
                                                                         'start',
                                                                         'end',
                                                                         'event_service__service__service_name',
@@ -133,7 +151,7 @@ def index(request):
     # Run through each service and see if it had an incident during the time range
     for service in services:
         # Make a row for this service, which looks like this:
-        # {service:www.domain1.com,status:0},['green'],[{'open':,'closed':,'type':,'id':}]
+        # {service:www.domain1.com,status:0},['green'],[{'id':foo, 'description':foo,'open':foo,'closed':foo,'type':foo}]
         # The service will initially be green and incidents trump maintenances
         # Statuses are as follows:
         #   - 0 = green
@@ -171,10 +189,11 @@ def index(request):
 
                     # If this is our date, add it
                     if date.date() == event_date.date():
-                        # This is our date so add the incident ID
+                        # This is our date so add the incident information
                         e = {
-                                 'type':event['type__type'],
                                  'id':event['id'],
+                                 'type':event['type__type'],
+                                 'description':event['description'],
                                  'open':event_date,
                                  'closed':end_date,
                                  'status':event['status__status']

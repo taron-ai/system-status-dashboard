@@ -20,6 +20,11 @@
 
 {% block content %}
 
+<script>
+  // Set edit style to inline instead of popup
+  $.fn.editable.defaults.mode = 'inline';
+</script>
+
 <div class="row">
   {# This is a large-3 side nav #}
   {% include "admin/side_nav.html" %}
@@ -29,7 +34,7 @@
     <div class="row">
       <div class="large-12 columns">
         <h4>Email Recipients</h4>
-        <p>Use this form to manage email recipients.</p>
+        <p>Use this page to manage email recipients.  Email addresses listed below will be available for sending alert emails when creating incidents or maintenance events.</p>
         <hr>
       </div>
     </div>
@@ -39,38 +44,38 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Email Addresses</span><br>
-        <div class="sublabel_container"><span class="sublabel">Email addresses listed below will be available for sending immediate alerts when creating incidents or maintenance events.</span></div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="large-12 columns">
-        <form method="POST" action="/admin/email_delete">
-        {% csrf_token %}
-          {% if emails %}
-          <table>
-           <tr>
-            <th>Delete</th>
-            <th>Email Address</th>
-           </tr>
-           {% for row in emails %}
-           <tr>
-            <td valign="top" style="text-align: center;"><input type="checkbox" name="id" value="{{row.id}}" /></td>
-            <td valign="top">{{row.email}}</td>
-           </tr>
-           {% endfor %}
-          </table>
-          <input type="submit" class="small button secondary" value="delete"/>
-          {% if form.id.errors %}
-            <span class="error">{% for error in form.id.errors %}{{error}}<br>{% endfor %}<br></span>
-          {% endif %}
-        </form>
+        <span class="radius secondary label">Current Email Addresses</span><br><br>
+        {% if emails %}
+          {% for row in emails %}
+          <div>
+            <span style="width: 40px; float: left;">
+              <a href="/admin/recipient_delete?id={{row.id}}" title="Delete email address"><span class="genericon genericon-trash genericon_container_trash"></span></a>
+            </span>
+            <span>
+              <a href="#" title="Modify email address" id="email_{{row.id}}">{{row.email}}</a>
+              <script>
+              $(document).ready(function() {
+                $('#email_{{row.id}}').editable({
+                      url: '/admin/recipient_modify',
+                      type: 'text',
+                      pk: '{{row.id}}',
+                      name: 'email_{{row.id}}',
+                      inputclass: 'x_editable_text',
+                      params: { csrfmiddlewaretoken: '{{csrf_token}}'},
+                      error: function(response, newValue) {
+                        return response.responseText;
+                      }
+                  });
+              });
+              </script>
+            </span>
+            <br><br>
+          </div>
+          <div class="spacer_micro"></div>
+          {% endfor %}
         {% else %}
-        No email recipients defined
+          <b>No email addresses defined</b>
         {% endif %}
-        </fieldset>
-        </form>
       </div>
     </div>
 
@@ -79,7 +84,7 @@
     <div class="row">
       <div class="large-12 columns">
         <span class="radius secondary label">Add Email Address</span><br>
-        <div class="sublabel_container"><span class="sublabel">Enter a valid email address into the field below to make it available for selection.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter a valid email address (limit 100 characters).</span></div>
       </div>
     </div>
 
@@ -87,7 +92,7 @@
       <div class="large-12 columns {% if form.email.errors %}error{% endif %}">
         <form method="POST" action="/admin/email_recipients">
          {% csrf_token %}
-          <input name="email" type="text" class="email" placeholder="Enter a valid email address" value="{% if form.recipient.data %}{{form.recipient.data}}{% endif %}">
+          <input name="email" type="text" class="email" placeholder="Enter a valid email address" value="{% if form.email.data %}{{form.email.data}}{% endif %}">
           {% if form.email.errors %}
             <span class="error">{% for error in form.email.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}

@@ -23,6 +23,9 @@ urlpatterns = patterns('',
 
     # Main Dashboard (cache this page for 60 seconds)
     url(r'^$',                              'ssd.main.views.main.index'),
+
+    # TEST (REMOVE)
+    url(r'^test$',                          'ssd.main.views.test.test'),
     
     # Escalation Path
     url(r'^escalation$',                    'ssd.main.views.escalation.escalation'),
@@ -81,8 +84,8 @@ urlpatterns = patterns('',
  
     # Services Configuration (admin functionality)
     url(r'^admin/services$',                'ssd.main.views.services.services'),
-    url(r'^admin/services_delete$',         'ssd.main.views.services.services_delete'),
-    url(r'^admin/services_modify$',         'ssd.main.views.services.services_modify'),
+    url(r'^admin/service_delete$',          'ssd.main.views.services.service_delete'),
+    url(r'^admin/service_modify$',          'ssd.main.views.services.service_modify'),
 
     # Messages Configuration (admin functionality)
     url(r'^admin/messages_config$',         'ssd.main.views.messages.messages_config'),

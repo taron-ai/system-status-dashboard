@@ -117,7 +117,7 @@
             <th style="width: 50px;">{{heading}}</th>
            {% else %}
             {% if forloop.counter == 2 %}
-              <th style="width: 100px;">{{heading}}</th>
+              <th style="width: 220px;">{{heading}}</th>
             {% else %}
               <th style="width: 100px;">{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
             {% endif %}
@@ -127,65 +127,50 @@
        {% else %}
         <tr>
          {% for column in row %}
-           
            {# Set the status colors next to the service and print the service #}
            {# 1 is active incident and 2 is active maintenance #}
-           {% if forloop.first %}
-             <td style="width: 50px;">
-              <div>
-                <div style="text-align: center;">
-                   {% if column.status == 1 %}
-                     <span><img src="/html/images/incident_red.png"></span>
-                   {% else %}
-                    {% if column.status == 2 %}
-                     <span><img src="/html/images/incident_blue.png"></span>
-                    {% else %}
-                     <span><img src="/html/images/incident_green.png"></span>
-                    {% endif %}
-                   {% endif %}
-                </div>
+           {% if forloop.counter == 1 %}
+             <td style="text-align: center;">
+               {% if column.status == 1 %}
+                 <span><img src="/html/images/incident_red.png"></span>
+               {% else %}
+                {% if column.status == 2 %}
+                 <span><img src="/html/images/incident_blue.png"></span>
+                {% else %}
+                 <span><img src="/html/images/incident_green.png"></span>
+                {% endif %}
+               {% endif %}
               </td>
               <td>
                 <span>{{column.service}}</span>
-              </div>
-             </td>
+              </td>
            {% else %}
-
              {# Check each date #}
-             <td style="width: 100px;">
+             <td>
              {% for event in column %}
                {% if not event == 'green' %}
-                 {# We have some events to show #}
-                 {# See if we have a maintenance or an incident #}
-
-                 {% if event.type == 'incident' %}
+                {# We have some events to show #}
+                {# See if we have a maintenance or an incident #}
+                {% if event.type == 'incident' %}
                    {% if event.status == 'open' %}
- 
                     <a href="#" data-dropdown="idrop_{{event.id}}"><img src="/html/images/incident_red.png" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></a>
-
                     <div id="idrop_{{event.id}}" class="f-dropdown content idrop" data-dropdown-content>
                       <span class="incident_drop">eres una puta</span>
                       <br>
                       <a href="/i_detail?id={{event.id}}" title="admin">More Info</a>
                     </div>
-
-
-
-
-
                    {% else %}
                      <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_orange.png" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></a>
                    {% endif %}
-                 {% else %}
-                   {% if event.type == 'maintenance' %}
-                     <a href="/m_detail?id={{event.id}}"><img src="/html/images/incident_blue.png" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></a>
-                   {% endif %}
-                 {% endif %}
+                {% else %}
+                  {% if event.type == 'maintenance' %}
+                    <a href="/m_detail?id={{event.id}}"><img src="/html/images/incident_blue.png" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></a>
+                  {% endif %}
+                {% endif %}
                {% endif %}
-
              {% endfor %}
              </td>
-           {% endif %}
+           {% endif %} 
          {% endfor %}
         </tr>
        {% endif %}

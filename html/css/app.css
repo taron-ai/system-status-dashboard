@@ -250,6 +250,12 @@ span.genericon_container_help {
    font-size: 25px; 
    color: #DDDDDD;
 }
+/* Trash icons for admin services/recipients */
+span.genericon_container_trash {
+   position: relative; 
+   bottom: 4px; 
+   color: red;
+}
 /* Dashboard legend */
 span.legend {
    font-size: 12px;
@@ -452,4 +458,4 @@ input.config_ireport_path {
 }
 
 
-
+}

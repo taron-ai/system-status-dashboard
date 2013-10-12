@@ -24,15 +24,11 @@ urlpatterns = patterns('',
     # Main Dashboard (cache this page for 60 seconds)
     url(r'^$',                              'ssd.main.views.main.index'),
 
-    # TEST (REMOVE)
-    url(r'^test$',                          'ssd.main.views.test.test'),
-    
     # Escalation Path
     url(r'^escalation$',                    'ssd.main.views.escalation.escalation'),
 
     # Search
     url(r'^events$',                        'ssd.main.views.search.events'),
-    url(r'^search$',                        'ssd.main.views.search.search'),
     url(r'^gsearch$',                       'ssd.main.views.search.gsearch'),
 
     # Preferences
@@ -79,8 +75,9 @@ urlpatterns = patterns('',
 
     # Email Configuration (admin functionality)
     url(r'^admin/email_config$',            'ssd.main.views.email.email_config'),
-    url(r'^admin/email_delete$',            'ssd.main.views.email.email_delete'),
     url(r'^admin/email_recipients$',        'ssd.main.views.email.email_recipients'),
+    url(r'^admin/recipient_delete$',        'ssd.main.views.email.recipient_delete'),
+    url(r'^admin/recipient_modify$',        'ssd.main.views.email.recipient_modify'),
  
     # Services Configuration (admin functionality)
     url(r'^admin/services$',                'ssd.main.views.services.services'),
@@ -105,5 +102,7 @@ urlpatterns = patterns('',
     # Escalation
     url(r'^admin/escalation_config$',       'ssd.main.views.escalation.escalation_config'),
     url(r'^admin/escalation_contacts$',     'ssd.main.views.escalation.escalation_contacts'),
-    url(r'^admin/escalation_modify$',       'ssd.main.views.escalation.escalation_modify'),
+    url(r'^admin/contact_switch$',          'ssd.main.views.escalation.contact_switch'),
+    url(r'^admin/contact_delete$',          'ssd.main.views.escalation.contact_delete'),
+    url(r'^admin/contact_modify$',          'ssd.main.views.escalation.contact_modify'),
 )

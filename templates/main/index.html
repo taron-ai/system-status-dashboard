@@ -75,19 +75,19 @@
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><img src="/html/images/incident_green.png">&nbsp;Service Normal - the service is operating normally.</span>
+        <span class="legend"><span class="genericon genericon-aside genericon_container_green"></span>&nbsp;Service Normal - the service is operating normally.</span>
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><img src="/html/images/incident_red.png">&nbsp;Service Disruption - the service is experiencing an active disruption.</span>
+        <span class="legend"><span class="genericon genericon-aside genericon_container_red"></span>&nbsp;Service Disruption - the service is experiencing an active disruption.</span>
         <div class="spacer_small"></div>      
       </div>
       <div>
-        <span class="legend"><img src="/html/images/incident_orange.png">&nbsp;Service Disruption (resolved) - a service disruption occurred, but has been resolved.</span>
+        <span class="legend"><span class="genericon genericon-aside genericon_container_orange"></span>&nbsp;Service Disruption (resolved) - a service disruption occurred, but has been resolved.</span>
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><img src="/html/images/incident_blue.png">&nbsp;Planned Maintenance - planned maintenance is occurring with the service.</span>
+        <span class="legend"><span class="genericon genericon-aside genericon_container_blue"></span>&nbsp;Planned Maintenance - planned maintenance is occurring with the service.</span>
       </div>
     </div>
 
@@ -132,12 +132,12 @@
            {% if forloop.counter == 1 %}
              <td style="text-align: center;">
                {% if column.status == 1 %}
-                 <span><img src="/html/images/incident_red.png"></span>
+                 <span class="genericon genericon-aside genericon_container_red" title="A service disruption is currently occurring with this service."></span>
                {% else %}
                 {% if column.status == 2 %}
-                 <span><img src="/html/images/incident_blue.png"></span>
+                 <span class="genericon genericon-aside genericon_container_blue" title="Maintenance is currently occurring with this service."></span>
                 {% else %}
-                 <span><img src="/html/images/incident_green.png"></span>
+                  <span class="genericon genericon-aside genericon_container_green" title="Service is operating normally."></span>
                 {% endif %}
                {% endif %}
               </td>
@@ -153,18 +153,43 @@
                 {# See if we have a maintenance or an incident #}
                 {% if event.type == 'incident' %}
                    {% if event.status == 'open' %}
-                    <a href="#" data-dropdown="idrop_{{event.id}}"><img src="/html/images/incident_red.png" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></a>
-                    <div id="idrop_{{event.id}}" class="f-dropdown content idrop" data-dropdown-content>
-                      <span class="incident_drop">eres una puta</span>
-                      <br>
-                      <a href="/i_detail?id={{event.id}}" title="admin">More Info</a>
+                    <a href="#" data-dropdown="idrop_{{event.id}}">
+                      <span class="genericon genericon-aside genericon_container_red" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></span>
+                    </a>
+                    <div id="idrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
+                      <span class="dashboard_drop">
+                        <h5>Incident Information</h5>
+                        <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                      </span>
+                      <br><br>
+                      <a href="/i_detail?id={{event.id}}" title="More information"><div class="genericon genericon-summary genericon_container"></div></a>
                     </div>
                    {% else %}
-                     <a href="/i_detail?id={{event.id}}"><img src="/html/images/incident_orange.png" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></a>
+                    <a href="#" data-dropdown="irdrop_{{event.id}}">
+                      <span class="genericon genericon-aside genericon_container_orange" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
+                    </a>
+                    <div id="irdrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
+                      <span class="dashboard_drop">
+                        <h5>Incident (Resolved) Information</h5>
+                        <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                      </span>
+                      <br><br>
+                      <a href="/i_detail?id={{event.id}}" title="More information"><div class="genericon genericon-summary genericon_container"></div></a>
+                    </div>
                    {% endif %}
                 {% else %}
                   {% if event.type == 'maintenance' %}
-                    <a href="/m_detail?id={{event.id}}"><img src="/html/images/incident_blue.png" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></a>
+                    <a href="#" data-dropdown="mdrop_{{event.id}}">
+                      <span class="genericon genericon-aside genericon_container_blue" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
+                    </a>
+                    <div id="mdrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
+                      <span class="dashboard_drop">
+                        <h5>Maintenance Information</h5>
+                        <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                      </span>
+                      <br><br>
+                      <a href="/m_detail?id={{event.id}}" title="More information"><div class="genericon genericon-summary genericon_container"></div></a>
+                    </div>
                   {% endif %}
                 {% endif %}
                {% endif %}
@@ -185,7 +210,11 @@
     <span class="heading">Detailed Service Disruption Timeline:</span><div class="hr"></div>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
-       {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}} <a href="/i_detail?id={{row.id}}">more detail...</a><br>
+       <a href="/i_detail?id={{row.id}}"><span class="genericon genericon-next genericon_container_next" title="More information"></span></a>
+       <span class="timeline">
+        {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}}
+       </span>
+       <br>
       {% endfor %}
     {% else %}
       <span class="all_good">No current service disruptions.</span>
@@ -199,7 +228,11 @@
     <span class="heading">Detailed Maintenance Timeline:</span><div class="hr"></div>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
-       {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}} <a href="/m_detail?id={{row.id}}">more detail...</a><br>
+       <a href="/m_detail?id={{row.id}}"><span class="genericon genericon-next genericon_container_next" title="More information"></span></a>
+       <span class="timeline">
+        {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}}
+       </span>
+       <br>
       {% endfor %}
     {% else %}
       <span class="all_good">No planned maintenance is occurring.</span>

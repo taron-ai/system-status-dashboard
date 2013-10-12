@@ -16,6 +16,8 @@
 
 """This module contains all of the system url configuration functions of ssd"""
 
+
+import logging
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
@@ -26,6 +28,10 @@ from ssd.main.models import Config_Systemurl
 from ssd.main.forms import SystemurlConfigForm
 
 
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
+
+
 @login_required
 @staff_member_required
 def systemurl_config(request):
@@ -33,11 +39,14 @@ def systemurl_config(request):
  
     """
 
+    logger.debug('%s view being executed.' % 'systemurl.systemurl_config')
+
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
 
         # Check the form elements
         form = SystemurlConfigForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('SystemurlConfigForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data

@@ -19,6 +19,7 @@
 """
 
 
+import logging
 import datetime
 import pytz
 import re
@@ -36,6 +37,10 @@ from ssd.main.forms import AddIncidentForm, DeleteEventForm, UpdateIncidentForm,
 from ssd.main import notify
 
 
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
+
+
 @login_required
 @staff_member_required
 def incident(request):
@@ -44,6 +49,9 @@ def incident(request):
     Create a new incident
 
     """
+
+    logger.debug('%s view being executed.' % 'incidents.incident')
+
 
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually
@@ -56,6 +64,7 @@ def incident(request):
 
         # Check the form elements
         form = AddIncidentForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('AddIncidentForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -162,6 +171,8 @@ def i_update(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'incidents.i_update')
+
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually (service
     # addition/subtraction
@@ -174,6 +185,7 @@ def i_update(request):
 
         # Check the form elements
         form = UpdateIncidentForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('UpdateIncidentForm',form))
 
         if form.is_valid():
 
@@ -340,11 +352,14 @@ def i_delete(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'incidents.i_delete')
+
     # If it's a POST, then we are going to delete it after confirmation
     if request.method == 'POST':
         
         # Check the form elements
         form = DeleteEventForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('DeleteEventForm',form))
 
         if form.is_valid():
 
@@ -357,21 +372,20 @@ def i_delete(request):
             # Set a message that the delete was successful
             messages.add_message(request, messages.SUCCESS, 'Message id:%s successfully deleted' % id)
 
-            # Redirect to the open incidents page
-            return HttpResponseRedirect('/admin/i_list')
-
         # Invalid form submit
         else:
             # Set a message that the delete was not successful
             messages.add_message(request, messages.ERROR, 'Message id:%s not deleted' % id)
             
-            # Redirect to the open incidents page
-            return HttpResponseRedirect('/admin/i_list')
+        # Redirect to the open incidents page
+        return HttpResponseRedirect('/admin/i_list')
 
     # If we get this far, it's a GET
    
     # Make sure we have an ID
     form = DeleteEventForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('DeleteEventForm',form))
+    
     if form.is_valid():
 
         # Obtain the cleaned data
@@ -390,12 +404,11 @@ def i_delete(request):
            context_instance=RequestContext(request)
         )
 
-        # Redirect to the open incidents page
-        return HttpResponseRedirect('/admin/i_list')
-
     # Invalid request
     else:
-        # Redirect to the open incidents page
+
+        # Set a message that the delete failed and send back to the incidents page
+        messages.add_message(request, messages.ERROR, 'Invalid request.')
         return HttpResponseRedirect('/admin/i_list')
 
 
@@ -406,7 +419,10 @@ def i_detail(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'incidents.i_detail')
+
     form = DetailForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('DetailForm',form))
 
     if form.is_valid():
         # Obtain the cleaned data
@@ -454,8 +470,7 @@ def i_detail(request):
           'services':services,
           'id':id,
           'details':details,
-          'updates':updates,
-          'breadcrumbs':{'Admin':'/admin','Update Detail':'i_detail'}
+          'updates':updates
        },
        context_instance=RequestContext(request)
     )
@@ -469,6 +484,8 @@ def i_list(request):
     Show all open incidents
 
     """
+
+    logger.debug('%s view being executed.' % 'incidents.i_list')
 
     # Obtain all open incidents
     incidents = Event.objects.filter(type__type='incident',status__status='open').values('id','start','description')

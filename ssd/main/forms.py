@@ -346,10 +346,23 @@ class MSearchForm(forms.Form):
     text = forms.CharField(required=False)
 
 
-class AddEmailForm(forms.Form):
+class AddRecipientForm(forms.Form):
     """Form for adding email recipients"""
 
     email = forms.EmailField(required=True)
+
+
+class DeleteRecipientForm(forms.Form):
+    """Form for deleting email recipients"""
+
+    id = forms.IntegerField(required=True)
+
+
+class ModifyRecipientForm(forms.Form):
+    """Form for modifying email recipients"""
+
+    pk = forms.IntegerField(required=True)
+    value = forms.CharField(required=True)
 
 
 class ListForm(forms.Form):
@@ -358,17 +371,19 @@ class ListForm(forms.Form):
     page = forms.IntegerField(required=False)
 
 
-class RemoveEmailForm(forms.Form):
-    """Form for removing remail recipients"""
-
-    id = MultipleServiceField()
-
-
 class AddContactForm(forms.Form):
     """Form for adding escalation contacts"""
 
     name = forms.CharField(required=True)
     contact_details = forms.CharField(required=True)
+
+
+class ModifyContactForm(forms.Form):
+    """Form for modifying contacts"""
+
+    pk = forms.IntegerField(required=True)
+    value = forms.CharField(required=True)
+    name = forms.CharField(required=True)
 
 
 class AddServiceForm(forms.Form):
@@ -390,11 +405,17 @@ class ModifyServiceForm(forms.Form):
     value = forms.CharField(required=True)
 
 
-class ModifyContactForm(forms.Form):
-    """Form for removing contacts"""
+class SwitchContactForm(forms.Form):
+    """Form for switching contacts around or hiding/unhiding them"""
 
     id = forms.IntegerField(required=True)
     action = forms.CharField(required=True)
+
+
+class RemoveContactForm(forms.Form):
+    """Form for removing contacts"""
+
+    id = forms.IntegerField(required=True)
 
 
 class SearchForm(forms.Form):

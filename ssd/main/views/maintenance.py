@@ -19,6 +19,7 @@
 """
 
 
+import logging
 import datetime
 import pytz
 import re
@@ -36,12 +37,18 @@ from ssd.main.forms import DetailForm, DeleteEventForm,UpdateMaintenanceForm, Em
 from ssd.main import notify
 
 
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
+
+
 @login_required
 @staff_member_required
 def maintenance(request):
     """Schedule maintenance page
 
     """
+
+    logger.debug('%s view being executed.' % 'maintenance.maintenance')
 
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually
@@ -54,6 +61,7 @@ def maintenance(request):
 
         # Check the form elements
         form = AddMaintenanceForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('AddMaintenanceForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -127,6 +135,7 @@ def maintenance(request):
         # There are no affected services selected yet
         affected_svcs = []
         
+        # Create a blank form
         form = AddMaintenanceForm() 
     
     # Obtain all current email addresses
@@ -163,6 +172,8 @@ def m_update(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'maintenance.m_update')
+
     # If this is a POST, then validate the form and save the data
     # Some validation must take place manually (service
     # addition/subtraction
@@ -175,6 +186,8 @@ def m_update(request):
 
         # Check the form elements
         form = UpdateMaintenanceForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('UpdateMaintenanceForm',form))
+
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -383,7 +396,11 @@ def m_detail(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'maintenance.m_detail')
+
     form = DetailForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('DetailForm',form))
+
 
     if form.is_valid():
         # Obtain the cleaned data
@@ -444,8 +461,11 @@ def m_detail(request):
 def m_email(request):
     """Send an Email Notification about a Maintenance"""
 
+    logger.debug('%s view being executed.' % 'maintenance.m_email')
+
     # Check the form elements
     form = EmailMaintenanceForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('EmailMaintenanceForm',form))
 
     if form.is_valid():
         # Obtain the cleaned data
@@ -484,11 +504,15 @@ def m_delete(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'maintenance.m_delete')
+
     # If it's a POST, then we are going to delete it after confirmation
     if request.method == 'POST':
         
         # Check the form elements
         form = DeleteEventForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('DeleteEventForm',form))
+
 
         if form.is_valid():
 
@@ -501,21 +525,19 @@ def m_delete(request):
             # Set a message that the delete was successful
             messages.add_message(request, messages.SUCCESS, 'Message id:%s successfully deleted' % id)
 
-            # Redirect to the open incidents page
-            return HttpResponseRedirect('/admin/m_list')
-
         # Invalid form submit
         else:
             # Set a message that the delete was not successful
             messages.add_message(request, messages.ERROR, 'Message id:%s not deleted' % id)
 
-            # Redirect to the open incidents page
-            return HttpResponseRedirect('/admin/m_list')
+        # Redirect to the open incidents page
+        return HttpResponseRedirect('/admin/m_list')
 
     # If we get this far, it's a GET
    
     # Make sure we have an ID
     form = DeleteEventForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('DeleteEventForm',form))
     
     if form.is_valid():
 
@@ -535,12 +557,11 @@ def m_delete(request):
            context_instance=RequestContext(request)
         )
 
-        # Redirect to the open incidents page
-        return HttpResponseRedirect('/admin/m_list')
-
     # Invalid request
     else:
-        # Redirect to the open incidents page
+
+        # Set a message that the delete failed and send back to the maintenance page
+        messages.add_message(request, messages.ERROR, 'Invalid request.')
         return HttpResponseRedirect('/admin/m_list')
    
 
@@ -552,6 +573,8 @@ def m_list(request):
     Show all open maintenances
 
     """
+
+    logger.debug('%s view being executed.' % 'maintenance.m_list')
 
     # Obtain all open incidents
     maintenances = Event.objects.filter(Q(type=2,status__status='planning') | Q(type=2,status__status='started')).values('id','start','description','event_email__email__email')

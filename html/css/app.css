@@ -206,29 +206,25 @@ span.error {
 span.genericon_container {
    display: table-cell;
 }
-/* Red circle indicators*/
+/* Red circle indicators */
 span.genericon_container_red {
-   position: relative; 
-   bottom: 14px; 
-   right: 6px; 
-   font-size: 42px; 
+   font-size: 16px; 
    color: #FF0000;
 }
 /* Blue circle indicators */
 span.genericon_container_blue {
-   position: relative; 
-   bottom: 14px; 
-   right: 6px; 
-   font-size: 42px; 
+   font-size: 16px; 
    color: #558ED5;
 }
 /* Green circle indicators */
 span.genericon_container_green {
-   position: relative; 
-   bottom: 14px; 
-   right: 6px; 
-   font-size: 42px; 
+   font-size: 16px;  
    color: #00B050;
+}
+/* Orange circle indicators */
+span.genericon_container_orange {
+   font-size: 16px; 
+   color: #FFB805;
 }
 /* Navigation links on the dashboard table */
 span.genericon_container_nav {
@@ -246,9 +242,14 @@ span.genericon_container_search {
 /* Help icons in the index page summary sections */
 span.genericon_container_help {
    position: relative; 
-   bottom: 2px; 
-   font-size: 25px; 
-   color: #DDDDDD;
+   bottom: 3px; 
+   right: 3px;
+}
+/* Help icons in the index page summary sections */
+span.genericon_container_next {
+   position: relative; 
+   bottom: 5px; 
+   right: 5px;
 }
 /* Trash icons for admin services/recipients */
 span.genericon_container_trash {
@@ -277,13 +278,18 @@ span.heading {
 /* Index page messages when no incidents/maintenances */
 span.all_good {
    color: #16AF48;
+   font-size: 12px;
 }
 /* Help Dropdowns */
 span.help_drop {
    font-size: 12px;
 }
-/* Incident Indicator Dropdowns */
-span.incident_drop {
+/* Dashboard Indicator Dropdowns */
+span.dashboard_drop {
+   font-size: 12px;
+}
+/* Dashboard timeline formatting */
+span.timeline {
    font-size: 12px;
 }
 
@@ -300,16 +306,12 @@ textarea.config {
    height: 85px;
    width: 300px;
 }
-textarea.config_messages {
-   height: 85px;
-   width: 500px;
-}
-textarea.config_email {
-   height: 85px;
-   width: 500px;
-}
 textarea.ireport_desc {
    height: 50px;
+}
+textarea.x_editable_contact {
+   width: 400px;
+   font-size: 12px;
 }
 
 
@@ -372,9 +374,6 @@ select {
 input.date {
    width: 135px;
 }
-input.service {
-   width: 300px;
-}
 input.email {
    width: 250px;
 }
@@ -384,17 +383,15 @@ select.email {
 select.config_email {
    width: 100px;
 }
-input.config_logo {
-   width: 400px;
-}
-input.config_systemurl {
-   width: 400px;
-}
 input.config_ireport_size {
    width: 100px;
 }
 input.config_ireport_path {
    width: 400px;
+}
+input.x_editable_text {
+   width: 300px;
+   font-size: 12px;
 }
 
 
@@ -407,17 +404,6 @@ input.config_ireport_path {
     background-color: #f9f9f9;
     border-top: 2px solid #EEE;
     padding: 5px 0 5px 0;
-}
-
-
-
-/* GENERICONS */
-.genericon {
-   font-size: 25px;
-}
-.genericon.caution {
-   font-size: 22px;
-   color: red;
 }
 
 
@@ -443,9 +429,9 @@ input.config_ireport_path {
    min-width: 300px;
 }
 /* Dashboard table incident indicators */
-.f-dropdown.idrop {
+.f-dropdown.edrop {
    min-width: 300px;  
-   background-color: red;
+   /* background-color: red; */
 }
 /* Historical summary status help */
 /* Navigation links on table */
@@ -458,4 +444,14 @@ input.config_ireport_path {
 }
 
 
+
+/* GENERICONS */
+.genericon {
+   font-size: 25px;
 }
+.genericon.caution {
+   font-size: 22px;
+   color: red;
+}
+
+

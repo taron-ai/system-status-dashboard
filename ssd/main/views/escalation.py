@@ -19,16 +19,21 @@
 """
 
 
+import logging
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import RequestContext
 from django.db.models import F
 from django.contrib import messages
 from ssd.main.models import Config_Escalation, Escalation
-from ssd.main.forms import AddContactForm, EscalationConfigForm, ModifyContactForm
+from ssd.main.forms import AddContactForm, EscalationConfigForm, ModifyContactForm, SwitchContactForm, RemoveContactForm
+
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
 
 
 def escalation(request):
@@ -38,6 +43,8 @@ def escalation(request):
     on who to contact when incidents occur
 
     """
+
+    logger.debug('%s view being executed.' % 'escalation.escalation')
 
     # If this functionality is disabled in the admin, let the user know
     if Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 0:
@@ -66,11 +73,14 @@ def escalation_config(request):
  
     """
 
+    logger.debug('%s view being executed.' % 'escalation.escalation_config')
+
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
 
         # Check the form elements
         form = EscalationConfigForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('EscalationConfigForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -115,11 +125,14 @@ def escalation_contacts(request):
  
     """
 
+    logger.debug('%s view being executed.' % 'escalation.escalation_contacts')
+
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
        
         # Check the form elements
         form = AddContactForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('AddContactForm',form))
 
         if form.is_valid():
             name = form.cleaned_data['name']
@@ -155,7 +168,7 @@ def escalation_contacts(request):
         form = AddContactForm()
     
     # Obtain all current email addresses
-    contacts = Escalation.objects.values('id','order','name','hidden').order_by('order')
+    contacts = Escalation.objects.values('id','order','name','contact_details','hidden').order_by('order')
    
     # Print the page
     return render_to_response(
@@ -174,15 +187,18 @@ def escalation_contacts(request):
 
 @login_required
 @staff_member_required
-def escalation_modify(request):
-    """Remove Contacts"""
+def contact_switch(request):
+    """Switch Contacts Around or Hide Them"""
+
+    logger.debug('%s view being executed.' % 'escalation.contact_switch')
 
     # If this is a GET, then validate the form and save the data, otherise send them
     # to the main escalation page
     if request.method == 'GET':
         
         # Check the form elements
-        form = ModifyContactForm(request.GET)
+        form = SwitchContactForm(request.GET)
+        logger.debug('Form submit (GET): %s, with result: %s' % ('SwitchContactForm',form))
 
         if form.is_valid():
             id = form.cleaned_data['id']
@@ -194,7 +210,6 @@ def escalation_modify(request):
             # Run through the orders and see if we need to change anything
             # If we are moving up, switch places with the previous
             # If we are moving down, switch places with the next
-            # If we are deleting, remove and then reorder everything
             # If we are hiding, remove the order
             # If we are unhiding, add to the end
 
@@ -215,6 +230,9 @@ def escalation_modify(request):
                     # Switch places
                     Escalation.objects.filter(id=id).update(order=F('order')-1)
                     Escalation.objects.filter(id=after_id).update(order=F('order')+1)
+
+                # Set a success message
+                messages.add_message(request, messages.SUCCESS, 'Escalation contacts successfully modified.')
             
             # Move this down, meaning increase the order
             elif action == "down": 
@@ -237,36 +255,156 @@ def escalation_modify(request):
                     Escalation.objects.filter(id=id).update(order=F('order')+1)
                     Escalation.objects.filter(id=after_id).update(order=F('order')-1)
 
-            # Delete
-            elif action == 'delete':
+                # Set a success message
+                messages.add_message(request, messages.SUCCESS, 'Escalation contacts successfully modified.')
 
-                # Delete the object and then re-order what's left
-                Escalation.objects.filter(id=id).delete()
-
-                # Get the orders
-                orders = Escalation.objects.values('id','order').order_by('order')
-
-                # If there's more than 1, re-order
-                if orders > 1:
-                    # Start a counter at 1 and reset the orders
-                    counter = 1
-                    for contact in orders:
-                        Escalation.objects.filter(id=contact['id']).update(order=counter)
-                        counter += 1
-            
             # Hide
             elif action == 'hide':
                 Escalation.objects.filter(id=id).update(hidden=True)
+                # Set a success message
+                messages.add_message(request, messages.SUCCESS, 'Escalation contacts successfully modified.')
 
             # Show
             elif action == 'show':
                 Escalation.objects.filter(id=id).update(hidden=False)
+                # Set a success message
+                messages.add_message(request, messages.SUCCESS, 'Escalation contacts successfully modified.')
 
-            # Set a success message
-            messages.add_message(request, messages.SUCCESS, 'Escalation contacts successfully modified.')
+            # Unknown request
+            else:
+                # Set an error message
+                messages.add_message(request, messages.ERROR, 'Unknown request type - contact not modified.')
+
         # Invalid form
         else:
             messages.add_message(request, messages.ERROR, 'There was an error processing your request: %s' % form.errors)
 
     # Send them back so they can see the newly updated services list
     return HttpResponseRedirect('/admin/escalation_contacts')
+
+
+@login_required
+@staff_member_required
+def contact_delete(request):
+    """Remove Contact"""
+
+    logger.debug('%s view being executed.' % 'escalation.contact_delete')
+
+    # If it's a POST, then we are going to delete it after confirmation
+    if request.method == 'POST':
+        
+        # Check the form elements
+        form = RemoveContactForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('RemoveContactForm',form))
+
+        if form.is_valid():
+            id = form.cleaned_data['id']
+
+            # Delete the contact and then re-order what's left (if there's more than 1)
+            Escalation.objects.filter(id=id).delete()
+
+            # Get the orders
+            orders = Escalation.objects.values('id','order').order_by('order')
+
+            # If there's more than 1, re-order
+            if orders > 1:
+                # Start a counter at 1 and reset the orders
+                counter = 1
+                for contact in orders:
+                    Escalation.objects.filter(id=contact['id']).update(order=counter)
+                    counter += 1
+            # There is only 1 so set it's order to 1
+            else:
+                Escalation.objects.filter(id=id).update(order=1)
+
+            # Set a message that delete was successful
+            messages.add_message(request, messages.SUCCESS, 'Contact successfully removed.')
+
+            # Redirect to the escalation contacts page
+            return HttpResponseRedirect('/admin/escalation_contacts')
+
+    # If we get this far, it's a GET and we are confirming that the contact should be removed.
+
+    # Make sure we have an ID
+    form = RemoveContactForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('RemoveContactForm',form))
+    
+    if form.is_valid():
+
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+
+        # Obtain the contact name
+        contact_name = Escalation.objects.filter(id=id).values('name')
+
+        # If someone already deleted it, set an error message and send back to the services listing
+        if not contact_name:
+            messages.add_message(request, messages.ERROR, 'That contact has already been removed, perhaps someone else deleted it?')
+            return HttpResponseRedirect('/admin/escalation_contacts')
+
+        # Print the page (confirm they want to delete the service)
+        return render_to_response(
+           'escalation/contact_delete.html',
+           {
+              'title':'System Status Dashboard | Confirm Delete',
+              'id':id,
+              'contact_name':contact_name,
+              'breadcrumbs':{'Admin':'/admin','Manage Escalation Contacts':'escalation_contacts'},
+              'nav_section':'escalation',
+              'nav_sub':'contact_delete'
+           },
+           context_instance=RequestContext(request)
+        )
+
+    # Invalid request
+    else:
+
+        # Set a message that the delete failed and send back to the services page
+        messages.add_message(request, messages.ERROR, 'Invalid request.')
+        return HttpResponseRedirect('/admin/escalation_contacts')
+
+
+  
+
+@login_required
+@staff_member_required
+def contact_modify(request):
+    """Modify contact properties
+        - This occurs only via AJAX from the escalation_contacts view (it's a POST)
+
+    """
+
+    logger.debug('%s view being executed.' % 'escalation.contact_modify')
+
+    # If this is a POST, then validate the form and save the data, otherise do nothing
+    if request.method == 'POST':
+        
+        # Check the form elements
+        form = ModifyContactForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('ModifyContactForm',form))
+
+        if form.is_valid():
+            pk = form.cleaned_data['pk']
+            name = form.cleaned_data['name']
+            value = form.cleaned_data['value']
+
+            filter = {}
+            filter[name] = value
+
+            # Update it
+            try:
+                Escalation.objects.filter(id=pk).update(**filter)
+            except Exception as e:
+                logger.error('%s: Error saving update: %s' % ('services.service_modify',e))
+                return HttpResponseBadRequest('An error was encountered with this request.')
+
+            return HttpResponse('Value successfully modified')
+
+        else:
+            logger.error('%s: invalid form: %s' % ('services.service_modify',form.errors))
+            return HttpResponseBadRequest('Invalid request')
+    else:
+        logger.error('%s: Invalid request: GET received but only POST accepted.' % ('services.service_modify'))
+        return HttpResponseRedirect('/admin/services') 
+
+

@@ -19,6 +19,7 @@
 """
 
 
+import logging
 import datetime
 import pytz
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -29,6 +30,10 @@ from ssd.main.models import Event
 from ssd.main.forms import SearchForm, GSearchForm, SearchForm
 
 
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
+
+
 def gsearch(request):
     """Event Search View (Graph)
 
@@ -36,7 +41,10 @@ def gsearch(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'search.gsearch')
+
     form = GSearchForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('GSearchForm',form))
 
     if form.is_valid():
         # Obtain the cleaned data (only validate the dates)
@@ -72,16 +80,6 @@ def gsearch(request):
         return HttpResponseRedirect('/') 
 
 
-def search(request):
-    """Event Search View 
-
-    Permit simple searching of events
-
-    """
-
-    return HttpResponseRedirect('/') 
-
-
 def events(request):
     """Event List View 
 
@@ -89,7 +87,10 @@ def events(request):
 
     """
 
+    logger.debug('%s view being executed.' % 'search.events')
+
     form = SearchForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('SearchForm',form))
 
     # Check the params
     if form.is_valid():

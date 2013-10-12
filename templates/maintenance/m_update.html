@@ -68,7 +68,7 @@
     {% include "admin/messages.html" %}
 
     <div class="row">
-      <div class="large-12 columns">
+      <div class="large-8 columns">
         <span class="radius secondary label">Maintenance Update</span><br>
         <div class="sublabel_container"><span class="sublabel">Enter an update about the maintenance.</span></div>
       </div>
@@ -148,7 +148,7 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns {% if form.description.errors %}error{% endif %}">
+      <div class="large-8 columns {% if form.description.errors %}error{% endif %}">
         <textarea name="description" placeholder="Enter maintenance description" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% else %}{{details.0.description}}{% endif %}</textarea>
         {% if form.description.errors %}
         <br><span class="error">{% for error in form.description.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -166,7 +166,7 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns {% if form.impact.errors %}error{% endif %}">
+      <div class="large-8 columns {% if form.impact.errors %}error{% endif %}">
         <textarea name="impact" placeholder="Enter maintenance impact analysis" maxlength="1000">{% if form.impact.data %}{{form.impact.data}}{% else %}{% if details.0.event_impact__impact %}{{details.0.event_impact__impact}}{% endif %}{% endif %}</textarea>
         {% if form.impact.errors %}
         <br><span class="error">{% for error in form.impact.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -184,7 +184,7 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns {% if form.coordinator.errors %}error{% endif %}">
+      <div class="large-8 columns {% if form.coordinator.errors %}error{% endif %}">
         <textarea name="coordinator" placeholder="Enter maintenance coordinator" maxlength="1000">{% if form.coordinator.data %}{{form.coordinator.data}}{% else %}{% if details.0.event_coordinator__coordinator %}{{details.0.event_coordinator__coordinator}}{% endif %}{% endif %}</textarea>
         {% if form.coordinator.errors %}
         <br><span class="error">{% for error in form.coordinator.errors %}{{error}}<br>{% endfor %}<br></span>

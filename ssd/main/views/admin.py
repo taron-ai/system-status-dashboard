@@ -17,6 +17,7 @@
 """This module contains all of the admin functions of ssd"""
 
 
+import logging
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
@@ -24,12 +25,19 @@ from django.template import RequestContext
 from django import get_version
 from ssd.main.models import Config_Email
 
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
+
+
 @login_required
 @staff_member_required
 def main(request):
     """Main admin index view
  
     """
+
+    logger.debug('%s view being executed.' % 'admin.main')
 
     # Print the page
     return render_to_response(

@@ -47,6 +47,14 @@
 
 <div class="row">
   <div class="large-12 columns">
+    <h5>Search Events</h5>
+    <p>Use this page to search through all events, or constrain your search by using custom search criteria.</p>
+    <br>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
     <span class="navigation">
       {% if events.has_previous %}
         <a href="?page={{events.previous_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&laquo;</a>
@@ -94,7 +102,7 @@
           </select></label>       
         </div>
         <div class="large-6 columns left">
-          <label>Search Text:<input type="text" name="text" placeholder="Enter search text" value="{{text}}" /></label>
+          <label>Search Description:<input type="text" name="text" placeholder="Enter search text" value="{{text}}" /></label>
         </div>
       </div>
       <div class="row">

@@ -16,6 +16,7 @@
 
 """This module contains all of the logo configuration functions of ssd"""
 
+import logging
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
@@ -26,6 +27,10 @@ from ssd.main.models import Config_Logo
 from ssd.main.forms import LogoConfigForm
 
 
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
+
+
 @login_required
 @staff_member_required
 def logo_config(request):
@@ -33,11 +38,14 @@ def logo_config(request):
  
     """
 
+    logger.debug('%s view being executed.' % 'logo.logo_config')
+
     # If this is a POST, then validate the form and save the data
     if request.method == 'POST':
 
         # Check the form elements
         form = LogoConfigForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('LogoConfigForm',form))
 
         if form.is_valid():
             # Obtain the cleaned data
@@ -57,7 +65,6 @@ def logo_config(request):
         form = LogoConfigForm
 
     # Obtain the email config
-
     logo_config = Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('url','logo_enabled')
 
     # Print the page

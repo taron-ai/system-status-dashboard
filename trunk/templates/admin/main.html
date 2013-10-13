@@ -41,7 +41,41 @@
         <p>It looks like you don't have any services defined - you should <a href="/admin/services">add</a> some.</p>
       </div>
     </div>
-	</div>
+	
+    <div class="row">
+      <div class="large-12 columns">
+        <b>Memcached Stats</b>
+
+        {% if m_stats %}
+
+          <table class="responsive">
+
+            {# First the headings #}
+            <tr>
+            {% for item in m_stats.0 %}
+              <th>{{item}}</th>
+            {% endfor %}
+            </tr>
+            
+            {# Now the stats #}
+            {% for key,value in m_stats.1.items %}
+            <tr>
+              <td>{{key}}</td>
+              {% for stat in value %}
+              <td>{{stat}}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+           </table>
+        {% else %}
+        It looks like you are not running memcached
+        {% endif %}
+      </div>
+    </div>
+
+
+
+  </div>
 
 </div>
 {% endblock %}

@@ -49,19 +49,19 @@ def main(request):
     # Table Headings, will look like this:
     # ['Statistic','Server1','Server2','Server3']
     headings = ['Statistic']
-
     # Table rows, will look like this:
     # {
     #   'auth_cmd':[2,3,4],
     #   'curr_connections':[7,3,2]
     # }
     rows = {}
-
     m_stats = [headings,rows]
 
+    cache_settings = None
     # Note, headings and rows should have the same number of elements
     # or something is wrong
     if hasattr(settings, 'CACHES'):
+        cache_settings = settings.CACHES
         try:
             for c in settings.CACHES:
                 stats = get_cache(c)._cache.get_stats()
@@ -93,6 +93,7 @@ def main(request):
        {
           'title':'System Status Dashboard | Admin',
           'version':get_version,
+          'cache_settings':cache_settings,
           'm_stats':m_stats,
           'breadcrumbs':{'Admin':'/admin'}
        },

@@ -28,7 +28,7 @@
     <div class="row">
       <div class="large-12 columns">
         <h4>SSD Administration</h4>
-        <p>Use this console to manage the different SSD configuration options.</p>
+        <p>Use this administration console to manage all configuration options for SSD.  The options at the left affect the user facing functionality of SSD and the information below is for administrative purposes.</p>
         <hr><br>
       </div>
     </div>
@@ -41,14 +41,44 @@
         <p>It looks like you don't have any services defined - you should <a href="/admin/services">add</a> some.</p>
       </div>
     </div>
+
+
+    <div class="row">
+      <div class="large-12 columns">
+        <hr>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        {% if cache_settings %}
+          <h5>Cache Settings</h5>
+          <p>
+            {% for cache,details in cache_settings.items %}
+            Name: <b>{{cache}}</b>
+            <br>
+            Backend: <b>{{details.BACKEND}}</b>
+            <br>
+            {% endfor %}
+            </p>
+        {% else %}
+        <p>No Cache Defined</p>
+        {% endif %}
+      </div>
+    </div>
 	
     <div class="row">
       <div class="large-12 columns">
-        <b>Memcached Stats</b>
 
         {% if m_stats %}
 
           <table class="responsive">
+
+            <tr>
+              <th colspan="100%">
+                MEMCACHED SETTINGS
+              </th>
+            </tr>
 
             {# First the headings #}
             <tr>
@@ -68,7 +98,7 @@
             {% endfor %}
            </table>
         {% else %}
-        It looks like you are not running memcached
+        <p>It looks like you are not running memcached - please consider setting it up.</p>
         {% endif %}
       </div>
     </div>

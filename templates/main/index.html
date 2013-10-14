@@ -207,7 +207,7 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <span class="heading">Detailed Service Disruption Timeline:</span><div class="hr"></div>
+    <span class="heading">Active Service Disruption Timeline:</span><div class="hr"></div>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
        <a href="/i_detail?id={{row.id}}"><span class="genericon genericon-next genericon_container_next" title="More information"></span></a>
@@ -225,7 +225,7 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <span class="heading">Detailed Maintenance Timeline:</span><div class="hr"></div>
+    <span class="heading">Active Maintenance Timeline:</span><div class="hr"></div>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
        <a href="/m_detail?id={{row.id}}"><span class="genericon genericon-next genericon_container_next" title="More information"></span></a>
@@ -243,7 +243,7 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <span class="heading">Historical Summary Status:</span>
+    <span class="heading">Summary Status:</span>
     <a href="#" data-dropdown="histsumdrop"><span class="genericon genericon-help genericon_container_help" title="Dashboard color indicator key"></span></a>
     <div id="histsumdrop" class="f-dropdown content histsumdrop" data-dropdown-content>
       <h5>Historical Summary Status</h5><br>

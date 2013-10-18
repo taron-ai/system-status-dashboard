@@ -59,9 +59,9 @@
             <td>{{incident.id}}</td>
             <td>{{incident.start|date:"Y-m-d H:i:s e"}}</td>
             <td>{{incident.description}}</td>
-            <td><a href="/i_detail?id={{incident.id}}"><div class="genericon genericon-summary genericon_container"></div></a></td>
-            <td><a href="/admin/i_delete?id={{incident.id}}"><div class="genericon genericon-trash genericon_container"></div></a></td>
-            <td><a href="/admin/i_update?id={{incident.id}}"><div class="genericon genericon-edit genericon_container"></div></a></td>
+            <td><a href="/i_detail?id={{incident.id}}"><i class="foundicon-gen-page"></a></td>
+            <td><a href="/admin/i_delete?id={{incident.id}}"><i class="foundicon-gen-trash"></a></td>
+            <td><a href="/admin/i_update?id={{incident.id}}"><i class="foundicon-gen-edit"></a></td>
           </tr>
           {% endfor %}
         </table>

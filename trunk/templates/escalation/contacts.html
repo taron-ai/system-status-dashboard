@@ -44,14 +44,45 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Current Contacts and Order</span><br><br>
+        <span class="radius secondary label">Current Contacts and Order</span>
+        <a href="#" data-dropdown="keydrop"><span class="foundicon-acc-key foundicon_container_key" title="Contacts key"></span></a>
+        
+
+        <div id="keydrop" class="f-dropdown content keydrop" data-dropdown-content>
+          <div>
+            <h5>Contacts Key</h5>
+            <div class="spacer_small"></div>
+          </div>
+          <div>
+            <span class="legend"><i class="foundicon-gen-up-arrow"></i>&nbsp;Move an escalation contact up.</span>
+            <div class="spacer_small"></div>
+          </div>
+          <div>
+            <span class="legend"><i class="foundicon-gen-down-arrow"></i>&nbsp;Move an escalation contact down.</span>
+            <div class="spacer_small"></div>
+          </div>
+          <div>
+            <span class="legend"><i class="foundicon-gen-checkmark"></i>&nbsp;Show an escalation contact that is currently hidden.</span>
+            <div class="spacer_small"></div>
+          </div>
+          <div>
+            <span class="legend"><i class="foundicon-gen-remove"></i>&nbsp;Hide an escalation contact that is currently being shown.</span>
+            <div class="spacer_small"></div>
+          </div>
+          <div>
+            <span class="legend"><i class="foundicon-gen-trash"></i>&nbsp;Delete an escalation contact.</span>
+            <div class="spacer_small"></div>
+          </div>
+        </div>
+
+        <br><br>
       </div>
     </div>
 
     <div class="row">
       <div class="large-12 columns">
         {% if contacts %}
-        <table>
+        <table class="responsive">
           <tr>
            <th>Order</th>
            <th>Name</th>
@@ -105,19 +136,18 @@
               </span>
             </td>
             <td>
-              <a href="/admin/contact_switch?id={{row.id}}&action=up" title="move up"><div class="genericon genericon-uparrow genericon_container"></div></a>
-              <br>
-              <a href="/admin/contact_switch?id={{row.id}}&action=down" title="move down"><div class="genericon genericon-downarrow genericon_container"></div></a>
+              <a href="/admin/contact_switch?id={{row.id}}&action=up" title="move up"><i class="foundicon-gen-up-arrow"></i></a>
+              <a href="/admin/contact_switch?id={{row.id}}&action=down" title="move down"><i class="foundicon-gen-down-arrow"></i></a>
             </td>
             <td class="genericon_container">
              {% if row.hidden %}
-              <a href="/admin/contact_switch?id={{row.id}}&action=show" title="show"><div class="genericon genericon-hide genericon_container"></div></a>
+              <a href="/admin/contact_switch?id={{row.id}}&action=show" title="show"><i class="foundicon-gen-checkmark"></i></a>
              {% else %}
-              <a href="/admin/contact_switch?id={{row.id}}&action=hide" title="hide"><div class="genericon genericon-show genericon_container"></div></a>
+              <a href="/admin/contact_switch?id={{row.id}}&action=hide" title="hide"><i class="foundicon-gen-remove"></i></a>
              {% endif %}
             </td>
             <td class="genericon_container">
-              <a href="/admin/contact_delete?id={{row.id}}"><div class="genericon genericon-trash genericon_container"></div></a>
+              <a href="/admin/contact_delete?id={{row.id}}"><i class="foundicon-gen-trash"></i></div></a>
             </td>
           </tr>
           {% endfor %}
@@ -136,19 +166,14 @@
     <div class="row">
       <div class="large-12 columns {% if form.service.errors %}error{% endif %}">
         <span class="radius secondary label">Add Escalation Contacts</span><br>
-        <div class="sublabel_container"><span class="sublabel">Escalation contacts added here can be shown/hidden on the escalation contacts page.  Contacts are initially created in a hidden state so you will need to show them after creation.  You are permitted to enter up to 10 escalation contacts (shown + hidden)</span></div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="large-12 columns">
-       <label>Full Name</label>
+        <div class="sublabel_container"><span class="sublabel">Escalation contacts added here can be shown/hidden on the escalation contacts page.  Contacts are initially created in a hidden state so you will need to show them after creation.</span></div>
       </div>
     </div>
 
     <div class="row">
       <div class="large-8 columns {% if form.name.errors %}error{% endif %}">
-        <input name="name" type="text" value="{% if form.name.data %}{{form.name.data}}{% endif %}" placeholder="Enter the contact name">
+        <label>Full Name</label>
+        <input name="name" type="text" value="{% if form.name.data %}{{form.name.data}}{% endif %}" maxlength="50" placeholder="Enter the contact name">
         {% if form.name.errors %}
         <small class="error">
           {% for error in form.name.errors %}{{error}}{% endfor %}
@@ -158,14 +183,11 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns">
-       <label>Contact Details</label>
-      </div>
-    </div>
-          
-    <div class="row">
-      <div class="large-8 columns {% if form.contact_details.errors %}error{% endif %}">
-        <textarea name="contact_details" placeholder="Enter contact details">{% if form.contact_details.data %}{{form.contact_details.data}}{% endif %}</textarea>
+      <div class="large-12 columns {% if form.contact_details.errors %}error{% endif %}">
+        <label>Contact Details
+          &nbsp;<span id="contact_details_counter" class="counter"></span>
+        </label>
+        <textarea id="contact_details" name="contact_details" maxlength="200" placeholder="Enter contact details">{% if form.contact_details.data %}{{form.contact_details.data}}{% endif %}</textarea>
         {% if form.contact_details.errors %}
         <small class="error">
           {% for error in form.contact_details.errors %}{{error}}{% endfor %}
@@ -176,13 +198,21 @@
          
     <div class="row">
       <div class="large-12 columns">
-        <input type="submit" class="small button secondary" value="add"/>
+        <input type="submit" class="small button secondary" value="save"/>
       </div>
     </div>
     </form> 
 
   </div>
 </div>
+
+
+<script>
+  // Textarea counters
+  $("#contact_details").keyup(function(){
+    $("#contact_details_counter").text("Characters remaining: " + (160 - $(this).val().length));
+  });
+</script>
 
 
 {% endblock %}

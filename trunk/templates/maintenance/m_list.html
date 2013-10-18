@@ -60,10 +60,10 @@
             <td>{{maintenance.id}}</td>
             <td>{{maintenance.start|date:"Y-m-d H:i:s e"}}</td>
             <td>{{maintenance.description}}</td>
-            <td><a href="/m_detail?id={{maintenance.id}}"><div class="genericon genericon-summary genericon_container"></div></a></td>
-            <td><a href="/admin/m_delete?id={{maintenance.id}}"><div class="genericon genericon-trash genericon_container"></div></a></td>
-            <td>{% if maintenance.event_email__email__email and email_enabled %}<a href="/admin/m_email?id={{maintenance.id}}" title="Send email reminder to {{maintenance.event_email__email__email}}"><div class="genericon genericon-mail genericon_container"></div></a>{% endif %}</td>
-            <td><a href="/admin/m_update?id={{maintenance.id}}"><div class="genericon genericon-edit genericon_container"></div></a></td>
+            <td><a href="/m_detail?id={{maintenance.id}}"><i class="foundicon-gen-page"></a></td>
+            <td><a href="/admin/m_delete?id={{maintenance.id}}"><i class="foundicon-gen-trash"></a></td>
+            <td>{% if maintenance.event_email__email__email and email_enabled %}<a href="/admin/m_email?id={{maintenance.id}}" title="Send email reminder to {{maintenance.event_email__email__email}}"><i class="foundicon-gen-mail"></a>{% endif %}</td>
+            <td><a href="/admin/m_update?id={{maintenance.id}}"><i class="foundicon-gen-edit"></a></td>
           </tr>
           {% endfor %}
         </table>

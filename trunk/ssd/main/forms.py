@@ -80,12 +80,12 @@ class EmailConfigForm(forms.Form):
 
     enabled = forms.BooleanField(required=False)
     email_format = forms.BooleanField(required=False)
-    from_address = forms.EmailField(required=False,max_length=50)
-    text_pager = forms.EmailField(required=False,max_length=50)
-    incident_greeting = forms.CharField(required=False)
-    incident_update = forms.CharField(required=False)
-    maintenance_greeting = forms.CharField(required=False)
-    maintenance_update = forms.CharField(required=False)
+    from_address = forms.EmailField(required=False, max_length=50)
+    text_pager = forms.EmailField(required=False, max_length=50)
+    incident_greeting = forms.CharField(required=False, max_length=1000)
+    incident_update = forms.CharField(required=False, max_length=1000)
+    maintenance_greeting = forms.CharField(required=False, max_length=1000)
+    maintenance_update = forms.CharField(required=False, max_length=1000)
 
     # Override the form clean method - there is some special logic to validate 
 
@@ -146,9 +146,9 @@ class EmailConfigForm(forms.Form):
 class MessagesConfigForm(forms.Form):
     """Form for modifying the admin messages configuration"""
 
-    main = forms.CharField(required=False)
+    main = forms.CharField(required=False, max_length=1000)
     main_enabled = forms.BooleanField(required=False)
-    alert = forms.CharField(required=False)
+    alert = forms.CharField(required=False, max_length=1000)
     alert_enabled = forms.BooleanField(required=False)
 
 
@@ -179,7 +179,7 @@ class MessagesConfigForm(forms.Form):
 class LogoConfigForm(forms.Form):
     """Form for modifying the admin logo configuration"""
 
-    url = forms.CharField(required=False)
+    url = forms.CharField(required=False, max_length=250)
     logo_enabled = forms.BooleanField(required=False)
 
 
@@ -202,7 +202,7 @@ class LogoConfigForm(forms.Form):
 class SystemurlConfigForm(forms.Form):
     """Form for modifying the admin system url configuration"""
 
-    url = forms.URLField(required=False)
+    url = forms.URLField(required=False, max_length=250)
     url_enabled = forms.BooleanField(required=False)
 
 
@@ -215,7 +215,7 @@ class SystemurlConfigForm(forms.Form):
         # Cannot enabled the logo if there is no url
         if url_enabled and not url:
             # Make sure its an integer
-            self._errors["url"] = self.error_class(['Please enter a system url'])
+            self._errors["url"] = self.error_class(['Please enter a valid URL'])
             self._errors["url_enabled"] = self.error_class(['Cannot enable the system url without a url defined'])
      
         # Return the full collection of cleaned data
@@ -227,11 +227,11 @@ class IreportConfigForm(forms.Form):
 
     enabled = forms.BooleanField(required=False)
     email_enabled = forms.BooleanField(required=False)
-    instructions = forms.CharField(required=True)
-    submit_message = forms.CharField(required=True)
-    upload_path = forms.CharField(required=False)
+    instructions = forms.CharField(required=True, max_length=1000)
+    submit_message = forms.CharField(required=True, max_length=100)
+    upload_path = forms.CharField(required=False, max_length=100)
     upload_enabled = forms.BooleanField(required=False)
-    file_size = forms.IntegerField(required=False)
+    file_size = forms.IntegerField(required=True)
 
 
     # Override the form clean method - there is some special logic to validate 
@@ -281,7 +281,7 @@ class EscalationConfigForm(forms.Form):
     """Form for modifying the admin escalation configuration"""
 
     enabled = forms.BooleanField(required=False)
-    instructions = forms.CharField(required=True)
+    instructions = forms.CharField(required=False, max_length=1000)
 
 
 class DetailForm(forms.Form):
@@ -305,58 +305,24 @@ class UpdateTZForm(forms.Form):
 class JumpToForm(forms.Form):
     """Form for setting the calendar view date"""
 
-    jump_to = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
+    jump_to = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
 
 
 class ReportIncidentForm(forms.Form):
     """Form for reporting an incident (by a user)"""
 
-    name = forms.CharField(required=True,max_length=50)
-    email = forms.EmailField(required=True,max_length=50)
-    detail = forms.CharField(required=True,max_length=160)
-    extra = forms.CharField(required=False,max_length=1000)
-    screenshot1 = forms.ImageField(required=False,validators=[file_size])
-    screenshot2 = forms.ImageField(required=False,validators=[file_size])
-
-
-class SearchForm(forms.Form):
-    """Form for searching through events
-
-    """
-
-    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    status = forms.CharField(required=False)
-    text = forms.CharField(required=False)
-
-
-class GSearchForm(forms.Form):
-    """Form for searching through incidents from the summary graph
-
-    """
-
-    date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    type = forms.CharField(required=True)
-
-
-class MSearchForm(forms.Form):
-    """Form for searching through scheduled maintenance
-
-    """
-
-    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    text = forms.CharField(required=False)
+    name = forms.CharField(required=True, max_length=50)
+    email = forms.EmailField(required=True, max_length=50)
+    detail = forms.CharField(required=True, max_length=160)
+    extra = forms.CharField(required=False, max_length=1000)
+    screenshot1 = forms.ImageField(required=False, validators=[file_size])
+    screenshot2 = forms.ImageField(required=False, validators=[file_size])
 
 
 class AddRecipientForm(forms.Form):
     """Form for adding email recipients"""
 
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=True, max_length=50)
 
 
 class DeleteRecipientForm(forms.Form):
@@ -381,22 +347,29 @@ class ListForm(forms.Form):
 class AddContactForm(forms.Form):
     """Form for adding escalation contacts"""
 
-    name = forms.CharField(required=True)
-    contact_details = forms.CharField(required=True)
+    name = forms.CharField(required=True, max_length=50)
+    contact_details = forms.CharField(required=True, max_length=200)
 
 
 class ModifyContactForm(forms.Form):
     """Form for modifying contacts"""
 
     pk = forms.IntegerField(required=True)
-    value = forms.CharField(required=True)
+    value = forms.CharField(required=True) # This is either the contact name or contact details.
     name = forms.CharField(required=True)
+
+
+class SwitchContactForm(forms.Form):
+    """Form for switching contacts around or hiding/unhiding them"""
+
+    id = forms.IntegerField(required=True)
+    action = forms.CharField(required=True)
 
 
 class AddServiceForm(forms.Form):
     """Form for adding services"""
 
-    service = forms.CharField(required=True)
+    service = forms.CharField(required=True, max_length=50)
 
 
 class RemoveServiceForm(forms.Form):
@@ -409,14 +382,7 @@ class ModifyServiceForm(forms.Form):
     """Form for modifying services"""
 
     pk = forms.IntegerField(required=True)
-    value = forms.CharField(required=True)
-
-
-class SwitchContactForm(forms.Form):
-    """Form for switching contacts around or hiding/unhiding them"""
-
-    id = forms.IntegerField(required=True)
-    action = forms.CharField(required=True)
+    value = forms.CharField(required=True, max_length=50)
 
 
 class RemoveContactForm(forms.Form):
@@ -427,21 +393,30 @@ class RemoveContactForm(forms.Form):
 
 class SearchForm(forms.Form):
     """Form for performing a custom search"""
-    start = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
-    end = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
+    start = forms.DateField(required=False, input_formats=['%Y-%m-%d'])
+    end = forms.DateField(required=False, input_formats=['%Y-%m-%d'])
     type = forms.CharField(required=False)
-    text = forms.CharField(required=False)
+    text = forms.CharField(required=False, max_length=50)
     page = forms.IntegerField(required=False)
+
+
+class GSearchForm(forms.Form):
+    """Form for searching through incidents from the summary graph
+
+    """
+
+    date = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
+    type = forms.CharField(required=True)
 
 
 class AddIncidentForm(forms.Form):
     """Form for adding a new incident (by an administrator)"""
 
-    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    e_date = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
-    e_time = forms.TimeField(required=False,input_formats=['%H:%M'])
-    description = forms.CharField(required=True)
+    s_date = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
+    s_time = forms.TimeField(required=True, input_formats=['%H:%M'])
+    e_date = forms.DateField(required=False, input_formats=['%Y-%m-%d'])
+    e_time = forms.TimeField(required=False, input_formats=['%H:%M'])
+    description = forms.CharField(required=True, max_length=1000)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
     email_id = forms.IntegerField(required=False)
@@ -504,12 +479,12 @@ class UpdateIncidentForm(forms.Form):
     """Form for updating an existing incident"""
 
     id = forms.IntegerField()
-    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    e_date = forms.DateField(required=False,input_formats=['%Y-%m-%d'])
-    e_time = forms.TimeField(required=False,input_formats=['%H:%M'])
+    s_date = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
+    s_time = forms.TimeField(required=True, input_formats=['%H:%M'])
+    e_date = forms.DateField(required=False, input_formats=['%Y-%m-%d'])
+    e_time = forms.TimeField(required=False, input_formats=['%H:%M'])
     description = forms.CharField(required=True)
-    update = forms.CharField(required=False)
+    update = forms.CharField(required=False, max_length=1000)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
     email_id = forms.IntegerField(required=False)
@@ -577,13 +552,13 @@ class EmailMaintenanceForm(forms.Form):
 class AddMaintenanceForm(forms.Form):
     """Form for adding maintenance"""
 
-    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    description = forms.CharField(required=True)
-    impact = forms.CharField(required=False)
-    coordinator = forms.CharField(required=False)
+    s_date = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
+    s_time = forms.TimeField(required=True, input_formats=['%H:%M'])
+    e_date = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
+    e_time = forms.TimeField(required=True, input_formats=['%H:%M'])
+    description = forms.CharField(required=True, max_length=1000)
+    impact = forms.CharField(required=False, max_length=1000)
+    coordinator = forms.CharField(required=False, max_length=250)
     service = MultipleServiceField()
     broadcast = forms.BooleanField(required=False)
     email_id = forms.IntegerField(required=False)
@@ -634,16 +609,16 @@ class AddMaintenanceForm(forms.Form):
 class UpdateMaintenanceForm(forms.Form):
     """Form for updating maintenance"""
 
-    s_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    s_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    e_date = forms.DateField(required=True,input_formats=['%Y-%m-%d'])
-    e_time = forms.TimeField(required=True,input_formats=['%H:%M'])
-    description = forms.CharField(required=True)
-    impact = forms.CharField(required=False)
-    coordinator = forms.CharField(required=False)
-    update = forms.CharField(required=False)
-    service = MultipleServiceField()
     id = forms.IntegerField(required=True)
+    s_date = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
+    s_time = forms.TimeField(required=True, input_formats=['%H:%M'])
+    e_date = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
+    e_time = forms.TimeField(required=True, input_formats=['%H:%M'])
+    description = forms.CharField(required=True, max_length=1000)
+    impact = forms.CharField(required=False, max_length=1000)
+    coordinator = forms.CharField(required=False, max_length=250)
+    update = forms.CharField(required=False, max_length=1000)
+    service = MultipleServiceField()
     started = forms.CharField(required=False)
     completed = forms.CharField(required=False)
     broadcast = forms.BooleanField(required=False)
@@ -696,3 +671,7 @@ class UpdateMaintenanceForm(forms.Form):
 
         # Return the full collection of cleaned data
         return cleaned_data
+
+
+
+        

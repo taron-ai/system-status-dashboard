@@ -21,7 +21,7 @@
         - All email addresses will have a max_length of 50 characters
         - All date fields will have blank=False (cannot be blank)
         - All boolean fields will have blank=False (cannot be blank)
-        - All fields that are allowed to be blank will have null=True (stored in DB as null when blank)
+        - All fields that are allowed to be blank will have null=False (stored in DB as empty string)
         - Form validation will match the max_length restriction in all cases
 """
 
@@ -38,13 +38,13 @@ from datetime import datetime
 class Service(models.Model):
     """Services that will be monitored"""
 
-    service_name = models.CharField(max_length=50, unique=True,null=False,blank=False)
+    service_name = models.CharField(blank=False, max_length=50, unique=True)
 
 
 class Email(models.Model):
     """Email addresses that will be used for alerting"""
 
-    email = models.CharField(max_length=100,unique=True,null=False,blank=False)
+    email = models.CharField(blank=False, max_length=100, unique=True)
 
 
 class Type(models.Model):
@@ -77,10 +77,10 @@ class Event(models.Model):
     """Events that have been logged"""
 
     type = models.ForeignKey(Type)
-    date = models.DateTimeField(null=False,blank=False,auto_now=True)
-    description = models.CharField(blank=False,max_length=1000)
-    start = models.DateTimeField(null=False)
-    end = models.DateTimeField(null=True)
+    date = models.DateTimeField(blank=False, auto_now=True)
+    description = models.CharField(blank=False, max_length=1000)
+    start = models.DateTimeField(blank=False)
+    end = models.DateTimeField(null=False, blank=True)
     status = models.ForeignKey(Status)
     user = models.ForeignKey(User)
 
@@ -99,7 +99,7 @@ class Event_Impact(models.Model):
     """
 
     event = models.ForeignKey(Event, unique=True)
-    impact = models.CharField(max_length=1000)
+    impact = models.CharField(blank=False, max_length=1000)
 
 
 class Event_Coordinator(models.Model):
@@ -109,7 +109,7 @@ class Event_Coordinator(models.Model):
     """
 
     event = models.ForeignKey(Event, unique=True)
-    coordinator = models.CharField(max_length=1000)
+    coordinator = models.CharField(blank=False, max_length=250)
 
 
 class Event_Email(models.Model):
@@ -126,22 +126,18 @@ class Event_Update(models.Model):
     """Updates to Events"""
 
     event = models.ForeignKey(Event)
-    date = models.DateTimeField(null=False,blank=False,auto_now=True)
-    update = models.CharField(max_length=1000)
+    date = models.DateTimeField(blank=False, auto_now=True)
+    update = models.CharField(blank=False, max_length=1000)
     user = models.ForeignKey(User)
 
 
 class Escalation(models.Model):
     """Escalation Contacts"""
 
-    order = models.PositiveIntegerField(null=False,blank=False)
-    name = models.CharField(null=False,blank=False,max_length=50)
-    contact_details = models.CharField(null=False,blank=False,max_length=160)
+    order = models.PositiveIntegerField(blank=False)
+    name = models.CharField(blank=False, max_length=50)
+    contact_details = models.CharField(blank=False, max_length=200)
     hidden = models.BooleanField(blank=False)
-
-    class Meta:
-        unique_together = ['name','contact_details']
-
 
 
 #-- Configuration Models -- #
@@ -162,12 +158,12 @@ class Config_Email(models.Model):
 
     enabled = models.BooleanField(blank=False)
     email_format = models.BooleanField(blank=False)
-    from_address = models.CharField(blank=False,max_length=50)
-    text_pager = models.CharField(blank=False,max_length=50)
-    incident_greeting = models.CharField(null=False,blank=False,max_length=1000)
-    incident_update = models.CharField(null=False,blank=False,max_length=1000)
-    maintenance_greeting = models.CharField(null=False,blank=False,max_length=1000)
-    maintenance_update = models.CharField(null=False,blank=False,max_length=1000)
+    from_address = models.CharField(null=False, blank=True, max_length=50)
+    text_pager = models.CharField(null=False, blank=True, max_length=50)
+    incident_greeting = models.CharField(null=False, blank=True, max_length=1000)
+    incident_update = models.CharField(null=False, blank=True, max_length=1000)
+    maintenance_greeting = models.CharField(null=False, blank=True, max_length=1000)
+    maintenance_update = models.CharField(null=False, blank=True, max_length=1000)
 
 
 class Config_Message(models.Model):
@@ -175,9 +171,9 @@ class Config_Message(models.Model):
 
     """
 
-    main = models.CharField(null=False,blank=False,max_length=1000)
+    main = models.CharField(null=False, blank=True, max_length=1000)
     main_enabled = models.BooleanField(blank=False)
-    alert = models.CharField(null=False,blank=False,max_length=1000)
+    alert = models.CharField(null=False, blank=True, max_length=1000)
     alert_enabled = models.BooleanField(blank=False)
 
 
@@ -186,7 +182,7 @@ class Config_Logo(models.Model):
 
     """
 
-    url = models.CharField(null=False,blank=False,max_length=1000)
+    url = models.CharField(null=False, blank=True, max_length=1000)
     logo_enabled = models.BooleanField(blank=False)
 
 
@@ -196,7 +192,7 @@ class Config_Escalation(models.Model):
     """
 
     enabled = models.BooleanField(blank=False)
-    instructions = models.CharField(null=False,blank=False,max_length=1000)
+    instructions = models.CharField(null=False, blank=True, max_length=1000)
 
 
 class Config_Systemurl(models.Model):
@@ -204,7 +200,7 @@ class Config_Systemurl(models.Model):
 
     """
 
-    url = models.CharField(null=False,blank=False,max_length=1000)
+    url = models.CharField(null=False, blank=True, max_length=250)
     url_enabled = models.BooleanField(blank=False)
 
 
@@ -215,11 +211,11 @@ class Config_Ireport(models.Model):
 
     enabled = models.BooleanField(blank=False)
     email_enabled = models.BooleanField(blank=False)
-    instructions = models.CharField(null=False,blank=False,max_length=500)
-    submit_message = models.CharField(null=False,blank=False,max_length=500)
+    instructions = models.CharField(blank=False, max_length=1000)
+    submit_message = models.CharField(blank=False, max_length=100)
     upload_enabled = models.BooleanField(blank=False)
-    upload_path = models.CharField(null=False,blank=True,max_length=500)
-    file_size = models.IntegerField(null=False,blank=True,max_length=5)
+    upload_path = models.CharField(null=False, blank=True, max_length=100)
+    file_size = models.IntegerField(blank=False, max_length=5)
 
 
 class Ireport(models.Model):
@@ -245,11 +241,11 @@ class Ireport(models.Model):
         return '%s/%s%s' % (file_path,file_name,extension)
 
     date = models.DateTimeField(blank=False)
-    name = models.CharField(blank=False,max_length=50)
-    email = models.CharField(blank=False,max_length=50)
-    detail = models.CharField(blank=False,max_length=160)
-    extra = models.CharField(null=True,blank=True,max_length=1000)
-    screenshot1 = models.ImageField(null=True,blank=True,storage=fs,upload_to=_upload_to)
-    screenshot2 = models.ImageField(null=True,blank=True,storage=fs,upload_to=_upload_to)
+    name = models.CharField(blank=False, max_length=50)
+    email = models.CharField(blank=False, max_length=50)
+    detail = models.CharField(blank=False, max_length=160)
+    extra = models.CharField(null=False, blank=True, max_length=1000)
+    screenshot1 = models.ImageField(null=False, blank=True, storage=fs, upload_to=_upload_to)
+    screenshot2 = models.ImageField(null=False, blank=True, storage=fs, upload_to=_upload_to)
 
     

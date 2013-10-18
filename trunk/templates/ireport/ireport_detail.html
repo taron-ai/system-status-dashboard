@@ -36,7 +36,7 @@
  
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Incident Report ID:</span><br>
+        <label>Incident Report ID:</label>
         <div class="sublabel_container"><span class="sublabel">{{detail.0.id}}</span></div>
       </div>
     </div>
@@ -45,7 +45,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Report Date:</span><br>
+        <label>Report Date:</label>
         <div class="sublabel_container"><span class="sublabel">{{detail.0.date|date:"Y-m-d H:i:s e"}}</span></div>
       </div>
     </div>
@@ -54,7 +54,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Report Submitted By:</span><br>
+        <label>Report Submitted By:</label>
         <div class="sublabel_container"><span class="sublabel">{{detail.0.name}}</span></div>
       </div>
     </div>
@@ -63,7 +63,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Reporter Email Address:</span><br>
+        <label>Reporter Email Address:</label>
         <div class="sublabel_container"><span class="sublabel">{{detail.0.email}}</span></div>
       </div>
     </div>
@@ -72,7 +72,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Incident Report Detail:</span><br>
+        <label>Incident Report Detail:</label>
         <div class="sublabel_container"><span class="sublabel">{{detail.0.detail}}</span></div>
       </div>
     </div>
@@ -81,7 +81,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Additional Information Provided:</span><br>
+        <label>Additional Information Provided:</label>
         <div class="sublabel_container"><span class="sublabel">{% if detail.0.extra %}{{detail.0.extra}}{% else %}No additional information provided.{% endif %}</span></div>
       </div>
     </div>
@@ -90,7 +90,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Screenshot 1:</span><br>
+        <label>Screenshot 1:</label>
         <div class="sublabel_container"><span class="sublabel">{% if detail.0.screenshot1 %}<img src="/uploads/{{detail.0.screenshot1}}">{% else %}No screenshot provided.{% endif %}</span></div>
       </div>
     </div>
@@ -99,12 +99,12 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Screenshot 2:</span><br>
+        <label>Screenshot 2:</label>
         <div class="sublabel_container"><span class="sublabel">{% if detail.0.screenshot2 %}<img src="/uploads/{{detail.0.screenshot2}}">{% else %}No screenshot provided.{% endif %}</span></div>
       </div>
     </div>
 
-    <div class="spacer_medium"></div>
+    <div class="spacer_small"></div>
 
   </div>
 </div>

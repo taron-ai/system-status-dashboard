@@ -49,9 +49,9 @@
 		
 		<div class="row">
 			<div class="large-8 columns {% if form.url.errors %}error{% endif %}">
-		 		<input type="text" name="url" placeholder="Enter a logo url" value="{% if form.url.data %}{{form.url.data}}{% else %}{{logo_config.0.url}}{% endif %}" />
+		 		<input type="text" name="url" maxlength="250" placeholder="Enter a logo url" value="{% if form.url.data %}{{form.url.data}}{% else %}{{logo_config.0.url}}{% endif %}" />
 		    {% if form.url.errors %}
-        <span class="error">{% for error in form.url.errors %}{{error}}<br>{% endfor %}<br></span>
+        <span class="err">{% for error in form.url.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
 		  </div>
 		</div>
@@ -70,7 +70,7 @@
        <label><input type="checkbox" name="logo_enabled" {% if form.logo_enabled.data %}checked{% else %}{% if logo_config.0.logo_enabled %}checked{% endif %}{% endif %} />
         Enabled</label>
         {% if form.logo_enabled.errors %}
-        <span class="error">{% for error in form.logo_enabled.errors %}{{error}}<br>{% endfor %}<br></span>
+        <span class="err">{% for error in form.logo_enabled.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
 			</div>
 		</div>

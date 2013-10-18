@@ -66,7 +66,7 @@
         <a href="?page={{events.next_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&raquo;</a>
       {% endif %}
 
-      &nbsp;&nbsp;&nbsp;<a href="#" title="Search for specific events"><span id="search_button" class="genericon genericon-search genericon_container_search"></span></a>
+      &nbsp;&nbsp;&nbsp;<a href="#" title="Search for specific events"><span id="search_button" class="foundicon-gen-search foundicon_container_search"></span></a>
     </span>
   </div>
 </div>
@@ -82,13 +82,13 @@
         <div class="large-6 columns {% if form.start.errors %}error{% endif %}">
           <label>Date From:<input type="text" name="start" id="start" class="date" value="{% if form.start.data %}{{form.start.data}}{% else %}{{start|date:"Y-m-d"}}{% endif %}"/></label>
           {% if form.start.errors %}
-          <span class="error">{% for error in form.start.errors %}{{error}}<br>{% endfor %}<br></span>
+          <span class="err">{% for error in form.start.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}            
         </div>
         <div class="large-6 columns left {% if form.end.errors %}error{% endif %}">
           <label>Date To:<input type="text" name="end" id="end" class="date" value="{% if form.end.data %}{{form.end.data}}{% else %}{{end|date:"Y-m-d"}}{% endif %}"/></label>
           {% if form.end.errors %}
-          <span class="error">{% for error in form.end.errors %}{{error}}<br>{% endfor %}<br></span>
+          <span class="err">{% for error in form.end.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}            
         </div>
       </div>
@@ -102,7 +102,10 @@
           </select></label>       
         </div>
         <div class="large-6 columns left">
-          <label>Search Description:<input type="text" name="text" placeholder="Enter search text" value="{{text}}" /></label>
+          <label>Search Description:<input type="text" name="text" maxlength="50" placeholder="Enter search text" value="{{text}}" /></label>
+          {% if form.text.errors %}
+          <span class="err">{% for error in form.text.errors %}{{error}}<br>{% endfor %}<br></span>
+          {% endif %} 
         </div>
       </div>
       <div class="row">
@@ -139,7 +142,7 @@
         <td>{{event.end|date:"Y-m-d H:i:s e"}}</td>
         <td>{{event.status__status}}</td>
         <td>{{event.description|linebreaksbr}}</td>
-        <td>{% if event.type__type = 'incident' %}<a href="/i_detail?id={{event.id}}"><div class="genericon genericon-summary genericon_container"></div></a>{% else %}{% if event.type__type = 'maintenance' %}<a href="/m_detail?id={{event.id}}"><div class="genericon genericon-summary genericon_container"></div></a>{% endif %}{% endif %}</td>
+        <td>{% if event.type__type = 'incident' %}<a href="/i_detail?id={{event.id}}"><i class="foundicon-gen-page"></i></a>{% else %}{% if event.type__type = 'maintenance' %}<a href="/m_detail?id={{event.id}}"><i class="foundicon-gen-page"></i></a>{% endif %}{% endif %}</td>
       </tr>
       {% endfor %}
     </table>

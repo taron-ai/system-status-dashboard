@@ -149,11 +149,11 @@
 <script>
   // Textarea counters
   $("#detail").keyup(function(){
-    $("#detail_counter").text("Characters left: " + (160 - $(this).val().length));
+    $("#detail_counter").text("Characters remaining: " + (160 - $(this).val().length));
   });
 
   $("#extra").keyup(function(){
-    $("#extra_counter").text("Characters left: " + (1000 - $(this).val().length));
+    $("#extra_counter").text("Characters remaining: " + (1000 - $(this).val().length));
   });
 </script>
 

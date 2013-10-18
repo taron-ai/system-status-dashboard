@@ -27,7 +27,7 @@ from django.template import Context
 from django.utils import timezone as jtz
 from ssd.main.models import Email
 from ssd.main.models import Event
-from ssd.main.models import Config_Email
+from ssd.main.models import Config_Email, Config_Systemurl
 
 
 # Get an instance of the ssd logger
@@ -79,9 +79,9 @@ class email:
 
         # Obain the incident detail
         detail = Event.objects.filter(id=id).values(
-                                                    'event_time__start',
-                                                    'event_time__end',
-                                                    'event_description__description',
+                                                    'start',
+                                                    'end',
+                                                    'description',
                                                     'event_email__email__email',
                                                     'event_user__user__first_name',
                                                     'event_user__user__last_name'
@@ -169,12 +169,12 @@ class email:
 
         # Obain the incident detail
         detail = Event.objects.filter(id=id).values(
-                                                    'event_time__start',
-                                                    'event_time__end',
-                                                    'event_description__description',
+                                                    'start',
+                                                    'end',
+                                                    'description',
                                                     'event_impact__impact',
                                                     'event_coordinator__coordinator',
-                                                    'event_status__status'
+                                                    'status'
                                                     )
 
         # Which services were impacted

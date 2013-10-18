@@ -30,11 +30,26 @@
 
 <div class="row">
   <div class="large-12 columns">
+    <a href="#" data-dropdown="keydrop"><span class="foundicon-acc-key foundicon_container_key"></span></a>
+      <div id="keydrop" class="f-dropdown content keydrop" data-dropdown-content>
+        <div>
+          <h5>Escalation Key</h5>
+          <div class="spacer_small"></div>
+        </div>
+        <div>
+          <span class="legend">The escalation contact path is displayed in order of priority, from left to right.  The contact on the far left should be contacted first, and the contact on the far right last.</span>
+        </div>
+      </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
     {% if contacts %}
     <div class="section-container auto" data-section data-section-resized>
       {% for contact in contacts %}
       <section {% if forloop.first %}class="active"{% endif %}>
-        <p class="title" data-section-title><a href="#panel1">Escalate:<br>{{contact.name}}&nbsp;<span class="genericon genericon-rightarrow"></span></a></p>
+        <p class="title" data-section-title><a href="#panel1">Escalate:&nbsp;<span class="foundicon-genenc-right-arrow foundicon_container_escalate"></span><br>{{contact.name}}</a></p>
         <div class="content" data-section-content>
           <p> 
            <br>

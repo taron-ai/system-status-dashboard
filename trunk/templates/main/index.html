@@ -20,15 +20,6 @@
 
 {% block content %}
 
-<script type="text/javascript">
-
-   // Jump To
-   $(function() {
-      $("#jump_to").datepicker({dateFormat: 'yy-mm-dd'});
-   });
-
-</script>
-
 {# This is row consisting of 12 columns that will display all messages passed in the request #}
 {% include "admin/messages.html" %}
 
@@ -243,7 +234,7 @@
   <div class="large-12 columns">
     <br><br><br>
     <span class="heading">Summary Status:</span>
-    <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-question foundicon_container_help" title="Explanation"></span></a>
+    <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-key foundicon_container_key" title="Summary Status Key"></a>
     <div id="histsumdrop" class="f-dropdown content histsumdrop" data-dropdown-content>
       <h5>Historical Summary Status</h5><br>
       <span class="help_drop">
@@ -386,5 +377,15 @@ $(function () {
   </div>
 </div>
 {% endif %}
+
+
+<script type="text/javascript">
+
+   // Jump To
+   $(function() {
+      $("#jump_to").datepicker({dateFormat: 'yy-mm-dd'});
+   });
+
+</script>
 
 {% endblock %}

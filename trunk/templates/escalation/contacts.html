@@ -139,14 +139,14 @@
               <a href="/admin/contact_switch?id={{row.id}}&action=up" title="move up"><i class="foundicon-gen-up-arrow"></i></a>
               <a href="/admin/contact_switch?id={{row.id}}&action=down" title="move down"><i class="foundicon-gen-down-arrow"></i></a>
             </td>
-            <td class="genericon_container">
+            <td>
              {% if row.hidden %}
               <a href="/admin/contact_switch?id={{row.id}}&action=show" title="show"><i class="foundicon-gen-checkmark"></i></a>
              {% else %}
               <a href="/admin/contact_switch?id={{row.id}}&action=hide" title="hide"><i class="foundicon-gen-remove"></i></a>
              {% endif %}
             </td>
-            <td class="genericon_container">
+            <td>
               <a href="/admin/contact_delete?id={{row.id}}"><i class="foundicon-gen-trash"></i></div></a>
             </td>
           </tr>

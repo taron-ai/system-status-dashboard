@@ -25,9 +25,9 @@
 
 <div class="row">
   <div class="large-12 columns">
-    <h5>Search Events</h5>
+    <h5>Search Events
+      &nbsp;&nbsp;<a href="#" title="Search for specific events"><span id="search_button" class="foundicon-gen-search foundicon_container_search"></span></a></h5>
     <p>Use this page to search through all events, or constrain your search by using custom search criteria.</p>
-    <br>
   </div>
 </div>
 
@@ -44,8 +44,6 @@
       {% if events.has_next %}
         <a href="?page={{events.next_page_number}}{% if query_params %}&{{query_params}}{% endif %}">&raquo;</a>
       {% endif %}
-
-      &nbsp;&nbsp;&nbsp;<a href="#" title="Search for specific events"><span id="search_button" class="foundicon-gen-search foundicon_container_search"></span></a>
     </span>
   </div>
 </div>
@@ -127,7 +125,7 @@
       {% endfor %}
     </table>
     {% else %}
-    There are no events to display
+    <p>There are no events to display</p>
     {% endif %}
   </div>
 </div>

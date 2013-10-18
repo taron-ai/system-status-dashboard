@@ -68,11 +68,11 @@ def create_log(app_dir,apache_uid):
 def customize_settings(app_dir,dst_local):
     """Customize the SSD settings.tmpl file"""
 
-    print 'Customizing %s/ssd/settings.tmpl' % app_dir
+    print 'Customizing %s/src/settings.tmpl' % app_dir
 
     try:
         # Open the settings.tmpl file
-        s_sp = open('%s/ssd/settings.tmpl' % app_dir).read()
+        s_sp = open('%s/src/settings.tmpl' % app_dir).read()
 
         # Add the path to the SSD local dir
         s_sp = s_sp.replace('$__local_dir__$',dst_local)
@@ -269,7 +269,7 @@ def install():
     print 'PERFORMING FRESH INSTALL:\n'  
 
     # SOURCE DIRECTORY
-    ssd_source = re.search('^(\S+)\/install$',os.getcwd())
+    ssd_source = re.search('^(\S+)\/src/install$',os.getcwd())
     if ssd_source:
         default_source = ssd_source.group(1)
     else:
@@ -390,7 +390,7 @@ def install():
     create_log(app_dir,apache_uid)
 
     # Source and Destination local directories
-    src_local = app_dir + '/local.tmpl'
+    src_local = app_dir + '/src/local.tmpl'
     dst_local = local_dir + '/ssd-local'
 
     # Copy the local.tmpl directory out of the source directory so it can be customized

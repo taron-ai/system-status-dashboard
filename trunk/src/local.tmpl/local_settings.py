@@ -41,5 +41,28 @@ TEMPLATE_DIRS = (
 )
 
 # Set the timezone to match the server's timezone
-TIME_ZONE = 'US/Pacific'
+# TIME_ZONE = 'US/Pacific'
 
+
+
+# -- MEMCACHED CONFIGURATION  -- #
+# Uncomment and set the location to your server(s) and port(s)
+# Do not change the KEY_PREFIX
+"""
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': [
+            'localhost:11211'
+        ],
+        'KEY_PREFIX':'ssd',
+    }
+}
+"""
+# -- SESSION CACHE
+# If you have memcache installed/configured, then you can use a write-through cache
+# to store session information.  If you'd rather not use the write-through cache and
+# just want to use memcache then set SESSION_ENGINE to 'django.contrib.sessions.backends.cache'
+# Keep in mind that sessions could be evicted or you could lose your session store if memcached
+# is restarted.
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'

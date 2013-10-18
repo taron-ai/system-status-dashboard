@@ -63,6 +63,13 @@ class MultipleServiceField(forms.Field):
 ### FORMS ###
 
 
+class AdminConfigForm(forms.Form):
+    """Form for modifying the admin configuration
+    """
+
+    link_enabled = forms.BooleanField(required=False)
+
+
 class EmailConfigForm(forms.Form):
     """Form for modifying the admin email configuration
 
@@ -73,8 +80,8 @@ class EmailConfigForm(forms.Form):
 
     enabled = forms.BooleanField(required=False)
     email_format = forms.BooleanField(required=False)
-    from_address = forms.EmailField(required=False)
-    text_pager = forms.EmailField(required=False)
+    from_address = forms.EmailField(required=False,max_length=50)
+    text_pager = forms.EmailField(required=False,max_length=50)
     incident_greeting = forms.CharField(required=False)
     incident_update = forms.CharField(required=False)
     maintenance_greeting = forms.CharField(required=False)
@@ -304,10 +311,10 @@ class JumpToForm(forms.Form):
 class ReportIncidentForm(forms.Form):
     """Form for reporting an incident (by a user)"""
 
-    name = forms.CharField(required=True)
-    email = forms.EmailField(required=True)
-    detail = forms.CharField(required=True)
-    extra = forms.CharField(required=False)
+    name = forms.CharField(required=True,max_length=50)
+    email = forms.EmailField(required=True,max_length=50)
+    detail = forms.CharField(required=True,max_length=160)
+    extra = forms.CharField(required=False,max_length=1000)
     screenshot1 = forms.ImageField(required=False,validators=[file_size])
     screenshot2 = forms.ImageField(required=False,validators=[file_size])
 

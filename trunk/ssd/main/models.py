@@ -17,9 +17,12 @@
 """Models for the SSD Project
 
     General Notes:
-        - All non-char/text fields will be stored as null in the DB when blank (null=True)
-        - All fields will be allowed to be blank (blank=true).  Form validation will confirm if the field is required
-
+        - All name fields will have a max_length of 50 characters
+        - All email addresses will have a max_length of 50 characters
+        - All date fields will have blank=False (cannot be blank)
+        - All boolean fields will have blank=False (cannot be blank)
+        - All fields that are allowed to be blank will have null=True (stored in DB as null when blank)
+        - Form validation will match the max_length restriction in all cases
 """
 
 
@@ -143,18 +146,24 @@ class Escalation(models.Model):
 
 #-- Configuration Models -- #
 
+
+class Config_Admin(models.Model):
+    """Admin Configuration
+
+    """
+
+    link_enabled = models.BooleanField(blank=False)
+
+
 class Config_Email(models.Model):
     """Email Configuration
-        Email Format:
-            0 = text
-            1 = html
 
     """
 
     enabled = models.BooleanField(blank=False)
     email_format = models.BooleanField(blank=False)
-    from_address = models.CharField(null=False,blank=False,max_length=100)
-    text_pager = models.CharField(null=False,blank=False,max_length=100)
+    from_address = models.CharField(blank=False,max_length=50)
+    text_pager = models.CharField(blank=False,max_length=50)
     incident_greeting = models.CharField(null=False,blank=False,max_length=1000)
     incident_update = models.CharField(null=False,blank=False,max_length=1000)
     maintenance_greeting = models.CharField(null=False,blank=False,max_length=1000)
@@ -235,12 +244,12 @@ class Ireport(models.Model):
         # Return the path and file
         return '%s/%s%s' % (file_path,file_name,extension)
 
-    date = models.DateTimeField(null=False,blank=False)
-    name = models.CharField(null=False,blank=False,max_length=50)
-    email = models.CharField(null=False,blank=False,max_length=50)
-    detail = models.CharField(null=False,blank=False,max_length=160)
+    date = models.DateTimeField(blank=False)
+    name = models.CharField(blank=False,max_length=50)
+    email = models.CharField(blank=False,max_length=50)
+    detail = models.CharField(blank=False,max_length=160)
     extra = models.CharField(null=True,blank=True,max_length=1000)
-    screenshot1 = models.ImageField(storage=fs,upload_to=_upload_to)
-    screenshot2 = models.ImageField(storage=fs,upload_to=_upload_to)
+    screenshot1 = models.ImageField(null=True,blank=True,storage=fs,upload_to=_upload_to)
+    screenshot2 = models.ImageField(null=True,blank=True,storage=fs,upload_to=_upload_to)
 
     

@@ -116,7 +116,10 @@ def ireport(request):
             message = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('submit_message')[0]['submit_message']
             messages.add_message(request, messages.SUCCESS, message)
             return HttpResponseRedirect('/')
-
+        
+        # Invalid form
+        else:
+            messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')
 
     # Ok, its a GET or an invalid form so create a blank form
     else:
@@ -241,7 +244,7 @@ def ireport_list(request):
            {
               'title':'System Status Dashboard | Incident Report List',
               'ireports':ireports,
-              'breadcrumbs':{'Admin':'/admin','List Open Incident Reports':'ireport_list'},
+              'breadcrumbs':{'Admin':'/admin','List Incident Reports':'ireport_list'},
               'nav_section':'ireport',
               'nav_sub':'ireport_list'
            },

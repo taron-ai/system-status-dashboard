@@ -168,7 +168,7 @@ div.hr {
 }
 /* Main login window */
 div.login_window {
-   margin: 50px auto 0 auto;
+   margin: 30px auto 0 auto;
    min-height: 80px;
    width: 400px;
    padding: 30px;
@@ -202,8 +202,14 @@ span.success {
    font-size: 12px;
 }
 /* inline element for displaying error messages */
-span.error {
+span.err {
    font-size: 12px;
+   font-weight: bold;
+   color: red;
+}
+/* inline element for displaying error messages (large) */
+span.err_lg {
+   font-size: 14px;
    font-weight: bold;
    color: red;
 }
@@ -412,7 +418,7 @@ input.x_editable_text {
 }
 
 
-
+/*
 #sticky_footer {
     position: fixed;
     bottom: 0px;
@@ -421,6 +427,15 @@ input.x_editable_text {
     background-color: #f9f9f9;
     border-top: 2px solid #EEE;
     padding: 5px 0 5px 0;
+}
+*/
+
+#sticky_footer {
+height: 100px;
+position:relative;
+bottom: -100px;
+background-color: #f9f9f9;
+border-top: 2px solid #EEE;
 }
 
 
@@ -472,3 +487,13 @@ input.x_editable_text {
 }
 
 
+
+
+/* 
+Eliminate the divider color 
+Cannot figure out how to do this with scss 
+*/
+
+.top-bar-section > ul > .divider, .top-bar-section > ul > [role="separator"] {
+    border-left: solid 1px white;
+}

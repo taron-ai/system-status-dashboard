@@ -28,12 +28,22 @@
   <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
 
   <link rel="stylesheet" href="/html/css/foundation.css" />
+  <link rel="stylesheet" href="/html/css/foundicons/general_foundicons.css">
+  <link rel="stylesheet" href="/html/css/foundicons/general_enclosed_foundicons.css">
+  <link rel="stylesheet" href="/html/css/foundicons/accessibility_foundicons.css">
+  <!--[if IE 7]>
+  <link rel="stylesheet" href="/html/css/foundicons/general_foundicons_ie7.css">
+  <link rel="stylesheet" href="/html/css/foundicons/general_enclosed_foundicons_ie7.css">
+  <link rel="stylesheet" href="/html/css/foundicons/accessibility_foundicons_ie7.css">
+  <![endif]-->
+
   <link rel="stylesheet" href="/html/css/normalize.css" />
   <link rel="stylesheet" href="/html/css/smoothness/jquery-ui-1.10.3.custom.min.css"  />
   <link rel="stylesheet" media="screen" href="/html/css/responsive-tables.css" />
   <link rel="stylesheet" href="/html/css/genericons.css">
   <link rel="stylesheet" href="/html/css/jqueryui-editable.css">
   <link rel="stylesheet" href="/html/css/app.css">
+  <link rel="stylesheet" href="/html/css/ssd.css">
 
   <script type="text/javascript" src="/html/js/vendor/custom.modernizr.js"></script>
   <script type="text/javascript" src="/html/js/jquery-1.8.2.js"></script>
@@ -46,25 +56,43 @@
  </head>
  <body>
 
-<div class="row">
-  <div class="large-12 columns">
-    <br>
-    <div class="header"><a href="/">Home</a>&nbsp;|&nbsp;</div>
-    <div class="header"><a href="/events">Search Events</a>&nbsp;|&nbsp;</div>
-    <div class="header"><a href="/admin">Admin</a>&nbsp;|&nbsp;</div>
-    {% if ireport %}
-    <div class="header"><a href="/ireport">Report Incident</a>&nbsp;|&nbsp;</div>
-    {% endif %}
-    {% if escalation %}
-    <div class="header"><a href="/escalation">Escalate</a>&nbsp;|&nbsp;</div>
-    {% endif %}
-    {% if user.is_authenticated %}
-    <div class="header"><a href="/accounts/logout">Logout ({{user.username}})</a></div>
-    {% endif %}
-  </div>
-</div>
+<div class="contain-to-grid">
+  <nav class="top-bar">
+    <ul class="title-area">
+      <li class="name">
+        <h1><a href="/">Status Dashboard</a></h1>
+      </li>
+      <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+    <section class="top-bar-section">
+      <!-- Left Nav Section -->
+      <ul class="left">
+        <li class="divider"></li>
+        <li><a href="/events">Search Events</a></li>
 
-<div class="spacer_small"></div>
+        {% if ireport %}   
+        <li class="divider"></li>   
+        <li><a href="/ireport">Report Incident</a></li>
+        {% endif %}
+
+        {% if escalation %}
+        <li class="divider"></li>        
+        <li><a href="/escalation">Escalation</a></li>
+        {% endif %}
+
+        {% if admin_link %}
+        <li class="divider">
+        <li><a href="/admin">Admin</a></li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <li class="divider">
+        <li><a href="/accounts/logout">Logout ({{user.username}})</a></li>
+        {% endif %}
+      </ul>
+    </section>
+  </nav>
+</div>
 
 {% if logo %}
 <div class="row">

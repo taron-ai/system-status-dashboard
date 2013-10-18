@@ -49,7 +49,7 @@
           {% for row in emails %}
           <div>
             <span style="width: 40px; float: left;">
-              <a href="/admin/recipient_delete?id={{row.id}}" title="Delete email address"><span class="genericon genericon-trash genericon_container_trash"></span></a>
+              <a href="/admin/recipient_delete?id={{row.id}}" title="Delete email address"><i class="foundicon-gen-trash"></i></a>
             </span>
             <span>
               <a href="#" title="Modify email address" id="email_{{row.id}}">{{row.email}}</a>
@@ -84,17 +84,17 @@
     <div class="row">
       <div class="large-12 columns">
         <span class="radius secondary label">Add Email Address</span><br>
-        <div class="sublabel_container"><span class="sublabel">Enter a valid email address (limit 100 characters).</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter a valid email address.</span></div>
       </div>
     </div>
 
     <div class="row">
-      <div class="large-12 columns {% if form.email.errors %}error{% endif %}">
+      <div class="large-6 columns {% if form.email.errors %}error{% endif %}">
         <form method="POST" action="/admin/email_recipients">
          {% csrf_token %}
-          <input name="email" type="text" class="email" placeholder="Enter a valid email address" value="{% if form.email.data %}{{form.email.data}}{% endif %}">
+          <input name="email" type="text" placeholder="Enter a valid email address" maxlength="50" value="{% if form.email.data %}{{form.email.data}}{% endif %}">
           {% if form.email.errors %}
-            <span class="error">{% for error in form.email.errors %}{{error}}<br>{% endfor %}<br></span>
+            <span class="err">{% for error in form.email.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}
           <input type="submit" class="small button secondary" value="add"/>
         </form> 

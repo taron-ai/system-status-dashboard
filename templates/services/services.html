@@ -49,7 +49,7 @@
           {% for row in services %}
           <div>
             <span style="width: 40px; float: left;">
-              <a href="/admin/service_delete?id={{row.id}}" title="Delete service"><span class="genericon genericon-trash genericon_container_trash"></span></a>
+              <a href="/admin/service_delete?id={{row.id}}" title="Delete service"><i class="foundicon-gen-trash"></i></a>
             </span>
             <span>
               <a href="#" title="Modify service" id="service_{{row.id}}">{{row.service_name}}</a>
@@ -84,27 +84,33 @@
     <div class="row">
       <div class="large-12 columns {% if form.service.errors %}error{% endif %}">
         <span class="radius secondary label">Add Service</span><br>
-        <div class="sublabel_container"><span class="sublabel">(limit 50 characters)</span></div>
+        <div class="sublabel_container"><span class="sublabel">Any services added here will immediately available on the dashboard.</span></div>
       </div>
     </div>
+
+<form method="POST" action="/admin/services">
+{% csrf_token %}
 
     <div class="row">
       <div class="large-8 columns {% if form.service.errors %}error{% endif %}">
-        <form method="POST" action="/admin/services">
-         {% csrf_token %}
-
-        <input name="service" type="text" placeholder="Enter a service name" value="{% if form.service.data %}{{form.service.data}}{% endif %}">
+        <input name="service" type="text" maxlength="50" placeholder="Enter a service name" value="{% if form.service.data %}{{form.service.data}}{% endif %}">
         {% if form.service.errors %}
-        <p class="error">
-          {% for error in form.service.errors %}{{error}}{% endfor %}
-        </p>
-        <br>
+        <span class="err">{% for error in form.service.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
-
-        <input type="submit" class="small button secondary" value="add"/>
-        </form>
       </div>
     </div>
+
+    <div class="spacer_small"></div>
+
+    <div class="row">
+      <div class="large-11 columns">
+        <input type="submit" class="small button secondary" value="Save"/>
+      </div>
+    </div>
+
+</form>
+
+    <div class="spacer_medium"></div>
 
   </div>
 </div>

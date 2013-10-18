@@ -19,31 +19,33 @@ INSERT INTO `main_config_admin` VALUES ('1', '1');
 
 
 -- ----------------------------
--- Table structure for `main_config_email`
+--  Table structure for `main_config_email`
 -- ----------------------------
 DROP TABLE IF EXISTS `main_config_email`;
 CREATE TABLE `main_config_email` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `enabled` tinyint(1) NOT NULL,
   `email_format` tinyint(1) NOT NULL,
-  `from_address` varchar(100) NOT NULL,
-  `text_pager` varchar(100) NOT NULL,
+  `from_address` varchar(50) NOT NULL,
+  `text_pager` varchar(50) NOT NULL,
   `incident_greeting` varchar(1000) NOT NULL,
   `incident_update` varchar(1000) NOT NULL,
   `maintenance_greeting` varchar(1000) NOT NULL,
   `maintenance_update` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- ----------------------------
 -- Records of main_config_email
 -- ----------------------------
-INSERT INTO `main_config_email` VALUES ('1', '1', '0', '', '', 'test', 'test', 'test', 'test');
+INSERT INTO `main_config_email` VALUES ('1', '0', '0', '', '', '', '', '', '');
 
 
 
 -- ----------------------------
--- Table structure for `main_config_escalation`
+--  Table structure for `main_config_escalation`
 -- ----------------------------
 DROP TABLE IF EXISTS `main_config_escalation`;
 CREATE TABLE `main_config_escalation` (
@@ -68,10 +70,10 @@ CREATE TABLE `main_config_ireport` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `enabled` tinyint(1) NOT NULL,
   `email_enabled` tinyint(1) NOT NULL,
-  `instructions` varchar(500) NOT NULL,
-  `submit_message` varchar(500) NOT NULL,
+  `instructions` varchar(1000) NOT NULL,
+  `submit_message` varchar(1000) NOT NULL,
   `upload_enabled` tinyint(1) NOT NULL,
-  `upload_path` varchar(500) NOT NULL,
+  `upload_path` varchar(1000) NOT NULL,
   `file_size` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
@@ -79,7 +81,7 @@ CREATE TABLE `main_config_ireport` (
 -- ----------------------------
 -- Records of main_config_ireport
 -- ----------------------------
-INSERT INTO `main_config_ireport` VALUES ('1', '1', '0', 'Please be as descriptive as possible', 'Thank you for your support!\r\n\r\nWe\'ll be in touch!', '0', '', '1');
+INSERT INTO `main_config_ireport` VALUES ('1', '0', '0', 'Please be as descriptive as possible', 'Thank you for your support!\r\n\r\nWe\'ll be in touch!', '0', '', '1024');
 
 
 
@@ -127,7 +129,7 @@ INSERT INTO `main_config_message` VALUES ('1', 'This dashboard displays status i
 DROP TABLE IF EXISTS `main_config_systemurl`;
 CREATE TABLE `main_config_systemurl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `url` varchar(1000) NOT NULL,
+  `url` varchar(250) NOT NULL,
   `url_enabled` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
@@ -135,7 +137,7 @@ CREATE TABLE `main_config_systemurl` (
 -- ----------------------------
 -- Records of main_config_systemurl
 -- ----------------------------
-INSERT INTO `main_config_systemurl` VALUES ('1', '/foo/bar1', '1');
+INSERT INTO `main_config_systemurl` VALUES ('1', '', '0');
 
 
 

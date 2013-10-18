@@ -149,10 +149,6 @@ div.sublabel_container {
    padding-top: 5px;
    padding-bottom: 8px;
 }
-/* Genericon containers within tables (vertical center)*/
-div.genericon_container {
-   display: table-cell;
-}
 /* Page Navigation */
 div.navigation {
    font-size: 14px;
@@ -213,10 +209,6 @@ span.err_lg {
    font-weight: bold;
    color: red;
 }
-/* Genericon containers within tables (vertical center)*/
-span.genericon_container {
-   display: table-cell;
-}
 /* Green circle indicators */
 span.foundicon_container_green {
    position: relative;
@@ -252,33 +244,42 @@ span.foundicon_container_nav {
    font-size: 25px; 
    color: #DDDDDD;
 }
+/* Navigation links on the dashboard table */
+span.foundicon_container_iconlink {
+   position: relative; 
+   /* bottom: 1px; */ 
+   font-size: 20px; 
+   color: #DDDDDD;
+}
+/* Key dropdown links (anywhere but the dashboard) */
+span.foundicon_container_key {
+   position: relative; 
+   bottom: -7px;  
+   font-size: 25px; 
+   color: #DDDDDD;
+}
+/* Delete confirmation icon */
+span.foundicon_container_delete {
+   position: relative; 
+   bottom: -7px;  
+   font-size: 25px; 
+   color: red;
+}
 /* More information links */
 span.foundicon_container_info {
    font-size: 25px; 
 }
 /* Search icon */
-span.genericon_container_search {
-   position: relative; 
-   bottom: 3px; 
-   font-size: 25px; 
+span.foundicon_container_search {
+   position: relative;
+   bottom: -3px; 
+   color: #DDDDDD;
 }
 /* Help icons in the index page summary sections */
 span.foundicon_container_help {
    position: relative; 
    bottom: -2px; 
    right: 3px;
-}
-/* Help icons in the index page summary sections */
-span.genericon_container_next {
-   position: relative; 
-   bottom: 5px; 
-   right: 5px;
-}
-/* Trash icons for admin services/recipients */
-span.genericon_container_trash {
-   position: relative; 
-   bottom: 4px; 
-   color: red;
 }
 /* Dashboard legend */
 span.legend {
@@ -397,9 +398,6 @@ select {
 input.date {
    width: 135px;
 }
-input.email {
-   width: 250px;
-}
 select.email {
    width: 250px;
 }
@@ -473,17 +471,6 @@ border-top: 2px solid #EEE;
 
 .accordion {
    box-shadow: 0 0 5px 1px #ddd;
-}
-
-
-
-/* GENERICONS */
-.genericon {
-   font-size: 25px;
-}
-.genericon.caution {
-   font-size: 22px;
-   color: red;
 }
 
 

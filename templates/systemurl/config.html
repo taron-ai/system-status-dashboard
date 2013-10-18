@@ -40,37 +40,27 @@
     {# This is row consisting of 12 columns that will display all messages passed in the request #}
     {% include "admin/messages.html" %}
 
-    <div class="row">
-      <div class="large-12 columns">
-        <span class="radius secondary label">System Url</span><br>
-        <div class="sublabel_container"><span class="sublabel">The system url should be a fully qualified domain name (e.g. www.domain.com).</span></div>
-      </div>
-    </div>
-		
 		<div class="row">
 			<div class="large-8 columns {% if form.url.errors %}error{% endif %}">
-		 		<input type="text" name="url" placeholder="Enter a system url" value="{% if form.url.data %}{{form.url.data}}{% else %}{{systemurl_config.0.url}}{% endif %}" />
+        <label>System Url</label>
+        <div class="sublabel_container"><span class="sublabel">The system url should be a fully qualified domain name (e.g. www.domain.com).</span></div>
+		 		<input type="text" name="url" maxlength="250" placeholder="Enter a system url" value="{% if form.url.data %}{{form.url.data}}{% else %}{{systemurl_config.0.url}}{% endif %}" />
 		    {% if form.url.errors %}
-        <span class="error">{% for error in form.url.errors %}{{error}}<br>{% endfor %}<br></span>
+        <span class="err">{% for error in form.url.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
 		  </div>
 		</div>
 
     <div class="spacer_medium"></div>
 
-    <div class="row">
-      <div class="large-12 columns">
-        <span class="radius secondary label">System Url Enabled</span><br>
-        <div class="sublabel_container"><span class="sublabel">If enabled, the system url will be included in any communication that SSD sends out so that users will be directed back to the dashboard.</span></div>
-      </div>
-    </div>
-
 		<div class="row">
 			<div class="large-12 columns {% if form.url_enabled.errors %}error{% endif %}">
+        <label>System Url Enabled</label>
+        <div class="sublabel_container"><span class="sublabel">If enabled, the system url will be included in any communication that SSD sends out so that users will be directed back to the dashboard.</span></div>
        <label><input type="checkbox" name="url_enabled" {% if form.url_enabled.data %}checked{% else %}{% if systemurl_config.0.url_enabled %}checked{% endif %}{% endif %} />
         Enabled</label>
         {% if form.url_enabled.errors %}
-        <span class="error">{% for error in form.url_enabled.errors %}{{error}}<br>{% endfor %}<br></span>
+        <span class="err">{% for error in form.url_enabled.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
 			</div>
 		</div>

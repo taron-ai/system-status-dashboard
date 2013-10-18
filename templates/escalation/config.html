@@ -51,7 +51,7 @@
 	    <div class="large-12 columns">
 				<label><input type="checkbox" name="enabled" {% if form.enabled.data %}checked{% else %}{% if escalation_config.0.enabled == 1 %}checked{% endif %}{% endif %} />&nbsp;Enabled</label>
 	   		{% if form.enabled.errors %}
-				<span class="error">{% for error in form.enabled.errors %}{{error}}<br>{% endfor %}<br></span>
+				<span class="err">{% for error in form.enabled.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
 			</div>
 		</div>
@@ -60,21 +60,22 @@
 
 	    <div class="row">
 	      <div class="large-12 columns">
-	        <span class="radius secondary label">Escalation Instructions</span><br>
+	        <span class="radius secondary label">Escalation Instructions</span>
+	        &nbsp;<b><span id="instructions_counter" class="counter"></span></b>
 	        <div class="sublabel_container"><span class="sublabel">Enter escalation instructions, that will be displayed above the escalation path.</span></div>
 	      </div>
 	    </div>
 
 	    <div class="row">
 	      <div class="large-12 columns {% if form.instructions.errors %}error{% endif %}">
-	        <textarea name="instructions" placeholder="Enter escalation instructions" maxlength="1000">{% if form.instructions.data %}{{form.instructions.data}}{% else %}{{escalation_config.0.instructions}}{% endif %}</textarea>
+	        <textarea id="instructions" name="instructions" placeholder="Enter escalation instructions" maxlength="1000">{% if form.instructions.data %}{{form.instructions.data}}{% else %}{{escalation_config.0.instructions}}{% endif %}</textarea>
 	        {% if form.instructions.errors %}
-	        <br><span class="error">{% for error in form.instructions.errors %}{{error}}<br>{% endfor %}<br></span>
+	        <br><span class="err">{% for error in form.instructions.errors %}{{error}}<br>{% endfor %}<br></span>
 	        {% endif %}
 	      </div>
 	    </div>
 
-		<div class="spacer_medium"></div>
+		<div class="spacer_small"></div>
 
 		<div class="row">
 		  <div class="large-11 columns">
@@ -88,6 +89,14 @@
 </div>
 
 </form>
+
+
+<script>
+  // Textarea counters
+  $("#instructions").keyup(function(){
+    $("#instructions_counter").text("Characters remaining: " + (1000 - $(this).val().length));
+  });
+</script>
 
 {% endblock %}
 

@@ -132,7 +132,8 @@
 		<div class="row">
 			<div class="large-12 columns {% if form.incident_greeting.errors %}error{% endif %}">
 				<label>Incident Greeting Text
-				&nbsp;<span id="incident_greeting_counter" class="counter"></span></label>
+				&nbsp;<span id="incident_greeting_counter" class="counter"></span>
+				</label>
         <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany new emails sent out about incidents.</span></div>
 		 		<textarea id="incident_greeting" name="incident_greeting" placeholder="Enter Incident Greeting" maxlength="1000">{% if form.incident_greeting.data %}{{form.incident_greeting.data}}{% else %}{{email_config.0.incident_greeting}}{% endif %}</textarea>
 		    {% if form.incident_greeting.errors %}
@@ -145,9 +146,11 @@
 			
 		<div class="row">
 			<div class="large-12 columns {% if form.incident_update.errors %}error{% endif %}">
-        <label>Incident Update Text</label>
+        <label>Incident Update Text
+        &nbsp;<span id="incident_update_counter" class="counter"></span>
+      	</label>
         <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany update emails sent out about existing incidents.</span></div>
-		 		<textarea name="incident_update" placeholder="Enter Incident Update" maxlength="1000">{% if form.incident_update.data %}{{form.incident_update.data}}{% else %}{{email_config.0.incident_update}}{% endif %}</textarea>
+		 		<textarea id="incident_update" name="incident_update" placeholder="Enter Incident Update" maxlength="1000">{% if form.incident_update.data %}{{form.incident_update.data}}{% else %}{{email_config.0.incident_update}}{% endif %}</textarea>
 		    {% if form.incident_update.errors %}
 				<br><span class="err">{% for error in form.incident_update.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -158,9 +161,11 @@
 
 		<div class="row">
 			<div class="large-12 columns {% if form.maintenance_greeting.errors %}error{% endif %}">
-        <label>Maintenance Greeting Text</label>
+        <label>Maintenance Greeting Text
+        &nbsp;<span id="maintenance_greeting_counter" class="counter"></span>
+      	</label>
         <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany new emails sent out about scheduled maintenance.</span></div>
-		 		<textarea name="maintenance_greeting" placeholder="Enter Maintenance Greeting" maxlength="1000">{% if form.maintenance_greeting.data %}{{form.maintenance_greeting.data}}{% else %}{{email_config.0.maintenance_greeting}}{% endif %}</textarea>
+		 		<textarea id="maintenance_greeting" name="maintenance_greeting" placeholder="Enter Maintenance Greeting" maxlength="1000">{% if form.maintenance_greeting.data %}{{form.maintenance_greeting.data}}{% else %}{{email_config.0.maintenance_greeting}}{% endif %}</textarea>
 		    {% if form.maintenance_greeting.errors %}
 				<br><span class="err">{% for error in form.maintenance_greeting.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -171,16 +176,18 @@
 
 		<div class="row">
 			<div class="large-12 columns {% if form.maintenance_update.errors %}error{% endif %}">
-        <label>Maintenance Update Text</label>
+        <label>Maintenance Update Text
+        &nbsp;<span id="maintenance_update_counter" class="counter"></span>
+      	</label>
         <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany update emails sent out about existing scheduled maintenance.</span></div>
-		 		<textarea name="maintenance_update" placeholder="Enter Maintenance Update" maxlength="1000">{% if form.maintenance_update.data %}{{form.maintenance_update.data}}{% else %}{{email_config.0.maintenance_update}}{% endif %}</textarea>
+		 		<textarea id="maintenance_update" name="maintenance_update" placeholder="Enter Maintenance Update" maxlength="1000">{% if form.maintenance_update.data %}{{form.maintenance_update.data}}{% else %}{{email_config.0.maintenance_update}}{% endif %}</textarea>
 		    {% if form.maintenance_update.errors %}
 				<br><span class="err">{% for error in form.maintenance_update.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
 			</div>
 		</div>
 
-		<div class="spacer_medium"></div>
+		<div class="spacer_small"></div>
 
 		<div class="row">
 		  <div class="large-12 columns">
@@ -199,7 +206,19 @@
 <script>
   // Textarea counters
   $("#incident_greeting").keyup(function(){
-    $("#incident_greeting_counter").text("Characters left: " + (1000 - $(this).val().length));
+    $("#incident_greeting_counter").text("Characters remaining: " + (1000 - $(this).val().length));
+  });
+
+  $("#incident_update").keyup(function(){
+    $("#incident_update_counter").text("Characters remaining: " + (1000 - $(this).val().length));
+  });
+
+  $("#maintenance_greeting").keyup(function(){
+    $("#maintenance_greeting_counter").text("Characters remaining: " + (1000 - $(this).val().length));
+  });
+
+  $("#maintenance_update").keyup(function(){
+    $("#maintenance_update_counter").text("Characters remaining: " + (1000 - $(this).val().length));
   });
 
 </script>

@@ -20,33 +20,6 @@
 
 {% block content %}
 
-<script type="text/javascript">
-
-   // Date Pickers and Submit
-   $(function() {
-
-      //Start Date
-      $("#s_date").datepicker({dateFormat: 'yy-mm-dd'});
-
-      //Start Time
-      $("#s_time").timepicker({
-          hourGrid: 4,
-          minuteGrid: 10
-      });
-
-      //End Date
-      $("#e_date").datepicker({dateFormat: 'yy-mm-dd'});
-
-      //End Time
-      $("#e_time").timepicker({
-          hourGrid: 4,
-          minuteGrid: 10
-      });
-   });
-</script>
-
-<br>
-
 <form method="POST" action="/admin/m_update">
 {% csrf_token %}
 
@@ -69,16 +42,17 @@
 
     <div class="row">
       <div class="large-8 columns">
-        <span class="radius secondary label">Maintenance Update</span><br>
+        <span class="radius secondary label">Maintenance Update</span>
+        &nbsp;<b><span id="update_counter" class="counter"></span></b>
         <div class="sublabel_container"><span class="sublabel">Enter an update about the maintenance.</span></div>
       </div>
     </div>
 
     <div class="row">
       <div class="large-12 columns {% if form.update.errors %}error{% endif %}">
-        <textarea name="update" placeholder="Enter an update" maxlength="1000">{% if form.update.data %}{{form.update.data}}{% endif %}</textarea>
+        <textarea id="update" name="update" placeholder="Enter an update" maxlength="1000">{% if form.update.data %}{{form.update.data}}{% endif %}</textarea>
         {% if form.update.errors %}
-        <br><span class="error">{% for error in form.update.errors %}{{error}}<br>{% endfor %}<br></span>
+        <br><span class="err">{% for error in form.update.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
       </div>
     </div>
@@ -97,7 +71,7 @@
           <div class="large-12 columns {% if form.s_date.errors %}error{% endif %}">
             <input type="text" name="s_date" id="s_date" class="date" value="{% if form.s_date.data %}{{form.s_date.data}}{% else %}{{s_date}}{% endif %}"/>
             {% if form.s_date.errors %}
-            <span class="error">{% for error in form.s_date.errors %}{{error}}<br>{% endfor %}<br></span>
+            <span class="err">{% for error in form.s_date.errors %}{{error}}<br>{% endfor %}<br></span>
             {% endif %}            
           </div>
         </div>
@@ -105,7 +79,7 @@
           <div class="large-12 columns {% if form.s_time.errors %}error{% endif %}">
             <input type="text" name="s_time" id="s_time" class="date" value="{% if form.s_time.data %}{{form.s_time.data}}{% else %}{{s_time}}{% endif %}"/>
             {% if form.s_time.errors %}
-            <span class="error">{% for error in form.s_time.errors %}{{error}}<br>{% endfor %}<br></span>
+            <span class="err">{% for error in form.s_time.errors %}{{error}}<br>{% endfor %}<br></span>
             {% endif %}            
           </div>
         </div>
@@ -122,7 +96,7 @@
           <div class="large-12 columns {% if form.e_date.errors %}error{% endif %}">
             <input type="text" name="e_date" id="e_date" class="date" value="{% if form.e_date.data %}{{form.e_date.data}}{% else %}{{e_date}}{% endif %}"/>
             {% if form.e_date.errors %}
-            <span class="error">{% for error in form.e_date.errors %}{{error}}<br>{% endfor %}<br></span>
+            <span class="err">{% for error in form.e_date.errors %}{{error}}<br>{% endfor %}<br></span>
             {% endif %}            
           </div>
         </div>
@@ -130,7 +104,7 @@
           <div class="large-12 columns {% if form.e_time.errors %}error{% endif %}">
             <input type="text" name="e_time" id="e_time" class="date" value="{% if form.e_time.data %}{{form.e_time.data}}{% else %}{{e_time}}{% endif %}"/>
             {% if form.e_time.errors %}
-            <span class="error">{% for error in form.e_time.errors %}{{error}}<br>{% endfor %}<br></span>
+            <span class="err">{% for error in form.e_time.errors %}{{error}}<br>{% endfor %}<br></span>
             {% endif %}            
           </div>
         </div>
@@ -142,16 +116,17 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Maintenance Description</span><br>
+        <span class="radius secondary label">Maintenance Description</span>
+        &nbsp;<b><span id="description_counter" class="counter"></span></b>
         <div class="sublabel_container"><span class="sublabel">Update the maintenance description, if desired.</span></div>
       </div>
     </div>
 
     <div class="row">
-      <div class="large-8 columns {% if form.description.errors %}error{% endif %}">
-        <textarea name="description" placeholder="Enter maintenance description" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% else %}{{details.0.description}}{% endif %}</textarea>
+      <div class="large-12 columns {% if form.description.errors %}error{% endif %}">
+        <textarea id="description" name="description" placeholder="Enter maintenance description" maxlength="1000">{% if form.description.data %}{{form.description.data}}{% else %}{{details.0.description}}{% endif %}</textarea>
         {% if form.description.errors %}
-        <br><span class="error">{% for error in form.description.errors %}{{error}}<br>{% endfor %}<br></span>
+        <br><span class="err">{% for error in form.description.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
       </div>
     </div>
@@ -160,16 +135,17 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Impact Analysis</span><br>
+        <span class="radius secondary label">Impact Analysis</span>
+        &nbsp;<b><span id="impact_counter" class="counter"></span></b>
         <div class="sublabel_container"><span class="sublabel">Enter or update the impact analysis, if desired.</span></div>
       </div>
     </div>
 
     <div class="row">
-      <div class="large-8 columns {% if form.impact.errors %}error{% endif %}">
-        <textarea name="impact" placeholder="Enter maintenance impact analysis" maxlength="1000">{% if form.impact.data %}{{form.impact.data}}{% else %}{% if details.0.event_impact__impact %}{{details.0.event_impact__impact}}{% endif %}{% endif %}</textarea>
+      <div class="large-12 columns {% if form.impact.errors %}error{% endif %}">
+        <textarea id="impact" name="impact" placeholder="Enter maintenance impact analysis" maxlength="1000">{% if form.impact.data %}{{form.impact.data}}{% else %}{% if details.0.event_impact__impact %}{{details.0.event_impact__impact}}{% endif %}{% endif %}</textarea>
         {% if form.impact.errors %}
-        <br><span class="error">{% for error in form.impact.errors %}{{error}}<br>{% endfor %}<br></span>
+        <br><span class="err">{% for error in form.impact.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
       </div>
     </div>
@@ -178,16 +154,17 @@
 
     <div class="row">
       <div class="large-12 columns {% if form.coordinator.errors %}error{% endif %}">
-        <span class="radius secondary label">Maintenance Coordinator</span><br>
+        <span class="radius secondary label">Maintenance Coordinator</span>
+        &nbsp;<b><span id="coordinator_counter" class="counter"></span></b>
         <div class="sublabel_container"><span class="sublabel">If a particular individual will be coordinating this maintenance and you would like to publish their contact information (or any other relevant details), enter it here.</span></div>
       </div>
     </div>
 
     <div class="row">
-      <div class="large-8 columns {% if form.coordinator.errors %}error{% endif %}">
-        <textarea name="coordinator" placeholder="Enter maintenance coordinator" maxlength="1000">{% if form.coordinator.data %}{{form.coordinator.data}}{% else %}{% if details.0.event_coordinator__coordinator %}{{details.0.event_coordinator__coordinator}}{% endif %}{% endif %}</textarea>
+      <div class="large-12 columns {% if form.coordinator.errors %}error{% endif %}">
+        <textarea id="coordinator" name="coordinator" placeholder="Enter maintenance coordinator" maxlength="250">{% if form.coordinator.data %}{{form.coordinator.data}}{% else %}{% if details.0.event_coordinator__coordinator %}{{details.0.event_coordinator__coordinator}}{% endif %}{% endif %}</textarea>
         {% if form.coordinator.errors %}
-        <br><span class="error">{% for error in form.coordinator.errors %}{{error}}<br>{% endfor %}<br></span>
+        <br><span class="err">{% for error in form.coordinator.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
       </div>
     </div>
@@ -206,7 +183,7 @@
         <label><input type="checkbox" name="started" {% if form.started.data %}checked="on"{% else %}{% if details.0.status__status == 'started' %}checked="on"{% endif %}{% endif %}/>
         Started</label>
         {% if form.started.errors %}
-        <span class="error">{% for error in form.started.errors %}{{error}}<br>{% endfor %}<br></span>
+        <span class="err">{% for error in form.started.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %} 
       </div>
     </div>
@@ -216,7 +193,7 @@
         <label><input type="checkbox" name="completed" {% if form.completed.data %}checked="on"{% else %}{% if details.0.status__status == 4 %}checked="on"{% endif %}{% endif %}/>
         Completed</label>
         {% if form.completed.errors %}
-        <span class="error">{% for error in form.completed.errors %}{{error}}<br>{% endfor %}<br></span>
+        <span class="err">{% for error in form.completed.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
       </div>
     </div>
@@ -235,7 +212,7 @@
         <label><input type="checkbox" {% if not email_enabled %}disabled{% endif %} name="broadcast" {% if form.broadcast.data %}checked{% endif %} />
         Broadcast Email On Save</label>
         {% if form.broadcast.errors %}
-        <span class="error">{% for error in form.broadcast.errors %}{{error}}<br>{% endfor %}<br></span>
+        <span class="err">{% for error in form.broadcast.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
         <select name="email_id" class="email" {% if not email_enabled == 1 %}disabled{% endif %}>
           {% if not email_enabled %}
@@ -271,12 +248,12 @@
           {{row.service_name}}</label>
         {% endfor %}
         {% if form.service.errors %}
-        <span class="error">{% for error in form.service.errors %}{{error}}<br>{% endfor %}<br></span>
+        <span class="err">{% for error in form.service.errors %}{{error}}<br>{% endfor %}<br></span>
         {% endif %}
       </div>
     </div>
 
-    <div class="spacer_medium"></div>
+    <div class="spacer_small"></div>
 
     <div class="row">
       <div class="large-12 columns">
@@ -290,6 +267,51 @@
 </div>
 
 </form>
+
+
+
+<script type="text/javascript">
+
+   // Date Pickers and Submit
+   $(function() {
+
+      //Start Date
+      $("#s_date").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //Start Time
+      $("#s_time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
+
+      //End Date
+      $("#e_date").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //End Time
+      $("#e_time").timepicker({
+          hourGrid: 4,
+          minuteGrid: 10
+      });
+   });
+
+  $("#update").keyup(function(){
+    $("#update_counter").text("Characters remaining: " + (1000 - $(this).val().length));
+  });
+
+  $("#description").keyup(function(){
+    $("#description_counter").text("Characters remaining: " + (1000 - $(this).val().length));
+  });
+
+  $("#impact").keyup(function(){
+    $("#impact_counter").text("Characters remaining: " + (1000 - $(this).val().length));
+  });
+
+  $("#coordinator").keyup(function(){
+    $("#coordinator_counter").text("Characters remaining: " + (250 - $(this).val().length));
+  });
+
+
+</script>
 
 {% endblock %}
 

@@ -33,33 +33,32 @@
 
 <div class="spacer_small"></div>
 
-<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+<form method="post" action="{% url 'django.contrib.auth.views.login' %}?next={{next}}">
 {% csrf_token %}
 <div class="row">
-  <div class="large-10 columns">
+  <div class="large-10 columns {% if form.password.errors %}error{% endif %}">
 		<label>{{form.username.label_tag}}<span>{{form.username }}</span></label>
    	{% if form.username.errors %}
-    	<small class="error">
-      	{% for error in form.username.errors %}{{error}}{% endfor %}
-     	</small>
+    <span class="err">
+      {% for error in form.username.errors %}{{error}}{% endfor %}<br><br>
+    </span>
     {% endif %}
 	</div>
 </div>
 
 <div class="row">
-	<div class="large-10 columns left">
+	<div class="large-10 columns {% if form.password.errors %}error{% endif %}">
 		<label>{{form.password.label_tag}}<span>{{form.password}}</span></label>
   	{% if form.password.errors %}
-  		<small class="error">
-    		{% for error in form.password.errors %}{{error}}{% endfor %}
-    	</small>
+  	<span class="err">
+    	{% for error in form.password.errors %}{{error}}{% endfor %}<br><br>
+    </span>
     {% endif %}
   </div>
 </div>
 
 <div class="row">
   <div class="large-3 columns">
-  	<input type="hidden" name="next" value="{{ next }}" />
 		<input type="submit" class="small button secondary" value="submit"/>
   </div>
 </div>

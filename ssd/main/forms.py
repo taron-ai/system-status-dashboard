@@ -407,6 +407,7 @@ class GSearchForm(forms.Form):
 
     date = forms.DateField(required=True, input_formats=['%Y-%m-%d'])
     type = forms.CharField(required=True)
+    page = forms.IntegerField(required=False)
 
 
 class AddIncidentForm(forms.Form):

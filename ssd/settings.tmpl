@@ -183,6 +183,9 @@ LOGGING = {
 # Login URL
 LOGIN_URL = '/accounts/login'
 
+# Redirect here after login if contrib.auth.login gets no 'next' parameter
+LOGIN_REDIRECT_URL = '/'
+
 # SSD Version
 execfile('$__app_dir__$/ssd/version.py')
 

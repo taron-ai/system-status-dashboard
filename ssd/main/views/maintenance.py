@@ -27,13 +27,14 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from ssd.main.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email,Config_Email
-from ssd.main.forms import DetailForm, DeleteEventForm,UpdateMaintenanceForm, EmailMaintenanceForm, AddMaintenanceForm
+from ssd.main.forms import DetailForm, DeleteEventForm,UpdateMaintenanceForm, EmailMaintenanceForm, AddMaintenanceForm, ListForm
 from ssd.main import notify
 
 
@@ -419,8 +420,8 @@ def m_detail(request):
                                                 'event_impact__impact',
                                                 'event_coordinator__coordinator',
                                                 'event_email__email__email',
-                                                'user__first_name',
-                                                'user__last_name'
+                                                'user_id__first_name',
+                                                'user_id__last_name'
                                                 )
     # If nothing was returned, send back to the home page
     if not details:
@@ -576,19 +577,47 @@ def m_list(request):
 
     logger.debug('%s view being executed.' % 'maintenance.m_list')
 
-    # Obtain all open incidents
-    maintenances = Event.objects.filter(Q(type=2,status__status='planning') | Q(type=2,status__status='started')).values('id','start','description','event_email__email__email')
+    form = ListForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('ListForm',form))
 
-    # Print the page
-    return render_to_response(
-       'maintenance/m_list.html',
-       {
-          'title':'System Status Dashboard | Open Maintenance',
-          'maintenances':maintenances,
-          'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
-          'breadcrumbs':{'Admin':'/admin','List Open Maintenance':'m_list'},
-          'nav_section':'event',
-          'nav_sub':'m_list'
-       },
-       context_instance=RequestContext(request)
-    )
+    # Check the params
+    if form.is_valid():
+
+        page = form.cleaned_data['page']
+
+        # Obtain all open incidents
+        maintenances_all = Event.objects.filter(Q(type=2,status__status='planning') | Q(type=2,status__status='started')).values('id','start','description','event_email__email__email').order_by('-id')
+
+        # Create a paginator and paginate the list w/ 10 messages per page
+        paginator = Paginator(maintenances_all, 10)
+
+        # Paginate them
+        try:
+            maintenances = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, or is not given deliver first page.
+            maintenances = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            maintenances = paginator.page(paginator.num_pages)
+
+
+        # Print the page
+        return render_to_response(
+           'maintenance/m_list.html',
+           {
+              'title':'System Status Dashboard | Open Maintenance',
+              'maintenances':maintenances,
+              'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
+              'breadcrumbs':{'Admin':'/admin','List Open Maintenance':'m_list'},
+              'nav_section':'event',
+              'nav_sub':'m_list'
+           },
+           context_instance=RequestContext(request)
+        )
+
+
+    # Invalid form
+    else:
+        messages.add_message(request, messages.ERROR, 'Invalid request, please submit your request again.')
+        return HttpResponseRedirect('/admin/m_list')

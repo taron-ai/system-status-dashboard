@@ -27,6 +27,28 @@
     </div>
   </div>
 
+{% if results %}
+<div class="row">
+  <div class="large-12 columns">
+    <span class="navigation">
+      {% if results.has_previous %}
+        <a href="?page={{events.previous_page_number}}&{{query_params}}">&laquo;</a>
+      {% endif %}
+
+      <span>Page {{results.number}} of {{results.paginator.num_pages}}</span>
+
+      {% if results.has_next %}
+        <a href="?page={{results.next_page_number}}&{{query_params}}">&raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+</div>
+
+<div class="spacer_small"></div>
+
+{% endif %}
+
+
 <div class="row">
   <div class="large-12 large-centered columns">
 

@@ -60,14 +60,13 @@
 
 <div class="row">
   <div class="large-6 columns">
-    <a href="{{backward_link}}" title="Move back one week"><span class="genericon genericon-rewind genericon_container_nav"></span></a>
+    <a href="{{backward_link}}" title="Move back one week"><span class="foundicon-gen-left-arrow foundicon_container_nav"></span></a>
     &nbsp;&nbsp;
-    <a href="{{forward_link}}" title="Move forward one week"><span class="genericon genericon-fastforward genericon_container_nav"></span></a>
+    <a href="{{forward_link}}" title="Move forward one week"><span class="foundicon-gen-right-arrow foundicon_container_nav"></span></a>
     &nbsp;&nbsp;
-    <span id="calselector" class="genericon genericon-day genericon_container_nav" title="Jump to a specific date"></span>
-
+    <span id="calselector" title="Jump to a specific date" class="foundicon-gen-calendar foundicon_container_nav"></span>
     &nbsp;&nbsp;
-    <a href="#" data-dropdown="keydrop"><span class="genericon genericon-key genericon_container_nav" title="Dashboard color indicator key"></span></a>
+    <a href="#" data-dropdown="keydrop"><span class="foundicon-acc-key foundicon_container_nav" title="Dashboard color indicator key"></span></a>
 
     <div id="keydrop" class="f-dropdown content keydrop" data-dropdown-content>
       <div>
@@ -75,23 +74,23 @@
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><span class="genericon genericon-aside genericon_container_green"></span>&nbsp;Service Normal - the service is operating normally.</span>
+        <span class="legend"><span class="foundicon-genenc-checkmark foundicon_container_green"></span>&nbsp;Service Normal - the service is operating normally.</span>
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><span class="genericon genericon-aside genericon_container_red"></span>&nbsp;Service Disruption - the service is experiencing an active disruption.</span>
+        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_red"></span>&nbsp;Service Disruption - the service is experiencing an active disruption.</span>
         <div class="spacer_small"></div>      
       </div>
       <div>
-        <span class="legend"><span class="genericon genericon-aside genericon_container_orange"></span>&nbsp;Service Disruption (resolved) - a service disruption occurred, but has been resolved.</span>
+        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_orange"></span>&nbsp;Service Disruption (resolved) - a service disruption occurred, but has been resolved.</span>
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><span class="genericon genericon-aside genericon_container_blue"></span>&nbsp;Planned Maintenance - planned maintenance is occurring with the service.</span>
+        <span class="legend"><span class="foundicon-genenc-tools foundicon_container_blue"></span>&nbsp;Planned Maintenance - planned maintenance is occurring with the service.</span>
       </div>
     </div>
 
-    <form name="prefs_jump" action="/prefs/jump" method="post">
+    <form name="prefs_jump" action="/prefs/jump" method="post" style="margin: 0;">
     {% csrf_token %}
       <input type="text" class="jump_to" name="jump_to" id="jump_to" onchange='this.form.submit()'/>
     </form>
@@ -100,7 +99,7 @@
 </div>
 
 <script>
-  // Interact with datepicker through genericon icon
+  // Interact with datepicker through foundicon icon
   $("#calselector").click(function() {
       $("#jump_to").datepicker('show');
   });
@@ -132,12 +131,12 @@
            {% if forloop.counter == 1 %}
              <td style="text-align: center;">
                {% if column.status == 1 %}
-                 <span class="genericon genericon-aside genericon_container_red" title="A service disruption is currently occurring with this service."></span>
+                 <span class="foundicon-genenc-remove foundicon_container_red" title="A service disruption is currently occurring with this service."></span>
                {% else %}
                 {% if column.status == 2 %}
-                 <span class="genericon genericon-aside genericon_container_blue" title="Maintenance is currently occurring with this service."></span>
+                 <span class="foundicon-genenc-tools foundicon_container_blue" title="Maintenance is currently occurring with this service."></span>
                 {% else %}
-                  <span class="genericon genericon-aside genericon_container_green" title="Service is operating normally."></span>
+                  <span class="foundicon-genenc-checkmark foundicon_container_green" title="Service is operating normally."></span>
                 {% endif %}
                {% endif %}
               </td>
@@ -154,41 +153,41 @@
                 {% if event.type == 'incident' %}
                    {% if event.status == 'open' %}
                     <a href="#" data-dropdown="idrop_{{event.id}}">
-                      <span class="genericon genericon-aside genericon_container_red" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></span>
+                      <span class="foundicon-genenc-remove foundicon_container_red" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></span>
                     </a>
                     <div id="idrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
                       <span class="dashboard_drop">
                         <h5>Incident Information</h5>
                         <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                        <br><br>
+                        <a href="/i_detail?id={{event.id}}" title="More information">Full Details</a>
                       </span>
-                      <br><br>
-                      <a href="/i_detail?id={{event.id}}" title="More information"><div class="genericon genericon-summary genericon_container"></div></a>
                     </div>
                    {% else %}
                     <a href="#" data-dropdown="irdrop_{{event.id}}">
-                      <span class="genericon genericon-aside genericon_container_orange" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
+                      <span class="foundicon-genenc-remove foundicon_container_orange" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
                     </a>
                     <div id="irdrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
                       <span class="dashboard_drop">
                         <h5>Incident (Resolved) Information</h5>
                         <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                        <br><br>
+                        <a href="/i_detail?id={{event.id}}" title="More information">Full Details</span></a>
                       </span>
-                      <br><br>
-                      <a href="/i_detail?id={{event.id}}" title="More information"><div class="genericon genericon-summary genericon_container"></div></a>
                     </div>
                    {% endif %}
                 {% else %}
                   {% if event.type == 'maintenance' %}
                     <a href="#" data-dropdown="mdrop_{{event.id}}">
-                      <span class="genericon genericon-aside genericon_container_blue" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
+                      <span class="foundicon-genenc-tools foundicon_container_blue" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
                     </a>
                     <div id="mdrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
                       <span class="dashboard_drop">
                         <h5>Maintenance Information</h5>
                         <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                        <br><br>
+                        <a href="/m_detail?id={{event.id}}" title="More information">Full Details</a>
                       </span>
-                      <br><br>
-                      <a href="/m_detail?id={{event.id}}" title="More information"><div class="genericon genericon-summary genericon_container"></div></a>
                     </div>
                   {% endif %}
                 {% endif %}
@@ -210,10 +209,10 @@
     <span class="heading">Active Service Disruption Timeline:</span><div class="hr"></div>
     {% if incident_timeline %}
       {% for row in incident_timeline %}
-       <a href="/i_detail?id={{row.id}}"><span class="genericon genericon-next genericon_container_next" title="More information"></span></a>
        <span class="timeline">
-        {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}}
-       </span>
+        <a href="/i_detail?id={{row.id}}">{{row.start|date:"Y-m-d H:i:s e"}}</a>
+         - {{row.description}}
+        </span>
        <br>
       {% endfor %}
     {% else %}
@@ -228,9 +227,9 @@
     <span class="heading">Active Maintenance Timeline:</span><div class="hr"></div>
     {% if maintenance_timeline %}
       {% for row in maintenance_timeline %}
-       <a href="/m_detail?id={{row.id}}"><span class="genericon genericon-next genericon_container_next" title="More information"></span></a>
        <span class="timeline">
-        {{row.start|date:"Y-m-d H:i:s e"}} - {{row.description}}
+        <a href="/m_detail?id={{row.id}}">{{row.start|date:"Y-m-d H:i:s e"}}</a>
+        - {{row.description}}
        </span>
        <br>
       {% endfor %}
@@ -244,7 +243,7 @@
   <div class="large-12 columns">
     <br><br><br>
     <span class="heading">Summary Status:</span>
-    <a href="#" data-dropdown="histsumdrop"><span class="genericon genericon-help genericon_container_help" title="Dashboard color indicator key"></span></a>
+    <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-question foundicon_container_help" title="Explanation"></span></a>
     <div id="histsumdrop" class="f-dropdown content histsumdrop" data-dropdown-content>
       <h5>Historical Summary Status</h5><br>
       <span class="help_drop">
@@ -268,7 +267,10 @@ $(function () {
                 marginRight: 25,
                 marginBottom: 75,
                 height: 250,
-                width: 900
+                /* width: 900, */
+                backgroundColor: '#f9f9f9',
+                borderColor: '#cccccc',
+                borderWidth: 1
             },
             plotOptions: {
                 spline: {
@@ -299,6 +301,7 @@ $(function () {
                     text: 'Event Counts'
                 },
                 allowDecimals: false,
+                gridLineColor: '#eeeeee'
                 //min: 0
             },
             legend: {
@@ -369,9 +372,9 @@ $(function () {
 </script>
 <script type="text/javascript" src="/html/js/highcharts.js"></script>
 
-<div class="row hide-for-small">
+<div class="row">
   <div class="large-12 columns">
-    <div id="graph" style="width: 905px;"></div>
+    <div id="graph"></div>
     <br><br>
   </div>
 </div>

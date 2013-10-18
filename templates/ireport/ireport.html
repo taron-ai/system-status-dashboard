@@ -25,11 +25,14 @@
 {% csrf_token %}
 
   <div class="row">
-    <div class="large-8 columns">
+    <div class="large-12 columns">
       <h5>Report an Incident or Service Disruption</h5>
       <p>{{instructions|safe}}</p>
     </div>
   </div>
+
+  {# This is a row consisting of 12 columns that will display all messages passed in the request #}
+  {% include "admin/messages.html" %}
 
   <div class="row">
     <div class="large-8 columns">
@@ -38,21 +41,21 @@
     </div>
   </div>
 
-  <div class="spacer_medium"></div>
+  <div class="spacer_small"></div>
 
   <div class="row">
     <div class="large-8 columns">
       <div class="row">
-        <div class="large-4 columns {% if form.name.errors %}error{% endif %}">
-          <label>Your Full Name:<div class="input_container"><input type="text" name="name" placeholder="Enter your full name" value="{% if not form.name.data == None %}{{form.name.data}}{% endif %}" /></div></label>
+        <div class="large-6 columns {% if form.name.errors %}error{% endif %}">
+          <label>Your Full Name:<div class="input_container"><input type="text" name="name" placeholder="Enter your full name" maxlength="50" value="{% if not form.name.data == None %}{{form.name.data}}{% endif %}" /></div></label>
           {% if form.name.errors %}
-          <span class="error">{% for error in form.name.errors %}{{error}}<br>{% endfor %}<br></span>
+          <span class="err">{% for error in form.name.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}
         </div>
-        <div class="large-4 columns left {% if form.email.errors %}error{% endif %}">
+        <div class="large-6 columns left {% if form.email.errors %}error{% endif %}">
           <label>Your Email Address:<div class="input_container"><input type="text" name="email" placeholder="Enter your email address" maxlength="50" value="{% if not form.email.data == None %}{{form.email.data}}{% endif %}" /></div></label>
           {% if form.email.errors %}
-          <span class="error">{% for error in form.email.errors %}{{error}}<br>{% endfor %}<br></span>
+          <span class="err">{% for error in form.email.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}
         </div>
       </div>
@@ -64,15 +67,23 @@
   <div class="row">
     <div class="large-8 columns">
       <span class="radius secondary label">Incident Description</span><br>
-        <div class="sublabel_container"><span class="sublabel">Enter a full description of the issue you are currently experiencing.  Please include all information that would be useful in troubleshooting this issue.  If you need more room to enter information, please use the extended description entry field below.</span></div>
+        <div class="sublabel_container">
+          <span class="sublabel">Enter a full description of the issue you are currently experiencing.  Please include all information that would be useful in troubleshooting this issue.  If you need more room to enter information, please use the extended description entry field below.
+          </span>
+        </div>
     </div>
   </div>
 
+  <div class="spacer_small"></div>
+
   <div class="row">
     <div class="large-8 columns {% if form.detail.errors %}error{% endif %}">
-      <label>Brief Description:<div class="input_container"><textarea name="detail" class="ireport_desc" placeholder="Enter a description of the issue you are experiencing.  Input is limited to 160 characters." maxlength="160">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea></div></label>
+      <label>Brief Description:
+        &nbsp;<span id="detail_counter" class="counter"></span>
+      </label>
+      <div class="input_container"><textarea id="detail" name="detail" class="ireport_desc" placeholder="Enter a description of the issue you are experiencing.  Input is limited to 160 characters." maxlength="160">{% if not form.detail.data == None %}{{form.detail.data}}{% endif %}</textarea></div>
       {% if form.detail.errors %}
-      <span class="error">{% for error in form.detail.errors %}{{error}}<br>{% endfor %}</br></span>
+      <span class="err">{% for error in form.detail.errors %}{{error}}<br>{% endfor %}</br></span>
       {% endif %}
     </div>
   </div>
@@ -81,9 +92,12 @@
 
   <div class="row">
     <div class="large-8 columns {% if form.extra.errors %}error{% endif %}">
-      <label>Extended Description:<div class="input_container"><textarea name="extra" placeholder="Enter any additional information, beyond 160 characters, that you would like to report about this incident." maxlength="1000">{% if not form.extra.data == None %}{{form.extra.data}}{% endif %}</textarea></div></label>
+      <label>Extended Description:
+        &nbsp;<span id="extra_counter" class="counter"></span>      
+      </label>
+      <div class="input_container"><textarea id="extra" name="extra" placeholder="Enter any additional information, beyond 160 characters, that you would like to report about this incident." maxlength="1000">{% if not form.extra.data == None %}{{form.extra.data}}{% endif %}</textarea></div>
       {% if form.extra.errors %}
-      <span class="error">{% for error in form.extra.errors %}{{error}}<br>{% endfor %}<br></span>
+      <span class="err">{% for error in form.extra.errors %}{{error}}<br>{% endfor %}<br></span>
       {% endif %}
     </div>
   </div>
@@ -105,13 +119,13 @@
         <div class="large-4 columns {% if form.screenshot1.errors %}error{% endif %}">
           {{form.screenshot1}}
           {% if form.screenshot1.errors %}
-          <span class="error">{% for error in form.screenshot1.errors %}{{error}}<br>{% endfor %}<br></span>
+          <span class="err">{% for error in form.screenshot1.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}
         </div>
         <div class="large-4 columns left {% if form.screenshot2.errors %}error{% endif %}">
           {{form.screenshot2}}
           {% if form.screenshot2.errors %}
-          <span class="error">{% for error in form.screenshot2.errors %}{{error}}<br>{% endfor %}<br></span>
+          <span class="err">{% for error in form.screenshot2.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %}
         </div>
       </div>
@@ -129,6 +143,19 @@
   </div>
 
 </form>
+
+
+
+<script>
+  // Textarea counters
+  $("#detail").keyup(function(){
+    $("#detail_counter").text("Characters left: " + (160 - $(this).val().length));
+  });
+
+  $("#extra").keyup(function(){
+    $("#extra_counter").text("Characters left: " + (1000 - $(this).val().length));
+  });
+</script>
 
 
 {% endblock %}

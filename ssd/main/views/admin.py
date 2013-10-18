@@ -24,8 +24,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib import messages
 from django import get_version
-from ssd.main.models import Config_Email
+from ssd.main.models import Config_Admin
+from ssd.main.forms import AdminConfigForm
 
 
 # Get an instance of the ssd logger
@@ -41,8 +43,26 @@ def main(request):
 
     logger.debug('%s view being executed.' % 'admin.main')
 
+    # Print the page
+    return render_to_response(
+       'admin/main.html',
+       {
+          'title':'System Status Dashboard | Admin',
+          'django_version':get_version,
+          'breadcrumbs':{'Admin':'/admin'}
+       },
+       context_instance=RequestContext(request)
+    )
 
-    # -- MEMCACHED INFORMATION --#
+
+@login_required
+@staff_member_required
+def cache(request):
+    """Display cache settings
+ 
+    """
+
+    logger.debug('%s view being executed.' % 'admin.cache')
 
     m_stats = []
 
@@ -89,14 +109,65 @@ def main(request):
 
     # Print the page
     return render_to_response(
-       'admin/main.html',
+       'admin/cache.html',
        {
-          'title':'System Status Dashboard | Admin',
-          'version':get_version,
+          'title':'System Status Dashboard | Admin - Cache',
           'cache_settings':cache_settings,
           'm_stats':m_stats,
-          'breadcrumbs':{'Admin':'/admin'}
+          'breadcrumbs':{'Admin':'/admin','Cache Settings':'cache'},
+          'nav_section':'admin',
+          'nav_sub':'cache'
        },
        context_instance=RequestContext(request)
     )
 
+
+@login_required
+@staff_member_required
+def admin_config(request):
+    """SSD Admin Configuration View
+ 
+    """
+
+    logger.debug('%s view being executed.' % 'admin.admin_config')
+
+    # If this is a POST, then validate the form and save the data
+    if request.method == 'POST':
+
+        # Check the form elements
+        form = AdminConfigForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('AdminConfigForm',form))
+
+        if form.is_valid():
+            # Obtain the cleaned data
+            link_enabled = form.cleaned_data['link_enabled']
+        
+            # There should only ever be one record in this table
+            Config_Admin.objects.filter(id=Config_Admin.objects.values('id')[0]['id']).update(link_enabled=link_enabled)
+
+            messages.add_message(request, messages.SUCCESS, 'Preferences saved successfully')
+        else:
+            messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')
+
+    # Not a POST or a failed form submit
+    else:
+        # Create a blank form
+        form = AdminConfigForm
+
+    # Obtain the email config
+
+    admin_config = Config_Admin.objects.filter(id=Config_Admin.objects.values('id')[0]['id']).values('link_enabled')
+
+    # Print the page
+    return render_to_response(
+       'admin/config.html',
+       {
+          'title':'System Status Dashboard | Admin Configuration',
+          'admin_config':admin_config,
+          'form':form,
+          'breadcrumbs':{'Admin':'/admin','Admin Configuration':'admin_config'},
+          'nav_section':'admin',
+          'nav_sub':'admin_config'
+       },
+       context_instance=RequestContext(request)
+    )

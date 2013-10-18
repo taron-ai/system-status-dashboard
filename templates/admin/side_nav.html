@@ -3,6 +3,16 @@
 <div class="large-3 columns">
     <div class="docs section-container accordion" data-section="accordion" data-options="one_up: false">
 
+	  <section class="section {% if nav_section == 'admin' %}active{% endif %}">
+	    <p class="title"><a href="#">Admin</a></p>
+	    <div class="content">
+	      <ul class="side-nav">
+	        <li {% if nav_sub == 'cache' %}class="active"{% endif %}><a href="/admin/cache">Cache Settings</a></li>
+	        <li {% if nav_sub == 'admin_config' %}class="active"{% endif %}><a href="/admin/admin_config">Admin Configuration</a></li>
+	      </ul>
+	    </div>
+	  </section>
+
 	  <section class="section {% if nav_section == 'email' %}active{% endif %}">
 	    <p class="title"><a href="#">Email</a></p>
 	    <div class="content">
@@ -40,7 +50,7 @@
 	    <div class="content">
 	      <ul class="side-nav">
 	        <li {% if nav_sub == 'ireport_config' %}class="active"{% endif %}><a href="/admin/ireport_config">Configuration</a></li>
-			<li {% if nav_sub == 'ireport_list' or nav_sub == 'ireport_delete' or nav_sub == 'ireport_detail' %}class="active"{% endif %}><a href="/admin/ireport_list">List/Delete Incident Reports</a></li>
+			<li {% if nav_sub == 'ireport_list' or nav_sub == 'ireport_delete' or nav_sub == 'ireport_detail' %}class="active"{% endif %}><a href="/admin/ireport_list">List Incident Reports</a></li>
 	      </ul>
 	    </div>
 	  </section>

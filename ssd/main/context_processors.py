@@ -22,9 +22,7 @@
 """
 
 import pytz
-from ssd.main.models import Config_Logo
-from ssd.main.models import Config_Ireport
-from ssd.main.models import Config_Escalation
+from ssd.main.models import Config_Admin, Config_Logo, Config_Escalation, Config_Ireport
 from django.conf import settings
 
 
@@ -54,7 +52,7 @@ def prefs(request):
     else:
         values['logo'] = False
 
-    # Display the report incident?
+    # Display the report incident link?
     if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
         values['ireport'] = True
     else:
@@ -66,9 +64,16 @@ def prefs(request):
     else:
         values['escalation'] = False
 
+    # Display the admin link?
+    if Config_Admin.objects.filter(id=Config_Admin.objects.values('id')[0]['id']).values('link_enabled')[0]['link_enabled'] == 1:
+        values['admin_link'] = True
+    else:
+        values['admin_link'] = False
+
     # Return values to the template
     return {
             'app_version':values['app_version'],
+            'admin_link':values['admin_link'],
             'logo':values['logo'],
             'ireport':values['ireport'],
             'escalation':values['escalation']

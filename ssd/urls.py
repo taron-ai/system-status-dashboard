@@ -57,8 +57,10 @@ urlpatterns = patterns('',
     # Standard Django admin site
     url(r'^djadmin/',                       include(admin.site.urls)),
 
-    # SSD Admin Homepage
+    # SSD Admin 
     url(r'^admin$',                         'ssd.main.views.admin.main'),
+    url(r'^admin/admin_config$',            'ssd.main.views.admin.admin_config'),
+    url(r'^admin/cache$',                   'ssd.main.views.admin.cache'),
 
     # Incident Events (admin functionality)
     url(r'^admin/incident$',                'ssd.main.views.incidents.incident'),

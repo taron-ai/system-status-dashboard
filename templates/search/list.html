@@ -73,8 +73,8 @@
 
 <div class="spacer_micro"></div>
 
-<form method="GET" action="/events">
 <div class="row">
+  <form method="GET" action="/events">
   <div class="large-5 columns">
     {# If a custom query is being performed, or there was an error in the custom search, expand #}
     <div class="panel" id="search" style="background-color: white;{% if not form.errors and not query_params %} display: none;{% endif %}">
@@ -112,8 +112,9 @@
       </div>
     </div>
   </div>
+  </form>
 </div>
-</form>
+
 
 <div class="spacer_small"></div>
 

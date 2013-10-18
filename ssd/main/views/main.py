@@ -107,9 +107,16 @@ def index(request):
 
     # Determine if there are any active events (incidents or maintenances), regardless of the time range
     # This will be used to set the main service status
+    active_incidents = cache.get('active_incidents')
+    if active_incidents == None:
+        active_incidents = Event.objects.filter(type__type='incident',status__status='open').values('event_service__service__service_name')
+        cache.set('active_incidents', active_incidents)
 
-    active_incidents = Event.objects.filter(type__type='incident',status__status='open').values('event_service__service__service_name')
-    active_maintenances = Event.objects.filter(type__type='maintenance',status__status='started').values('event_service__service__service_name')
+    active_maintenances = cache.get('active_maintenances')
+    if active_maintenances == None:
+        active_maintenances = Event.objects.filter(type__type='maintenance',status__status='started').values('event_service__service__service_name')
+        cache.set('active_maintenances', active_maintenances)
+
     # Create an easy lookup table for later
     events_lookup = {
         'incident':{},

@@ -21,6 +21,13 @@
 {% block content %}
 
 <div class="row">
+  <div class="large-12 columns">
+    <h5>Graph Search Results</h5>
+    <br>
+    </div>
+  </div>
+
+<div class="row">
   <div class="large-12 large-centered columns">
 
   {% if results %}
@@ -41,7 +48,7 @@
          <td>{{row.start|date:"Y-m-d H:i:s e"}}</td>
          <td>{{row.end|date:"Y-m-d H:i:s e"}}</td>
          <td>{{row.description}}</td>
-         <td>{% if row.type__type == 'incident' %}<a href="/i_detail?id={{row.id}}">{% else %}{% if row.type__type == 'maintenance' %}<a href="/m_detail?id={{row.id}}">{% endif %}{% endif %}<div class="genericon genericon-summary genericon_container"></div></a></td>
+         <td>{% if row.type__type == 'incident' %}<a href="/i_detail?id={{row.id}}">{% else %}{% if row.type__type == 'maintenance' %}<a href="/m_detail?id={{row.id}}">{% endif %}{% endif %}<i class="foundicon-gen-page"></i></a></td>
         </tr>
         {% endfor %}
       </tbody>

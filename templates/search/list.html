@@ -20,28 +20,6 @@
 
 {% block content %}
 
-<script type="text/javascript">
-
-   // Date Pickers and Submit
-   $(function() {
-
-      //Start Date
-      $("#start").datepicker({dateFormat: 'yy-mm-dd'});
-
-      //End Date
-      $("#end").datepicker({dateFormat: 'yy-mm-dd'});
-
-     // Settings Slider
-     $(function() {
-        $("#search_button").click(function () {
-          $("#search").slideToggle("slow");
-        });
-      });
-
-   });
-
-</script>
-
 {# This is row consisting of 12 columns that will display all messages passed in the request #}
 {% include "admin/messages.html" %}
 
@@ -152,7 +130,27 @@
   </div>
 </div>
 
-<div class="spacer_medium"></div>
+<script type="text/javascript">
+
+   // Date Pickers and Submit
+   $(function() {
+
+      //Start Date
+      $("#start").datepicker({dateFormat: 'yy-mm-dd'});
+
+      //End Date
+      $("#end").datepicker({dateFormat: 'yy-mm-dd'});
+
+     // Settings Slider
+     $(function() {
+        $("#search_button").click(function () {
+          $("#search").slideToggle("slow");
+        });
+      });
+
+   });
+
+</script>
 
 {% endblock %}
 

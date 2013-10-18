@@ -244,12 +244,19 @@ span.foundicon_container_nav {
    font-size: 25px; 
    color: #DDDDDD;
 }
-/* Navigation links on the dashboard table */
+/* General formatting where foundicons are used for links */
 span.foundicon_container_iconlink {
    position: relative; 
    /* bottom: 1px; */ 
    font-size: 20px; 
    color: #DDDDDD;
+}
+/* Escalation Arrow */
+span.foundicon_container_escalate {
+   position: relative;
+   bottom: -5px;
+   font-size: 20px; 
+   color: red;
 }
 /* Key dropdown links (anywhere but the dashboard) */
 span.foundicon_container_key {

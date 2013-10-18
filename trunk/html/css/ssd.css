@@ -149,10 +149,6 @@ div.sublabel_container {
    padding-top: 5px;
    padding-bottom: 8px;
 }
-/* Page Navigation */
-div.navigation {
-   font-size: 14px;
-}
 /* pseudo hr */
 div.hr { 
    width: 100%; 
@@ -181,6 +177,11 @@ div.header {
 
 
 /* SPANs */
+/* Pagination Links */
+span.navigation {
+   font-size: 12px;
+   font-weight: bold;
+}
 /* Counters */
 span.counter {
    font-size: 12px;

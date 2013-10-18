@@ -15,25 +15,25 @@
  limitations under the License.
 
 {% endcomment %}
-Dear {{recipient_name}}, {{greeting|safe}}
+{{greeting|safe}}
 
-Incident Status: {% if detail.0.closed %}CLOSED ({{detail.0.closed}}){% else %}OPEN{% endif %}
+Incident Status: {{details.0.status__status}}
 
 The following services have been impacted by this incident:{% if services %}{% for row in services %}
-- {{row.service_name_id__service_name}}{% endfor %}{% else %}- NO SERVICES DEFINED{% endif %}
+- {{row.event_service__service__service_name}}{% endfor %}{% else %}- NO SERVICES DEFINED{% endif %}
 
 
 INCIDENT DETAILS/UPDATES:
 
-Date: {{detail.0.date|date:"Y-m-d H:i:s e"}}
-Logged by: {{detail.0.user_id__first_name}} {{detail.0.user_id__last_name}}
-Detail: {{detail.0.detail|safe}}
+Start: {{details.0.start|date:"Y-m-d H:i e"}}
+End: {{details.0.end|date:"Y-m-d H:i e"}}
+Detail: {{details.0.description|linebreaksbr}}
     
 {% if updates %}{% for row in updates %}
-Date: {{row.date|date:"Y-m-d H:i:s e"}}
-Logged by: {{row.user_id__first_name}} {{row.user_id__last_name}}
-Update: {{row.detail|safe}}
+Date: {{row.event_update__date|date:"Y-m-d H:i:s e"}}
+Update: {{row.event_update__update}}
+
 
 {% endfor %}{% endif %}
-* You may visit the System Status Dashboard at any time for current information on the status of all services: {{ssd_url}}
+{% if ssd_url%}* You may visit the Status Dashboard at any time for current information on the status of all services: {{ssd_url}}{% endif %}
 

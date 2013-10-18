@@ -23,6 +23,7 @@ import logging
 import datetime
 import pytz
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib import messages
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -50,6 +51,7 @@ def gsearch(request):
         # Obtain the cleaned data (only validate the dates)
         date = form.cleaned_data['date']
         type = form.cleaned_data['type']
+        page = form.cleaned_data['page']
 
         # Combine the dates and times into datetime objects
         start = datetime.datetime.combine(date, datetime.datetime.strptime('00:00:00','%H:%M:%S').time())
@@ -60,16 +62,33 @@ def gsearch(request):
         start = tz.localize(start)
         end = tz.localize(end)
 
-        results = Event.objects.filter(type__type=type,start__range=[start,end]
-                                              ).values('id','type__type','start','end','description',
-                                              ).distinct().order_by('-start')
+        results_all = Event.objects.filter(type__type=type,start__range=[start,end]
+                                          ).values('id','type__type','start','end','description',
+                                          ).distinct().order_by('-start')
+
+        # Create a paginator and paginate the list w/ 10 messages per page
+        paginator = Paginator(results_all, 10)
+
+        # Paginate them
+        try:
+            results = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, or is not given deliver first page.
+            results = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            results = paginator.page(paginator.num_pages)
+
+        # Put together the query params
+        query_params = 'date=%s&type=%s' % (date,type)
 
         # Print the page
         return render_to_response(
            'search/search_results.html',
            {
               'title':'System Status Dashboard | Event Search',
-              'results':results
+              'results':results,
+              'query_params':query_params
            },
            context_instance=RequestContext(request)
         )

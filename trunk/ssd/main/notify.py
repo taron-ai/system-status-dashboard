@@ -78,26 +78,22 @@ class email:
 
 
         # Obain the incident detail
-        detail = Event.objects.filter(id=id).values(
-                                                    'start',
-                                                    'end',
-                                                    'description',
-                                                    'event_email__email__email',
-                                                    'event_user__user__first_name',
-                                                    'event_user__user__last_name'
-                                                    )
+        details = Event.objects.filter(id=id,type=1).values(
+                                                'status__status',
+                                                'start',
+                                                'end',
+                                                'description',
+                                                )
 
         # Which services were impacted
         services = Event.objects.filter(id=id).values('event_service__service__service_name')
 
         # Obain any incident updates
         updates = Event.objects.filter(id=id).values(
-                                                    'event_update__id',
-                                                    'event_update__date',
-                                                    'event_update__update',
-                                                    'event_update__user__first_name',
-                                                    'event_update__user__last_name'
-                                                    ).order_by('event_update__id')
+                                                'event_update__id',
+                                                'event_update__date',
+                                                'event_update__update',
+                                                ).order_by('event_update__id')
 
         # Obtain the recipient email address
         recipient_incident = Email.objects.filter(id=email_id).values('email')[0]['email']
@@ -121,7 +117,7 @@ class email:
 
         # Interpolate values for the template
         d = Context({ 
-                     'detail':detail,
+                     'details':details,
                      'greeting':greeting,
                      'services':services,
                      'updates':updates,
@@ -154,7 +150,7 @@ class email:
             msg.send()
         except Exception, e:
             # Log to the error log and return the error to the caller
-            print e
+            logger.error('Error sending incident email: %s' % e)
             return e
 
         # All good
@@ -244,7 +240,7 @@ class email:
             msg.send()
         except Exception, e:
             # Log to the error log and return the error to the caller
-            print e
+            logger.error('Error sending maintenance email: %s' % e)
             return e
 
         # All good

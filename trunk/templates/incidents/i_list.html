@@ -42,6 +42,27 @@
 
     <div class="spacer_medium"></div>
 
+    {% if incidents %}
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="navigation">
+          {% if incidents.has_previous %}
+            <a href="?page={{incidents.previous_page_number}}">&laquo;</a>
+          {% endif %}
+
+          <span>Page {{incidents.number}} of {{incidents.paginator.num_pages}}</span>
+
+          {% if incidents.has_next %}
+            <a href="?page={{incidents.next_page_number}}">&raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    <div class="spacer_small"></div>
+
+    {% endif %}
+
     <div class="row">
       <div class="large-12 columns">
         {% if incidents %}

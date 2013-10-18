@@ -80,36 +80,6 @@ def prefs(request):
            }
 
 
-def redirect(request):
-    """Set the 'next' Key so that after login events, the user can be 
-    sent back to where they were"""
-
-    # If the @login_required decorator is being used on a view,
-    # then 'next' will already be set so do nothing
-    # Since context_processors must return a dictionary, just give back
-    # what is already in 'next'
-    if request.GET.has_key('next'):
-        return{'next':request.GET['next']}
-
-    # If someone is accessing the login link directly, then set the next
-    # key to the referring page so they can be redirected to the page they 
-    # were on after login
-    elif 'HTTP_REFERER' in request.META:
-
-        # If the referring page is 'http://<quinico server>/accounts/login', then its probably
-        # a failed login, so send them back to the homepage after login
-        # since we don't know the true referrer
-        if request.META['HTTP_REFERER'] == 'http://%s/accounts/login/' % request.META['HTTP_HOST']:
-            return{'next':'/'}
-        else:
-            return{'next':request.META['HTTP_REFERER']}
-
-    # Its not an @login_required view and there is no referrer, so send
-    # them back to the home page after login
-    else:
-        return{'next':'/'}
-
-
 def timezones(request):
     """Populate the timezones in the sticky footer timezone picker"""
 

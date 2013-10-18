@@ -222,7 +222,7 @@ def ireport_list(request):
 
         page = form.cleaned_data['page']
 
-        # Obtain all open incidents
+        # Obtain all incidents reports
         ireports_all = Ireport.objects.values('id','date','name','email','detail','extra','screenshot1','screenshot2').order_by('-id')
 
         # Create a paginator and paginate the list w/ 10 messages per page

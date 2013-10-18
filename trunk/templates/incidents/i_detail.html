@@ -83,6 +83,12 @@
           <td>Description</td>
           <td>{{details.0.description|linebreaksbr}}</td>
         </tr>
+        {% if user.is_authenticated %}
+        <tr>
+          <td>Created By</td>
+          <td>{{details.0.user_id__first_name}} {{details.0.user_id__last_name}}</td>
+        </td>
+        {% endif %}
       </tbody>
     </table>
   </div>
@@ -100,7 +106,9 @@
         </tr>
         <tr>
           <th width="200">Time</th>
+          {% if user.is_authenticated %}
           <th width="165">Logged By</th>
+          {% endif %}
           <th width="400px">Detail</th>
         </tr>
       </thead>
@@ -109,7 +117,9 @@
       {% for row in updates %}
         <tr>
          <td>{{row.event_update__date|date:"Y-m-d H:i:s e"}}</td>
+         {% if user.is_authenticated %}
          <td>{{row.event_update__user__first_name}} {{row.event_update__user__last_name}}</td>
+         {% endif %}
          <td>{{row.event_update__update|linebreaksbr}}</td>
         </tr>
       {% endfor %}

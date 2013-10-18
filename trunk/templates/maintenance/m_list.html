@@ -42,6 +42,27 @@
 
     <div class="spacer_medium"></div>
 
+    {% if maintenances %}
+    <div class="row">
+      <div class="large-12 columns">
+        <span class="navigation">
+          {% if maintenances.has_previous %}
+            <a href="?page={{maintenances.previous_page_number}}">&laquo;</a>
+          {% endif %}
+
+          <span>Page {{maintenances.number}} of {{maintenances.paginator.num_pages}}</span>
+
+          {% if maintenances.has_next %}
+            <a href="?page={{maintenances.next_page_number}}">&raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    <div class="spacer_small"></div>
+
+    {% endif %}
+
     <div class="row">
       <div class="large-12 columns">
         {% if maintenances %}

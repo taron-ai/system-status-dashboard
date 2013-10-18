@@ -27,13 +27,14 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.cache import cache
 from ssd.main.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email, Config_Email
-from ssd.main.forms import AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm
+from ssd.main.forms import AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm, ListForm
 from ssd.main import notify
 
 
@@ -487,19 +488,44 @@ def i_list(request):
 
     logger.debug('%s view being executed.' % 'incidents.i_list')
 
-    # Obtain all open incidents
-    incidents = Event.objects.filter(type__type='incident',status__status='open').values('id','start','description')
+    form = ListForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('ListForm',form))
 
-    # Print the page
-    return render_to_response(
-       'incidents/i_list.html',
-       {
-          'title':'System Status Dashboard | Open Incidents',
-          'incidents':incidents,
-          'breadcrumbs':{'Admin':'/admin','List Open Incidents':'i_list'},
-          'nav_section':'event',
-          'nav_sub':'i_list'
-       },
-       context_instance=RequestContext(request)
-    )
+    # Check the params
+    if form.is_valid():
 
+        page = form.cleaned_data['page']
+
+        # Obtain all open incidents
+        incidents_all = Event.objects.filter(type__type='incident',status__status='open').values('id','start','description').order_by('-id')
+
+        # Create a paginator and paginate the list w/ 10 messages per page
+        paginator = Paginator(incidents_all, 10)
+
+        # Paginate them
+        try:
+            incidents = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, or is not given deliver first page.
+            incidents = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            incidents = paginator.page(paginator.num_pages)
+
+        # Print the page
+        return render_to_response(
+           'incidents/i_list.html',
+           {
+              'title':'System Status Dashboard | Open Incidents',
+              'incidents':incidents,
+              'breadcrumbs':{'Admin':'/admin','List Open Incidents':'i_list'},
+              'nav_section':'event',
+              'nav_sub':'i_list'
+           },
+           context_instance=RequestContext(request)
+        )
+
+    # Invalid form
+    else:
+        messages.add_message(request, messages.ERROR, 'Invalid request, please submit your request again.')
+        return HttpResponseRedirect('/admin/i_list')

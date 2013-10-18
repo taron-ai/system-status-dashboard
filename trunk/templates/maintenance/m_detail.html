@@ -95,6 +95,12 @@
           <td>{{details.0.event_coordinator__coordinator|linebreaksbr}}</td>
         </tr>
         {% endif %}
+        {% if user.is_authenticated %}
+        <tr>
+          <td>Created By</td>
+          <td>{{details.0.user_id__first_name}} {{details.0.user_id__last_name}}</td>
+        </td>
+        {% endif %}
       </tbody>
     </table>
   </div>
@@ -121,7 +127,9 @@
       {% for row in updates %}
         <tr>
          <td>{{row.event_update__date|date:"Y-m-d H:i:s e"}}</td>
+         {% if user.is_authenticated %}
          <td>{{row.event_update__user__first_name}} {{row.event_update__user__last_name}}</td>
+         {% endif %}
          <td>{{row.event_update__update|linebreaksbr}}</td>
         </tr>
       {% endfor %}

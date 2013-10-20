@@ -102,9 +102,9 @@ def cache_status(request):
                         rows[key].append(value)
 
         except Exception as e:
-            logger.error('Cannot obtain memcached settings: %s' % e)
+            logger.error('Cannot obtain cache settings: %s' % e)
     else:
-        logger.debug('No memcached caches are defined.')
+        logger.debug('No caches are defined.')
 
 
     # Print the page

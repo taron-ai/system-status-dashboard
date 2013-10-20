@@ -107,12 +107,23 @@ def index(request):
 
     # Determine if there are any active events (incidents or maintenances), regardless of the time range
     # This will be used to set the main service status
-    active_incidents = cache.get('active_incidents')
+
+    # Active Incidents
+    try:
+        active_incidents = cache.get('active_incidents')
+    except Exception as e:
+        logger.error('Exception getting active_incidents from cache: %s' % e)
+        active_incidents = None
     if active_incidents == None:
         active_incidents = Event.objects.filter(type__type='incident',status__status='open').values('event_service__service__service_name')
         cache.set('active_incidents', active_incidents)
 
-    active_maintenances = cache.get('active_maintenances')
+    # Active Maintenances
+    try:
+        active_maintenances = cache.get('active_maintenances')
+    except Exception as e:
+        logger.error('Exception getting active_maintenances from cache: %s' % e)
+        active_maintenances = None 
     if active_maintenances == None:
         active_maintenances = Event.objects.filter(type__type='maintenance',status__status='started').values('event_service__service__service_name')
         cache.set('active_maintenances', active_maintenances)
@@ -149,7 +160,11 @@ def index(request):
         cache.set('services', services)
 
     # Grab all events within the time range requested
-    events = cache.get('events')
+    try:
+        events = cache.get('events')
+    except Exception as e:
+        logger.error('Exception getting events from cache: %s' % e)
+        events = None 
     if events == None:
         events = Event.objects.filter(start__range=[dates[0],ref_q]).values('id',
                                                                             'type__type',
@@ -226,7 +241,7 @@ def index(request):
 
 
     # ------------------ #
-    # Obtain a count of all incidents/maintenances/reports going back 30 days and forward 30 days (from the reference date) for the summary
+    # Obtain a count of all incidents/maintenances going back 30 days and forward 30 days (from the reference date) for the summary
     # graph
     
     # First populate all of the dates into an array so we can iterate through 
@@ -299,6 +314,7 @@ def index(request):
 
         # Add the tuple
         count_data.append(t)
+    # End counts
     # ------------------ #
 
 
@@ -313,6 +329,7 @@ def index(request):
     if maintenance_timeline == None:
         maintenance_timeline = Event.objects.filter(status__status='started',type__type='maintenance').values('id','start','description').order_by('-id')
         cache.set('maintenance_timeline', maintenance_timeline)
+    # End timelines
     # ------------------ #
 
 

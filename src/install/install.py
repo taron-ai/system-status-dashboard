@@ -269,7 +269,7 @@ def install():
     print 'PERFORMING FRESH INSTALL:\n'  
 
     # SOURCE DIRECTORY
-    ssd_source = re.search('^(\S+)\/src/install$',os.getcwd())
+    ssd_source = re.search('^(\S+)\/src\/install$',os.getcwd())
     if ssd_source:
         default_source = ssd_source.group(1)
     else:
@@ -421,7 +421,7 @@ def upgrade():
     print 'PERFORMING SSD UPGRADE:\n'  
 
     # SOURCE DIRECTORY
-    ssd_source = re.search('^(\S+)\/install$',os.getcwd())
+    ssd_source = re.search('^(\S+)\/src\/install$',os.getcwd())
     if ssd_source:
         default_source = ssd_source.group(1)
     else:

@@ -25,9 +25,9 @@ from django.core.mail import EmailMessage
 from django.template.loader import get_template
 from django.template import Context
 from django.utils import timezone as jtz
-from ssd.main.models import Email
-from ssd.main.models import Event
-from ssd.main.models import Config_Email, Config_Systemurl
+from ssd.dashboard.models import Email
+from ssd.dashboard.models import Event
+from ssd.dashboard.models import Config_Email, Config_Systemurl
 
 
 # Get an instance of the ssd logger

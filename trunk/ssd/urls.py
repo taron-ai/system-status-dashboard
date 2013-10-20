@@ -16,33 +16,33 @@
 
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from ssd.main.views import main
+from ssd.dashboard.views import main
 admin.autodiscover()
 
 urlpatterns = patterns('',
 
     # Main Dashboard (cache this page for 60 seconds)
-    url(r'^$',                              'ssd.main.views.main.index'),
+    url(r'^$',                              'ssd.dashboard.views.main.index'),
 
     # Escalation Path
-    url(r'^escalation$',                    'ssd.main.views.escalation.escalation'),
+    url(r'^escalation$',                    'ssd.dashboard.views.escalation.escalation'),
 
     # Search
-    url(r'^events$',                        'ssd.main.views.search.events'),
-    url(r'^gsearch$',                       'ssd.main.views.search.gsearch'),
+    url(r'^events$',                        'ssd.dashboard.views.search.events'),
+    url(r'^gsearch$',                       'ssd.dashboard.views.search.gsearch'),
 
     # Preferences
-    url(r'^prefs/set_timezone$',            'ssd.main.views.prefs.set_timezone'),
-    url(r'^prefs/jump$',                    'ssd.main.views.prefs.jump'),
+    url(r'^prefs/set_timezone$',            'ssd.dashboard.views.prefs.set_timezone'),
+    url(r'^prefs/jump$',                    'ssd.dashboard.views.prefs.jump'),
 
     # Incident Events
-    url(r'^i_detail$',                      'ssd.main.views.incidents.i_detail'),
+    url(r'^i_detail$',                      'ssd.dashboard.views.incidents.i_detail'),
 
     # Maintenance Events
-    url(r'^m_detail$',                      'ssd.main.views.maintenance.m_detail'),
+    url(r'^m_detail$',                      'ssd.dashboard.views.maintenance.m_detail'),
 
     # Incident Reports
-    url(r'^ireport$',                       'ssd.main.views.ireport.ireport'),
+    url(r'^ireport$',                       'ssd.dashboard.views.ireport.ireport'),
 
 
 
@@ -58,53 +58,53 @@ urlpatterns = patterns('',
     url(r'^djadmin/',                       include(admin.site.urls)),
 
     # SSD Admin 
-    url(r'^admin$',                         'ssd.main.views.admin.main'),
-    url(r'^admin/admin_config$',            'ssd.main.views.admin.admin_config'),
-    url(r'^admin/cache_status$',            'ssd.main.views.admin.cache_status'),
+    url(r'^admin$',                         'ssd.dashboard.views.admin.main'),
+    url(r'^admin/admin_config$',            'ssd.dashboard.views.admin.admin_config'),
+    url(r'^admin/cache_status$',            'ssd.dashboard.views.admin.cache_status'),
 
     # Incident Events (admin functionality)
-    url(r'^admin/incident$',                'ssd.main.views.incidents.incident'),
-    url(r'^admin/i_delete$',                'ssd.main.views.incidents.i_delete'),
-    url(r'^admin/i_list$',                  'ssd.main.views.incidents.i_list'),
-    url(r'^admin/i_update$',                'ssd.main.views.incidents.i_update'),
+    url(r'^admin/incident$',                'ssd.dashboard.views.incidents.incident'),
+    url(r'^admin/i_delete$',                'ssd.dashboard.views.incidents.i_delete'),
+    url(r'^admin/i_list$',                  'ssd.dashboard.views.incidents.i_list'),
+    url(r'^admin/i_update$',                'ssd.dashboard.views.incidents.i_update'),
     
     # Maintenance Events (admin functionality)
-    url(r'^admin/maintenance$',             'ssd.main.views.maintenance.maintenance'),
-    url(r'^admin/m_delete$',                'ssd.main.views.maintenance.m_delete'),
-    url(r'^admin/m_list$',                  'ssd.main.views.maintenance.m_list'),
-    url(r'^admin/m_email$',                 'ssd.main.views.maintenance.m_email'),
-    url(r'^admin/m_update$',                'ssd.main.views.maintenance.m_update'),
+    url(r'^admin/maintenance$',             'ssd.dashboard.views.maintenance.maintenance'),
+    url(r'^admin/m_delete$',                'ssd.dashboard.views.maintenance.m_delete'),
+    url(r'^admin/m_list$',                  'ssd.dashboard.views.maintenance.m_list'),
+    url(r'^admin/m_email$',                 'ssd.dashboard.views.maintenance.m_email'),
+    url(r'^admin/m_update$',                'ssd.dashboard.views.maintenance.m_update'),
 
     # Email Configuration (admin functionality)
-    url(r'^admin/email_config$',            'ssd.main.views.email.email_config'),
-    url(r'^admin/email_recipients$',        'ssd.main.views.email.email_recipients'),
-    url(r'^admin/recipient_delete$',        'ssd.main.views.email.recipient_delete'),
-    url(r'^admin/recipient_modify$',        'ssd.main.views.email.recipient_modify'),
+    url(r'^admin/email_config$',            'ssd.dashboard.views.email.email_config'),
+    url(r'^admin/email_recipients$',        'ssd.dashboard.views.email.email_recipients'),
+    url(r'^admin/recipient_delete$',        'ssd.dashboard.views.email.recipient_delete'),
+    url(r'^admin/recipient_modify$',        'ssd.dashboard.views.email.recipient_modify'),
  
     # Services Configuration (admin functionality)
-    url(r'^admin/services$',                'ssd.main.views.services.services'),
-    url(r'^admin/service_delete$',          'ssd.main.views.services.service_delete'),
-    url(r'^admin/service_modify$',          'ssd.main.views.services.service_modify'),
+    url(r'^admin/services$',                'ssd.dashboard.views.services.services'),
+    url(r'^admin/service_delete$',          'ssd.dashboard.views.services.service_delete'),
+    url(r'^admin/service_modify$',          'ssd.dashboard.views.services.service_modify'),
 
     # Messages Configuration (admin functionality)
-    url(r'^admin/messages_config$',         'ssd.main.views.messages.messages_config'),
+    url(r'^admin/messages_config$',         'ssd.dashboard.views.messages.messages_config'),
 
     # Logo Configuration (admin functionality)
-    url(r'^admin/logo_config$',             'ssd.main.views.logo.logo_config'),
+    url(r'^admin/logo_config$',             'ssd.dashboard.views.logo.logo_config'),
 
     # Url Configuration (admin functionality)
-    url(r'^admin/systemurl_config$',        'ssd.main.views.systemurl.systemurl_config'),
+    url(r'^admin/systemurl_config$',        'ssd.dashboard.views.systemurl.systemurl_config'),
 
     # Incident Reports (admin functionality)
-    url(r'^admin/ireport_config$',          'ssd.main.views.ireport.ireport_config'),
-    url(r'^admin/ireport_detail$',          'ssd.main.views.ireport.ireport_detail'),
-    url(r'^admin/ireport_delete$',          'ssd.main.views.ireport.ireport_delete'),
-    url(r'^admin/ireport_list$',            'ssd.main.views.ireport.ireport_list'),
+    url(r'^admin/ireport_config$',          'ssd.dashboard.views.ireport.ireport_config'),
+    url(r'^admin/ireport_detail$',          'ssd.dashboard.views.ireport.ireport_detail'),
+    url(r'^admin/ireport_delete$',          'ssd.dashboard.views.ireport.ireport_delete'),
+    url(r'^admin/ireport_list$',            'ssd.dashboard.views.ireport.ireport_list'),
 
     # Escalation
-    url(r'^admin/escalation_config$',       'ssd.main.views.escalation.escalation_config'),
-    url(r'^admin/escalation_contacts$',     'ssd.main.views.escalation.escalation_contacts'),
-    url(r'^admin/contact_switch$',          'ssd.main.views.escalation.contact_switch'),
-    url(r'^admin/contact_delete$',          'ssd.main.views.escalation.contact_delete'),
-    url(r'^admin/contact_modify$',          'ssd.main.views.escalation.contact_modify'),
+    url(r'^admin/escalation_config$',       'ssd.dashboard.views.escalation.escalation_config'),
+    url(r'^admin/escalation_contacts$',     'ssd.dashboard.views.escalation.escalation_contacts'),
+    url(r'^admin/contact_switch$',          'ssd.dashboard.views.escalation.contact_switch'),
+    url(r'^admin/contact_delete$',          'ssd.dashboard.views.escalation.contact_delete'),
+    url(r'^admin/contact_modify$',          'ssd.dashboard.views.escalation.contact_modify'),
 )

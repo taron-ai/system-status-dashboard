@@ -29,8 +29,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.template import RequestContext
 from django.db.models import F
 from django.contrib import messages
-from ssd.main.models import Config_Escalation, Escalation
-from ssd.main.forms import AddContactForm, EscalationConfigForm, ModifyContactForm, SwitchContactForm, RemoveContactForm
+from ssd.dashboard.models import Config_Escalation, Escalation
+from ssd.dashboard.forms import AddContactForm, EscalationConfigForm, ModifyContactForm, SwitchContactForm, RemoveContactForm
 
 
 # Get an instance of the ssd logger

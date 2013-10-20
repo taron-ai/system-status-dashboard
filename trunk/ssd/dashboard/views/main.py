@@ -29,7 +29,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from ssd.main.models import Event, Service, Config_Message
+from ssd.dashboard.models import Event, Service, Config_Message
 
 
 # Get an instance of the ssd logger

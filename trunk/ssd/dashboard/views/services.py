@@ -26,8 +26,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.contrib import messages
-from ssd.main.models import Service, Event_Service
-from ssd.main.forms import AddServiceForm, RemoveServiceForm, ModifyServiceForm
+from ssd.dashboard.models import Service, Event_Service
+from ssd.dashboard.forms import AddServiceForm, RemoveServiceForm, ModifyServiceForm
 
 
 # Get an instance of the ssd logger

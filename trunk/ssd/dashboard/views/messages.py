@@ -25,8 +25,8 @@ from django.core.cache import cache
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from ssd.main.models import Config_Message
-from ssd.main.forms import MessagesConfigForm
+from ssd.dashboard.models import Config_Message
+from ssd.dashboard.forms import MessagesConfigForm
 
 
 # Get an instance of the ssd logger

@@ -24,8 +24,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from ssd.main.models import Config_Logo
-from ssd.main.forms import LogoConfigForm
+from ssd.dashboard.models import Config_Logo
+from ssd.dashboard.forms import LogoConfigForm
 
 
 # Get an instance of the ssd logger

@@ -26,8 +26,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import messages
 from django import get_version
-from ssd.main.models import Config_Admin
-from ssd.main.forms import AdminConfigForm
+from ssd.dashboard.models import Config_Admin
+from ssd.dashboard.forms import AdminConfigForm
 
 
 # Get an instance of the ssd logger

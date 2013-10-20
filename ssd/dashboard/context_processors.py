@@ -23,7 +23,7 @@
 
 import pytz
 from django.core.cache import cache
-from ssd.main.models import Config_Admin, Config_Logo, Config_Escalation, Config_Ireport
+from ssd.dashboard.models import Config_Admin, Config_Logo, Config_Escalation, Config_Ireport
 from django.conf import settings
 
 

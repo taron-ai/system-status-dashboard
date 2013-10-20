@@ -22,7 +22,7 @@
 import logging
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from ssd.main.forms import JumpToForm, UpdateTZForm
+from ssd.dashboard.forms import JumpToForm, UpdateTZForm
 
 
 # Get an instance of the ssd logger

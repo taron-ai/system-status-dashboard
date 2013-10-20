@@ -29,9 +29,9 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
-from ssd.main.models import Config_Ireport, Config_Email, Ireport
-from ssd.main.forms import IreportConfigForm, ReportIncidentForm, ListForm, DeleteEventForm, DetailForm
-from ssd.main import notify
+from ssd.dashboard.models import Config_Ireport, Config_Email, Ireport
+from ssd.dashboard.forms import IreportConfigForm, ReportIncidentForm, ListForm, DeleteEventForm, DetailForm
+from ssd.dashboard import notify
 
 
 # Get an instance of the ssd logger

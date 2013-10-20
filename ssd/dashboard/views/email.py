@@ -26,8 +26,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib import messages
-from ssd.main.models import Config_Email, Email, Event
-from ssd.main.forms import AddRecipientForm, DeleteRecipientForm, ModifyRecipientForm, EmailConfigForm
+from ssd.dashboard.models import Config_Email, Email, Event
+from ssd.dashboard.forms import AddRecipientForm, DeleteRecipientForm, ModifyRecipientForm, EmailConfigForm
 
 
 # Get an instance of the ssd logger

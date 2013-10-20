@@ -27,8 +27,8 @@ import datetime
 import re
 from django import forms
 from django.conf import settings
-from ssd.main.models import Config_Email
-from ssd.main.models import Config_Ireport
+from ssd.dashboard.models import Config_Email
+from ssd.dashboard.models import Config_Ireport
 
 
 

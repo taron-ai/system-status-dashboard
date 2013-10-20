@@ -34,9 +34,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.cache import cache
-from ssd.main.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email, Config_Email
-from ssd.main.forms import AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm, ListForm
-from ssd.main import notify
+from ssd.dashboard.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email, Config_Email
+from ssd.dashboard.forms import AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm, ListForm
+from ssd.dashboard import notify
 
 
 # Get an instance of the ssd logger

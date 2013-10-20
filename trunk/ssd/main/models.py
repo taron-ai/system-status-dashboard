@@ -80,7 +80,7 @@ class Event(models.Model):
     date = models.DateTimeField(blank=False, auto_now=True)
     description = models.CharField(blank=False, max_length=1000)
     start = models.DateTimeField(blank=False)
-    end = models.DateTimeField(null=False, blank=True)
+    end = models.DateTimeField(null=True, blank=True)
     status = models.ForeignKey(Status)
     user = models.ForeignKey(User)
 

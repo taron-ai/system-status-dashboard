@@ -22,6 +22,7 @@
 """
 
 import pytz
+from django.core.cache import cache
 from ssd.main.models import Config_Admin, Config_Logo, Config_Escalation, Config_Ireport
 from django.conf import settings
 
@@ -33,7 +34,7 @@ def prefs(request):
     values = {}
 
     # Application Version?
-    # This one is in a settings file
+    # This is a constant from the settings file
     if hasattr(settings, 'APP_VERSION'):
         if not settings.APP_VERSION == False:
             values['app_version'] = settings.APP_VERSION
@@ -42,48 +43,69 @@ def prefs(request):
     else:
         values['app_version'] = False
 
-    # The rest of the configs are in the database
-    
-    # Display the logo?
-    if Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('logo_enabled')[0]['logo_enabled'] == 1:
+        
+    # -- LOGO DISPLAY -- #
+    display_logo = cache.get('display_logo')
+    if display_logo == None:
+        display_logo = Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('logo_enabled')[0]['logo_enabled']
+        cache.set('display_logo', display_logo)
+    if display_logo == 1:
         # Yes, display it, what's the url
-        logo_url = Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('url')[0]['url']
+        logo_url = cache.get('logo_url')
+        if logo_url == None:
+            logo_url = Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('url')[0]['url']
+            cache.set('logo_url', logo_url)
         values['logo'] = logo_url
     else:
         values['logo'] = False
+    # -- LOGO DISPLAY -- #
 
-    # Display the report incident link?
-    if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
+
+    # -- INCIDENT REPORT -- #
+    enable_ireport = cache.get('enable_ireport')
+    if enable_ireport == None:
+        enable_ireport = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled']
+        cache.set('enable_ireport', enable_ireport)
+    if enable_ireport == 1:    
         values['ireport'] = True
     else:
         values['ireport'] = False
+    # -- INCIDENT REPORT DISPLAY -- #
 
-    # Display the escalation path?
-    if Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
+
+    # -- ESCALATION PATH --#
+    enable_escalation = cache.get('enable_escalation')
+    if enable_escalation == None:
+        enable_escalation = Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled']
+        cache.set('enable_escalation', enable_escalation)
+    if enable_escalation == 1:
         values['escalation'] = True
     else:
         values['escalation'] = False
+    # -- ESCALATION PATH --#
 
-    # Display the admin link?
-    if Config_Admin.objects.filter(id=Config_Admin.objects.values('id')[0]['id']).values('link_enabled')[0]['link_enabled'] == 1:
+
+    # -- ADMIN LINK --#
+    display_admin = cache.get('display_admin')
+    if display_admin == None:
+        display_admin = Config_Admin.objects.filter(id=Config_Admin.objects.values('id')[0]['id']).values('link_enabled')[0]['link_enabled']
+        cache.set('display_admin', display_admin)
+    if display_admin == 1:
         values['admin_link'] = True
     else:
         values['admin_link'] = False
+    # -- ADMIN LINK --#
+
 
     # Return values to the template
-    return {
-            'app_version':values['app_version'],
-            'admin_link':values['admin_link'],
-            'logo':values['logo'],
-            'ireport':values['ireport'],
-            'escalation':values['escalation']
-           }
+    return values
+
 
 
 def timezones(request):
-    """Populate the timezones in the sticky footer timezone picker"""
+    """Populate the timezones in the footer timezone picker"""
 
     # Obtain all timezones (put this in a context processor)
     timezones = pytz.all_timezones
 
-    return {'timezones': timezones }
+    return {'timezones': timezones}

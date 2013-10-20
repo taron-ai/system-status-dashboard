@@ -146,9 +146,9 @@
     <div class="large-6 columns">
       <span class="footer">Timezone: {{TIME_ZONE}}</span>
       <div class="spacer_micro"></div>
-      <form name="prefs_timezone" id="prefs_timezone" action="/prefs/timezone" method="post">
+      <form id="timezone_form" action="/prefs/set_timezone" method="post">
        {% csrf_token %}
-         <select name="timezone" id="timezone" onchange='this.form.submit()'>
+         <select name="tz_pref" id="tz_pref" onchange='this.form.submit()'>
            <option disabled selected>-- Change Timezone --</option>
          {% for timezone in timezones %}
            <option value="{{timezone}}">{{timezone}}</option>

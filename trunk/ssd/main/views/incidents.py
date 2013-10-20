@@ -24,6 +24,7 @@ import datetime
 import pytz
 import re
 from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -120,9 +121,12 @@ def incident(request):
                 email = notify.email()
                 email.incident(event_id,email_id,request.timezone,True)
 
-            # Clear the cache b/c this will update the homepage (need to be specific about what cache to clear!)
-            cache.clear()
+            # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
+            cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
             
+            # Set a success message
+            messages.add_message(request, messages.SUCCESS, 'Incident successfully created.')
+
             # Send them to the incident detail page for this newly created
             # incident
             return HttpResponseRedirect('/i_detail?id=%s' % event_id)
@@ -259,7 +263,10 @@ def i_update(request):
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
                 email.incident(id,email_id,request.timezone,False)
-            
+
+            # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
+            cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
+
             # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Incident successfully updated')
 
@@ -369,6 +376,9 @@ def i_delete(request):
 
             # Delete the incident
             Event.objects.filter(id=id).delete()
+
+            # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
+            cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
 
             # Set a message that the delete was successful
             messages.add_message(request, messages.SUCCESS, 'Message id:%s successfully deleted' % id)

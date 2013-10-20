@@ -32,7 +32,7 @@ urlpatterns = patterns('',
     url(r'^gsearch$',                       'ssd.main.views.search.gsearch'),
 
     # Preferences
-    url(r'^prefs/timezone$',                'ssd.main.views.prefs.timezone'),
+    url(r'^prefs/set_timezone$',            'ssd.main.views.prefs.set_timezone'),
     url(r'^prefs/jump$',                    'ssd.main.views.prefs.jump'),
 
     # Incident Events
@@ -60,7 +60,7 @@ urlpatterns = patterns('',
     # SSD Admin 
     url(r'^admin$',                         'ssd.main.views.admin.main'),
     url(r'^admin/admin_config$',            'ssd.main.views.admin.admin_config'),
-    url(r'^admin/cache$',                   'ssd.main.views.admin.cache'),
+    url(r'^admin/cache_status$',            'ssd.main.views.admin.cache_status'),
 
     # Incident Events (admin functionality)
     url(r'^admin/incident$',                'ssd.main.views.incidents.incident'),

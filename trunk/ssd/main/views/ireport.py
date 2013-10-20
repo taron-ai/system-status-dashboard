@@ -21,6 +21,7 @@ import os
 import datetime
 import pytz
 from django.conf import settings
+from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
@@ -47,7 +48,12 @@ def ireport(request):
     logger.debug('%s view being executed.' % 'ireport.ireport')
 
     # If this functionality is disabled in the admin, let the user know
-    if Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 0:
+    enable_ireport = cache.get('enable_ireport')
+    if enable_ireport == None:
+        enable_ireport = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled']
+        cache.set('enable_ireport', enable_ireport)
+    if enable_ireport == 0:
+        # Incident reports are disabled, send them to the homepage with an error message
         messages.add_message(request, messages.ERROR, 'Your system administrator has disabled incident reports')
         return HttpResponseRedirect('/')
 
@@ -175,6 +181,10 @@ def ireport_config(request):
                                                   file_size=file_size
                                                   )
 
+            # Clear the cache 
+            cache.delete('enable_ireport')
+
+            # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Preferences saved successfully')
         else:
             messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')

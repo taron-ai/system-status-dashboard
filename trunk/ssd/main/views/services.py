@@ -19,6 +19,7 @@
 
 import logging
 from django.db import IntegrityError
+from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
@@ -60,6 +61,9 @@ def services(request):
                 pass
             else:
                 messages.add_message(request, messages.SUCCESS, 'Service saved successfully.')
+
+            # Clear the cache so the new services show up in the dashboard immediately
+            cache.delete('services')
 
             # Send them back so they can see the newly created service
             return HttpResponseRedirect('/admin/services')
@@ -121,6 +125,9 @@ def service_delete(request):
             # Ok, remove it
             else:
                 Service.objects.filter(id=id).delete()
+
+                # Clear the cache so the modified service listing shows up in the dashboard immediately
+                cache.delete('services')
 
                 # Set a message that delete was successful
                 messages.add_message(request, messages.SUCCESS, 'Service successfully removed.')
@@ -196,6 +203,9 @@ def service_modify(request):
             except Exception as e:
                 logger.error('%s: Error saving update: %s' % ('services.service_modify',e))
                 return HttpResponseBadRequest('An error was encountered with this request.')
+
+            # Clear the cache so the modified service listing shows up in the dashboard immediately
+            cache.delete('services')
 
             return HttpResponse('Value successfully modified')
 

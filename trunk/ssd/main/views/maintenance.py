@@ -24,6 +24,7 @@ import datetime
 import pytz
 import re
 from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -122,6 +123,12 @@ def maintenance(request):
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
                 email.maintenance(event_id,email_id,request.timezone,True)
+
+            # Clear the cache - don't discriminate and just clear everything that impacts events or maintenances
+            cache.delete_many(['active_maintenances','events','maintenance_count','maintenance_timeline'])
+            
+            # Set a success message
+            messages.add_message(request, messages.SUCCESS, 'Maintenance successfully created.')
 
             # Send them to the maintenance detail page for this newly created
             # maintenance
@@ -276,13 +283,15 @@ def m_update(request):
                 # multiple checkboxes in the form
                 if re.match(r'^\d+$', service_id):
                     Event_Service(event_id=id,service_id=service_id).save()
-      
-            
+           
             # Send an email notification to the appropriate list about this maintenance, if requested.  Broadcast won't be
             # allowed to be true if an email address is not defined or if global email is disabled.
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
                 email.maintenance(id,email_id,request.timezone,True)
+
+            # Clear the cache - don't discriminate and just clear everything that impacts events or maintenances
+            cache.delete_many(['active_maintenances','events','maintenance_count','maintenance_timeline'])
 
             # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Maintenance successfully updated')
@@ -522,6 +531,9 @@ def m_delete(request):
 
             # Delete the incident
             Event.objects.filter(id=id).delete()
+
+            # Clear the cache - don't discriminate and just clear everything that impacts events or maintenances
+            cache.delete_many(['active_maintenances','events','maintenance_count','maintenance_timeline'])
 
             # Set a message that the delete was successful
             messages.add_message(request, messages.SUCCESS, 'Message id:%s successfully deleted' % id)

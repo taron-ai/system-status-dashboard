@@ -61,10 +61,11 @@ CACHES = {
     }
 }
 """
+
 # -- SESSION CACHE
 # If you have memcache installed/configured, then you can use a write-through cache
 # to store session information.  If you'd rather not use the write-through cache and
 # just want to use memcache then set SESSION_ENGINE to 'django.contrib.sessions.backends.cache'
 # Keep in mind that sessions could be evicted or you could lose your session store if memcached
 # is restarted.
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'

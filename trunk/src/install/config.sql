@@ -2,27 +2,27 @@ SET FOREIGN_KEY_CHECKS=0;
 
 
 -- ----------------------------
--- Table structure for `main_config_admin`
+-- Table structure for `dashboard_config_admin`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_config_admin`;
-CREATE TABLE `main_config_admin` (
+DROP TABLE IF EXISTS `dashboard_config_admin`;
+CREATE TABLE `dashboard_config_admin` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `link_enabled` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of main_config_admin
+-- Records of dashboard_config_admin
 -- ----------------------------
-INSERT INTO `main_config_admin` VALUES ('1', '1');
+INSERT INTO `dashboard_config_admin` VALUES ('1', '1');
 
 
 
 -- ----------------------------
---  Table structure for `main_config_email`
+--  Table structure for `dashboard_config_email`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_config_email`;
-CREATE TABLE `main_config_email` (
+DROP TABLE IF EXISTS `dashboard_config_email`;
+CREATE TABLE `dashboard_config_email` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `enabled` tinyint(1) NOT NULL,
   `email_format` tinyint(1) NOT NULL,
@@ -38,17 +38,17 @@ CREATE TABLE `main_config_email` (
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ----------------------------
--- Records of main_config_email
+-- Records of dashboard_config_email
 -- ----------------------------
-INSERT INTO `main_config_email` VALUES ('1', '0', '0', '', '', '', '', '', '');
+INSERT INTO `dashboard_config_email` VALUES ('1', '0', '0', '', '', '', '', '', '');
 
 
 
 -- ----------------------------
---  Table structure for `main_config_escalation`
+--  Table structure for `dashboard_config_escalation`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_config_escalation`;
-CREATE TABLE `main_config_escalation` (
+DROP TABLE IF EXISTS `dashboard_config_escalation`;
+CREATE TABLE `dashboard_config_escalation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `enabled` tinyint(1) NOT NULL,
   `instructions` varchar(1000) NOT NULL,
@@ -56,17 +56,17 @@ CREATE TABLE `main_config_escalation` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of main_config_escalation
+-- Records of dashboard_config_escalation
 -- ----------------------------
-INSERT INTO `main_config_escalation` VALUES ('1', '1', 'If you reported an incident via the <a href=\"/report\">report incident</a> link and have not received confirmation that our engineers are investigating the problem, please follow the below escalation path. If you are unable to make contact, please leave a voice message, wait 5 minutes for a response, and escalate to the next contact on the list.');
+INSERT INTO `dashboard_config_escalation` VALUES ('1', '1', 'If you reported an incident via the <a href=\"/report\">report incident</a> link and have not received confirmation that our engineers are investigating the problem, please follow the below escalation path. If you are unable to make contact, please leave a voice message, wait 5 minutes for a response, and escalate to the next contact on the list.');
 
 
 
 -- ----------------------------
--- Table structure for `main_config_ireport`
+-- Table structure for `dashboard_config_ireport`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_config_ireport`;
-CREATE TABLE `main_config_ireport` (
+DROP TABLE IF EXISTS `dashboard_config_ireport`;
+CREATE TABLE `dashboard_config_ireport` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `enabled` tinyint(1) NOT NULL,
   `email_enabled` tinyint(1) NOT NULL,
@@ -79,17 +79,17 @@ CREATE TABLE `main_config_ireport` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of main_config_ireport
+-- Records of dashboard_config_ireport
 -- ----------------------------
-INSERT INTO `main_config_ireport` VALUES ('1', '0', '0', 'Please be as descriptive as possible', 'Thank you for your support!\r\n\r\nWe\'ll be in touch!', '0', '', '1024');
+INSERT INTO `dashboard_config_ireport` VALUES ('1', '0', '0', 'Please be as descriptive as possible', 'Thank you for your support!\r\n\r\nWe\'ll be in touch!', '0', '', '1024');
 
 
 
 -- ----------------------------
--- Table structure for `main_config_logo`
+-- Table structure for `dashboard_config_logo`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_config_logo`;
-CREATE TABLE `main_config_logo` (
+DROP TABLE IF EXISTS `dashboard_config_logo`;
+CREATE TABLE `dashboard_config_logo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `url` varchar(1000) NOT NULL,
   `logo_enabled` tinyint(1) NOT NULL,
@@ -97,17 +97,17 @@ CREATE TABLE `main_config_logo` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of main_config_logo
+-- Records of dashboard_config_logo
 -- ----------------------------
-INSERT INTO `main_config_logo` VALUES ('1', 'http://www.test.com/logo.png', '1');
+INSERT INTO `dashboard_config_logo` VALUES ('1', 'http://www.test.com/logo.png', '1');
 
 
 
 -- ----------------------------
--- Table structure for `main_config_message`
+-- Table structure for `dashboard_config_message`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_config_message`;
-CREATE TABLE `main_config_message` (
+DROP TABLE IF EXISTS `dashboard_config_message`;
+CREATE TABLE `dashboard_config_message` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `main` varchar(1000) NOT NULL,
   `main_enabled` tinyint(1) NOT NULL,
@@ -117,17 +117,17 @@ CREATE TABLE `main_config_message` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of main_config_message
+-- Records of dashboard_config_message
 -- ----------------------------
-INSERT INTO `main_config_message` VALUES ('1', 'This dashboard displays status information for all critical services. The dashboard will be updated whenever status information for any service changes. Please check back here at any time to obtain current status information.<br><br>To report a problem with a service, please use the <a href=\"/report\">report incident</a> link. If you have reported an incident and have not received a response, please <a href=\"/escalation\">escalate</a> the issue.', '1', 'We are currently experiencing a level 1 issue.  Baten down the hatches.', '0');
+INSERT INTO `dashboard_config_message` VALUES ('1', 'This dashboard displays status information for all critical services. The dashboard will be updated whenever status information for any service changes. Please check back here at any time to obtain current status information.<br><br>To report a problem with a service, please use the <a href=\"/report\">report incident</a> link. If you have reported an incident and have not received a response, please <a href=\"/escalation\">escalate</a> the issue.', '1', 'We are currently experiencing a level 1 issue.  Baten down the hatches.', '0');
 
 
 
 -- ----------------------------
--- Table structure for `main_config_systemurl`
+-- Table structure for `dashboard_config_systemurl`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_config_systemurl`;
-CREATE TABLE `main_config_systemurl` (
+DROP TABLE IF EXISTS `dashboard_config_systemurl`;
+CREATE TABLE `dashboard_config_systemurl` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `url` varchar(250) NOT NULL,
   `url_enabled` tinyint(1) NOT NULL,
@@ -135,17 +135,17 @@ CREATE TABLE `main_config_systemurl` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of main_config_systemurl
+-- Records of dashboard_config_systemurl
 -- ----------------------------
-INSERT INTO `main_config_systemurl` VALUES ('1', '', '0');
+INSERT INTO `dashboard_config_systemurl` VALUES ('1', '', '0');
 
 
 
 -- ----------------------------
--- Table structure for `main_status`
+-- Table structure for `dashboard_status`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_status`;
-CREATE TABLE `main_status` (
+DROP TABLE IF EXISTS `dashboard_status`;
+CREATE TABLE `dashboard_status` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `status` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
@@ -153,21 +153,21 @@ CREATE TABLE `main_status` (
 ) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of main_status
+-- Records of dashboard_status
 -- ----------------------------
-INSERT INTO `main_status` VALUES ('1', 'planning');
-INSERT INTO `main_status` VALUES ('2', 'open');
-INSERT INTO `main_status` VALUES ('3', 'closed');
-INSERT INTO `main_status` VALUES ('4', 'started');
-INSERT INTO `main_status` VALUES ('5', 'completed');
+INSERT INTO `dashboard_status` VALUES ('1', 'planning');
+INSERT INTO `dashboard_status` VALUES ('2', 'open');
+INSERT INTO `dashboard_status` VALUES ('3', 'closed');
+INSERT INTO `dashboard_status` VALUES ('4', 'started');
+INSERT INTO `dashboard_status` VALUES ('5', 'completed');
 
 
 
 -- ----------------------------
--- Table structure for `main_type`
+-- Table structure for `dashboard_type`
 -- ----------------------------
-DROP TABLE IF EXISTS `main_type`;
-CREATE TABLE `main_type` (
+DROP TABLE IF EXISTS `dashboard_type`;
+CREATE TABLE `dashboard_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` varchar(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -175,7 +175,7 @@ CREATE TABLE `main_type` (
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of main_type
+-- Records of dashboard_type
 -- ----------------------------
-INSERT INTO `main_type` VALUES ('1', 'incident');
-INSERT INTO `main_type` VALUES ('2', 'maintenance');
+INSERT INTO `dashboard_type` VALUES ('1', 'incident');
+INSERT INTO `dashboard_type` VALUES ('2', 'maintenance');

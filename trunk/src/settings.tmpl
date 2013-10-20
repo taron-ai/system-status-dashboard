@@ -120,7 +120,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'ssd.main.middleware.timezone.TimezoneMiddleware',
+    'ssd.dashboard.middleware.timezone.TimezoneMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -131,8 +131,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
-    'ssd.main.context_processors.prefs',
-    'ssd.main.context_processors.timezones',
+    'ssd.dashboard.context_processors.prefs',
+    'ssd.dashboard.context_processors.timezones',
 )
 
 ROOT_URLCONF = 'ssd.urls'
@@ -151,7 +151,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'ssd.main'
+    'ssd.dashboard'
 )
 
 LOGGING = {

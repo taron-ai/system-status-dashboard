@@ -390,11 +390,11 @@ select {
    height: 26px;
 }
 /* Timezone form */
-#prefs_timezone {
+#timezone_form {
    margin: 0px;
    padding: 0px;
 }
-#timezone {
+#tz_pref {
    font-size: 10px;
    width: 200px;
 }

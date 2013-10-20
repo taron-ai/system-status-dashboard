@@ -299,7 +299,7 @@ class DeleteEventForm(forms.Form):
 class UpdateTZForm(forms.Form):
     """Form for setting or updating the timezone"""
 
-    timezone = forms.CharField(required=True)
+    tz_pref = forms.CharField(required=True)
 
 
 class JumpToForm(forms.Form):

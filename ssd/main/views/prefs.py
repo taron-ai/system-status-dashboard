@@ -29,14 +29,14 @@ from ssd.main.forms import JumpToForm, UpdateTZForm
 logger = logging.getLogger(__name__)
 
 
-def timezone(request):
+def set_timezone(request):
     """Process a form submit to set the timezone
 
     Supported timezones are from pytz
 
     """
 
-    logger.debug('%s view being executed.' % 'prefs.timezone')
+    logger.debug('%s view being executed.' % 'prefs.set_timezone')
 
     if request.method == 'POST':
         # Check the form elements
@@ -45,7 +45,7 @@ def timezone(request):
 
         if form.is_valid():
             # Obtain the cleaned data
-            timezone = form.cleaned_data['timezone']
+            tz_pref = form.cleaned_data['tz_pref']
 
             # Set the timezone in a cookie and redirect
             # If the referer is set, use that, otherwise the homepage
@@ -55,8 +55,8 @@ def timezone(request):
                 response = HttpResponseRedirect('/')
 
             # Set the cookie
-            response.set_cookie('timezone',
-                                timezone,
+            response.set_cookie('tz_pref',
+                                tz_pref,
                                 max_age=157680000,
                                 expires=157680000,
                                 path='/',
@@ -67,7 +67,11 @@ def timezone(request):
             # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Timezone successfully updated.')
 
+            # Return the response
             return response
+
+        else:
+            messages.add_message(request, messages.ERROR, 'Invalid request, cannot update timezone.')
 
     # Not a POST 
     else:

@@ -17,6 +17,7 @@
 """This module contains all of the logo configuration functions of ssd"""
 
 import logging
+from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render_to_response
@@ -54,6 +55,9 @@ def logo_config(request):
         
             # There should only ever be one record in this table
             Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).update(url=url,logo_enabled=logo_enabled)
+
+            # Clear the cache 
+            cache.delete_many(['display_logo','logo_url'])
 
             messages.add_message(request, messages.SUCCESS, 'Preferences saved successfully')
         else:

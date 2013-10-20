@@ -55,7 +55,9 @@ CACHES = {
         'LOCATION': [
             'localhost:11211'
         ],
-        'KEY_PREFIX':'ssd',
+        'TIMEOUT': 300,
+        'KEY_PREFIX':' ssd'
+
     }
 }
 """

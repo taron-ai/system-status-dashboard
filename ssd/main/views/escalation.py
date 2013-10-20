@@ -20,6 +20,7 @@
 
 
 import logging
+from django.core.cache import cache
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -47,7 +48,12 @@ def escalation(request):
     logger.debug('%s view being executed.' % 'escalation.escalation')
 
     # If this functionality is disabled in the admin, let the user know
-    if Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 0:
+    enable_escalation = cache.get('enable_escalation')
+    if enable_escalation == None:
+        enable_escalation = Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled']
+        cache.set('enable_escalation', enable_escalation)
+    if enable_escalation == 0:
+        # Escalation is disabled, send them to the homepage with an error message
         messages.add_message(request, messages.ERROR, 'Your system administrator has disabled the escalation path functionality')
         return HttpResponseRedirect('/')
 
@@ -90,6 +96,10 @@ def escalation_config(request):
             # There should only ever be one record in this table
             Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).update(enabled=enabled,instructions=instructions)
 
+            # Clear the cache
+            cache.delete('enable_escalation')
+
+            # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Escalation configuration saved successfully')
         else:
             messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')

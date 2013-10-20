@@ -23,8 +23,13 @@
 
 """
 
+import logging
 from django.conf import settings
 from django.utils import timezone as jtz
+
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
 
 
 class TimezoneMiddleware:
@@ -33,10 +38,12 @@ class TimezoneMiddleware:
 
 		# See if the timezone is set, if not, set the default server timezone
 		# (the one in settings.py)
-		if request.COOKIES.get('timezone') == None:
+		if request.COOKIES.get('tz_pref') == None:
 			set_timezone = settings.TIME_ZONE
+			logger.debug('tz_pref cookie is not set, using server timezone: %s' % set_timezone)
 		else:
-			set_timezone = request.COOKIES.get('timezone')
+			set_timezone = request.COOKIES.get('tz_pref')
+			logger.debug('tz_pref cookie is set to: %s' % set_timezone)
 
         # Set the current timezone to either the server timezone, or the user requested one.  This will display
         # all times in templates in the desired timezone

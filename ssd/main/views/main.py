@@ -143,17 +143,23 @@ def index(request):
     data.append(headings)
 
     # Grab all services
-    services = Service.objects.values('service_name').order_by('service_name')
+    services = cache.get('services')
+    if services == None:
+        services = Service.objects.values('service_name').order_by('service_name')
+        cache.set('services', services)
 
     # Grab all events within the time range requested
-    events = Event.objects.filter(start__range=[dates[0],ref_q]).values('id',
-                                                                        'type__type',
-                                                                        'description',
-                                                                        'start',
-                                                                        'end',
-                                                                        'event_service__service__service_name',
-                                                                        'status__status'
-                                                                        ).order_by('id')
+    events = cache.get('events')
+    if events == None:
+        events = Event.objects.filter(start__range=[dates[0],ref_q]).values('id',
+                                                                            'type__type',
+                                                                            'description',
+                                                                            'start',
+                                                                            'end',
+                                                                            'event_service__service__service_name',
+                                                                            'status__status'
+                                                                            ).order_by('id')
+        cache.set('events', events)
 
     # Run through each service and see if it had an incident during the time range
     for service in services:
@@ -252,10 +258,16 @@ def index(request):
     forward_date = ref_q + forward
     
     # Obtain a count of incidents, per day
-    incident_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='incident').values('start')
-    
+    incident_count = cache.get('incident_count')
+    if incident_count == None:
+        incident_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='incident').values('start')
+        cache.set('incident_count', incident_count)
+
     # Obtain a count of maintenances, per day
-    maintenance_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='maintenance').values('start')
+    maintenance_count = cache.get('maintenance_count')
+    if maintenance_count == None:
+        maintenance_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='maintenance').values('start')
+        cache.set('maintenance_count', maintenance_count)
 
     # Iterate through the graph_dates and find matching incidents/maintenances/reports
     # This data structure will look like this:
@@ -292,15 +304,15 @@ def index(request):
 
     # ------------------ #
     # Obtain the incident (open) and maintenance (started) timelines
-    incident_timeline = Event.objects.filter(status__status='open',type__type='incident').values('id',
-                                                                                                 'start',
-                                                                                                 'description',
-                                                                                                ).order_by('-id')
-    
-    maintenance_timeline = Event.objects.filter(status__status='started',type__type='maintenance').values('id',
-                                                                                                       'start',
-                                                                                                       'description',
-                                                                                                       ).order_by('-id')
+    incident_timeline = cache.get('incident_timeline')
+    if incident_timeline == None:
+        incident_timeline = Event.objects.filter(status__status='open',type__type='incident').values('id','start','description').order_by('-id')
+        cache.set('incident_timeline', incident_timeline)
+
+    maintenance_timeline = cache.get('maintenance_timeline')
+    if maintenance_timeline == None:
+        maintenance_timeline = Event.objects.filter(status__status='started',type__type='maintenance').values('id','start','description').order_by('-id')
+        cache.set('maintenance_timeline', maintenance_timeline)
     # ------------------ #
 
 
@@ -312,20 +324,18 @@ def index(request):
         cache.set('alerts', alerts)
 
     # If we are showing the alert, obtain the alert text
-    if alerts[0]['alert_enabled']:
+    if alerts[0]['alert_enabled'] == 1:
         alert = alerts[0]['alert']
     else:
         alert = None
 
     # If we are showing the information message, obtain the text
-    if alerts[0]['main_enabled']:
+    if alerts[0]['main_enabled'] == 1:
         information = alerts[0]['main']
     else:
         information = None
     # End alert and information text
     # ------------------ #
-
-
 
     # Print the page
     return render_to_response(

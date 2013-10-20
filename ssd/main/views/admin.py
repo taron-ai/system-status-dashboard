@@ -57,12 +57,12 @@ def main(request):
 
 @login_required
 @staff_member_required
-def cache(request):
+def cache_status(request):
     """Display cache settings
  
     """
 
-    logger.debug('%s view being executed.' % 'admin.cache')
+    logger.debug('%s view being executed.' % 'admin.cache_status')
 
     m_stats = []
 
@@ -114,9 +114,9 @@ def cache(request):
           'title':'System Status Dashboard | Admin - Cache',
           'cache_settings':cache_settings,
           'm_stats':m_stats,
-          'breadcrumbs':{'Admin':'/admin','Cache Settings':'cache'},
+          'breadcrumbs':{'Admin':'/admin','Cache Status':'cache_status'},
           'nav_section':'admin',
-          'nav_sub':'cache'
+          'nav_sub':'cache_status'
        },
        context_instance=RequestContext(request)
     )
@@ -145,6 +145,10 @@ def admin_config(request):
             # There should only ever be one record in this table
             Config_Admin.objects.filter(id=Config_Admin.objects.values('id')[0]['id']).update(link_enabled=link_enabled)
 
+            # Clear the cache
+            cache.delete('display_admin')
+
+            # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Preferences saved successfully')
         else:
             messages.add_message(request, messages.ERROR, 'Invalid data entered, please correct the errors below:')

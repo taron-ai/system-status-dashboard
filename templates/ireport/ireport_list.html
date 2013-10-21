@@ -60,23 +60,20 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <table width="100%">
+        <table>
           <tr>
-            <th>ID</th>
-            <th width="190">Date/Time</th>
-            <th>Email</th>
+            <th width="160">Date/Time</th>
             <th>Description</th>
-            <th>Full Details</th>
-            <th>Delete</th>
+            <th width="65"></th>
           </tr>
           {% for ireport in ireports %}
           <tr>
-            <td>{{ireport.id}}</td>
             <td>{{ireport.date|date:"Y-m-d H:i:s e"}}</td>
-            <td>{{ireport.email}}</td>
             <td>{{ireport.detail}}</td>
-            <td><a href="/admin/ireport_detail?id={{ireport.id}}"><i class="foundicon-gen-page"></i></a></td>
-            <td><a href="/admin/ireport_delete?id={{ireport.id}}"><i class="foundicon-gen-trash"></i></a></td>
+            <td>
+              <a href="/admin/ireport_detail?id={{ireport.id}}" title="More detail"><span class="foundicon-gen-page foundicon_container_iconlink"></span></a>
+              <a href="/admin/ireport_delete?id={{ireport.id}}" title="Delete"><span class="foundicon-gen-trash foundicon_container_iconlink"></span></a>
+            </td>
           </tr>
           {% endfor %}
         </table>

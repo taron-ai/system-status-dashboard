@@ -88,6 +88,8 @@ def gsearch(request):
            {
               'title':'System Status Dashboard | Event Search',
               'results':results,
+              'type':type,
+              'date':date,
               'query_params':query_params
            },
            context_instance=RequestContext(request)

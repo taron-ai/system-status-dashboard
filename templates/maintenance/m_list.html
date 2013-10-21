@@ -66,25 +66,22 @@
     <div class="row">
       <div class="large-12 columns">
         {% if maintenances %}
-        <table class="responsive">
+        <table>
           <tr>
-            <th>ID</th>
-            <th width="190">Start Time</th>
+            <th width="95">Start Time</th>
             <th>Description</th>
-            <th>Detail</th>
-            <th>Delete</th>
-            <th>Email</th>
-            <th>Edit</th>
+            <th width="110"></th>
           </tr>
           {% for maintenance in maintenances %}
           <tr>
-            <td>{{maintenance.id}}</td>
             <td>{{maintenance.start|date:"Y-m-d H:i:s e"}}</td>
             <td>{{maintenance.description}}</td>
-            <td><a href="/m_detail?id={{maintenance.id}}"><i class="foundicon-gen-page"></a></td>
-            <td><a href="/admin/m_delete?id={{maintenance.id}}"><i class="foundicon-gen-trash"></a></td>
-            <td>{% if maintenance.event_email__email__email and email_enabled %}<a href="/admin/m_email?id={{maintenance.id}}" title="Send email reminder to {{maintenance.event_email__email__email}}"><i class="foundicon-gen-mail"></a>{% endif %}</td>
-            <td><a href="/admin/m_update?id={{maintenance.id}}"><i class="foundicon-gen-edit"></a></td>
+            <td>
+              <a href="/m_detail?id={{maintenance.id}}" title="More detail"><span class="foundicon-gen-page foundicon_container_iconlink"></span></a>
+              <a href="/admin/m_delete?id={{maintenance.id}}" title="Delete"><span class="foundicon-gen-trash foundicon_container_iconlink"></span></a>
+              {% if maintenance.event_email__email__email and email_enabled %}<a href="/admin/m_email?id={{maintenance.id}}" title="Send email reminder to {{maintenance.event_email__email__email}}"><span class="foundicon-gen-mail foundicon_container_iconlink"></span></a>{% endif %}
+              <a href="/admin/m_update?id={{maintenance.id}}" title="Edit"><span class="foundicon-gen-edit foundicon_container_iconlink"></span></a>
+            </td>
           </tr>
           {% endfor %}
         </table>

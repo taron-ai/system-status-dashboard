@@ -68,21 +68,19 @@
         {% if incidents %}
         <table>
           <tr>
-            <th>ID</th>
-            <th width="190">Start Time</th>
+            <th width="95">Start Time</th>
             <th>Description</th>
-            <th>Detail</th>
-            <th>Delete</th>
-            <th>Edit</th>
+            <th width="90"></th>
           </tr>
           {% for incident in incidents %}
           <tr>
-            <td>{{incident.id}}</td>
             <td>{{incident.start|date:"Y-m-d H:i:s e"}}</td>
             <td>{{incident.description}}</td>
-            <td><a href="/i_detail?id={{incident.id}}"><i class="foundicon-gen-page"></a></td>
-            <td><a href="/admin/i_delete?id={{incident.id}}"><i class="foundicon-gen-trash"></a></td>
-            <td><a href="/admin/i_update?id={{incident.id}}"><i class="foundicon-gen-edit"></a></td>
+            <td>
+              <a href="/i_detail?id={{incident.id}}" title="More detail"><span class="foundicon-gen-page foundicon_container_iconlink"></span></a>
+              <a href="/admin/i_delete?id={{incident.id}}" title="Delete"><span class="foundicon-gen-trash foundicon_container_iconlink"></span></a>
+              <a href="/admin/i_update?id={{incident.id}}" title="Edit"><span class="foundicon-gen-edit foundicon_container_iconlink"></span></a>
+            </td>
           </tr>
           {% endfor %}
         </table>

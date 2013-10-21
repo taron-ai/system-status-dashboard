@@ -20,14 +20,23 @@
 
 {% block content %}
 
+{# This is row consisting of 12 columns that will display all messages passed in the request #}
+{% include "admin/messages.html" %}
+
 <div class="row">
   <div class="large-12 columns">
     <h5>Graph Search Results</h5>
-    <br>
-    </div>
+    <span class="navigation">
+      Type: {{type}}
+      <br>
+      Date: {{date|date:"Y-m-d"}}
+    </span>
   </div>
+</div>
 
 {% if results %}
+<div class="spacer_small"></div>
+
 <div class="row">
   <div class="large-12 columns">
     <span class="navigation">
@@ -43,44 +52,22 @@
     </span>
   </div>
 </div>
-
-<div class="spacer_small"></div>
-
 {% endif %}
 
-
-<div class="row">
-  <div class="large-12 large-centered columns">
-
-  {% if results %}
-
-    <table class="responsive">
-      <thead>
-        <tr>
-         <th>Start Date/Time</th>
-         <th>End Date/Time</th>
-         <th>Description</th>
-         <th>Detail</th>
-        </tr>
-      </thead>
-  
-      <tbody>
-      {% for row in results %}
-        <tr>
-         <td>{{row.start|date:"Y-m-d H:i:s e"}}</td>
-         <td>{{row.end|date:"Y-m-d H:i:s e"}}</td>
-         <td>{{row.description}}</td>
-         <td>{% if row.type__type == 'incident' %}<a href="/i_detail?id={{row.id}}">{% else %}{% if row.type__type == 'maintenance' %}<a href="/m_detail?id={{row.id}}">{% endif %}{% endif %}<i class="foundicon-gen-page"></i></a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-
+{% if results %}
+  {% for row in results %}
+    <div class="spacer_medium"></div>
+    <div class="row">
+      <div class="large-12 large-centered columns">  
+        <div class="search_results">{% if row.type__type == 'incident' %}<a href="/i_detail?id={{row.id}}" title="Detail">{% else %}{% if row.type__type == 'maintenance' %}<a href="/m_detail?id={{row.id}}" title="Detail">{% endif %}{% endif %}{{row.start|date:"Y-m-d H:i:s e"}}</a></div>
+        <div class="search_results"><b>Status:</b> {% if row.end %}<span class="all_good">Closed ({{row.end|date:"Y-m-d H:i:s e"}})</span>{% else %}Active{% endif %}</div>
+        <div class="search_results"><b>Description:</b> {{row.description}}</div>
+      </div>
+    </div>
+  {% endfor %}
 {% else %}
-No search results were returned
+<p>No search results were returned</p>
 {% endif %}
 
-  </div>
-</div>
+
 {% endblock %}

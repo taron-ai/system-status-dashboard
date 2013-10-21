@@ -26,7 +26,7 @@
 {% if alert %}
 <div class="row">
   <div class="large-12 large-centered columns">
-    <div class="panel callout radius" style="background: #D45757;">
+    <div class="panel callout radius" style="background: #D45757; border-color: #D45757;">
       {{alert}}
     </div>
   </div>
@@ -238,7 +238,7 @@
     <div id="histsumdrop" class="f-dropdown content histsumdrop" data-dropdown-content>
       <h5>Historical Summary Status</h5><br>
       <span class="help_drop">
-        Historical summary status shows the past 30 days (incidents and maintenance) and future 30 days (scheduled maintenance).<br><br>Click on any of the event indicators to review detailed information about events.<br><br>Remove a data series from the graph by clicking its legend icon.
+        Historical summary status shows the past 15 days (incidents and maintenance) and future 15 days (scheduled maintenance).<br><br>Click on any of the event indicators to review detailed information about events.<br><br>Remove a data series from the graph by clicking its legend icon.
       </span>
     </div>
     <div class="hr"></div>
@@ -302,7 +302,7 @@ $(function () {
                 x: -25
             },
             series: [{
-                name: 'Disruptions',
+                name: 'Incidents',
                 data: [
      
                   {% for row in count_data %}
@@ -365,7 +365,7 @@ $(function () {
 
 <div class="row">
   <div class="large-12 columns">
-    <div id="graph"></div>
+    <div id="graph" style="width:100%; margin: 0 auto"></div>
     <br><br>
   </div>
 </div>

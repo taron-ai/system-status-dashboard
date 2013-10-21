@@ -49,7 +49,7 @@
           {% for row in emails %}
           <div>
             <span style="width: 40px; float: left;">
-              <a href="/admin/recipient_delete?id={{row.id}}" title="Delete email address"><i class="foundicon-gen-trash"></i></a>
+              <a href="/admin/recipient_delete?id={{row.id}}" title="Delete email address"><span class="foundicon-gen-trash foundicon_container_iconlink"></span></a>
             </span>
             <span>
               <a href="#" title="Modify email address" id="email_{{row.id}}">{{row.email}}</a>

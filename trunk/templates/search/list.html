@@ -96,39 +96,22 @@
   </form>
 </div>
 
+{% if events %}
+  {% for event in events %}
+    <div class="spacer_medium"></div>
+    <div class="row">
+      <div class="large-12 large-centered columns">  
+        <div class="search_results">{% if event.type__type = 'incident' %}<a href="/i_detail?id={{event.id}}">{{event.start|date:"Y-m-d H:i:s e"}}</a>{% else %}{% if event.type__type = 'maintenance' %}<a href="/m_detail?id={{event.id}}">{{event.start|date:"Y-m-d H:i:s e"}}</a>{% endif %}{% endif %}</div>     
+        <div class="search_results"><b>Type:</b> {{event.type__type}}</div>
+        <div class="search_results"><b>Status:</b> {{event.status__status}}</div>
+        <div class="search_results"><b>Description</b>{{event.description}}</div>
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+<p>There are no events to display</p>
+{% endif %}
 
-<div class="spacer_small"></div>
-
-<div class="row">
-  <div class="large-12 columns">
-    {% if events %}
-    <table>
-      <tr>
-        <th>ID</th>
-        <th>Type</th>
-        <th width="150">Start Time</th>
-        <th width="150">End Time</th>
-        <th>Status</th>
-        <th>Description</th>
-        <th>Detail</th>
-      </tr>
-      {% for event in events %}
-      <tr>
-        <td>{{event.id}}</td>
-        <td>{{event.type__type}}</td>
-        <td>{{event.start|date:"Y-m-d H:i:s e"}}</td>
-        <td>{{event.end|date:"Y-m-d H:i:s e"}}</td>
-        <td>{{event.status__status}}</td>
-        <td>{{event.description|linebreaksbr}}</td>
-        <td>{% if event.type__type = 'incident' %}<a href="/i_detail?id={{event.id}}"><i class="foundicon-gen-page"></i></a>{% else %}{% if event.type__type = 'maintenance' %}<a href="/m_detail?id={{event.id}}"><i class="foundicon-gen-page"></i></a>{% endif %}{% endif %}</td>
-      </tr>
-      {% endfor %}
-    </table>
-    {% else %}
-    <p>There are no events to display</p>
-    {% endif %}
-  </div>
-</div>
 
 <script type="text/javascript">
 

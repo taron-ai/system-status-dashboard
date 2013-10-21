@@ -136,18 +136,18 @@
               </span>
             </td>
             <td>
-              <a href="/admin/contact_switch?id={{row.id}}&action=up" title="move up"><i class="foundicon-gen-up-arrow"></i></a>
-              <a href="/admin/contact_switch?id={{row.id}}&action=down" title="move down"><i class="foundicon-gen-down-arrow"></i></a>
+              <a href="/admin/contact_switch?id={{row.id}}&action=up" title="move up"><span class="foundicon-gen-up-arrow foundicon_container_iconlink"></span></a>
+              <a href="/admin/contact_switch?id={{row.id}}&action=down" title="move down"><span class="foundicon-gen-down-arrow foundicon_container_iconlink"></span></a>
             </td>
             <td>
              {% if row.hidden %}
-              <a href="/admin/contact_switch?id={{row.id}}&action=show" title="show"><i class="foundicon-gen-checkmark"></i></a>
+              <a href="/admin/contact_switch?id={{row.id}}&action=show" title="show"><span class="foundicon-gen-checkmark foundicon_container_iconlink"></span></a>
              {% else %}
-              <a href="/admin/contact_switch?id={{row.id}}&action=hide" title="hide"><i class="foundicon-gen-remove"></i></a>
+              <a href="/admin/contact_switch?id={{row.id}}&action=hide" title="hide"><span class="foundicon-gen-remove foundicon_container_iconlink"></span></a>
              {% endif %}
             </td>
             <td>
-              <a href="/admin/contact_delete?id={{row.id}}"><i class="foundicon-gen-trash"></i></div></a>
+              <a href="/admin/contact_delete?id={{row.id}}"><span class="foundicon-gen-trash foundicon_container_iconlink"></span></div></a>
             </td>
           </tr>
           {% endfor %}

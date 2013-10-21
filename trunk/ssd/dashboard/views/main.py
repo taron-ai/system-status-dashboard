@@ -241,14 +241,15 @@ def index(request):
 
 
     # ------------------ #
-    # Obtain a count of all incidents/maintenances going back 30 days and forward 30 days (from the reference date) for the summary
+    # Obtain a count of all incidents/maintenances going back 15 days and forward 15 days (from the reference date) for the summary
     # graph
     
     # First populate all of the dates into an array so we can iterate through 
     graph_dates = []
     
     # The back dates (including today)
-    counter = 30
+    day_range = 15
+    counter = day_range
     while counter >= 0:
         day = datetime.timedelta(days=counter)
         day = ref - day
@@ -258,7 +259,7 @@ def index(request):
 
     # Now the forward dates
     counter = 1
-    while counter <= 30:
+    while counter <= day_range:
         day = datetime.timedelta(days=counter)
         day = ref + day
         day = day.strftime("%Y-%m-%d")
@@ -267,9 +268,9 @@ def index(request):
 
 
     # Obtain the back and forward dates for the query    
-    back = datetime.timedelta(days=30)
+    back = datetime.timedelta(days=day_range)
     back_date = ref - back
-    forward = datetime.timedelta(days=30)
+    forward = datetime.timedelta(days=day_range)
     forward_date = ref_q + forward
     
     # Obtain a count of incidents, per day

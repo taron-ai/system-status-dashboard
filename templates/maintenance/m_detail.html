@@ -52,7 +52,7 @@
       <tbody>
         <tr>
           <td width="165">Maintenance Status</td>
-          <td width="565">
+          <td>
             <b>
               {{details.0.status__status}}
             </b>
@@ -114,12 +114,14 @@
     <table>
       <thead>
         <tr>
-          <th colspan="3">Maintenance Updates</th>
+          <th colspan="{% if user.is_authenticated %}3{% else %}2{% endif %}">Maintenance Updates</th>
         </tr>
         <tr>
           <th width="200">Time</th>
+          {% if user.is_authenticated %}
           <th width="165">Logged By</th>
-          <th width="400px">Detail</th>
+          {% endif %}
+          <th>Detail</th>
         </tr>
       </thead>
 

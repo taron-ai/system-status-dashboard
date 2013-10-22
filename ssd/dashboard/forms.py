@@ -86,6 +86,7 @@ class EmailConfigForm(forms.Form):
     incident_update = forms.CharField(required=False, max_length=1000)
     maintenance_greeting = forms.CharField(required=False, max_length=1000)
     maintenance_update = forms.CharField(required=False, max_length=1000)
+    email_footer = forms.CharField(required=False, max_length=250)
 
     # Override the form clean method - there is some special logic to validate 
 

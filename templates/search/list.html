@@ -104,7 +104,7 @@
         <div class="search_results">{% if event.type__type = 'incident' %}<a href="/i_detail?id={{event.id}}">{{event.start|date:"Y-m-d H:i:s e"}}</a>{% else %}{% if event.type__type = 'maintenance' %}<a href="/m_detail?id={{event.id}}">{{event.start|date:"Y-m-d H:i:s e"}}</a>{% endif %}{% endif %}</div>     
         <div class="search_results"><b>Type:</b> {{event.type__type}}</div>
         <div class="search_results"><b>Status:</b> {{event.status__status}}</div>
-        <div class="search_results"><b>Description</b>{{event.description}}</div>
+        <div class="search_results"><b>Description:</b> {{event.description}}</div>
       </div>
     </div>
   {% endfor %}
@@ -112,6 +112,7 @@
 <p>There are no events to display</p>
 {% endif %}
 
+<div class="spacer_medium"></div>
 
 <script type="text/javascript">
 

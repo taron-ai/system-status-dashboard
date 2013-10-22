@@ -32,6 +32,7 @@ CREATE TABLE `dashboard_config_email` (
   `incident_update` varchar(1000) NOT NULL,
   `maintenance_greeting` varchar(1000) NOT NULL,
   `maintenance_update` varchar(1000) NOT NULL,
+  `email_footer` varchar(250) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -40,7 +41,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ----------------------------
 -- Records of dashboard_config_email
 -- ----------------------------
-INSERT INTO `dashboard_config_email` VALUES ('1', '0', '0', '', '', '', '', '', '');
+INSERT INTO `dashboard_config_email` VALUES ('1', '0', '0', '', '', '', '', '', '', '');
 
 
 

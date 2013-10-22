@@ -60,6 +60,7 @@ def email_config(request):
             incident_update = form.cleaned_data['incident_update']
             maintenance_greeting = form.cleaned_data['maintenance_greeting']
             maintenance_update = form.cleaned_data['maintenance_update']
+            email_footer = form.cleaned_data['email_footer']
         
 
             # There should only ever be one record in this table
@@ -71,7 +72,8 @@ def email_config(request):
                                                         incident_greeting=incident_greeting,
                                                         incident_update=incident_update,
                                                         maintenance_greeting=maintenance_greeting,
-                                                        maintenance_update=maintenance_update
+                                                        maintenance_update=maintenance_update,
+                                                        email_footer=email_footer
                                                     )
 
             messages.add_message(request, messages.SUCCESS, 'Email configuration saved successfully')

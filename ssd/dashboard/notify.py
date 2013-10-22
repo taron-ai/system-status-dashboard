@@ -112,8 +112,8 @@ class email:
         # Obtain the ssd url
         ssd_url = Config_Systemurl.objects.filter(id=Config_Systemurl.objects.values('id')[0]['id']).values('url')[0]['url']
 
-        # HTML (true) or text (false) formatting
-        format = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('email_format')[0]['email_format']
+        # HTML (true) or text (false) formatting and footer
+        email_config = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('email_format','email_footer')
 
         # Obtain the greeting
         if new == True:
@@ -145,9 +145,10 @@ class email:
                      'services':services,
                      'updates':updates,
                      'ssd_url':ssd_url,
+                     'email_footer':email_config[0]['email_footer']
                     })
 
-        if format:
+        if email_config[0]['email_format'] == 1:
             # Its HTML
             template = get_template('email/email.html')
         else:
@@ -174,6 +175,9 @@ class email:
         except Exception, e:
             # Log to the error log and return the error to the caller
             logger.error('Error sending event email: %s' % e)
+            return
+
+        return 'success'
 
 
     

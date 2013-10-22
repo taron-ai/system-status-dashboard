@@ -17,26 +17,33 @@
 {% endcomment %}
 {{greeting|safe}}
 
-*** Incident Status ***
+*** Event Status ***
 {{details.0.status__status}}
 
-*** Incident Start ***
+*** Event Start ***
 {{details.0.start|date:"Y-m-d H:i e"}}
 
-*** Incident End ***
-{% if details.0.end %}{{details.0.end|date:"Y-m-d H:i e"}}{% endif %}n/a
+*** Event End ***
+{% if details.0.end %}{{details.0.end|date:"Y-m-d H:i e"}}{% else %}n/a{% endif %}
 
 *** Services Impacted ***{% if services %}{% for row in services %}
 - {{row.event_service__service__service_name}}{% endfor %}{% else %}- NO SERVICES DEFINED{% endif %}
 
 *** Details ***
-{{details.0.description|linebreaksbr}}
-
-
+{{details.0.description}}
+{% if details.0.event_coordinator__coordinator %}
+*** Event Coordinator ***
+{{details.0.event_coordinator__coordinator}}
+{% endif %}{% if details.0.event_impact__impact %}
+*** Event Impact Analysis ***
+{{details.0.event_impact__impact}}
+{% endif %}
 {% if updates %}*** Updates ***
 {% for row in updates %}
 Date: {{row.event_update__date|date:"Y-m-d H:i:s e"}}
 Update: {{row.event_update__update}}
 {% endfor %}{% endif %}
-{% if ssd_url%}* You may visit the Status Dashboard at any time for current information on the status of all services: {{ssd_url}}{% endif %}
+
+{% if ssd_url %}You may visit the Status Dashboard at any time for current information on the status of all services: {{ssd_url}}{% endif %}
+{% if email_footer %}{{email_footer}}{% endif %}
 

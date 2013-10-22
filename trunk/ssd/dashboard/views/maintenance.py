@@ -122,7 +122,7 @@ def maintenance(request):
             # allowed to be true if an email address is not defined or if global email is disabled.
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
-                email.maintenance(event_id,email_id,request.timezone,True)
+                email.event_email(event_id,email_id,request.timezone,True)
 
             # Clear the cache - don't discriminate and just clear everything that impacts events or maintenances
             cache.delete_many(['active_maintenances','events','maintenance_count','maintenance_timeline'])
@@ -288,7 +288,7 @@ def m_update(request):
             # allowed to be true if an email address is not defined or if global email is disabled.
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
-                email.maintenance(id,email_id,request.timezone,True)
+                email.event_email(id,email_id,request.timezone,True)
 
             # Clear the cache - don't discriminate and just clear everything that impacts events or maintenances
             cache.delete_many(['active_maintenances','events','maintenance_count','maintenance_timeline'])

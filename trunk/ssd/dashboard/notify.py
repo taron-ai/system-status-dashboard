@@ -70,10 +70,11 @@ class email:
             logger.error('Error sending text page: %s' % e)
         
     
-    def incident(self,id,email_id,set_timezone,new):
+    def email_event(self,id,email_id,set_timezone,new):
         """
-        Send an email message in HTML format about a new or existing incident
-           - If there is an error, the user will not be notified but an Apache error log will be generated
+        Send an email message in HTML or TEXT format about a new or existing incident
+           - If HTML formatting is selected, a multi-part MIME message will be sent w/ the text
+             version as well
         """
 
 
@@ -83,92 +84,7 @@ class email:
                                                     'start',
                                                     'end',
                                                     'description',
-                                                    )
-
-        # Which services were impacted
-        services = Event.objects.filter(id=id).values('event_service__service__service_name')
-
-        # Obain any incident updates
-        updates = Event.objects.filter(id=id).values(
-                                                'event_update__id',
-                                                'event_update__date',
-                                                'event_update__update',
-                                                ).order_by('event_update__id')
-
-        # Obtain the recipient email address
-        recipient = Email.objects.filter(id=email_id).values('email')[0]['email']
-
-        # Obtain the sender email address
-        email_from = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('from_address')[0]['from_address']
-
-        # Obtain the ssd url
-        ssd_url = Config_Systemurl.objects.filter(id=Config_Systemurl.objects.values('id')[0]['id']).values('url')[0]['url']
-
-        # HTML (true) or text (false) formatting
-        format = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('email_format')[0]['email_format']
-
-        # Obtain the greeting
-        if new == True:
-            greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('incident_greeting')[0]['incident_greeting']
-            email_subject_incident = 'Incident Notification'
-        else:
-            greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('incident_update')[0]['incident_update']
-            email_subject_incident = 'Incident Update'
-
-        # Interpolate values for the template
-        d = Context({ 
-                     'details':details,
-                     'greeting':greeting,
-                     'services':services,
-                     'updates':updates,
-                     'ssd_url':ssd_url,
-                    })
-
-        if format:
-            # Its HTML
-            template = get_template('email/incident.html')
-        else:
-            # Its text
-            template = get_template('email/incident.txt')
-
-        # Render the template
-        rendered_template = template.render(d)
-
-        try:
-            msg = EmailMessage(
-                                email_subject_incident, 
-                                rendered_template, 
-                                email_from, 
-                                [recipient],None,None,None
-                              )
-
-            # Change the content type to HTML, if requested
-            if format:
-                msg.content_subtype = 'html'
-            
-            # Send it
-            msg.send()
-        except Exception, e:
-            # Log to the error log and return the error to the caller
-            logger.error('Error sending incident email: %s' % e)
-            return e
-
-        # All good
-        return 'success'
-
-
-    def maintenance(self,id,email_id,set_timezone,new):
-        """
-        Send an email message in HTML format about a new or existing maintenance
-           - If there is an error, the user will not be notified but an Apache error log will be generated
-        """
-
-        # Obain the incident detail
-        details = Event.objects.filter(id=id).values(
-                                                    'status__status',
-                                                    'start',
-                                                    'end',
-                                                    'description',
+                                                    'type__type',
                                                     'event_impact__impact',
                                                     'event_coordinator__coordinator'
                                                     )
@@ -183,6 +99,10 @@ class email:
                                                 'event_update__update',
                                                 ).order_by('event_update__id')
 
+        # If there are no updates, set to None
+        if len(updates) == 1 and updates[0]['event_update__date'] == None:
+            updates = None
+
         # Obtain the recipient email address
         recipient = Email.objects.filter(id=email_id).values('email')[0]['email']
 
@@ -197,13 +117,28 @@ class email:
 
         # Obtain the greeting
         if new == True:
-            greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_greeting')[0]['maintenance_greeting']
-            email_subject_maintenance = 'Maintenance Notification'
+            if details[0]['type__type'] == 'incident':
+                greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('incident_greeting')[0]['incident_greeting']
+                email_subject = 'Incident Notification'
+            elif details[0]['type__type'] == 'maintenance':
+                greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_greeting')[0]['maintenance_greeting']
+                email_subject = 'Maintenance Notification'
+            else:
+                logger.error('Unknown event type, exiting')
+                return
         else:
-            greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_update')[0]['incident_update']
-            email_subject_maintenance = 'Maintenance Update'
+            if details[0]['type__type'] == 'incident':
+                greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('incident_update')[0]['incident_update']
+                email_subject = 'Incident Update'
+            elif details[0]['type__type'] == 'maintenance':
+                greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_update')[0]['maintenance_update']
+                email_subject = 'Maintenance Update'
+            else:
+                logger.error('Unknown event type, exiting')
+                return
 
-        # Interpolate the values
+
+        # Interpolate values for the template
         d = Context({ 
                      'details':details,
                      'greeting':greeting,
@@ -214,17 +149,17 @@ class email:
 
         if format:
             # Its HTML
-            template = get_template('email/maintenance.html')
+            template = get_template('email/email.html')
         else:
             # Its text
-            template = get_template('email/maintenance.txt')
+            template = get_template('email/email.txt')
 
         # Render the template
         rendered_template = template.render(d)
 
         try:
             msg = EmailMessage(
-                                email_subject_maintenance, 
+                                email_subject, 
                                 rendered_template, 
                                 email_from, 
                                 [recipient],None,None,None
@@ -238,9 +173,7 @@ class email:
             msg.send()
         except Exception, e:
             # Log to the error log and return the error to the caller
-            logger.error('Error sending maintenance email: %s' % e)
-            return e
+            logger.error('Error sending event email: %s' % e)
 
-        # All good
-        return 'success'
 
+    

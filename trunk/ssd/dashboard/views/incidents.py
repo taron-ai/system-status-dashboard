@@ -119,7 +119,7 @@ def incident(request):
             # allowed to be true if an email address is not defined or if global email is disabled.
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
-                email.incident(event_id,email_id,request.timezone,True)
+                email.email_event(event_id,email_id,request.timezone,True)
 
             # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
             cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
@@ -262,7 +262,7 @@ def i_update(request):
             # allowed to be true if an email address is not defined or if global email is disabled.
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
-                email.incident(id,email_id,request.timezone,False)
+                email.email_event(id,email_id,request.timezone,False)
 
             # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
             cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])

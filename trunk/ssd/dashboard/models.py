@@ -99,7 +99,7 @@ class Event_Impact(models.Model):
     """
 
     event = models.ForeignKey(Event, unique=True)
-    impact = models.CharField(blank=False, max_length=1000)
+    impact = models.CharField(null=False, blank=False, max_length=1000)
 
 
 class Event_Coordinator(models.Model):
@@ -109,7 +109,7 @@ class Event_Coordinator(models.Model):
     """
 
     event = models.ForeignKey(Event, unique=True)
-    coordinator = models.CharField(blank=False, max_length=250)
+    coordinator = models.CharField(null=False, blank=False, max_length=250)
 
 
 class Event_Email(models.Model):
@@ -164,6 +164,7 @@ class Config_Email(models.Model):
     incident_update = models.CharField(null=False, blank=True, max_length=1000)
     maintenance_greeting = models.CharField(null=False, blank=True, max_length=1000)
     maintenance_update = models.CharField(null=False, blank=True, max_length=1000)
+    email_footer = models.CharField(null=False, blank=True, max_length=250)
 
 
 class Config_Message(models.Model):

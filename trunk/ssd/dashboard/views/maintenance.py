@@ -99,12 +99,10 @@ def maintenance(request):
             event_id = e.pk
 
             # Save the impact analysis
-            if impact:
-                Event_Impact(event_id=event_id,impact=impact).save()
+            Event_Impact(event_id=event_id,impact=impact).save()
 
             # Save the coordinator, if requested
-            if coordinator:
-                Event_Coordinator(event_id=event_id,coordinator=coordinator).save()
+            Event_Coordinator(event_id=event_id,coordinator=coordinator).save()
 
             # Add the email recipient, if requested
             if email_id: 
@@ -122,7 +120,7 @@ def maintenance(request):
             # allowed to be true if an email address is not defined or if global email is disabled.
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
-                email.event_email(event_id,email_id,request.timezone,True)
+                email.email_event(event_id,email_id,request.timezone,True)
 
             # Clear the cache - don't discriminate and just clear everything that impacts events or maintenances
             cache.delete_many(['active_maintenances','events','maintenance_count','maintenance_timeline'])
@@ -238,18 +236,10 @@ def m_update(request):
                                      end=end)
 
             # Update the impact analysis (if it's present, update it, otherwise save)
-            if impact:
-                if Event_Impact.objects.filter(event_id=id):
-                    Event_Impact.objects.filter(event_id=id).update(impact=impact)
-                else:
-                    Event_Impact(event_id=id,impact=impact).save()
+            Event_Impact.objects.filter(event_id=id).update(impact=impact)
 
             # Update the coordinator (if it's present, update it, otherwise save)
-            if coordinator:
-                if Event_Coordinator.objects.filter(event_id=id):
-                    Event_Coordinator.objects.filter(event_id=id).update(coordinator=coordinator)
-                else:
-                    Event_Coordinator(event_id=id,coordinator=coordinator).save()
+            Event_Coordinator.objects.filter(event_id=id).update(coordinator=coordinator)
 
             # Add the update, if there is one, using the current time
             if update:
@@ -288,7 +278,7 @@ def m_update(request):
             # allowed to be true if an email address is not defined or if global email is disabled.
             if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1 and broadcast:
                 email = notify.email()
-                email.event_email(id,email_id,request.timezone,True)
+                email.email_event(id,email_id,request.timezone,False)
 
             # Clear the cache - don't discriminate and just clear everything that impacts events or maintenances
             cache.delete_many(['active_maintenances','events','maintenance_count','maintenance_timeline'])
@@ -490,7 +480,7 @@ def m_email(request):
 
         if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
             email = notify.email()
-            email_status = email.maintenance(id,recipient_id,request.timezone,False)
+            email_status = email.email_event(id,recipient_id,request.timezone,False)
 
             if email_status == 'success':
                 messages.add_message(request, messages.SUCCESS, 'Email successfully sent for maintenance id:%s.' % id)

@@ -15,31 +15,28 @@
  limitations under the License.
 
 {% endcomment %}
-Dear {{recipient_name}}, {{greeting}}
+{{greeting|safe}}
 
-START TIME: {{detail.0.start|date:"Y-m-d H:i e"}}
-END TIME: {{detail.0.end|date:"Y-m-d H:i e"}}
-STATUS: {% if detail.0.completed %}COMPLETED{% else %}{% if detail.0.started %}STARTED{% else %}NOT STARTED{% endif %}{% endif %}
+*** Maintenance Status ***
+{{details.0.status__status}}
 
-The following services are impacted by this maintenance:{% if services %}{% for row in services %}
-- {{row.service_name_id__service_name}}{% endfor %}{% else %}- NO SERVICES DEFINED{% endif %}
+*** Maintenance Start ***
+{{details.0.start|date:"Y-m-d H:i e"}}
 
-DESCRIPTION:
-{{detail.0.description}}
+*** Maintenance End ***
+{% if details.0.end %}{{details.0.end|date:"Y-m-d H:i e"}}{% endif %}n/a
 
-IMPACT ANALYSIS:
-{{detail.0.impact}}
+*** Services Impacted ***{% if services %}{% for row in services %}
+- {{row.event_service__service__service_name}}{% endfor %}{% else %}- NO SERVICES DEFINED{% endif %}
 
-COORDINATOR:
-{{detail.0.coordinator}}
+*** Details ***
+{{details.0.description|linebreaksbr}}
 
-
-{% if updates %}MAINTENANCE UPDATES:
-
+{{updates}}
+{% if updates %}*** Updates ***
 {% for row in updates %}
-Date: {{row.date|date:"Y-m-d H:i:s e"}}
-Logged by: {{row.user_id__first_name}} {{row.user_id__last_name}}
-Update: {{row.detail}}
-
+Date: {{row.event_update__date|date:"Y-m-d H:i:s e"}}
+Update: {{row.event_update__update}}
 {% endfor %}{% endif %}
-* You may visit the System Status Dashboard at any time for current information on the status of all services: {{ssd_url}}
+{% if ssd_url%}* You may visit the Status Dashboard at any time for current information on the status of all services: {{ssd_url}}{% endif %}
+

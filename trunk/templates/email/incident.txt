@@ -17,23 +17,26 @@
 {% endcomment %}
 {{greeting|safe}}
 
-Incident Status: {{details.0.status__status}}
+*** Incident Status ***
+{{details.0.status__status}}
 
-The following services have been impacted by this incident:{% if services %}{% for row in services %}
+*** Incident Start ***
+{{details.0.start|date:"Y-m-d H:i e"}}
+
+*** Incident End ***
+{% if details.0.end %}{{details.0.end|date:"Y-m-d H:i e"}}{% endif %}n/a
+
+*** Services Impacted ***{% if services %}{% for row in services %}
 - {{row.event_service__service__service_name}}{% endfor %}{% else %}- NO SERVICES DEFINED{% endif %}
 
+*** Details ***
+{{details.0.description|linebreaksbr}}
 
-INCIDENT DETAILS/UPDATES:
 
-Start: {{details.0.start|date:"Y-m-d H:i e"}}
-End: {{details.0.end|date:"Y-m-d H:i e"}}
-Detail: {{details.0.description|linebreaksbr}}
-    
-{% if updates %}{% for row in updates %}
+{% if updates %}*** Updates ***
+{% for row in updates %}
 Date: {{row.event_update__date|date:"Y-m-d H:i:s e"}}
 Update: {{row.event_update__update}}
-
-
 {% endfor %}{% endif %}
 {% if ssd_url%}* You may visit the Status Dashboard at any time for current information on the status of all services: {{ssd_url}}{% endif %}
 

@@ -78,12 +78,12 @@ class email:
 
 
         # Obain the incident detail
-        details = Event.objects.filter(id=id,type=1).values(
-                                                'status__status',
-                                                'start',
-                                                'end',
-                                                'description',
-                                                )
+        details = Event.objects.filter(id=id).values(
+                                                    'status__status',
+                                                    'start',
+                                                    'end',
+                                                    'description',
+                                                    )
 
         # Which services were impacted
         services = Event.objects.filter(id=id).values('event_service__service__service_name')
@@ -96,7 +96,7 @@ class email:
                                                 ).order_by('event_update__id')
 
         # Obtain the recipient email address
-        recipient_incident = Email.objects.filter(id=email_id).values('email')[0]['email']
+        recipient = Email.objects.filter(id=email_id).values('email')[0]['email']
 
         # Obtain the sender email address
         email_from = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('from_address')[0]['from_address']
@@ -139,7 +139,7 @@ class email:
                                 email_subject_incident, 
                                 rendered_template, 
                                 email_from, 
-                                [recipient_incident],None,None,None
+                                [recipient],None,None,None
                               )
 
             # Change the content type to HTML, if requested
@@ -164,13 +164,13 @@ class email:
         """
 
         # Obain the incident detail
-        detail = Event.objects.filter(id=id).values(
+        details = Event.objects.filter(id=id).values(
+                                                    'status__status',
                                                     'start',
                                                     'end',
                                                     'description',
                                                     'event_impact__impact',
-                                                    'event_coordinator__coordinator',
-                                                    'status'
+                                                    'event_coordinator__coordinator'
                                                     )
 
         # Which services were impacted
@@ -178,15 +178,13 @@ class email:
 
         # Obain any incident updates
         updates = Event.objects.filter(id=id).values(
-                                                    'event_update__id',
-                                                    'event_update__date',
-                                                    'event_update__update',
-                                                    'event_update__user__first_name',
-                                                    'event_update__user__last_name'
-                                                    ).order_by('event_update__id')
+                                                'event_update__id',
+                                                'event_update__date',
+                                                'event_update__update',
+                                                ).order_by('event_update__id')
 
         # Obtain the recipient email address
-        recipient_incident = Email.objects.filter(id=email_id).values('email')[0]['email']
+        recipient = Email.objects.filter(id=email_id).values('email')[0]['email']
 
         # Obtain the sender email address
         email_from = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('from_address')[0]['from_address']
@@ -200,14 +198,14 @@ class email:
         # Obtain the greeting
         if new == True:
             greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_greeting')[0]['maintenance_greeting']
-            email_subject_incident = 'Maintenance Notification'
+            email_subject_maintenance = 'Maintenance Notification'
         else:
             greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_update')[0]['incident_update']
-            email_subject_incident = 'Maintenance Update'
+            email_subject_maintenance = 'Maintenance Update'
 
         # Interpolate the values
         d = Context({ 
-                     'detail':detail,
+                     'details':details,
                      'greeting':greeting,
                      'services':services,
                      'updates':updates,
@@ -229,7 +227,7 @@ class email:
                                 email_subject_maintenance, 
                                 rendered_template, 
                                 email_from, 
-                                [recipient_maintenance],None,None,None
+                                [recipient],None,None,None
                               )
 
             # Change the content type to HTML, if requested

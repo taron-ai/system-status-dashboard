@@ -306,6 +306,10 @@ span.foundicon_container_help {
    bottom: -2px; 
    right: 3px;
 }
+span.summary_status_legend {
+   position: relative;
+   bottom: -5px;
+}
 /* Dashboard legend */
 span.legend {
    font-size: 12px;
@@ -470,15 +474,6 @@ input.x_editable_text {
 /* Global Styling */
 .f-dropdown {
    box-shadow: 0 0 5px 1px #ddd;
-}
-/* Dashboard table key */
-.f-dropdown.keydrop {
-   min-width: 300px;
-}
-/* Dashboard table incident indicators */
-.f-dropdown.edrop {
-   min-width: 300px;  
-   /* background-color: red; */
 }
 /* Historical summary status help */
 /* Navigation links on table */

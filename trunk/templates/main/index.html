@@ -49,17 +49,18 @@
   </div>
 </div>
 
-<div class="row">
+{# Legend for large and medium screens #}
+<div class="row hide-for-small">
   <div class="large-6 columns">
     <a href="{{backward_link}}" title="Move back one week"><span class="foundicon-gen-left-arrow foundicon_container_nav"></span></a>
-    &nbsp;&nbsp;
+    &nbsp;
     <a href="{{forward_link}}" title="Move forward one week"><span class="foundicon-gen-right-arrow foundicon_container_nav"></span></a>
-    &nbsp;&nbsp;
+    &nbsp;
     <span id="calselector" title="Jump to a specific date" class="foundicon-gen-calendar foundicon_container_nav"></span>
-    &nbsp;&nbsp;
-    <a href="#" data-dropdown="keydrop"><span class="foundicon-acc-key foundicon_container_nav" title="Dashboard color indicator key"></span></a>
+    &nbsp;
+    <a href="#" data-dropdown="keydrop-large"><span class="foundicon-acc-key foundicon_container_nav" title="Dashboard color indicator key"></span></a>
 
-    <div id="keydrop" class="f-dropdown content keydrop" data-dropdown-content>
+    <div id="keydrop-large" class="f-dropdown content small" data-dropdown-content>
       <div>
         <h5>Dashboard Key</h5>
         <div class="spacer_small"></div>
@@ -96,9 +97,10 @@
   });
 </script>
 
-<div class="row">
+{# Main dashboard for large and medium screens #}
+<div class="row hide-for-small">
   <div class="large-12 large-centered columns">
-    <table class="responsive">
+    <table>
      {% for row in data %}
        {% if forloop.counter == 1 %}
          <tr>
@@ -146,7 +148,7 @@
                     <a href="#" data-dropdown="idrop_{{event.id}}">
                       <span class="foundicon-genenc-remove foundicon_container_red" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></span>
                     </a>
-                    <div id="idrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
+                    <div id="idrop_{{event.id}}" class="f-dropdown content small" data-dropdown-content>
                       <span class="dashboard_drop">
                         <h5>Incident Information</h5>
                         <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
@@ -158,7 +160,7 @@
                     <a href="#" data-dropdown="irdrop_{{event.id}}">
                       <span class="foundicon-genenc-remove foundicon_container_orange" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
                     </a>
-                    <div id="irdrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
+                    <div id="irdrop_{{event.id}}" class="f-dropdown content small" data-dropdown-content>
                       <span class="dashboard_drop">
                         <h5>Incident (Resolved) Information</h5>
                         <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
@@ -172,7 +174,7 @@
                     <a href="#" data-dropdown="mdrop_{{event.id}}">
                       <span class="foundicon-genenc-tools foundicon_container_blue" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
                     </a>
-                    <div id="mdrop_{{event.id}}" class="f-dropdown content edrop" data-dropdown-content>
+                    <div id="mdrop_{{event.id}}" class="f-dropdown content small" data-dropdown-content>
                       <span class="dashboard_drop">
                         <h5>Maintenance Information</h5>
                         <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
@@ -187,6 +189,78 @@
              </td>
            {% endif %} 
          {% endfor %}
+        </tr>
+       {% endif %}
+     {% endfor %}
+    </table>
+  </div>
+</div>
+
+{# Legend for small screens #}
+<div class="row show-for-small">
+  <div class="large-6 columns">
+    <a href="#" data-dropdown="keydrop-small"><span class="foundicon-acc-key foundicon_container_nav" title="Dashboard color indicator key"></span></a>
+
+    <div id="keydrop-small" class="f-dropdown content tiny" data-dropdown-content>
+      <div>
+        <h5>Dashboard Key</h5>
+        <div class="spacer_small"></div>
+      </div>
+      <div>
+        <span class="legend"><span class="foundicon-genenc-checkmark foundicon_container_green"></span>&nbsp;Service Normal - the service is operating normally.</span>
+        <div class="spacer_small"></div>
+      </div>
+      <div>
+        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_red"></span>&nbsp;Service Disruption - the service is experiencing an active disruption.</span>
+        <div class="spacer_small"></div>      
+      </div>
+      <div>
+        <span class="legend"><span class="foundicon-genenc-tools foundicon_container_blue"></span>&nbsp;Planned Maintenance - planned maintenance is occurring with the service.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{# Main dashboard for small screens #}
+<div class="row show-for-small">
+  <div class="large-12 large-centered columns">
+    <table>
+     {% for row in data %}
+       {% if forloop.counter == 1 %}
+         <tr>
+          {% for heading in row %}
+           {% if forloop.counter == 1 %}
+            <th style="width: 50px;">{{heading}}</th>
+           {% else %}
+            {% if forloop.counter == 2 %}
+              <th style="width: 220px;">{{heading}}</th>
+            {% endif %}
+           {% endif %}
+          {% endfor %}
+         </tr>
+       {% else %}
+        <tr>
+         {% for column in row %}
+           {# Set the status colors next to the service and print the service #}
+           {# 1 is active incident and 2 is active maintenance #}
+           {% if forloop.counter == 1 %}
+             <td style="text-align: center;">
+               {% if column.status == 1 %}
+                 <span class="foundicon-genenc-remove foundicon_container_red" title="A service disruption is currently occurring with this service."></span>
+               {% else %}
+                {% if column.status == 2 %}
+                 <span class="foundicon-genenc-tools foundicon_container_blue" title="Maintenance is currently occurring with this service."></span>
+                {% else %}
+                  <span class="foundicon-genenc-checkmark foundicon_container_green" title="Service is operating normally."></span>
+                {% endif %}
+               {% endif %}
+              </td>
+              <td>
+                <span>{{column.service}}</span>
+              </td>
+           {% endif %}
+          {% endfor %}
         </tr>
        {% endif %}
      {% endfor %}
@@ -234,7 +308,13 @@
   <div class="large-12 columns">
     <br><br><br>
     <span class="heading">Summary Status:</span>
-    <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-key foundicon_container_key" title="Summary Status Key"></a>
+    <span class="summary_status_legend">
+      <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-key foundicon_container_nav" title="Summary Status Key"></a>
+      &nbsp;
+      <a class="show-for-small" href="{{backward_link}}" title="Move back one week"><span class="foundicon-gen-left-arrow foundicon_container_nav"></span></a>
+      &nbsp;
+      <a class="show-for-small" href="{{forward_link}}" title="Move forward one week"><span class="foundicon-gen-right-arrow foundicon_container_nav"></span></a>
+    </span>
     <div id="histsumdrop" class="f-dropdown content histsumdrop" data-dropdown-content>
       <h5>Historical Summary Status</h5><br>
       <span class="help_drop">

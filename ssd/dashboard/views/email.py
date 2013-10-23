@@ -88,7 +88,6 @@ def email_config(request):
         form = EmailConfigForm
 
     # Obtain the email config
-
     email_config = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values(
                                                                                     'enabled',
                                                                                     'email_format',
@@ -98,6 +97,7 @@ def email_config(request):
                                                                                     'incident_update',
                                                                                     'maintenance_greeting',
                                                                                     'maintenance_update',
+                                                                                    'email_footer'
                                                                                     )
 
     # Print the page

@@ -41,7 +41,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ----------------------------
 -- Records of dashboard_config_email
 -- ----------------------------
-INSERT INTO `dashboard_config_email` VALUES ('1', '0', '0', '', '', '', '', '', '', '');
+INSERT INTO `dashboard_config_email` VALUES ('1', '0', '0', '', '', 'ATTN: We are currently experiencing a service issue that is impacting one or more production services. We are actively working to resolve this issue and will update you as progress is made on a resolution. All known information about this incident is listed below.', 'ATTN: The following is an update on a service issue that is impacting one or more production services. We are actively working to resolve this issue and will update you as progress is made on a resolution. All known information about this incident is listed below.', 'ATTN: The purpose of this message is to inform you of upcoming maintenance activities within our technical infrastructure.', 'ATTN: The purpose of this message is to update you on the status of maintenance activities within our technical infrastructure.', 'This message is being sent to you from the system status dashboard.  If you would prefer not to receive future updates on system status, please notify your system administrator.');
 
 
 
@@ -100,7 +100,7 @@ CREATE TABLE `dashboard_config_logo` (
 -- ----------------------------
 -- Records of dashboard_config_logo
 -- ----------------------------
-INSERT INTO `dashboard_config_logo` VALUES ('1', 'http://www.test.com/logo.png', '1');
+INSERT INTO `dashboard_config_logo` VALUES ('1', '', '0');
 
 
 

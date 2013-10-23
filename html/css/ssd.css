@@ -70,23 +70,6 @@ label {
 table {
    box-shadow: 0 0 5px 1px #ddd;
 }
-/* Service/Status container */
-table.service_container {
-   border: 1;
-   background: transparent; 
-}
-table.service_container tr td {
-   padding: 0px 0px 0px 0px;
-}
-/* Homepage table with no border on the bottom cells */
-td.td_border_top {
-	border-left: 0 !important;
-	border-right: 0 !important;
-	border-bottom: 0 !important;
-	background-color: white;
-	height: 40px;
-	vertical-align: bottom;
-}
 /* Table for footer */
 table.footer {
    border: 0;

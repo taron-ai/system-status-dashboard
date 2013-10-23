@@ -21,7 +21,7 @@
 """
 
 import logging
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
 from django.utils import timezone as jtz
@@ -138,7 +138,7 @@ class email:
                 return
 
 
-        # Interpolate values for the template
+        # Setup the context and interpolate the values in the template
         d = Context({ 
                      'details':details,
                      'greeting':greeting,
@@ -148,29 +148,26 @@ class email:
                      'email_footer':email_config[0]['email_footer']
                     })
 
-        if email_config[0]['email_format'] == 1:
-            # Its HTML
-            template = get_template('email/email.html')
-        else:
-            # Its text
-            template = get_template('email/email.txt')
+        # Render the text template
+        # If html formatting is requested, we'll render that one later
+        rendered_template_txt = get_template('email/email.txt').render(d)
 
-        # Render the template
-        rendered_template = template.render(d)
-
+        # Setup the message
         try:
             msg = EmailMessage(
                                 email_subject, 
-                                rendered_template, 
+                                rendered_template_txt, 
                                 email_from, 
-                                [recipient],None,None,None
+                                [recipient]
                               )
 
-            # Change the content type to HTML, if requested
-            if format:
-                msg.content_subtype = 'html'
+            # If HTML is requested, setup a multipart message
+            if email_config[0]['email_format'] == 1:
+                # Render the html template and attach it
+                rendered_template_html = get_template('email/email.html').render(d)
+                msg.attach_alternative(rendered_template_html, "text/html")
             
-            # Send it
+            # Send the message
             msg.send()
         except Exception, e:
             # Log to the error log and return the error to the caller

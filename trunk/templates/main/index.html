@@ -229,15 +229,9 @@
      {% for row in data %}
        {% if forloop.counter == 1 %}
          <tr>
-          {% for heading in row %}
-           {% if forloop.counter == 1 %}
-            <th style="width: 50px;">{{heading}}</th>
-           {% else %}
-            {% if forloop.counter == 2 %}
-              <th style="width: 220px;">{{heading}}</th>
-            {% endif %}
-           {% endif %}
-          {% endfor %}
+           <th style="width: 50px;"></th>
+           <th style="width: 220px;">Service</th>
+           <th style="width: 220px;">Current Status</th>
          </tr>
        {% else %}
         <tr>
@@ -259,6 +253,17 @@
               <td>
                 <span>{{column.service}}</span>
               </td>
+              <td>
+               {% if column.status == 1 %}
+                 <span class="mobile_red">Active service disruption</span>
+               {% else %}
+                {% if column.status == 2 %}
+                 <span class="mobile_blue">Planned maintenance</span>
+                {% else %}
+                 <span class="mobile_green">Service normal</span>
+                {% endif %}
+               {% endif %}
+              </td>
            {% endif %}
           {% endfor %}
         </tr>
@@ -270,17 +275,40 @@
 
 <div class="row">
   <div class="large-12 columns">
-    <br><br><br>
-    <span class="heading">Active Service Disruption Timeline:</span><div class="hr"></div>
+    <br><br>
+    <span class="heading">Active Service Disruption Timeline:</span>
+    <div class="spacer_micro"></div>
     {% if incident_timeline %}
+      <div class="timeline_container">
       {% for row in incident_timeline %}
        <span class="timeline">
-        <a href="/i_detail?id={{row.id}}">{{row.start|date:"Y-m-d H:i:s e"}}</a>
-         - {{row.description}}
-        </span>
+         <span id="expand_{{row.id}}" class="foundicon-genenc-plus foundicon_container_expand"></span>
+         <a href="/i_detail?id={{row.id}}">{{row.start|date:"Y-m-d H:i:s e"}}</a>
+          - {{row.description}}
+         <div id="event_{{row.id}}" style="display: none;">test, can you see me?</div>
+         <script>
+         // Expand Slider
+          $(function() {
+            $("#expand_{{row.id}}").click(function () {
+               $("#event_{{row.id}}").slideToggle("fast");
+               if ($(this).hasClass("foundicon-genenc-plus")) {
+                //Remove the plus class and add the minus one
+                $(this).removeClass("foundicon-genenc-plus");
+                $(this).addClass("foundicon-genenc-minus");
+               } else if ($(this).hasClass("foundicon-genenc-minus")) {
+                // Remove the minus class and add the plus one
+                $(this).removeClass("foundicon-genenc-minus");
+                $(this).addClass("foundicon-genenc-plus");
+               }
+            });
+          });
+         </script>
+       </span>
        <br>
       {% endfor %}
+      </div>
     {% else %}
+      <div class="hr"></div>
       <span class="all_good">No current service disruptions.</span>
     {% endif %}
   </div>
@@ -289,8 +317,10 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br><br>
-    <span class="heading">Active Maintenance Timeline:</span><div class="hr"></div>
+    <span class="heading">Active Maintenance Timeline:</span>
+    <div class="spacer_micro"></div>
     {% if maintenance_timeline %}
+      <div class="timeline_container">
       {% for row in maintenance_timeline %}
        <span class="timeline">
         <a href="/m_detail?id={{row.id}}">{{row.start|date:"Y-m-d H:i:s e"}}</a>
@@ -298,7 +328,9 @@
        </span>
        <br>
       {% endfor %}
+      </div>
     {% else %}
+      <div class="hr"></div>
       <span class="all_good">No planned maintenance is occurring.</span>
     {% endif %}
   </div>
@@ -321,7 +353,7 @@
         Historical summary status shows the past 15 days (incidents and maintenance) and future 15 days (scheduled maintenance).<br><br>Click on any of the event indicators to review detailed information about events.<br><br>Remove a data series from the graph by clicking its legend icon.
       </span>
     </div>
-    <div class="hr"></div>
+    <div class="spacer_micro"></div>
   </div>
 </div>
 
@@ -339,7 +371,7 @@ $(function () {
                 marginBottom: 75,
                 height: 250,
                 /* width: 900, */
-                backgroundColor: '#f9f9f9',
+                /* backgroundColor: '#f9f9f9', */
                 borderColor: '#cccccc',
                 borderWidth: 1
             },

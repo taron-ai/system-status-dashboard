@@ -33,7 +33,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.cache import cache
 from ssd.dashboard.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email, Config_Email
 from ssd.dashboard.forms import AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm, ListForm
 from ssd.dashboard import notify
@@ -312,7 +311,7 @@ def i_update(request):
         form = UpdateIncidentForm()
 
     # Obtain the details (and make sure it's an incident)
-    details = Event.objects.filter(id=id,type=1).values(
+    details = Event.objects.filter(id=id,type__type='incident').values(
                                                 'description',
                                                 'status__status',
                                                 'event_email__email__id',
@@ -445,7 +444,7 @@ def i_detail(request):
         return HttpResponseRedirect('/')
 
     # Obain the incident detail (and make sure it's an incident)
-    details = Event.objects.filter(id=id,type=1).values(
+    details = Event.objects.filter(id=id,type__type='incident').values(
                                                 'status__status',
                                                 'start',
                                                 'end',

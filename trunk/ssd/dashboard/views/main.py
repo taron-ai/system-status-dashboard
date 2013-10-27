@@ -25,11 +25,12 @@ import pytz
 import re
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from ssd.dashboard.models import Event, Service, Config_Message
+from ssd.dashboard.models import Event, Event_Update, Service, Config_Message
 
 
 # Get an instance of the ssd logger
@@ -115,6 +116,7 @@ def index(request):
         logger.error('Exception getting active_incidents from cache: %s' % e)
         active_incidents = None
     if active_incidents == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'active_incidents')
         active_incidents = Event.objects.filter(type__type='incident',status__status='open').values('event_service__service__service_name')
         cache.set('active_incidents', active_incidents)
 
@@ -125,6 +127,7 @@ def index(request):
         logger.error('Exception getting active_maintenances from cache: %s' % e)
         active_maintenances = None 
     if active_maintenances == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'active_maintenances')
         active_maintenances = Event.objects.filter(type__type='maintenance',status__status='started').values('event_service__service__service_name')
         cache.set('active_maintenances', active_maintenances)
 
@@ -156,6 +159,7 @@ def index(request):
     # Grab all services
     services = cache.get('services')
     if services == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'services')
         services = Service.objects.values('service_name').order_by('service_name')
         cache.set('services', services)
 
@@ -276,12 +280,14 @@ def index(request):
     # Obtain a count of incidents, per day
     incident_count = cache.get('incident_count')
     if incident_count == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'incident_count')
         incident_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='incident').values('start')
         cache.set('incident_count', incident_count)
 
     # Obtain a count of maintenances, per day
     maintenance_count = cache.get('maintenance_count')
     if maintenance_count == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'maintenance_count')
         maintenance_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='maintenance').values('start')
         cache.set('maintenance_count', maintenance_count)
 
@@ -320,16 +326,66 @@ def index(request):
 
 
     # ------------------ #
-    # Obtain the incident (open) and maintenance (started) timelines
-    incident_timeline = cache.get('incident_timeline')
-    if incident_timeline == None:
-        incident_timeline = Event.objects.filter(status__status='open',type__type='incident').values('id','start','description').order_by('-id')
-        cache.set('incident_timeline', incident_timeline)
+    # Obtain the incident (open) and maintenance (started) timelines as well as any updates
+    # Put into the following structure
+    # timeline = {
+    #              'incident':{
+    #                          '1': {
+    #                                'start':'2013-01-01 10:28:25 PDT',
+    #                                'description':'We are having an issue with the exchange server'
+    #                                'services':['service1','service2']                                
+    #                                'updates': [
+    #                                            ['2013-01-01 10:29:25 PDT','We are having an issue'],
+    #                                            ['2013-01-01 10:30:25 PDT','Resolved now']
+    #                                           ]
 
-    maintenance_timeline = cache.get('maintenance_timeline')
-    if maintenance_timeline == None:
-        maintenance_timeline = Event.objects.filter(status__status='started',type__type='maintenance').values('id','start','description').order_by('-id')
-        cache.set('maintenance_timeline', maintenance_timeline)
+    timeline = cache.get('timeline')
+    if timeline == None:
+
+        logger.debug('%s not in cache, querying from db and setting' % 'timeline')
+
+        timeline = {}
+        
+        # Get the events
+        timeline_events = Event.objects.filter(Q(status__status='open') | Q(status__status='started')).values('id','start','type__type','description').order_by('-id')
+        logger.debug('Query executed: %s' % timeline_events.query)
+
+        # Build the data structure
+        for event in timeline_events:
+
+            # Add the type if not there
+            if not event['type__type'] in timeline:
+                timeline[event['type__type']] = {}
+            
+            # Add the event id if not there
+            if not event['id'] in timeline[event['type__type']]:
+                timeline[event['type__type']][event['id']] = {}
+
+            # Add the event data
+            timeline[event['type__type']][event['id']]['start'] = event['start']
+            timeline[event['type__type']][event['id']]['description'] = event['description']
+
+            # Find out which services this event impacts
+            services_impacted = Event.objects.filter(id=event['id']).values('event_service__service__service_name')
+            timeline[event['type__type']][event['id']]['services'] = services_impacted            
+
+        # Now get the updates
+        timeline_updates = Event_Update.objects.filter(Q(event_id__status__status='open') | Q(event_id__status__status='started')).values('event_id','event_id__type__type','date','update').order_by('-id')
+        logger.debug('Query executed: %s' % timeline_updates.query)
+
+        for update in timeline_updates:
+
+            # Add the updates array if not there
+            if not 'updates' in timeline[update['event_id__type__type']][update['event_id']]:
+                timeline[update['event_id__type__type']][update['event_id']]['updates'] = []
+
+            # Add the update
+            timeline[update['event_id__type__type']][update['event_id']]['updates'].append([update['date'],update['update']])
+
+        cache.set('timeline', timeline)
+    else:
+        logger.debug('%s found in cache' % 'timeline')
+
     # End timelines
     # ------------------ #
 
@@ -366,8 +422,7 @@ def index(request):
           'alert':alert,
           'information':information,
           'count_data':count_data,
-          'incident_timeline':incident_timeline,
-          'maintenance_timeline':maintenance_timeline,
+          'timeline':timeline,
           'show_graph':show_graph
        },
        context_instance=RequestContext(request)

@@ -21,10 +21,16 @@
 
 """
 
+
+import logging
 import pytz
 from django.core.cache import cache
 from ssd.dashboard.models import Config_Admin, Config_Logo, Config_Escalation, Config_Ireport
 from django.conf import settings
+
+
+# Get an instance of the ssd logger
+logger = logging.getLogger(__name__)
 
 
 def prefs(request):
@@ -47,8 +53,11 @@ def prefs(request):
     # -- LOGO DISPLAY -- #
     display_logo = cache.get('display_logo')
     if display_logo == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'display_logo')
         display_logo = Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('logo_enabled')[0]['logo_enabled']
         cache.set('display_logo', display_logo)
+    else:
+        logger.debug('%s found in cache' % 'display_logo')
     if display_logo == 1:
         # Yes, display it, what's the url
         logo_url = cache.get('logo_url')
@@ -64,8 +73,11 @@ def prefs(request):
     # -- INCIDENT REPORT -- #
     enable_ireport = cache.get('enable_ireport')
     if enable_ireport == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'enable_ireport')
         enable_ireport = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled']
         cache.set('enable_ireport', enable_ireport)
+    else:
+        logger.debug('%s found in cache' % 'enable_ireport')
     if enable_ireport == 1:    
         values['ireport'] = True
     else:
@@ -76,8 +88,11 @@ def prefs(request):
     # -- ESCALATION PATH --#
     enable_escalation = cache.get('enable_escalation')
     if enable_escalation == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'enable_escalation')
         enable_escalation = Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled']
         cache.set('enable_escalation', enable_escalation)
+    else:
+        logger.debug('%s found in cache' % 'enable_escalation')
     if enable_escalation == 1:
         values['escalation'] = True
     else:
@@ -88,8 +103,11 @@ def prefs(request):
     # -- ADMIN LINK --#
     display_admin = cache.get('display_admin')
     if display_admin == None:
+        logger.debug('%s not in cache, querying from db and setting' % 'display_admin')
         display_admin = Config_Admin.objects.filter(id=Config_Admin.objects.values('id')[0]['id']).values('link_enabled')[0]['link_enabled']
-        cache.set('display_admin', display_admin)
+        setit = cache.set('display_admin', display_admin)
+    else:
+        logger.debug('%s found in cache' % 'display_admin')
     if display_admin == 1:
         values['admin_link'] = True
     else:
@@ -105,7 +123,7 @@ def prefs(request):
 def timezones(request):
     """Populate the timezones in the footer timezone picker"""
 
-    # Obtain all timezones (put this in a context processor)
+    # Obtain all timezones
     timezones = pytz.all_timezones
 
     return {'timezones': timezones}

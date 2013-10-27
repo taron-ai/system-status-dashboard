@@ -411,7 +411,7 @@ def m_detail(request):
         return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
 
     # Obain the maintenance detail (and make sure it's a maintenance)
-    details = Event.objects.filter(id=id,type=2).values(
+    details = Event.objects.filter(id=id,type__type='maintenance').values(
                                                 'start',
                                                 'end',
                                                 'status__status',

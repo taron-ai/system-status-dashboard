@@ -264,8 +264,8 @@ span.foundicon_container_iconlink {
 /* Expand/Collapse details link */
 span.foundicon_container_expand {
    position: relative; 
-   bottom: -1px; 
-   color: #CBE32D;
+   bottom: -4px; 
+   color: #DDDDDD;
 }
 /* Escalation Arrow */
 span.foundicon_container_escalate {

@@ -56,7 +56,7 @@
     &nbsp;
     <a href="{{forward_link}}" title="Move forward one week"><span class="foundicon-gen-right-arrow foundicon_container_nav"></span></a>
     &nbsp;
-    <span id="calselector" title="Jump to a specific date" class="foundicon-gen-calendar foundicon_container_nav"></span>
+    <span id="calselector" title="Jump to a specific date" class="foundicon-gen-calendar foundicon_container_nav_cal"></span>
     &nbsp;
     <a href="#" data-dropdown="keydrop-large"><span class="foundicon-acc-key foundicon_container_nav" title="Dashboard color indicator key"></span></a>
 
@@ -283,7 +283,7 @@
       {% for id,values in timeline.incident.items %}
         <div>
 
-          <div style="vertical-align: top;">
+          <div>
             <span id="expand_{{id}}" class="foundicon-genenc-plus foundicon_container_expand"></span>
             <span class="timeline">
               {% for service in values.services %}
@@ -513,7 +513,7 @@ $(function () {
                   {% for row in count_data %}
                     {% if forloop.last %}
                     {
-                      y: {{row.incidents}},
+                      y: {{row.incident}},
                       events: {
                         click: function() {
                           window.open('/gsearch?date={{row.date}}&type=incident', '_self');
@@ -522,7 +522,7 @@ $(function () {
                     }
                     {% else %}
                     {  
-                      y: {{row.incidents}},
+                      y: {{row.incident}},
                       events: {
                         click: function() {
                           window.open('/gsearch?date={{row.date}}&type=incident', '_self');
@@ -541,7 +541,7 @@ $(function () {
                   {% for row in count_data %}
                     {% if forloop.last %}
                     {
-                      y: {{row.maintenances}},
+                      y: {{row.maintenance}},
                       events: {
                         click: function() {
                           window.open('/gsearch?date={{row.date}}&type=maintenance', '_self');
@@ -550,7 +550,7 @@ $(function () {
                     }
                     {% else %}
                     {  
-                      y: {{row.maintenances}},
+                      y: {{row.maintenance}},
                       events: {
                         click: function() {
                           window.open('/gsearch?date={{row.date}}&type=maintenance', '_self');
@@ -578,6 +578,7 @@ $(function () {
 {% else %}
 <div class="row">
   <div class="large-12 columns">
+    <div class="hr"></div>
     <span class="all_good">No incidents or maintenance have occurred in the past 30 days and no maintenance is planned for the next 30 days.</span><br><br>
   </div>
 </div>

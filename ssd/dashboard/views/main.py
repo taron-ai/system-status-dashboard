@@ -40,11 +40,14 @@ logger = logging.getLogger(__name__)
 def index(request):
     """Index Page View
 
-    Show the calendar view with 7 days of information on all services
+    The main dashboard view
 
     """
     
     logger.debug('%s view being executed.' % 'main.index')
+
+    # -------------------------------------------------------- #
+    # OBTAIN AND CONFIGURE DATE INFORMATION
 
     # Get the reference date (if its not given, then its today)
     try:
@@ -71,7 +74,7 @@ def index(request):
     # standard homepage
     try:
         ref_q = datetime.datetime.strptime(ref_q,'%Y-%m-%d %H:%M:%S')
-    except ValueError as e:
+    except ValueError:
         # Set an error message
         messages.add_message(request, messages.ERROR, 'Improperly formatted reference date.')
         # Redirect to the homepage
@@ -105,45 +108,123 @@ def index(request):
     backward_link = '/?ref=%s' % (backward)
     forward = (ref + datetime.timedelta(days=7)).strftime('%Y-%m-%d')
     forward_link = '/?ref=%s' % (forward)
-
-    # Determine if there are any active events (incidents or maintenances), regardless of the time range
-    # This will be used to set the main service status
-
-    # Active Incidents
-    try:
-        active_incidents = cache.get('active_incidents')
-    except Exception as e:
-        logger.error('Exception getting active_incidents from cache: %s' % e)
-        active_incidents = None
-    if active_incidents == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'active_incidents')
-        active_incidents = Event.objects.filter(type__type='incident',status__status='open').values('event_service__service__service_name')
-        cache.set('active_incidents', active_incidents)
-
-    # Active Maintenances
-    try:
-        active_maintenances = cache.get('active_maintenances')
-    except Exception as e:
-        logger.error('Exception getting active_maintenances from cache: %s' % e)
-        active_maintenances = None 
-    if active_maintenances == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'active_maintenances')
-        active_maintenances = Event.objects.filter(type__type='maintenance',status__status='started').values('event_service__service__service_name')
-        cache.set('active_maintenances', active_maintenances)
-
-    # Create an easy lookup table for later
-    events_lookup = {
-        'incident':{},
-        'maintenance':{}
-    }
-    if active_incidents:
-        for incident in active_incidents:
-            events_lookup['incident'][incident['event_service__service__service_name']] = ''
-    if active_maintenances:
-        for maintenance in active_maintenances:
-            events_lookup['maintenance'][maintenance['event_service__service__service_name']] = ''
+    # END DATE INFORMATION
+    # -------------------------------------------------------- #
 
 
+    # -------------------------------------------------------- #
+    # OBTAIN ACTIVE INCIDENT INFORMATION
+    #
+    # This information will be used to build the timelines and also as lookups
+    # to set the service status in the main dashboard
+    #
+    # We'll use the following data structure
+    # timeline = {
+    #              'incident':{
+    #                          '1': {
+    #                                'start':'2013-01-01 10:28:25 PDT',
+    #                                'description':'We are having an issue with the exchange server',
+    #                                'services':['service1','service2'],                                
+    #                                'updates': [
+    #                                            ['2013-01-01 10:29:25 PDT','We are having an issue'],
+    #                                            ['2013-01-01 10:30:25 PDT','Resolved now']
+    #                                           ]
+    #                                }
+    #                          }
+    #             }
+    #          
+    # We'll also create a lookup table so we can easily determine if a service
+    # has an active event and set it's color (e.g. if service1 in events_lookup['incident'])
+    # events_lookup = {
+    #                   'incident':{
+    #                                  'service1' = '',
+    #                                  'service2' = ''
+    #                              },
+    #                   'maintenance':{
+    #                                    'service3' = '',
+    #                                    'service4' = ''
+    #                                  }
+    #                  }
+
+    # The timeline we'll pass to the template
+    timeline = {}
+
+    # The events lookup table 
+    events_lookup = {'incident':{},'maintenance':{}}
+    
+    # Get the events
+    timeline_events = cache.get('timeline_events')
+    if timeline_events == None:
+        logger.debug('cache miss: %s' % 'timeline_events')
+        timeline_events = Event.objects.filter(Q(status__status='open') | Q(status__status='started')).values('id','start','type__type','description').order_by('-id')
+        cache.set('timeline_events', timeline_events)
+    else:
+        logger.debug('cache hit: %s' % 'timeline_events')
+
+    # Build the timeline data structure
+    for event in timeline_events:
+
+        # Add the type to the timeline if not there
+        if not event['type__type'] in timeline:
+            timeline[event['type__type']] = {}
+        
+        # Add the event id to the timeline if not there
+        if not event['id'] in timeline[event['type__type']]:
+            timeline[event['type__type']][event['id']] = {}
+
+        # Add the event data to the timeline
+        timeline[event['type__type']][event['id']]['start'] = event['start']
+        timeline[event['type__type']][event['id']]['description'] = event['description']
+
+        # Find out which services this event impacts and add to the timeline
+        # These will be stored in cache by the event id
+        services_impacted = cache.get('services_impacted_%s' % event['id'])
+        if services_impacted == None:
+            logger.debug('cache miss: %s_%s' % ('services_impacted',event['id']))
+            services_impacted = Event.objects.filter(id=event['id']).values('event_service__service__service_name')
+            cache.set('services_impacted_%s' % event['id'], list(services_impacted))
+        else:
+            logger.debug('cache hit: %s_%s' % ('services_impacted',event['id']))
+        # Add the services to the timeline
+        timeline[event['type__type']][event['id']]['services'] = services_impacted
+
+        # Check each service impacted and add to the events_lookup table
+        for service in services_impacted:
+
+            if not service['event_service__service__service_name'] in events_lookup[event['type__type']]:
+                events_lookup[event['type__type']][service['event_service__service__service_name']] = ''            
+
+    # Now get the updates
+    timeline_updates = cache.get('timeline_updates')
+    if timeline_updates == None:
+        logger.debug('cache miss: %s', 'timeline_updates')
+        timeline_updates = Event_Update.objects.filter(Q(event_id__status__status='open') | Q(event_id__status__status='started')).values('event_id','event_id__type__type','date','update').order_by('-id')
+        cache.set('timeline_updates', list(timeline_updates))
+    else:
+        logger.debug('cache hit: %s' % 'timeline_updates')
+
+    for update in timeline_updates:
+
+        # Add the updates array to the timeline if not there
+        if not 'updates' in timeline[update['event_id__type__type']][update['event_id']]:
+            timeline[update['event_id__type__type']][update['event_id']]['updates'] = []
+
+        # Add the update to the timeline
+        timeline[update['event_id__type__type']][update['event_id']]['updates'].append([update['date'],update['update']])
+
+    # END ACTIVE INCIDENT INFORMATION
+    # -------------------------------------------------------- #
+
+
+
+
+
+    # -------------------------------------------------------- #
+    # MAIN DASHBOARD TABLE INFORMATION
+    #
+    # In order to build this table, we need to look through all events, regardless of status
+    # within the requested time frame
+    #
     # We'll print 7 days of dates at any time
     # Construct a dictionary like this to pass to the template
     # [
@@ -156,20 +237,21 @@ def index(request):
     data = []
     data.append(headings)
 
+
     # Grab all services
     services = cache.get('services')
     if services == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'services')
+        logger.debug('cache miss: %s' % 'services')
         services = Service.objects.values('service_name').order_by('service_name')
         cache.set('services', services)
+    else:
+        logger.debug('cache hit: %s' % 'services')
+
 
     # Grab all events within the time range requested
-    try:
-        events = cache.get('events')
-    except Exception as e:
-        logger.error('Exception getting events from cache: %s' % e)
-        events = None 
+    events = cache.get('events')
     if events == None:
+        logger.debug('cache miss: %s' % 'events')
         events = Event.objects.filter(start__range=[dates[0],ref_q]).values('id',
                                                                             'type__type',
                                                                             'description',
@@ -178,7 +260,10 @@ def index(request):
                                                                             'event_service__service__service_name',
                                                                             'status__status'
                                                                             ).order_by('id')
-        cache.set('events', events)
+        cache.set('events', list(events))
+    else:
+        logger.debug('cache hit: %s' % 'events')
+
 
     # Run through each service and see if it had an incident during the time range
     for service in services:
@@ -242,12 +327,16 @@ def index(request):
 
         # Add the main row to our data dict
         data.append(row)
-
-
-    # ------------------ #
-    # Obtain a count of all incidents/maintenances going back 15 days and forward 15 days (from the reference date) for the summary
-    # graph
     
+    # END MAIN DASHBOARD TABLE INFORMATION
+    # -------------------------------------------------------- #
+
+
+    # -------------------------------------------------------- #
+    # OBTAIN GRAPH COUNT DATA GOING BACK/FORWARD 15 DAYS (FROM REF)
+    #
+    # The reference date is set to midnight of the day, in the user's timezone
+    #
     # First populate all of the dates into an array so we can iterate through 
     graph_dates = []
     
@@ -277,21 +366,16 @@ def index(request):
     forward = datetime.timedelta(days=day_range)
     forward_date = ref_q + forward
     
-    # Obtain a count of incidents, per day
-    incident_count = cache.get('incident_count')
-    if incident_count == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'incident_count')
-        incident_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='incident').values('start')
-        cache.set('incident_count', incident_count)
+    # Obtain the events during the time range
+    event_count = cache.get('event_count')
+    if event_count == None:
+        logger.debug('cache miss: %s ' % 'event_count')
+        event_count = Event.objects.filter(start__range=[back_date,forward_date]).values('type__type','start')
+        cache.set('event_count', event_count)
+    else:
+        logger.debug('cache hit: %s ' % 'event_count')
 
-    # Obtain a count of maintenances, per day
-    maintenance_count = cache.get('maintenance_count')
-    if maintenance_count == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'maintenance_count')
-        maintenance_count = Event.objects.filter(start__range=[back_date,forward_date],type__type='maintenance').values('start')
-        cache.set('maintenance_count', maintenance_count)
-
-    # Iterate through the graph_dates and find matching incidents/maintenances/reports
+    # Iterate through the graph_dates and find matching events
     # This data structure will look like this:
     # count_data = [
     #               {'date' : '2013-09-01', 'incidents':0, 'maintenances':0, 'reports':1}
@@ -305,97 +389,30 @@ def index(request):
     for day in graph_dates:
 
         # Create a tuple to hold this data series
-        t = {'date':day, 'incidents':0, 'maintenances':0, 'reports':0}
+        t = {'date':day, 'incident':0, 'maintenance':0}
 
-        # Check for incidents that match this date
-        for row in incident_count:
+        # Check for events that match this date
+        for row in event_count:
             if row['start'].astimezone(pytz.timezone(request.timezone)).strftime("%Y-%m-%d") == day:
-                t['incidents'] += 1
-                show_graph = True
-
-        # Check for maintenances that match this date
-        for row in maintenance_count:
-            if row['start'].astimezone(pytz.timezone(request.timezone)).strftime("%Y-%m-%d") == day:
-                t['maintenances'] += 1
+                t[row['type__type']] += 1
                 show_graph = True
 
         # Add the tuple
         count_data.append(t)
-    # End counts
-    # ------------------ #
+    
+    # END GRAPH COUNT DATA
+    # -------------------------------------------------------- #
 
 
-    # ------------------ #
-    # Obtain the incident (open) and maintenance (started) timelines as well as any updates
-    # Put into the following structure
-    # timeline = {
-    #              'incident':{
-    #                          '1': {
-    #                                'start':'2013-01-01 10:28:25 PDT',
-    #                                'description':'We are having an issue with the exchange server'
-    #                                'services':['service1','service2']                                
-    #                                'updates': [
-    #                                            ['2013-01-01 10:29:25 PDT','We are having an issue'],
-    #                                            ['2013-01-01 10:30:25 PDT','Resolved now']
-    #                                           ]
-
-    timeline = cache.get('timeline')
-    if timeline == None:
-
-        logger.debug('%s not in cache, querying from db and setting' % 'timeline')
-
-        timeline = {}
-        
-        # Get the events
-        timeline_events = Event.objects.filter(Q(status__status='open') | Q(status__status='started')).values('id','start','type__type','description').order_by('-id')
-        logger.debug('Query executed: %s' % timeline_events.query)
-
-        # Build the data structure
-        for event in timeline_events:
-
-            # Add the type if not there
-            if not event['type__type'] in timeline:
-                timeline[event['type__type']] = {}
-            
-            # Add the event id if not there
-            if not event['id'] in timeline[event['type__type']]:
-                timeline[event['type__type']][event['id']] = {}
-
-            # Add the event data
-            timeline[event['type__type']][event['id']]['start'] = event['start']
-            timeline[event['type__type']][event['id']]['description'] = event['description']
-
-            # Find out which services this event impacts
-            services_impacted = Event.objects.filter(id=event['id']).values('event_service__service__service_name')
-            timeline[event['type__type']][event['id']]['services'] = services_impacted            
-
-        # Now get the updates
-        timeline_updates = Event_Update.objects.filter(Q(event_id__status__status='open') | Q(event_id__status__status='started')).values('event_id','event_id__type__type','date','update').order_by('-id')
-        logger.debug('Query executed: %s' % timeline_updates.query)
-
-        for update in timeline_updates:
-
-            # Add the updates array if not there
-            if not 'updates' in timeline[update['event_id__type__type']][update['event_id']]:
-                timeline[update['event_id__type__type']][update['event_id']]['updates'] = []
-
-            # Add the update
-            timeline[update['event_id__type__type']][update['event_id']]['updates'].append([update['date'],update['update']])
-
-        cache.set('timeline', timeline)
-    else:
-        logger.debug('%s found in cache' % 'timeline')
-
-    # End timelines
-    # ------------------ #
-
-
-    # ------------------ #
-    # Alert and information text
+    # -------------------------------------------------------- #
+    # OBTAIN ALERT AND INFORMATION TEXT
     alerts = cache.get('alerts')
     if alerts == None:
+        logger.debug('cache miss: %s' % 'alerts')
         alerts = Config_Message.objects.filter(id=Config_Message.objects.values('id')[0]['id']).values('alert_enabled','alert','main_enabled','main')
         cache.set('alerts', alerts)
+    else:
+        logger.debug('cache hit: %s' % 'alerts')
 
     # If we are showing the alert, obtain the alert text
     if alerts[0]['alert_enabled'] == 1:
@@ -408,8 +425,9 @@ def index(request):
         information = alerts[0]['main']
     else:
         information = None
-    # End alert and information text
-    # ------------------ #
+    # END ALERT AND INFORMATION TEXT
+    # -------------------------------------------------------- #
+
 
     # Print the page
     return render_to_response(

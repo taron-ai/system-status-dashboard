@@ -21,7 +21,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
-    # Main Dashboard (cache this page for 60 seconds)
+    # Main Dashboard
     url(r'^$',                              'ssd.dashboard.views.main.index'),
 
     # Escalation Path

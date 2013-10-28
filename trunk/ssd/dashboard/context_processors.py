@@ -53,11 +53,11 @@ def prefs(request):
     # -- LOGO DISPLAY -- #
     display_logo = cache.get('display_logo')
     if display_logo == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'display_logo')
+        logger.debug('cache miss: %s' % 'display_logo')
         display_logo = Config_Logo.objects.filter(id=Config_Logo.objects.values('id')[0]['id']).values('logo_enabled')[0]['logo_enabled']
         cache.set('display_logo', display_logo)
     else:
-        logger.debug('%s found in cache' % 'display_logo')
+        logger.debug('cache hit: %s' % 'display_logo')
     if display_logo == 1:
         # Yes, display it, what's the url
         logo_url = cache.get('logo_url')
@@ -73,11 +73,11 @@ def prefs(request):
     # -- INCIDENT REPORT -- #
     enable_ireport = cache.get('enable_ireport')
     if enable_ireport == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'enable_ireport')
+        logger.debug('cache miss: %s' % 'enable_ireport')
         enable_ireport = Config_Ireport.objects.filter(id=Config_Ireport.objects.values('id')[0]['id']).values('enabled')[0]['enabled']
         cache.set('enable_ireport', enable_ireport)
     else:
-        logger.debug('%s found in cache' % 'enable_ireport')
+        logger.debug('cache hit: %s' % 'enable_ireport')
     if enable_ireport == 1:    
         values['ireport'] = True
     else:
@@ -88,11 +88,11 @@ def prefs(request):
     # -- ESCALATION PATH --#
     enable_escalation = cache.get('enable_escalation')
     if enable_escalation == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'enable_escalation')
+        logger.debug('cache miss: %s' % 'enable_escalation')
         enable_escalation = Config_Escalation.objects.filter(id=Config_Escalation.objects.values('id')[0]['id']).values('enabled')[0]['enabled']
         cache.set('enable_escalation', enable_escalation)
     else:
-        logger.debug('%s found in cache' % 'enable_escalation')
+        logger.debug('cache hit: %s' % 'enable_escalation')
     if enable_escalation == 1:
         values['escalation'] = True
     else:
@@ -103,11 +103,11 @@ def prefs(request):
     # -- ADMIN LINK --#
     display_admin = cache.get('display_admin')
     if display_admin == None:
-        logger.debug('%s not in cache, querying from db and setting' % 'display_admin')
+        logger.debug('cache miss: %s' % 'display_admin')
         display_admin = Config_Admin.objects.filter(id=Config_Admin.objects.values('id')[0]['id']).values('link_enabled')[0]['link_enabled']
         setit = cache.set('display_admin', display_admin)
     else:
-        logger.debug('%s found in cache' % 'display_admin')
+        logger.debug('cache hit: %s' % 'display_admin')
     if display_admin == 1:
         values['admin_link'] = True
     else:
@@ -117,7 +117,6 @@ def prefs(request):
 
     # Return values to the template
     return values
-
 
 
 def timezones(request):

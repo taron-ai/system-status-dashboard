@@ -78,7 +78,6 @@ def logo_config(request):
           'title':'System Status Dashboard | Logo Configuration',
           'logo_config':logo_config,
           'form':form,
-          'breadcrumbs':{'Admin':'/admin','Logo Configuration':'logo_config'},
           'nav_section':'logo',
           'nav_sub':'logo_config'
        },

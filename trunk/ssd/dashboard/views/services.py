@@ -86,7 +86,6 @@ def services(request):
           'title':'System Status Dashboard | Manage Services',
           'form':form,
           'services':services,
-          'breadcrumbs':{'Admin':'/admin','Manage Services':'services'},
           'nav_section':'services',
           'nav_sub':'services'
        },
@@ -161,7 +160,6 @@ def service_delete(request):
               'title':'System Status Dashboard | Confirm Delete',
               'id':id,
               'service_name':service_name,
-              'breadcrumbs':{'Admin':'/admin','Manage Services':'services'},
               'nav_section':'services',
               'nav_sub':'service_delete'
            },

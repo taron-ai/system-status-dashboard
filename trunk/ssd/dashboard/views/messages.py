@@ -95,7 +95,6 @@ def messages_config(request):
           'title':'System Status Dashboard | Messages Configuration',
           'messages_config':messages_config,
           'form':form,
-          'breadcrumbs':{'Admin':'/admin','Messages Configuration':'messages_config'},
           'nav_section':'messages',
           'nav_sub':'messages_config'
        },

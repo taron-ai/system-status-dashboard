@@ -205,7 +205,6 @@ def ireport_config(request):
           'ireport_config':ireport_config,
           'form':form,
           'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
-          'breadcrumbs':{'Admin':'/admin','Incident Report Configuration':'ireport_config'},
           'nav_section':'ireport',
           'nav_sub':'ireport_config'
        },
@@ -254,7 +253,6 @@ def ireport_list(request):
            {
               'title':'System Status Dashboard | Incident Report List',
               'ireports':ireports,
-              'breadcrumbs':{'Admin':'/admin','List Incident Reports':'ireport_list'},
               'nav_section':'ireport',
               'nav_sub':'ireport_list'
            },
@@ -339,7 +337,6 @@ def ireport_delete(request):
            {
               'title':'System Status Dashboard | Confirm Incident Report Delete',
               'id':id,
-              'breadcrumbs':{'Admin':'/admin','List Open Incident Reports':'ireport_list'},
               'nav_section':'ireport',
               'nav_sub':'ireport_delete'
            },
@@ -394,7 +391,6 @@ def ireport_detail(request):
        {
           'title':'System Status Dashboard | Incident Report Detail',
           'detail':detail,
-          'breadcrumbs':{'Admin':'/admin','Incident Report Detail':'ireport_list'},
           'nav_section':'ireport',
           'nav_sub':'ireport_detail'
        },

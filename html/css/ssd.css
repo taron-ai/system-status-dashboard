@@ -266,7 +266,6 @@ span.foundicon_container_nav_sum {
 /* Navigation links on the dashboard table (calendar) */
 span.foundicon_container_nav_cal {
    position: relative; 
-   /* bottom: 1px; */ 
    font-size: 25px; 
    color: #DDDDDD;
    cursor: pointer;
@@ -274,14 +273,20 @@ span.foundicon_container_nav_cal {
 /* General formatting where foundicons are used for links */
 span.foundicon_container_iconlink {
    position: relative; 
-   /* bottom: 1px; */ 
    font-size: 20px; 
    color: #DDDDDD;
+}
+/* Foundicon event update delete trash icon */
+span.foundicon_container_iconlink_small_trash {
+   position: relative; 
+   font-size: 16px;
+   bottom: -2px;
+   right: 2px; 
 }
 /* Expand/Collapse details link */
 span.foundicon_container_expand {
    position: relative; 
-   bottom: -4px; 
+   bottom: -3px; 
    color: #DDDDDD;
    cursor: pointer;
 }
@@ -326,10 +331,6 @@ span.foundicon_container_help {
 /* Dashboard legend */
 span.legend {
    font-size: 12px;
-}
-/* Breadcrumbs in header */
-span.breadcrumb {
-   font-size: 11px;
 }
 /* Footer styling */
 span.footer {

@@ -67,6 +67,7 @@ urlpatterns = patterns('',
     url(r'^admin/i_delete$',                'ssd.dashboard.views.incidents.i_delete'),
     url(r'^admin/i_list$',                  'ssd.dashboard.views.incidents.i_list'),
     url(r'^admin/i_update$',                'ssd.dashboard.views.incidents.i_update'),
+    url(r'^admin/i_update_delete$',         'ssd.dashboard.views.incidents.i_update_delete'),
     
     # Maintenance Events (admin functionality)
     url(r'^admin/maintenance$',             'ssd.dashboard.views.maintenance.maintenance'),
@@ -74,6 +75,7 @@ urlpatterns = patterns('',
     url(r'^admin/m_list$',                  'ssd.dashboard.views.maintenance.m_list'),
     url(r'^admin/m_email$',                 'ssd.dashboard.views.maintenance.m_email'),
     url(r'^admin/m_update$',                'ssd.dashboard.views.maintenance.m_update'),
+    url(r'^admin/m_update_delete$',         'ssd.dashboard.views.maintenance.m_update_delete'),
 
     # Email Configuration (admin functionality)
     url(r'^admin/email_config$',            'ssd.dashboard.views.email.email_config'),

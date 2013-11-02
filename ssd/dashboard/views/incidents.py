@@ -34,7 +34,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from ssd.dashboard.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email, Config_Email
-from ssd.dashboard.forms import AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm, ListForm
+from ssd.dashboard.forms import DeleteUpdateForm, AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm, ListForm
 from ssd.dashboard import notify
 
 
@@ -157,7 +157,6 @@ def incident(request):
           'affected_svcs':tuple(affected_svcs),
           'form':form,
           'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
-          'breadcrumbs':{'Admin':'/admin','Create Incident':'incident'},
           'nav_section':'event',
           'nav_sub':'incident'
 
@@ -346,7 +345,6 @@ def i_update(request):
           'updates':updates,
           'emails':emails,
           'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
-          'breadcrumbs':{'Admin':'/admin','Update Incident':'incident'},
           'nav_section':'event',
           'nav_sub':'i_update'
        },
@@ -411,7 +409,6 @@ def i_delete(request):
            {
               'title':'System Status Dashboard | Confirm Delete',
               'id':id,
-              'breadcrumbs':{'Admin':'/admin','List Open Incidents':'i_list'},
               'nav_section':'event',
               'nav_sub':'i_delete'
            },
@@ -531,7 +528,6 @@ def i_list(request):
            {
               'title':'System Status Dashboard | Open Incidents',
               'incidents':incidents,
-              'breadcrumbs':{'Admin':'/admin','List Open Incidents':'i_list'},
               'nav_section':'event',
               'nav_sub':'i_list'
            },
@@ -541,4 +537,78 @@ def i_list(request):
     # Invalid form
     else:
         messages.add_message(request, messages.ERROR, 'Invalid request, please submit your request again.')
+        return HttpResponseRedirect('/admin/i_list')
+
+
+@login_required
+@staff_member_required
+def i_update_delete(request):
+    """Delete Incident Update Page
+
+    Delete an incident update given an id
+
+    """
+
+    logger.debug('%s view being executed.' % 'incidents.i_update_delete')
+
+    # If it's a POST, then we are going to delete it after confirmation
+    if request.method == 'POST':
+        
+        # Check the form elements
+        form = DeleteUpdateForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('DeleteUpdateForm',form))
+
+        if form.is_valid():
+
+            # Obtain the cleaned data
+            id = form.cleaned_data['id']
+            event_id = form.cleaned_data['event_id']
+
+            # Delete the event update
+            Event_Update.objects.filter(id=id).delete()
+
+            # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
+            cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
+
+            # Set a message that the delete was successful
+            messages.add_message(request, messages.SUCCESS, 'Incident update id:%s successfully deleted' % id)
+
+        # Invalid form submit
+        else:
+            # Set a message that the delete was not successful
+            messages.add_message(request, messages.ERROR, 'Incident update id:%s not deleted' % id)
+            
+        # Redirect back to the incident page
+        return HttpResponseRedirect('/admin/i_update?id=%s' % event_id)
+
+    # If we get this far, it's a GET
+   
+    # Make sure we have an ID
+    form = DeleteUpdateForm(request.GET)
+    logger.debug('Form submit (GET): %s, with result: %s' % ('DeleteUpdateForm',form))
+    
+    if form.is_valid():
+
+        # Obtain the cleaned data
+        id = form.cleaned_data['id']
+        event_id = form.cleaned_data['event_id']
+
+        # Print the page (confirm they want to delete the event update)
+        return render_to_response(
+           'incidents/i_update_delete.html',
+           {
+              'title':'System Status Dashboard | Confirm Delete',
+              'id':id,
+              'event_id':event_id,
+              'nav_section':'event',
+              'nav_sub':'i_delete'
+           },
+           context_instance=RequestContext(request)
+        )
+
+    # Invalid request
+    else:
+
+        # Set a message that the delete failed and send back to the incidents page
+        messages.add_message(request, messages.ERROR, 'Invalid request.')
         return HttpResponseRedirect('/admin/i_list')

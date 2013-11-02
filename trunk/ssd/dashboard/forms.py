@@ -288,13 +288,20 @@ class EscalationConfigForm(forms.Form):
 class DetailForm(forms.Form):
     """Form for obtaining the detail about an existing event (incident or maintenance)"""
 
-    id = forms.IntegerField()
+    id = forms.IntegerField(required=True)
 
 
 class DeleteEventForm(forms.Form):
     """Form for deleting an existing event (incident or maintenance)"""
 
-    id = forms.IntegerField()
+    id = forms.IntegerField(required=True)
+
+
+class DeleteUpdateForm(forms.Form):
+    """Form for deleting an event update"""
+
+    id = forms.IntegerField(required=True)
+    event_id = forms.IntegerField(required=True)
 
 
 class UpdateTZForm(forms.Form):

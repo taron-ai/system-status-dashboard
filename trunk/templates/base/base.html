@@ -55,7 +55,7 @@
  </head>
  <body>
 
-<div class="contain-to-grid sticky">
+<div class="contain-to-grid">
   <nav class="top-bar">
 
     <ul class="title-area">
@@ -92,8 +92,9 @@
         {% endif %}
       </ul>
     </section>
-  </nav>
+   </nav>
 </div>
+
 
 {% if logo %}
 <div class="row">
@@ -103,37 +104,17 @@
 </div>
 {% endif %}
     
-{% if breadcrumbs %}
-<div class="spacer_small hide-for-small"></div>
-<div class="row hide-for-small">
-  <div class="large-12 columns">
-    <span class="breadcrumb">
-      {% for item in breadcrumbs.items %}
-        {% if forloop.last %}
-          <a href="{{item.1}}">{{item.0}}</a>
-        {% else %}
-          <a href="{{item.1}}">{{item.0}}</a> &rarr;
-        {% endif %}
-      {% endfor %}
-    </span>
-  </div>
-</div>
-{% endif %}
-
 <div class="row">
   <div class="large-12 columns">    
     <hr class="header_break"><br>
   </div>
 </div>
 
-
 <div class="row show-for-small">
   <div class="large-12 columns">    
     <br>
   </div>
 </div>
-
-
       
 {# Source the content from the template #}
 {% block content %}{% endblock %}

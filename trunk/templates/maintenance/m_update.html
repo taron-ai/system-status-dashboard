@@ -74,7 +74,7 @@
           </label>
           <div id="updates" style="display: none; padding: 15px 15px 15px 25px;">
             {% for update in updates %}
-             <span class="updates"><b>{{update.date|date:"Y-m-d H:i e"}}</b> - <a href="#" title="Modify update" id="update_{{update.id}}">{{update.update}}</a></span>
+             <a href="/admin/m_update_delete?event_id={{id}}&id={{update.id}}" title="Delete update"><span class="foundicon-gen-trash foundicon_container_iconlink_small_trash"></span></a><span class="updates"><b>{{update.date|date:"Y-m-d H:i e"}}</b> - <a href="#" title="Modify update" id="update_{{update.id}}">{{update.update}}</a></span>
                
              <script>
              $(document).ready(function() {

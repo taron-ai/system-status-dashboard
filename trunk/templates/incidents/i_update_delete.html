@@ -28,15 +28,15 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <h4>Delete Service</h4>
-        <p><span class="foundicon-gen-remove foundicon_container_delete"></span>&nbsp;&nbsp;&nbsp;Caution: If you delete this service, it will be permanently removed.  In order for the service to be removed, it must not be part of any existing (open or closed) events.</p>
+        <h4>Delete Incident Update</h4>
+        <p><span class="foundicon-gen-remove foundicon_container_delete"></span>&nbsp;&nbsp;&nbsp;Caution: If you delete this incident update, it will be lost forever.</p>
         <hr>
       </div>
     </div>
  
     <div class="row">
       <div class="large-12 columns">
-        <p>Service: <b>{{service_name.0.service_name}}</b></p>
+        <p>Incident ID: {{event_id}}, Update ID: {{id}}</p>
       </div>
     </div>
 
@@ -44,9 +44,10 @@
 
     <div class="row">
       <div class="large-4 columns">
-        <form method="POST" action="/admin/service_delete">
+        <form method="POST" action="/admin/i_update_delete">
           {% csrf_token %}
           <input type="hidden" name="id" value="{{id}}">
+          <input type="hidden" name="event_id" value="{{event_id}}">
           <input type="submit" class="small button secondary" value="delete"/>
         </form>
       </div>

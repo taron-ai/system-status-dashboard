@@ -48,8 +48,7 @@ def main(request):
        'admin/main.html',
        {
           'title':'System Status Dashboard | Admin',
-          'django_version':get_version,
-          'breadcrumbs':{'Admin':'/admin'}
+          'django_version':get_version
        },
        context_instance=RequestContext(request)
     )
@@ -114,7 +113,6 @@ def cache_status(request):
           'title':'System Status Dashboard | Admin - Cache',
           'cache_settings':cache_settings,
           'm_stats':m_stats,
-          'breadcrumbs':{'Admin':'/admin','Cache Status':'cache_status'},
           'nav_section':'admin',
           'nav_sub':'cache_status'
        },
@@ -169,7 +167,6 @@ def admin_config(request):
           'title':'System Status Dashboard | Admin Configuration',
           'admin_config':admin_config,
           'form':form,
-          'breadcrumbs':{'Admin':'/admin','Admin Configuration':'admin_config'},
           'nav_section':'admin',
           'nav_sub':'admin_config'
        },

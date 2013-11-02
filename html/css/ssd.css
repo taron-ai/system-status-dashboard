@@ -69,6 +69,8 @@ label {
 /* Global Styling */
 table {
    box-shadow: 0 0 5px 1px #ddd;
+   border-radius: 3px;
+   width: 100%;
 }
 /* Table for footer */
 table.footer {
@@ -92,14 +94,14 @@ table.jump_to td {
 
 
 /* HR */
-/* Search Break */
+/* Top Bar Break */
 hr.header_break {
     border: 0;
     height: 1px;
-    background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(203, 227, 45, 1), rgba(0,0,0,0)); 
-    background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(203, 227, 45, 1), rgba(0,0,0,0)); 
-    background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(203, 227, 45, 1), rgba(0,0,0,0)); 
-    background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(203, 227, 45, 1), rgba(0,0,0,0)); 
+    background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0, 85, 150, 1), rgba(0,0,0,0)); 
+    background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0, 85, 150, 1), rgba(0,0,0,0)); 
+    background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(0, 85, 150, 1), rgba(0,0,0,0)); 
+    background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(0, 85, 150, 1), rgba(0,0,0,0)); 
 }
 
 
@@ -254,6 +256,13 @@ span.foundicon_container_nav {
    font-size: 25px; 
    color: #DDDDDD;
 }
+/* Navigation links on the dashboard table (summary status) */
+span.foundicon_container_nav_sum {
+   position: relative; 
+   bottom: -6px; 
+   font-size: 25px; 
+   color: #DDDDDD;
+}
 /* Navigation links on the dashboard table (calendar) */
 span.foundicon_container_nav_cal {
    position: relative; 
@@ -314,10 +323,6 @@ span.foundicon_container_help {
    bottom: -2px; 
    right: 3px;
 }
-span.summary_status_legend {
-   position: relative;
-   bottom: -5px;
-}
 /* Dashboard legend */
 span.legend {
    font-size: 12px;
@@ -353,6 +358,10 @@ span.dashboard_drop {
 span.timeline {
    font-size: 12px;
 }
+/* Event updates listing formatting */
+span.updates {
+   font-size: 12px;
+}
 /* Mobile dashboard statuses */
 span.mobile_red {
    color: #FF0000;
@@ -380,11 +389,16 @@ textarea.config {
 textarea.ireport_desc {
    height: 50px;
 }
+/* x-editable contact field */
 textarea.x_editable_contact {
    width: 400px;
    font-size: 12px;
 }
-
+/* x-editable event update field */
+textarea.x_editable_update {
+   width: 300px;
+   font-size: 12px;
+}
 
 
 
@@ -411,21 +425,19 @@ http://trentrichardson.com/examples/timepicker/
 
 /* INPUTS */
 input, textarea, select {
-   display: inline-block;
    padding: 4px;
    margin-bottom: 9px;
    font-size: 14px;
    color: #3f3f3f;
    border: 1px solid #CCCCCC;
-   -webkit-border-radius: 3px;
-   -moz-border-radius: 3px;
-   border-radius: 3px;
-   -webkit-box-shadow: inset 0 1px 1px;
-   transition: border linear .2s,box-shadow linear .2s;
+   -webkit-border-radius: 5px;
+   -moz-border-radius: 5px;
+   border-radius: 5px;
 }
+
 /* Global Selects */
 select {
-   height: 26px;
+   height: 32px;
 }
 /* Timezone form */
 #timezone_form {
@@ -444,6 +456,10 @@ select {
 }
 input.date {
    width: 135px;
+   border-radius: 5px;
+}
+input.search {
+   border-radius: 5px;
 }
 select.email {
    width: 250px;
@@ -453,25 +469,29 @@ select.config_email {
 }
 input.config_ireport_size {
    width: 100px;
+   border-radius: 5px;
 }
 input.config_ireport_path {
    width: 400px;
+   border-radius: 5px;
 }
+/* x-editable text field */
 input.x_editable_text {
    width: 300px;
    font-size: 12px;
+   border-radius: 5px;
 }
 
 
 
+/* Sticky Footer */
 #sticky_footer {
     position: fixed;
     bottom: 0px;
     left: 0px;
     width: 100%;
-    /* background-color: #f9f9f9; */
-    background-color: #DDDDDD;
-    border-top: 2px solid #EEE;
+    background-color: #efefef;
+    border-top: 2px solid #eee;
     padding: 5px 0 5px 0;
 }
 
@@ -505,7 +525,6 @@ input.x_editable_text {
 
 
 
-
 /* 
 Eliminate the divider color 
 Cannot figure out how to do this with scss 
@@ -514,3 +533,4 @@ Cannot figure out how to do this with scss
 .top-bar-section > ul > .divider, .top-bar-section > ul > [role="separator"] {
     border-left: solid 1px white;
 }
+

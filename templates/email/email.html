@@ -16,93 +16,78 @@
 
 {% endcomment %}
 
-<table>
+<br>
+{{greeting|linebreaksbr}}
+<br><br><br>
 
- <tr>
-  <td>
-   <p style="font-family: Arial, sans-serif;font-size:14px;">
-    Dear {{recipient_name}}, {{greeting}}
-   </p>
-  </td>
- </tr>
+<b>Event Status:</b><br>
+{{details.0.status__status}}
+<br><br><br>
 
- <tr>
-  <td height="15"></td>
- </tr>
+<b>Event Start:</b><br>
+{{details.0.start|date:"Y-m-d H:i e"}}
+<br><br><br>
 
- <tr>
-  <td>
-   <p style="font-family: Arial, sans-serif;font-size:14px;">
-    Incident Status: 
-    <b>
-     {% if detail.0.closed %}
-     CLOSED ({{detail.0.closed}})
-     {% else %}
-     OPEN
-     {% endif %}
-    </b>
-   </p>
-  </td>
- </tr>
+<b>Event End:</b><br>
+{% if details.0.end %}
+{{details.0.end|date:"Y-m-d H:i e"}}
+{% else %}
+n/a
+{% endif %}
+<br><br><br>
 
- <tr>
-  <td height="15"></td>
- </tr>
 
- <tr>
-  <td>
-   <p style="font-family: Arial, sans-serif;font-size:14px;">
-    The following services have been impacted by this incident:
-    <br>
-   {% if services %}
-   {% for row in services %}
-   <b>- {{row.service_name_id__service_name}}</b>
-    <br>
-   {% endfor %}
-   {% else %}
-   <b><font color="red">- NO SERVICES DEFINED</font></b>
-   {% endif %}
-   </p>
-  </td>
- </tr>
+<b>Services Impacted:</b><br>
+{% if services %}
+{% for row in services %}
+- {{row.event_service__service__service_name}}<br>
+{% endfor %}
+{% else %}
+- NO SERVICES DEFINED<br>
+{% endif %}
+<br><br>
 
- <tr>
-  <td height="15"></td>
- </tr>
- 
- <tr>
-  <td>
-   <table style="font-family: Arial, sans-serif; border-collapse:collapse;">
-    <tr>
-     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black;">Time</th>
-     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black;">Logged By</th>
-     <th style="font-weight:bold; font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; background-color:#c4dbe7; text-align:center; color:black;">Description</th>
-    </tr>
-    <tr>
-     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.date|date:"Y-m-d H:i:s e"}}</td>
-     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.user_id__first_name}} {{detail.0.user_id__last_name}}</td>
-     <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{detail.0.detail|linebreaksbr}}</td>
-    </tr>
 
-    {% if updates %}
-     {% for row in updates %}
-      <tr>
-       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.date|date:"Y-m-d H:i:s e"}}</td>
-       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.user_id__first_name}} {{row.user_id__last_name}}</td>
-       <td style="font-size:14px; border:1px solid #b0c5d0; padding:10px 10px 10px 10px; color:black; text-align:left;">{{row.detail|linebreaksbr}}</td>
-      </tr>
-     {% endfor %}
-    {% endif %}
-   </table>
-  </td>
- </tr> 
+<b>Event Description:</b><br>
+{{details.0.description|linebreaksbr}}
+<br><br><br>
 
- <tr>
-  <td height="25"></td>
- </tr>
 
-  <tr>
-    <td style="font-size:12px; color:black;">* You may visit the System Status Dashboard at any time for current information on the status of all services: {{ssd_url}}</td>
-  </tr>
+{% if details.0.event__coordinator__coordinator %}
+<b>Event Coordinator:</b><br>
+{{details.0.event_coordinator__coordinator|linebreaksbr}}
+<br><br><br>
+{% endif %}
 
-</table>
+
+{% if details.0.event_impact__impact %}
+<b>Event Impact Analysis:</b><br>
+{{details.0.event_impact__impact}}
+<br><br><br>
+{% endif %}
+
+
+{% if updates %}
+<b>Event Updates:</b>
+<br><br>
+{% for row in updates %}
+<b>Date:</b> {{row.event_update__date|date:"Y-m-d H:i:s e"}}<br>
+<b>Update</b>: {{row.event_update__update}}<br>
+<br>
+{% endfor %}
+{% endif %}
+
+<br>
+<hr>
+
+{% if email_footer %}
+<br><br>
+{{email_footer|linebreaksbr}}
+{% endif %}
+{% if ssd_url %}
+<br><br>
+You may visit the Status Dashboard at any time for current information on the status of all services: {{ssd_url}}
+{% endif %}
+
+
+

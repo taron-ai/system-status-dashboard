@@ -330,6 +330,9 @@ def i_update(request):
     # Obtain all current email addresses
     emails = Email.objects.values('id','email')
 
+    # Obtain any updates
+    updates = Event_Update.objects.filter(event_id=id).values('id','date','update').order_by('id')
+
     # Print the page
     return render_to_response(
        'incidents/i_update.html',
@@ -340,6 +343,7 @@ def i_update(request):
           'affected_svcs':affected_svcs,
           'id':id,
           'form':form,
+          'updates':updates,
           'emails':emails,
           'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
           'breadcrumbs':{'Admin':'/admin','Update Incident':'incident'},

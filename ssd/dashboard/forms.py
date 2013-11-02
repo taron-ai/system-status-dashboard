@@ -332,13 +332,6 @@ class DeleteRecipientForm(forms.Form):
     id = forms.IntegerField(required=True)
 
 
-class ModifyRecipientForm(forms.Form):
-    """Form for modifying email recipients"""
-
-    pk = forms.IntegerField(required=True)
-    value = forms.CharField(required=True)
-
-
 class ListForm(forms.Form):
     """Form for querying lists of reports"""
 
@@ -352,12 +345,12 @@ class AddContactForm(forms.Form):
     contact_details = forms.CharField(required=True, max_length=200)
 
 
-class ModifyContactForm(forms.Form):
-    """Form for modifying contacts"""
+class XEditableModifyForm(forms.Form):
+    """Form for modifying values via x-editable ajax"""
 
     pk = forms.IntegerField(required=True)
-    value = forms.CharField(required=True) # This is either the contact name or contact details.
-    name = forms.CharField(required=True)
+    name = forms.CharField(required=True) # This is the column we are updating
+    value = forms.CharField(required=True) # This is the value of the column
 
 
 class SwitchContactForm(forms.Form):
@@ -377,13 +370,6 @@ class RemoveServiceForm(forms.Form):
     """Form for removing services"""
 
     id = forms.IntegerField(required=True)
-
-
-class ModifyServiceForm(forms.Form):
-    """Form for modifying services"""
-
-    pk = forms.IntegerField(required=True)
-    value = forms.CharField(required=True, max_length=50)
 
 
 class RemoveContactForm(forms.Form):

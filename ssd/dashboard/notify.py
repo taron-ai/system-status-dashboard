@@ -78,6 +78,8 @@ class email:
         """
 
 
+        logger.debug('Sending email for event: %s' % id)
+
         # Obain the incident detail
         details = Event.objects.filter(id=id).values(
                                                     'status__status',
@@ -148,18 +150,19 @@ class email:
                      'email_footer':email_config[0]['email_footer']
                     })
 
-        # Render the text template
-        # If html formatting is requested, we'll render that one later
-        rendered_template_txt = get_template('email/email.txt').render(d)
 
-        # Setup the message
+        # Setup and send the message
         try:
-            msg = EmailMessage(
-                                email_subject, 
-                                rendered_template_txt, 
-                                email_from, 
-                                [recipient]
-                              )
+            # Render the text template
+            # If html formatting is requested, we'll render that one later
+            rendered_template_txt = get_template('email/email.txt').render(d)
+           
+            msg = EmailMultiAlternatives(
+                                            email_subject, 
+                                            rendered_template_txt, 
+                                            email_from, 
+                                            [recipient]
+                                        )
 
             # If HTML is requested, setup a multipart message
             if email_config[0]['email_format'] == 1:

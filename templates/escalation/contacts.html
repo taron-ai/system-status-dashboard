@@ -21,7 +21,7 @@
 {% block content %}
 
 <script>
-  // Set edit style to inline instead of popup
+  // Set edit style to popup instead of inline
   $.fn.editable.defaults.mode = 'popup';
 </script>
 
@@ -101,6 +101,7 @@
                 $(document).ready(function() {
                   $('#name_{{row.id}}').editable({
                         url: '/admin/contact_modify',
+                        tpl: '<input type="text" maxlength="50">',
                         type: 'text',
                         pk: '{{row.id}}',
                         name: 'name',
@@ -122,6 +123,7 @@
                 $(document).ready(function() {
                   $('#details_{{row.id}}').editable({
                         url: '/admin/contact_modify',
+                        tpl: '<textarea maxlength="200"></textarea>',
                         type: 'textarea',
                         pk: '{{row.id}}',
                         name: 'contact_details',

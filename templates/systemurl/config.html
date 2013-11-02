@@ -43,7 +43,7 @@
 		<div class="row">
 			<div class="large-8 columns {% if form.url.errors %}error{% endif %}">
         <label>System Url</label>
-        <div class="sublabel_container"><span class="sublabel">The system url should be a fully qualified domain name (e.g. www.domain.com).</span></div>
+        <div class="sublabel_container"><span class="sublabel">The system url should be a fully qualified domain name (e.g. http://www.domain.com).</span></div>
 		 		<input type="text" name="url" maxlength="250" placeholder="Enter a system url" value="{% if form.url.data %}{{form.url.data}}{% else %}{{systemurl_config.0.url}}{% endif %}" />
 		    {% if form.url.errors %}
         <span class="err">{% for error in form.url.errors %}{{error}}<br>{% endfor %}<br></span>

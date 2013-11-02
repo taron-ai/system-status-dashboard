@@ -27,7 +27,7 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.contrib import messages
 from ssd.dashboard.models import Service, Event_Service
-from ssd.dashboard.forms import AddServiceForm, RemoveServiceForm, ModifyServiceForm
+from ssd.dashboard.forms import AddServiceForm, RemoveServiceForm, XEditableModifyForm
 
 
 # Get an instance of the ssd logger
@@ -190,16 +190,25 @@ def service_modify(request):
     if request.method == 'POST':
         
         # Check the form elements
-        form = ModifyServiceForm(request.POST)
-        logger.debug('Form submit (POST): %s, with result: %s' % ('ModifyServiceForm',form))
+        form = XEditableModifyForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('XEditableModifyForm',form))
 
         if form.is_valid():
             pk = form.cleaned_data['pk']
+            name = form.cleaned_data['name']
             value = form.cleaned_data['value']
+
+            # Add the column we are updating (but only allow specific values)
+            if not name == 'service_name':
+                logger.error('Invalid column specified during service modification: %s' % name)
+                return HttpResponseBadRequest('An error was encountered with this request.')
+
+            filter = {}
+            filter[name] = value
 
             # Update it
             try:
-                Service.objects.filter(id=pk).update(service_name=value)
+                Service.objects.filter(id=pk).update(**filter)
             except Exception as e:
                 logger.error('%s: Error saving update: %s' % ('services.service_modify',e))
                 return HttpResponseBadRequest('An error was encountered with this request.')
@@ -214,5 +223,6 @@ def service_modify(request):
             return HttpResponseBadRequest('Invalid request')
     else:
         logger.error('%s: Invalid request: GET received but only POST accepted.' % ('services.service_modify'))
+        messages.add_message(request, messages.ERROR, 'Invalid request.')
         return HttpResponseRedirect('/admin/services')     
     

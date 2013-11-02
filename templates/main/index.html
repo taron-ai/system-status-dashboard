@@ -70,11 +70,11 @@
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_red"></span>&nbsp;Service Disruption - the service is experiencing an active disruption.</span>
+        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_red"></span>&nbsp;Incident - the service is experiencing an active incident.</span>
         <div class="spacer_small"></div>      
       </div>
       <div>
-        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_orange"></span>&nbsp;Service Disruption (resolved) - a service disruption occurred, but has been resolved.</span>
+        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_orange"></span>&nbsp;Incident (resolved) - an incident occurred, but has been resolved.</span>
         <div class="spacer_small"></div>
       </div>
       <div>
@@ -109,7 +109,7 @@
             <th style="width: 50px;">{{heading}}</th>
            {% else %}
             {% if forloop.counter == 2 %}
-              <th style="width: 220px;">{{heading}}</th>
+              <th>{{heading}}</th>
             {% else %}
               <th style="width: 100px;">{{heading|date:"Y-m-d"}}<br>{{heading|date:"D"}}</th>
             {% endif %}
@@ -124,7 +124,7 @@
            {% if forloop.counter == 1 %}
              <td style="text-align: center;">
                {% if column.status == 1 %}
-                 <span class="foundicon-genenc-remove foundicon_container_red" title="A service disruption is currently occurring with this service."></span>
+                 <span class="foundicon-genenc-remove foundicon_container_red" title="An incident has occurred with this service."></span>
                {% else %}
                 {% if column.status == 2 %}
                  <span class="foundicon-genenc-tools foundicon_container_blue" title="Maintenance is currently occurring with this service."></span>
@@ -146,7 +146,7 @@
                 {% if event.type == 'incident' %}
                    {% if event.status == 'open' %}
                     <a href="#" data-dropdown="idrop_{{event.id}}">
-                      <span class="foundicon-genenc-remove foundicon_container_red" title="Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></span>
+                      <span class="foundicon-genenc-remove foundicon_container_red" title="Incident (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~"></span>
                     </a>
                     <div id="idrop_{{event.id}}" class="f-dropdown content small" data-dropdown-content>
                       <span class="dashboard_drop">
@@ -158,7 +158,7 @@
                     </div>
                    {% else %}
                     <a href="#" data-dropdown="irdrop_{{event.id}}">
-                      <span class="foundicon-genenc-remove foundicon_container_orange" title="Resolved Service Disruption (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
+                      <span class="foundicon-genenc-remove foundicon_container_orange" title="Resolved Incident (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
                     </a>
                     <div id="irdrop_{{event.id}}" class="f-dropdown content small" data-dropdown-content>
                       <span class="dashboard_drop">
@@ -211,7 +211,7 @@
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_red"></span>&nbsp;Service Disruption - the service is experiencing an active disruption.</span>
+        <span class="legend"><span class="foundicon-genenc-remove foundicon_container_red"></span>&nbsp;Incident - the service is experiencing an active disruption.</span>
         <div class="spacer_small"></div>      
       </div>
       <div>
@@ -231,7 +231,7 @@
          <tr>
            <th style="width: 50px;"></th>
            <th style="width: 220px;">Service</th>
-           <th style="width: 220px;">Current Status</th>
+           <th>Current Status</th>
          </tr>
        {% else %}
         <tr>
@@ -241,7 +241,7 @@
            {% if forloop.counter == 1 %}
              <td style="text-align: center;">
                {% if column.status == 1 %}
-                 <span class="foundicon-genenc-remove foundicon_container_red" title="A service disruption is currently occurring with this service."></span>
+                 <span class="foundicon-genenc-remove foundicon_container_red" title="An incident is currently occurring with this service."></span>
                {% else %}
                 {% if column.status == 2 %}
                  <span class="foundicon-genenc-tools foundicon_container_blue" title="Maintenance is currently occurring with this service."></span>
@@ -255,7 +255,7 @@
               </td>
               <td>
                {% if column.status == 1 %}
-                 <span class="mobile_red">Active service disruption</span>
+                 <span class="mobile_red">Active Incident</span>
                {% else %}
                 {% if column.status == 2 %}
                  <span class="mobile_blue">Planned maintenance</span>
@@ -276,7 +276,7 @@
 <div class="row">
   <div class="large-12 columns">
     <br><br>
-    <span class="heading">Active Service Disruption Timeline:</span>
+    <span class="heading">Active Incident Timeline:</span>
     <div class="spacer_micro"></div>
     {% if timeline.incident %}
       <div class="timeline_container">
@@ -284,8 +284,9 @@
         <div>
 
           <div>
-            <span id="expand_{{id}}" class="foundicon-genenc-plus foundicon_container_expand"></span>
+            <span id="expand_{{id}}" title="View the sequence of events for this event" class="foundicon-genenc-plus foundicon_container_expand"></span>
             <span class="timeline">
+              ID: {{id}}
               {% for service in values.services %}
                {% if forloop.last %}
                 {{service.event_service__service__service_name}}
@@ -300,7 +301,7 @@
 
             <div style="padding: 15px 15px 15px 25px;">
               <span class="timeline">
-                <a href="/i_detail?id={{id}}">Full Details</a>
+                <a href="/i_detail?id={{id}}" title="View all available information about this event">Full Details</a>
               </span>
             </div>
 
@@ -346,7 +347,7 @@
       </div>
     {% else %}
       <div class="hr"></div>
-      <span class="all_good">No current service disruptions.</span>
+      <span class="all_good">No current incidents.</span>
     {% endif %}
   </div>
 </div>
@@ -364,6 +365,7 @@
           <div style="vertical-align: top;">
             <span id="expand_{{id}}" class="foundicon-genenc-plus foundicon_container_expand"></span>
             <span class="timeline">
+              ID: {{id}}
               {% for service in values.services %}
                {% if forloop.last %}
                 {{service.event_service__service__service_name}}
@@ -433,14 +435,13 @@
   <div class="large-12 columns">
     <br><br><br>
     <span class="heading">Summary Status:</span>
-    <span class="summary_status_legend">
-      <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-key foundicon_container_nav" title="Summary Status Key"></a>
-      &nbsp;
-      <a class="show-for-small" href="{{backward_link}}" title="Move back one week"><span class="foundicon-gen-left-arrow foundicon_container_nav"></span></a>
-      &nbsp;
-      <a class="show-for-small" href="{{forward_link}}" title="Move forward one week"><span class="foundicon-gen-right-arrow foundicon_container_nav"></span></a>
-    </span>
-    <div id="histsumdrop" class="f-dropdown content histsumdrop" data-dropdown-content>
+    &nbsp;
+    <a href="{{backward_link}}" title="Move the reference date back one week"><span class="foundicon-gen-left-arrow foundicon_container_nav_sum"></span></a>
+    &nbsp;
+    <a href="{{forward_link}}" title="Move the reference date forward one week"><span class="foundicon-gen-right-arrow foundicon_container_nav_sum"></span></a>
+    &nbsp;
+    <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-key foundicon_container_nav_sum" title="Summary Status Key"></a>
+    <div id="histsumdrop" class="f-dropdown content small" data-dropdown-content>
       <h5>Historical Summary Status</h5><br>
       <span class="help_drop">
         Historical summary status shows the past 15 days (incidents and maintenance) and future 15 days (scheduled maintenance).<br><br>Click on any of the event indicators to review detailed information about events.<br><br>Remove a data series from the graph by clicking its legend icon.
@@ -476,11 +477,12 @@ $(function () {
                 }
             },
             title: {
-                text: ' ',
-                x: -20, //center
+                text: 'Ref Date: {{ref|date:"Y-m-d"}}',
+                align: 'left',
                 style: {
                   color: '#616161',
-                  fontSize: '16px'
+                  fontSize: '10px',
+
                 }
             },
             xAxis: {
@@ -516,7 +518,7 @@ $(function () {
                       y: {{row.incident}},
                       events: {
                         click: function() {
-                          window.open('/gsearch?date={{row.date}}&type=incident', '_self');
+                          window.open('/search/graph?date={{row.date}}&type=incident', '_self');
                         }
                       }
                     }
@@ -525,7 +527,7 @@ $(function () {
                       y: {{row.incident}},
                       events: {
                         click: function() {
-                          window.open('/gsearch?date={{row.date}}&type=incident', '_self');
+                          window.open('/search/graph?date={{row.date}}&type=incident', '_self');
                         }
                       }
                     },
@@ -544,7 +546,7 @@ $(function () {
                       y: {{row.maintenance}},
                       events: {
                         click: function() {
-                          window.open('/gsearch?date={{row.date}}&type=maintenance', '_self');
+                          window.open('/search/graph?date={{row.date}}&type=maintenance', '_self');
                         }
                       }
                     }
@@ -553,7 +555,7 @@ $(function () {
                       y: {{row.maintenance}},
                       events: {
                         click: function() {
-                          window.open('/gsearch?date={{row.date}}&type=maintenance', '_self');
+                          window.open('/search/graph?date={{row.date}}&type=maintenance', '_self');
                         }
                       }
                     },
@@ -579,7 +581,7 @@ $(function () {
 <div class="row">
   <div class="large-12 columns">
     <div class="hr"></div>
-    <span class="all_good">No incidents or maintenance have occurred in the past 30 days and no maintenance is planned for the next 30 days.</span><br><br>
+    <span class="all_good">No incidents or maintenance have occurred in the past 15 days and no maintenance is planned for the next 15 days (relative to {{ref|date:"Y-m-d"}}).</span><br><br>
   </div>
 </div>
 {% endif %}

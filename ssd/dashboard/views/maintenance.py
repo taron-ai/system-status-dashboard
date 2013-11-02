@@ -235,11 +235,17 @@ def m_update(request):
                                      start=start,
                                      end=end)
 
-            # Update the impact analysis (if it's present, update it, otherwise save)
-            Event_Impact.objects.filter(event_id=id).update(impact=impact)
+            # Update the impact analysis (if it's blank, make sure it's deleted, maybe they added it previously)
+            if impact:
+                Event_Impact.objects.filter(event_id=id).update(impact=impact)
+            else:
+                Event_Impact.objects.filter(event_id=id).delete()
 
-            # Update the coordinator (if it's present, update it, otherwise save)
-            Event_Coordinator.objects.filter(event_id=id).update(coordinator=coordinator)
+            # Update the coordinator (if it's blank, make sure it's deleted, maybe they added it previously)
+            if coordinator:
+                Event_Coordinator.objects.filter(event_id=id).update(coordinator=coordinator)
+            else:
+                Event_Coordinator.objects.filter(event_id=id).delete()
 
             # Add the update, if there is one, using the current time
             if update:
@@ -365,6 +371,9 @@ def m_update(request):
     e_date = end.strftime("%Y-%m-%d")
     e_time = end.strftime("%H:%M")
 
+    # Obtain any updates
+    updates = Event_Update.objects.filter(event_id=id).values('id','date','update').order_by('id')
+    
     # Print the page
     return render_to_response(
        'maintenance/m_update.html',
@@ -381,6 +390,7 @@ def m_update(request):
           'e_time':e_time,
           'emails':emails,
           'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
+          'updates':updates,
           'breadcrumbs':{'Admin':'/admin','List Maintenance':'m_list'},
           'nav_section':'event',
           'nav_sub':'m_update'

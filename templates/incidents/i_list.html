@@ -56,6 +56,8 @@
             <a href="?page={{incidents.next_page_number}}">&raquo;</a>
           {% endif %}
         </span>
+        &nbsp;&nbsp;
+        <span class="navigation">({{incidents.paginator.count}} total result{{incidents.paginator.count|pluralize}})</span>
       </div>
     </div>
 

@@ -80,7 +80,7 @@
           </select></label>       
         </div>
         <div class="large-5 columns left">
-          <label>Search Description:<input type="text" name="text" class="search" maxlength="50" placeholder="Enter search text" value="{{text}}" /></label>
+          <label>Search Description:<input type="text" name="text" maxlength="50" placeholder="Enter search text" value="{{text}}" /></label>
           {% if form.text.errors %}
           <span class="err">{% for error in form.text.errors %}{{error}}<br>{% endfor %}<br></span>
           {% endif %} 

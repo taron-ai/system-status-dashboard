@@ -274,13 +274,12 @@ span.foundicon_container_nav_cal {
 span.foundicon_container_iconlink {
    position: relative; 
    font-size: 20px; 
-   color: #DDDDDD;
 }
 /* Foundicon event update delete trash icon */
 span.foundicon_container_iconlink_small_trash {
    position: relative; 
-   font-size: 16px;
-   bottom: -2px;
+   font-size: 20px;
+   bottom: -4px;
    right: 2px; 
 }
 /* Expand/Collapse details link */
@@ -436,6 +435,8 @@ input, textarea, select {
    border-radius: 5px;
 }
 
+
+
 /* Global Selects */
 select {
    height: 32px;
@@ -455,11 +456,17 @@ select {
    background: transparent;
    border: none;
 }
-input.date {
-   width: 135px;
+/* Global text Radius */
+input[type="text"] {
    border-radius: 5px;
 }
-input.search {
+input.date {
+   width: 135px;
+}
+/* x-editable text field */
+input.x_editable_text {
+   width: 300px;
+   font-size: 12px;
    border-radius: 5px;
 }
 select.email {
@@ -468,21 +475,6 @@ select.email {
 select.config_email {
    width: 100px;
 }
-input.config_ireport_size {
-   width: 100px;
-   border-radius: 5px;
-}
-input.config_ireport_path {
-   width: 400px;
-   border-radius: 5px;
-}
-/* x-editable text field */
-input.x_editable_text {
-   width: 300px;
-   font-size: 12px;
-   border-radius: 5px;
-}
-
 
 
 /* Sticky Footer */

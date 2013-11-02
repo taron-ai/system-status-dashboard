@@ -145,7 +145,7 @@
 		
 		<div class="row">
 			<div class="large-12 columns {% if form.upload_path.errors %}error{% endif %}">
-		 		<input type="text" name="upload_path" class="config_ireport_path" maxlength="100" placeholder="Enter a valid file system path" value="{% if form.upload_path.data %}{{form.upload_path.data}}{% else %}{{ireport_config.0.upload_path}}{% endif %}" />
+		 		<input type="text" name="upload_path" maxlength="100" placeholder="Enter a valid file system path" value="{% if form.upload_path.data %}{{form.upload_path.data}}{% else %}{{ireport_config.0.upload_path}}{% endif %}" />
 		    {% if form.upload_path.errors %}
         <span class="err">{% for error in form.upload_path.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 
@@ -163,7 +163,7 @@
 
 		<div class="row">
 			<div class="large-12 columns {% if form.file_size.errors %}error{% endif %}">
-		 		<input type="text" name="file_size" class="config_ireport_size" maxlength="5" placeholder="Bytes" value="{% if form.file_size.data %}{{form.file_size.data}}{% else %}{{ireport_config.0.file_size}}{% endif %}" />
+		 		<input type="text" name="file_size" maxlength="5" placeholder="Bytes" value="{% if form.file_size.data %}{{form.file_size.data}}{% else %}{{ireport_config.0.file_size}}{% endif %}" />
 		    {% if form.file_size.errors %}
         <span class="err">{% for error in form.file_size.errors %}{{error}}<br>{% endfor %}<br></span>
 		    {% endif %} 

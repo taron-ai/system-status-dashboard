@@ -120,7 +120,6 @@ def escalation_config(request):
           'title':'System Status Dashboard | Escalation Admin',
           'escalation_config':escalation_config,
           'form':form,
-          'breadcrumbs':{'Admin':'/admin','Escalation Configuration':'escalation_config'},
           'nav_section':'escalation',
           'nav_sub':'escalation_config'
        },
@@ -187,7 +186,6 @@ def escalation_contacts(request):
           'title':'System Status Dashboard | Manage Escalation Contacts',
           'form':form,
           'contacts':contacts,
-          'breadcrumbs':{'Admin':'/admin','Manage Escalation Contacts':'escalation_contacts'},
           'nav_section':'escalation',
           'nav_sub':'escalation_contacts'
        },
@@ -359,7 +357,6 @@ def contact_delete(request):
               'title':'System Status Dashboard | Confirm Delete',
               'id':id,
               'contact_name':contact_name,
-              'breadcrumbs':{'Admin':'/admin','Manage Escalation Contacts':'escalation_contacts'},
               'nav_section':'escalation',
               'nav_sub':'contact_delete'
            },

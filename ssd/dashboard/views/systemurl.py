@@ -76,7 +76,6 @@ def systemurl_config(request):
           'title':'System Status Dashboard | System Url Configuration',
           'systemurl_config':systemurl_config,
           'form':form,
-          'breadcrumbs':{'Admin':'/admin','System Url Configuration':'systemurl_config'},
           'nav_section':'systemurl',
           'nav_sub':'systemurl_config'
        },

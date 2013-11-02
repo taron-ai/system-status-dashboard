@@ -107,7 +107,6 @@ def email_config(request):
           'title':'System Status Dashboard | Admin',
           'email_config':email_config,
           'form':form,
-          'breadcrumbs':{'Admin':'/admin','Email Configuration':'email_config'},
           'nav_section':'email',
           'nav_sub':'email_config'
        },
@@ -163,7 +162,6 @@ def email_recipients(request):
           'title':'System Status Dashboard | Manage Email Recipients',
           'form':form,
           'emails':emails,
-          'breadcrumbs':{'Admin':'/admin','Manage Recipients':'email_recipients'},
           'nav_section':'email',
           'nav_sub':'recipients'
        },
@@ -235,7 +233,6 @@ def recipient_delete(request):
               'title':'System Status Dashboard | Confirm Delete',
               'id':id,
               'email_name':email_name,
-              'breadcrumbs':{'Admin':'/admin','Manage Recipients':'email_recipients'},
               'nav_section':'email',
               'nav_sub':'recipient_delete'
            },

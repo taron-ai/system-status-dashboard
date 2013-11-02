@@ -161,7 +161,6 @@ def maintenance(request):
           'affected_svcs':tuple(affected_svcs),
           'emails':emails,
           'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
-          'breadcrumbs':{'Admin':'/admin','Create Maintenance':'maintenance'},
           'nav_section':'event',
           'nav_sub':'maintenance'
        },
@@ -391,7 +390,6 @@ def m_update(request):
           'emails':emails,
           'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
           'updates':updates,
-          'breadcrumbs':{'Admin':'/admin','List Maintenance':'m_list'},
           'nav_section':'event',
           'nav_sub':'m_update'
        },
@@ -563,7 +561,6 @@ def m_delete(request):
            {
               'title':'System Status Dashboard | Confirm Delete',
               'id':id,
-              'breadcrumbs':{'Admin':'/admin','List Open Maintenance':'m_list'},
               'nav_section':'event',
               'nav_sub':'m_delete'
            },
@@ -621,7 +618,6 @@ def m_list(request):
               'title':'System Status Dashboard | Open Maintenance',
               'maintenances':maintenances,
               'email_enabled':Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'],
-              'breadcrumbs':{'Admin':'/admin','List Open Maintenance':'m_list'},
               'nav_section':'event',
               'nav_sub':'m_list'
            },

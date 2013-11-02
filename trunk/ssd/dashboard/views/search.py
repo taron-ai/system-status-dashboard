@@ -35,7 +35,7 @@ from ssd.dashboard.forms import SearchForm, GSearchForm, SearchForm
 logger = logging.getLogger(__name__)
 
 
-def gsearch(request):
+def graph(request):
     """Event Search View (Graph)
 
     Show events for a specific date, when clicked through from the summary graph
@@ -84,9 +84,9 @@ def gsearch(request):
 
         # Print the page
         return render_to_response(
-           'search/search_results.html',
+           'search/graph.html',
            {
-              'title':'System Status Dashboard | Event Search',
+              'title':'System Status Dashboard | Graph Search',
               'results':results,
               'type':type,
               'date':date,
@@ -186,9 +186,9 @@ def events(request):
 
         # Print the page
         return render_to_response(
-           'search/list.html',
+           'search/events.html',
            {
-              'title':'System Status Dashboard | List Events',
+              'title':'System Status Dashboard | Events Search',
               'events':events,
               'page':page,
               'start':start,
@@ -205,9 +205,9 @@ def events(request):
 
         # Print the page
         return render_to_response(
-           'search/list.html',
+           'search/events.html',
            {
-              'title':'System Status Dashboard | List Events',
+              'title':'System Status Dashboard | Events Search',
               'form':form,
            },
            context_instance=RequestContext(request)

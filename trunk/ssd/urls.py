@@ -28,8 +28,8 @@ urlpatterns = patterns('',
     url(r'^escalation$',                    'ssd.dashboard.views.escalation.escalation'),
 
     # Search
-    url(r'^events$',                        'ssd.dashboard.views.search.events'),
-    url(r'^gsearch$',                       'ssd.dashboard.views.search.gsearch'),
+    url(r'^search/events$',                 'ssd.dashboard.views.search.events'),
+    url(r'^search/graph$',                  'ssd.dashboard.views.search.graph'),
 
     # Preferences
     url(r'^prefs/set_timezone$',            'ssd.dashboard.views.prefs.set_timezone'),
@@ -107,4 +107,7 @@ urlpatterns = patterns('',
     url(r'^admin/contact_switch$',          'ssd.dashboard.views.escalation.contact_switch'),
     url(r'^admin/contact_delete$',          'ssd.dashboard.views.escalation.contact_delete'),
     url(r'^admin/contact_modify$',          'ssd.dashboard.views.escalation.contact_modify'),
+
+    # Events
+    url(r'^admin/update_modify$',           'ssd.dashboard.views.events.update_modify'),
 )

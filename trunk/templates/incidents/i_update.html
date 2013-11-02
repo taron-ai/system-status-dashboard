@@ -20,6 +20,13 @@
 
 {% block content %}
 
+{% if updates %}
+<script>
+  // Set edit style to inline instead of popup
+  $.fn.editable.defaults.mode = 'inline';
+</script>
+{% endif %}
+
 <form method="POST" action="/admin/i_update">
 {% csrf_token %}
 
@@ -43,7 +50,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <span class="radius secondary label">Incident Update</span>
+        <span class="radius secondary label">Incident Updates</span>
         &nbsp;<b><span id="update_counter" class="counter"></span></b>
         <div class="sublabel_container"><span class="sublabel">Enter an update about the incident.</span></div>
       </div>
@@ -57,6 +64,62 @@
         {% endif %}
       </div>
     </div>
+
+    {% if updates %}
+      <div class="spacer_small"></div>
+
+      <div class="row">
+        <div class="large-12 columns">
+          <label>
+            <span id="expand_updates" title="Modify previous event updates" class="foundicon-genenc-plus foundicon_container_expand"></span>&nbsp;Manage previous updates
+          </label>
+          <div id="updates" style="display: none; padding: 15px 15px 15px 25px;">
+            {% for update in updates %}
+             <span class="updates"><b>{{update.date|date:"Y-m-d H:i e"}}</b> - <a href="#" title="Modify update" id="update_{{update.id}}">{{update.update}}</a></span>
+               
+             <script>
+             $(document).ready(function() {
+               $('#update_{{update.id}}').editable({
+                     url: '/admin/update_modify',
+                     tpl: '<textarea maxlength="1000"></textarea>',
+                     type: 'textarea',
+                     pk: '{{update.id}}',
+                     name: 'update',
+                     inputclass: 'x_editable_update',
+                     params: { csrfmiddlewaretoken: '{{csrf_token}}'},
+                     error: function(response, newValue) {
+                       return response.responseText;
+                     }
+                 });
+             });
+             </script>
+
+             <br><br>
+
+            {% endfor %}
+          </div>
+   
+          <script>
+           // Expand Slider
+            $(function() {
+              $("#expand_updates").click(function () {
+                 $("#updates").slideToggle("fast");
+                 if ($(this).hasClass("foundicon-genenc-plus")) {
+                  //Remove the plus class and add the minus one
+                  $(this).removeClass("foundicon-genenc-plus");
+                  $(this).addClass("foundicon-genenc-minus");
+                 } else if ($(this).hasClass("foundicon-genenc-minus")) {
+                  // Remove the minus class and add the plus one
+                  $(this).removeClass("foundicon-genenc-minus");
+                  $(this).addClass("foundicon-genenc-plus");
+                 }
+              });
+            });
+          </script>
+
+        </div>
+      </div>
+    {% endif %}
 
     <div class="spacer_medium"></div>
 
@@ -202,7 +265,7 @@
         <input type="submit" class="small button secondary" value="save"/>
       </div>
     </div>
-
+     
   </div>
 </div>
 

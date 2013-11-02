@@ -57,9 +57,10 @@
               $(document).ready(function() {
                 $('#email_{{row.id}}').editable({
                       url: '/admin/recipient_modify',
+                      tpl: '<input type="text" maxlength="100">',
                       type: 'text',
                       pk: '{{row.id}}',
-                      name: 'email_{{row.id}}',
+                      name: 'email',
                       inputclass: 'x_editable_text',
                       params: { csrfmiddlewaretoken: '{{csrf_token}}'},
                       error: function(response, newValue) {

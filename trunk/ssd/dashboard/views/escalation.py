@@ -30,7 +30,7 @@ from django.template import RequestContext
 from django.db.models import F
 from django.contrib import messages
 from ssd.dashboard.models import Config_Escalation, Escalation
-from ssd.dashboard.forms import AddContactForm, EscalationConfigForm, ModifyContactForm, SwitchContactForm, RemoveContactForm
+from ssd.dashboard.forms import AddContactForm, EscalationConfigForm, XEditableModifyForm, SwitchContactForm, RemoveContactForm
 
 
 # Get an instance of the ssd logger
@@ -390,13 +390,20 @@ def contact_modify(request):
     if request.method == 'POST':
         
         # Check the form elements
-        form = ModifyContactForm(request.POST)
-        logger.debug('Form submit (POST): %s, with result: %s' % ('ModifyContactForm',form))
+        form = XEditableModifyForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('XEditableModifyForm',form))
 
         if form.is_valid():
             pk = form.cleaned_data['pk']
             name = form.cleaned_data['name']
             value = form.cleaned_data['value']
+
+            # Add the column we are updating (but only allow specific values)
+            if name == 'name' or name == 'contact_details':
+                pass
+            else:
+                logger.error('Invalid column specified during contact modification: %s' % name)
+                return HttpResponseBadRequest('An error was encountered with this request.')
 
             filter = {}
             filter[name] = value
@@ -405,16 +412,17 @@ def contact_modify(request):
             try:
                 Escalation.objects.filter(id=pk).update(**filter)
             except Exception as e:
-                logger.error('%s: Error saving update: %s' % ('services.service_modify',e))
+                logger.error('%s: Error saving update: %s' % ('escalation.contact_modify',e))
                 return HttpResponseBadRequest('An error was encountered with this request.')
 
             return HttpResponse('Value successfully modified')
 
         else:
-            logger.error('%s: invalid form: %s' % ('services.service_modify',form.errors))
+            logger.error('%s: invalid form: %s' % ('escalation.contact_modify',form.errors))
             return HttpResponseBadRequest('Invalid request')
     else:
-        logger.error('%s: Invalid request: GET received but only POST accepted.' % ('services.service_modify'))
-        return HttpResponseRedirect('/admin/services') 
+        logger.error('%s: Invalid request: GET received but only POST accepted.' % ('escalation.contact_modify'))
+        messages.add_message(request, messages.ERROR, 'Invalid request.')
+        return HttpResponseRedirect('/admin/escalation_contacts') 
 
 

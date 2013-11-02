@@ -27,7 +27,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib import messages
 from ssd.dashboard.models import Config_Email, Email, Event
-from ssd.dashboard.forms import AddRecipientForm, DeleteRecipientForm, ModifyRecipientForm, EmailConfigForm
+from ssd.dashboard.forms import AddRecipientForm, DeleteRecipientForm, EmailConfigForm, XEditableModifyForm
 
 
 # Get an instance of the ssd logger
@@ -264,12 +264,21 @@ def recipient_modify(request):
     if request.method == 'POST':
         
         # Check the form elements
-        form = ModifyRecipientForm(request.POST)
-        logger.debug('Form submit (POST): %s, with result: %s' % ('ModifyRecipientForm',form))
+        form = XEditableModifyForm(request.POST)
+        logger.debug('Form submit (POST): %s, with result: %s' % ('XEditableModifyForm',form))
 
         if form.is_valid():
             pk = form.cleaned_data['pk']
+            name = form.cleaned_data['name']
             value = form.cleaned_data['value']
+
+            # Add the column we are updating (but only allow specific values)
+            if not name == 'email':
+                logger.error('Invalid column specified during recipient modification: %s' % name)
+                return HttpResponseBadRequest('An error was encountered with this request.')
+
+            filter = {}
+            filter[name] = value
 
             # Make sure the email is value
             try:
@@ -279,7 +288,7 @@ def recipient_modify(request):
 
             # Update it
             try:
-                Email.objects.filter(id=pk).update(email=value)
+                Email.objects.filter(id=pk).update(**filter)
             except Exception as e:
                 logger.error('%s: Error saving update: %s' % ('email.recipient_modify',e))
                 return HttpResponseBadRequest('An error was encountered with this request.')
@@ -291,4 +300,5 @@ def recipient_modify(request):
             return HttpResponseBadRequest('Invalid request')
     else:
         logger.error('%s: Invalid request: GET received but only POST accepted.' % ('email.recipient_modify'))
+        messages.add_message(request, messages.ERROR, 'Invalid request.')
         return HttpResponseRedirect('/admin/email_recipients')     

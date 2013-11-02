@@ -44,12 +44,14 @@
         <a href="?page={{events.previous_page_number}}&{{query_params}}">&laquo;</a>
       {% endif %}
 
-      <span>Page {{results.number}} of {{results.paginator.num_pages}}</span>
+      Page {{results.number}} of {{results.paginator.num_pages}}
 
       {% if results.has_next %}
         <a href="?page={{results.next_page_number}}&{{query_params}}">&raquo;</a>
       {% endif %}
     </span>
+    &nbsp;&nbsp;
+    <span class="navigation">({{results.paginator.count}} total result{{results.paginator.count|pluralize}})</span>
   </div>
 </div>
 {% endif %}
@@ -66,7 +68,12 @@
     </div>
   {% endfor %}
 {% else %}
-<p>No search results were returned</p>
+<div class="spacer_medium"></div>
+<div class="row">
+  <div class="large-12 columns">  
+    <p>There are no events to display</p>
+  </div>
+</div>
 {% endif %}
 
 

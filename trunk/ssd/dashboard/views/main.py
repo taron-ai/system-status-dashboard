@@ -156,7 +156,7 @@ def index(request):
     timeline_events = cache.get('timeline_events')
     if timeline_events == None:
         logger.debug('cache miss: %s' % 'timeline_events')
-        timeline_events = Event.objects.filter(Q(status__status='open') | Q(status__status='started')).values('id','start','type__type','description').order_by('-id')
+        timeline_events = Event.objects.filter(Q(status__status='open') | Q(status__status='started')).values('id','start','type__type','description').order_by('start')
         cache.set('timeline_events', timeline_events)
     else:
         logger.debug('cache hit: %s' % 'timeline_events')
@@ -198,7 +198,7 @@ def index(request):
     timeline_updates = cache.get('timeline_updates')
     if timeline_updates == None:
         logger.debug('cache miss: %s', 'timeline_updates')
-        timeline_updates = Event_Update.objects.filter(Q(event_id__status__status='open') | Q(event_id__status__status='started')).values('event_id','event_id__type__type','date','update').order_by('-id')
+        timeline_updates = Event_Update.objects.filter(Q(event_id__status__status='open') | Q(event_id__status__status='started')).values('event_id','event_id__type__type','date','update').order_by('id')
         cache.set('timeline_updates', list(timeline_updates))
     else:
         logger.debug('cache hit: %s' % 'timeline_updates')
@@ -441,7 +441,8 @@ def index(request):
           'information':information,
           'count_data':count_data,
           'timeline':timeline,
-          'show_graph':show_graph
+          'show_graph':show_graph,
+          'ref':ref
        },
        context_instance=RequestContext(request)
     )

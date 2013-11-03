@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-"""This module contains all of the email configuration functions of ssd"""
+"""This module contains all of the email configuration functions of SSD."""
 
 import logging
 from django.db import IntegrityError

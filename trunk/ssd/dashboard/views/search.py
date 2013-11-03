@@ -14,9 +14,7 @@
 # limitations under the License.
 
 
-"""Views for the SSD Project that pertain to search functionality only
-
-"""
+"""This module contains all of the search functions of SSD."""
 
 
 import logging
@@ -63,8 +61,8 @@ def graph(request):
         end = tz.localize(end)
 
         results_all = Event.objects.filter(type__type=type,start__range=[start,end]
-                                          ).values('id','type__type','start','end','description',
-                                          ).distinct().order_by('-start')
+                                          ).values('id','type__type','start','description','status__status'
+                                          ).order_by('-start')
 
         # Create a paginator and paginate the list w/ 10 messages per page
         paginator = Paginator(results_all, 10)

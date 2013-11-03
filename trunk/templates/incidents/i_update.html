@@ -40,7 +40,7 @@
     <div class="row">
       <div class="large-12 columns">
         <h4>Update Incident</h4>
-        <p>Ensure that you provide all information that you think your users or customers will require about this service disruption.</p>
+        <p>To update this incident, complete the relevant fields below.</p>
         <hr>
       </div>
     </div>
@@ -52,7 +52,7 @@
       <div class="large-12 columns">
         <span class="radius secondary label">Incident Updates</span>
         &nbsp;<b><span id="update_counter" class="counter"></span></b>
-        <div class="sublabel_container"><span class="sublabel">Enter an update about the incident.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter an update about the incident, if desired.</span></div>
       </div>
     </div>
 
@@ -73,6 +73,7 @@
           <label>
             <span id="expand_updates" title="Modify previous event updates" class="foundicon-genenc-plus foundicon_container_expand"></span>&nbsp;Manage previous updates
           </label>
+          <span class="sublabel">Edit or delete previously entered incident updates.</span>
           <div id="updates" style="display: none; padding: 15px 15px 15px 25px;">
             {% for update in updates %}
              <a href="/admin/i_update_delete?event_id={{id}}&id={{update.id}}" title="Delete update"><span class="foundicon-gen-trash foundicon_container_iconlink_small_trash"></span></a><span class="updates"><b>{{update.date|date:"Y-m-d H:i e"}}</b> - <a href="#" title="Modify update" id="update_{{update.id}}">{{update.update}}</a></span>
@@ -147,7 +148,7 @@
         <div class="row">
           <div class="large-12 columns">
             <span class="radius secondary label">Start Date/Time</span><br>
-            <div class="sublabel_container"><span class="sublabel">Enter the incident start date/time.</span></div>
+            <div class="sublabel_container"><span class="sublabel">Update the incident start date/time.</span></div>
           </div>
         </div>
         <div class="row">
@@ -172,7 +173,7 @@
         <div class="row">
           <div class="large-12 columns">
             <span class="radius secondary label">End Date/Time</span><br>
-            <div class="sublabel_container"><span class="sublabel">Enter the incident end date/time (if already resolved).</span></div>
+            <div class="sublabel_container"><span class="sublabel">Update the incident end date/time (if already resolved).</span></div>
           </div>
         </div>
         <div class="row">
@@ -240,12 +241,12 @@
     <div class="row">
       <div class="large-12 columns">
         <span class="radius secondary label">Services Impacted</span><br>
-        <div class="sublabel_container"><span class="sublabel">Select all services that are impacted by this incident.  These services will be represented in the dashboard as impaired.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Select all services that are impacted by this incident.</span></div>
       </div>
     </div>
 
     <div class="row">
-      <div class="large-6 columns">
+      <div class="large-12 columns">
         {% for row in services %}
           {# See if this service was previously selected and this is a failed form submit #}
           {# On a failed form the list is unicode values and on a GET they are ints so we have to check both #}

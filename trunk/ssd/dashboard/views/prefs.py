@@ -14,9 +14,7 @@
 # limitations under the License.
 
 
-"""Views for the SSD project that pertain to setting user preferences only
-
-"""
+"""This module contains all of the user preference setting functions of SSD."""
 
 
 import logging

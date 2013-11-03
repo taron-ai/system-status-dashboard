@@ -39,7 +39,7 @@
     <div class="row">
       <div class="large-12 columns">
         <h4>Update Maintenance</h4>
-        <p>Ensure that you provide all information that your users or customers will require about this planned maintenance activity.</p>
+        <p>To update this scheduled maintenance, complete the relevant fields below.</p>
         <hr>
       </div>
     </div>
@@ -51,7 +51,7 @@
       <div class="large-8 columns">
         <span class="radius secondary label">Maintenance Update</span>
         &nbsp;<b><span id="update_counter" class="counter"></span></b>
-        <div class="sublabel_container"><span class="sublabel">Enter an update about the maintenance.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter an update about the scheduled maintenance, if desired.</span></div>
       </div>
     </div>
 
@@ -72,6 +72,7 @@
           <label>
             <span id="expand_updates" title="Modify previous event updates" class="foundicon-genenc-plus foundicon_container_expand"></span>&nbsp;Manage previous updates
           </label>
+          <span class="sublabel">Edit or delete previously entered maintenance updates.</span>
           <div id="updates" style="display: none; padding: 15px 15px 15px 25px;">
             {% for update in updates %}
              <a href="/admin/m_update_delete?event_id={{id}}&id={{update.id}}" title="Delete update"><span class="foundicon-gen-trash foundicon_container_iconlink_small_trash"></span></a><span class="updates"><b>{{update.date|date:"Y-m-d H:i e"}}</b> - <a href="#" title="Modify update" id="update_{{update.id}}">{{update.update}}</a></span>
@@ -127,7 +128,7 @@
         <div class="row">
           <div class="large-12 columns">
             <span class="radius secondary label">Start Date/Time</span><br>
-            <div class="sublabel_container"><span class="sublabel">Enter the maintenance start date/time.</span></div>
+            <div class="sublabel_container"><span class="sublabel">Update the maintenance start date/time.</span></div>
           </div>
         </div>
         <div class="row">
@@ -152,7 +153,7 @@
         <div class="row">
           <div class="large-12 columns">
             <span class="radius secondary label">End Date/Time</span><br>
-            <div class="sublabel_container"><span class="sublabel">Enter the maintenance end date/time.</span></div>
+            <div class="sublabel_container"><span class="sublabel">Update the maintenance end date/time.</span></div>
           </div>
         </div>
         <div class="row">
@@ -219,7 +220,7 @@
       <div class="large-12 columns {% if form.coordinator.errors %}error{% endif %}">
         <span class="radius secondary label">Maintenance Coordinator</span>
         &nbsp;<b><span id="coordinator_counter" class="counter"></span></b>
-        <div class="sublabel_container"><span class="sublabel">If a particular individual will be coordinating this maintenance and you would like to publish their contact information (or any other relevant details), enter it here.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter or update the maintenance coordinator, if desired..</span></div>
       </div>
     </div>
 
@@ -302,8 +303,14 @@
     <div class="spacer_medium"></div>
 
     <div class="row">
-      <div class="large-6 columns">
-        <span class="radius secondary label">Services Impacted</span><br><br>
+      <div class="large-12 columns">
+        <span class="radius secondary label">Services Impacted</span><br>
+        <div class="sublabel_container"><span class="sublabel">Select all services that are impacted by this scheduled maintenance.</span></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
         {% for row in services %}
           {# See if this service was previously selected and this is a failed form submit #}
           {# On a failed form the list is unicode values and on a GET they are ints so we have to check both #}

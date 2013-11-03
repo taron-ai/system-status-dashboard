@@ -78,7 +78,7 @@
         <div class="spacer_small"></div>
       </div>
       <div>
-        <span class="legend"><span class="foundicon-genenc-tools foundicon_container_blue"></span>&nbsp;Planned Maintenance - planned maintenance is occurring with the service.</span>
+        <span class="legend"><span class="foundicon-genenc-tools foundicon_container_blue"></span>&nbsp;Scheduled Maintenance - scheduled maintenance is occurring with the service.</span>
       </div>
     </div>
 
@@ -150,8 +150,8 @@
                     </a>
                     <div id="idrop_{{event.id}}" class="f-dropdown content small" data-dropdown-content>
                       <span class="dashboard_drop">
-                        <h5>Incident Information</h5>
-                        <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                        <h5>Incident Description</h5>
+                        {{event.description}}
                         <br><br>
                         <a href="/i_detail?id={{event.id}}" title="More information">Full Details</a>
                       </span>
@@ -162,8 +162,8 @@
                     </a>
                     <div id="irdrop_{{event.id}}" class="f-dropdown content small" data-dropdown-content>
                       <span class="dashboard_drop">
-                        <h5>Incident (Resolved) Information</h5>
-                        <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                        <h5>Incident (Resolved) Description</h5>
+                        {{event.description}}
                         <br><br>
                         <a href="/i_detail?id={{event.id}}" title="More information">Full Details</span></a>
                       </span>
@@ -172,12 +172,12 @@
                 {% else %}
                   {% if event.type == 'maintenance' %}
                     <a href="#" data-dropdown="mdrop_{{event.id}}">
-                      <span class="foundicon-genenc-tools foundicon_container_blue" title="Planned Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
+                      <span class="foundicon-genenc-tools foundicon_container_blue" title="Scheduled Maintenance (ID:{{event.id}}) {{event.open|date:"Y-m-d H:i:s e"}} ~ {{event.closed|date:"Y-m-d H:i:s e"}}"></span>
                     </a>
                     <div id="mdrop_{{event.id}}" class="f-dropdown content small" data-dropdown-content>
                       <span class="dashboard_drop">
-                        <h5>Maintenance Information</h5>
-                        <br>Start: {{event.open|date:"Y-m-d H:i:s e"}}<br><br>{{event.description}}
+                        <h5>Maintenance Description</h5>
+                        {{event.description}}
                         <br><br>
                         <a href="/m_detail?id={{event.id}}" title="More information">Full Details</a>
                       </span>
@@ -215,7 +215,7 @@
         <div class="spacer_small"></div>      
       </div>
       <div>
-        <span class="legend"><span class="foundicon-genenc-tools foundicon_container_blue"></span>&nbsp;Planned Maintenance - planned maintenance is occurring with the service.</span>
+        <span class="legend"><span class="foundicon-genenc-tools foundicon_container_blue"></span>&nbsp;Scheduled Maintenance - scheduled maintenance is occurring with the service.</span>
       </div>
     </div>
 
@@ -258,7 +258,7 @@
                  <span class="mobile_red">Active Incident</span>
                {% else %}
                 {% if column.status == 2 %}
-                 <span class="mobile_blue">Planned maintenance</span>
+                 <span class="mobile_blue">Scheduled maintenance</span>
                 {% else %}
                  <span class="mobile_green">Service normal</span>
                 {% endif %}
@@ -277,10 +277,18 @@
   <div class="large-12 columns">
     <br><br>
     <span class="heading">Active Incident Timeline:</span>
+    <a href="#" data-dropdown="incident_timeline_drop"><span class="foundicon-acc-key foundicon_container_nav_tl" title="Summary Status Key"></a>
+    <div id="incident_timeline_drop" class="f-dropdown content small" data-dropdown-content>
+      <h5>Active Incident Timeline</h5><br>
+      <span class="help_drop">
+        The active incident timeline displays all active incidents, categorized by the services they impact.  Expand any incident to view a full description of the incident as well as any updates.
+      </span>
+    </div>
+
     <div class="spacer_micro"></div>
-    {% if timeline.incident %}
+    {% if timeline.events.incident %}
       <div class="timeline_container">
-      {% for id,values in timeline.incident.items %}
+      {% for id,values in timeline.events.incident.items %}
         <div>
 
           <div>
@@ -356,10 +364,17 @@
   <div class="large-12 columns">
     <br><br>
     <span class="heading">Active Maintenance Timeline:</span>
-    <div class="spacer_micro"></div>
-    {% if timeline.maintenance %}
+    <a href="#" data-dropdown="maintenance_timeline_drop"><span class="foundicon-acc-key foundicon_container_nav_tl" title="Summary Status Key"></a>
+    <div id="maintenance_timeline_drop" class="f-dropdown content small" data-dropdown-content>
+      <h5>Active Maintenance Timeline</h5><br>
+      <span class="help_drop">
+        The active maintenance timeline displays all active scheduled system maintenance activities, categorized by the services they impact.  Expand any maintenance event to view a full description of the maintenance as well as any updates.
+      </span>
+    </div>
+
+    {% if timeline.events.maintenance %}
       <div class="timeline_container">
-      {% for id,values in timeline.maintenance.items %}
+      {% for id,values in timeline.events.maintenance.items %}
         <div>
 
           <div style="vertical-align: top;">
@@ -426,7 +441,7 @@
       </div>
     {% else %}
       <div class="hr"></div>
-      <span class="all_good">No planned maintenance is occurring.</span>
+      <span class="all_good">No scheduled maintenance is occurring.</span>
     {% endif %}
   </div>
 </div>
@@ -436,11 +451,11 @@
     <br><br><br>
     <span class="heading">Summary Status:</span>
     &nbsp;
-    <a href="{{backward_link}}" title="Move the reference date back one week"><span class="foundicon-gen-left-arrow foundicon_container_nav_sum"></span></a>
+    <a href="{{backward_link}}" title="Move the reference date back one week"><span class="foundicon-gen-left-arrow foundicon_container_nav_tl"></span></a>
     &nbsp;
-    <a href="{{forward_link}}" title="Move the reference date forward one week"><span class="foundicon-gen-right-arrow foundicon_container_nav_sum"></span></a>
+    <a href="{{forward_link}}" title="Move the reference date forward one week"><span class="foundicon-gen-right-arrow foundicon_container_nav_tl"></span></a>
     &nbsp;
-    <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-key foundicon_container_nav_sum" title="Summary Status Key"></a>
+    <a href="#" data-dropdown="histsumdrop"><span class="foundicon-acc-key foundicon_container_nav_tl" title="Summary Status Key"></a>
     <div id="histsumdrop" class="f-dropdown content small" data-dropdown-content>
       <h5>Historical Summary Status</h5><br>
       <span class="help_drop">
@@ -585,6 +600,8 @@ $(function () {
   </div>
 </div>
 {% endif %}
+
+<div class="spacer_large"></div>
 
 
 <script type="text/javascript">

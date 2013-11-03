@@ -32,7 +32,7 @@
 	  <div class="row">
 	    <div class="large-12 columns">
 	      <h4>Email Configuration</h4>
-	      <p>If you plan to notify your users via email, please complete the relevant fields below.</p>
+	      <p>If you plan to notify your users about events via email, please complete the relevant fields below.</p>
 	      <hr>
 	    </div>
 	  </div>
@@ -43,7 +43,7 @@
 	  <div class="row">
 	    <div class="large-12 columns">
         <span class="radius secondary label">Enable Email Functionality</span><br>
-        <div class="sublabel_container"><span class="sublabel">Select the checkbox to enable global email functionality in SSD.  This includes sending notifications/updates about incidents/maintenances and also notifications to staff about incident reports.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Select the checkbox to enable global email functionality.  This includes sending notifications/updates about incidents/maintenances and also notifications to administrative staff about incident reports.</span></div>
 	    </div>
 	  </div>
 
@@ -61,7 +61,7 @@
 	  <div class="row">
 	    <div class="large-12 columns">
         <span class="radius secondary label">Email Format</span><br>
-        <div class="sublabel_container"><span class="sublabel">Select the format for email messages sent from SSD.  Messages sent in HTML format will be sent in Multipart MIME format so will include Text and Email versions.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Select the format for email messages.  Messages sent in html format will be sent in Multipart MIME format and will include text and html versions.</span></div>
 	    </div>
 	  </div>
 		
@@ -97,7 +97,7 @@
 				<div class="row">
 					<div class="large-12 columns {% if form.from_address.errors %}error{% endif %}">
 		        <label>From Address</label>
-		        <div class="sublabel_container"><span class="sublabel">Enter the email address that messages from SSD will originate from.</span></div>
+		        <div class="sublabel_container"><span class="sublabel">Enter a valid email address that messages sent from this system will originate from.</span></div>
 						<input type="text" name="from_address" placeholder="Enter a valid email address" maxlength="50" value="{% if form.from_address.data %}{{form.from_address.data}}{% else %}{{email_config.0.from_address}}{% endif %}" />
 				    {% if form.from_address.errors %}
 						<span class="err">{% for error in form.from_address.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -109,7 +109,7 @@
 				<div class="row">
 					<div class="large-12 columns {% if form.text_pager.errors %}error{% endif %}">
 		        <label>Text Pager Address</label>
-		        <div class="sublabel_container"><span class="sublabel">Enter the email address that will receive alerts when users submit incident reports (this is typically a text pager address).</span></div>
+		        <div class="sublabel_container"><span class="sublabel">Enter a valid email address that will receive alerts when users submit incident reports.</span></div>
 						<input type="text" name="text_pager" placeholder="Enter a valid email address" maxlength="50" value="{% if form.text_pager.data %}{{form.text_pager.data}}{% else %}{{email_config.0.text_pager}}{% endif %}" />
 				    {% if form.text_pager.errors %}
 						<span class="err">{% for error in form.text_pager.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -134,7 +134,7 @@
 				<label>Incident Greeting Text
 				&nbsp;<span id="incident_greeting_counter" class="counter"></span>
 				</label>
-        <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany new emails sent out about incidents.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany the initial email sent about an incident.</span></div>
 		 		<textarea id="incident_greeting" name="incident_greeting" placeholder="Enter Incident Greeting" maxlength="1000">{% if form.incident_greeting.data %}{{form.incident_greeting.data}}{% else %}{{email_config.0.incident_greeting}}{% endif %}</textarea>
 		    {% if form.incident_greeting.errors %}
 				<br><span class="err">{% for error in form.incident_greeting.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -149,7 +149,7 @@
         <label>Incident Update Text
         &nbsp;<span id="incident_update_counter" class="counter"></span>
       	</label>
-        <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany update emails sent out about existing incidents.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany emails sent about existing incidents.</span></div>
 		 		<textarea id="incident_update" name="incident_update" placeholder="Enter Incident Update" maxlength="1000">{% if form.incident_update.data %}{{form.incident_update.data}}{% else %}{{email_config.0.incident_update}}{% endif %}</textarea>
 		    {% if form.incident_update.errors %}
 				<br><span class="err">{% for error in form.incident_update.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -164,7 +164,7 @@
         <label>Maintenance Greeting Text
         &nbsp;<span id="maintenance_greeting_counter" class="counter"></span>
       	</label>
-        <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany new emails sent out about scheduled maintenance.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany the initial email sent about a scheduled maintenance activity.</span></div>
 		 		<textarea id="maintenance_greeting" name="maintenance_greeting" placeholder="Enter Maintenance Greeting" maxlength="1000">{% if form.maintenance_greeting.data %}{{form.maintenance_greeting.data}}{% else %}{{email_config.0.maintenance_greeting}}{% endif %}</textarea>
 		    {% if form.maintenance_greeting.errors %}
 				<br><span class="err">{% for error in form.maintenance_greeting.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -179,7 +179,7 @@
         <label>Maintenance Update Text
         &nbsp;<span id="maintenance_update_counter" class="counter"></span>
       	</label>
-        <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany update emails sent out about existing scheduled maintenance.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter the text that will accompany update emails sent about existing scheduled maintenance activities.</span></div>
 		 		<textarea id="maintenance_update" name="maintenance_update" placeholder="Enter Maintenance Update" maxlength="1000">{% if form.maintenance_update.data %}{{form.maintenance_update.data}}{% else %}{{email_config.0.maintenance_update}}{% endif %}</textarea>
 		    {% if form.maintenance_update.errors %}
 				<br><span class="err">{% for error in form.maintenance_update.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -194,7 +194,7 @@
         <label>Email Footer Text
         &nbsp;<span id="email_footer_counter" class="counter"></span>
       	</label>
-        <div class="sublabel_container"><span class="sublabel">Enter optional text that will be included in the footer of all emails sent by SSD.</span></div>
+        <div class="sublabel_container"><span class="sublabel">Enter optional text that will be included in the footer of all emails sent by this system.</span></div>
 		 		<textarea id="email_footer" name="email_footer" placeholder="Enter Email Footer" maxlength="1000">{% if form.email_footer.data %}{{form.email_footer.data}}{% else %}{{email_config.0.email_footer}}{% endif %}</textarea>
 		    {% if form.email_footer.errors %}
 				<br><span class="err">{% for error in form.email_footer.errors %}{{error}}<br>{% endfor %}<br></span>

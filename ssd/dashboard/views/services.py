@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-"""This module contains all of the configuration functions of ssd"""
+"""This module contains all of the service configuration functions of SSD."""
 
 
 import logging

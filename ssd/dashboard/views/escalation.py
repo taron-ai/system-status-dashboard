@@ -14,9 +14,7 @@
 # limitations under the License.
 
 
-"""This module contains all of the basic user facing views for SSD
-
-"""
+"""This module contains all of the escalation functions of SSD."""
 
 
 import logging

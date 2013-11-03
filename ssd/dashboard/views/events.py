@@ -14,9 +14,7 @@
 # limitations under the License.
 
 
-"""Views for the SSD Project that that are common to events
-
-"""
+"""This module contains all of the generic event functions of SSD."""
 
 
 import logging
@@ -72,6 +70,9 @@ def update_modify(request):
             except Exception as e:
                 logger.error('%s: Error saving update: %s' % ('events.update_modify',e))
                 return HttpResponseBadRequest('An error was encountered with this request.')
+
+            # Clear the cache 
+            cache.delete('timeline')
 
             return HttpResponse('Value successfully modified')
 

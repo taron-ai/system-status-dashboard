@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-"""This module contains all of the logo configuration functions of ssd"""
+"""This module contains all of the logo configuration functions of SSD."""
 
 import logging
 from django.core.cache import cache

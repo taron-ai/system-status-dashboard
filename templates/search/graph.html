@@ -62,7 +62,7 @@
     <div class="row">
       <div class="large-12 large-centered columns">  
         <div class="search_results">{% if row.type__type == 'incident' %}<a href="/i_detail?id={{row.id}}" title="Detail">{% else %}{% if row.type__type == 'maintenance' %}<a href="/m_detail?id={{row.id}}" title="Detail">{% endif %}{% endif %}{{row.start|date:"Y-m-d H:i:s e"}}</a></div>
-        <div class="search_results"><b>Status:</b> {% if row.end %}<span class="all_good">Closed ({{row.end|date:"Y-m-d H:i:s e"}})</span>{% else %}Active{% endif %}</div>
+        <div class="search_results"><b>Status:</b> {{row.status__status}}</div>
         <div class="search_results"><b>Description:</b> {{row.description}}</div>
       </div>
     </div>

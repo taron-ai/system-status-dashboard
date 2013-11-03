@@ -32,7 +32,7 @@
     <div class="row">
       <div class="large-12 columns">
         <h4>System Url Configuration</h4>
-        <p>Complete the relevant fields below to display a system url on any communication that SSD sends out.</p>
+        <p>Complete the relevant fields below to display a system url on any communication that this system sends out.</p>
         <hr>
       </div>
     </div>
@@ -51,12 +51,12 @@
 		  </div>
 		</div>
 
-    <div class="spacer_medium"></div>
+    <div class="spacer_small"></div>
 
 		<div class="row">
 			<div class="large-12 columns {% if form.url_enabled.errors %}error{% endif %}">
         <label>System Url Enabled</label>
-        <div class="sublabel_container"><span class="sublabel">If enabled, the system url will be included in any communication that SSD sends out so that users will be directed back to the dashboard.</span></div>
+        <div class="sublabel_container"><span class="sublabel">If enabled, the system url will be included in any communication that this system sends out so that users will be directed back to the dashboard.</span></div>
        <label><input type="checkbox" name="url_enabled" {% if form.url_enabled.data %}checked{% else %}{% if systemurl_config.0.url_enabled %}checked{% endif %}{% endif %} />
         Enabled</label>
         {% if form.url_enabled.errors %}
@@ -65,7 +65,7 @@
 			</div>
 		</div>
 
-  	<div class="spacer_medium"></div>
+  	<div class="spacer_small"></div>
 
     <div class="row">
 		  <div class="large-11 columns">

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-"""This module contains all of the incident report functions of ssd"""
+"""This module contains all of the incident report functions of SSD."""
 
 import logging
 import os

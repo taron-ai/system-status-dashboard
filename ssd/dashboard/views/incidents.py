@@ -14,9 +14,7 @@
 # limitations under the License.
 
 
-"""Views for the SSD Project that pertain to managing incidents
-
-"""
+"""This module contains all of the incident specific functions of SSD."""
 
 
 import logging
@@ -120,8 +118,8 @@ def incident(request):
                 email = notify.email()
                 email.email_event(event_id,email_id,request.timezone,True)
 
-            # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
-            cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
+            # Clear the cache - don't discriminate and just clear everything that impacts events
+            cache.delete_many(['timeline','events_ns','event_count_ns'])
             
             # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Incident successfully created.')
@@ -262,8 +260,8 @@ def i_update(request):
                 email = notify.email()
                 email.email_event(id,email_id,request.timezone,False)
 
-            # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
-            cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
+            # Clear the cache - don't discriminate and just clear everything that impacts events
+            cache.delete_many(['timeline','events_ns','event_count_ns'])
 
             # Set a success message
             messages.add_message(request, messages.SUCCESS, 'Incident successfully updated')
@@ -378,16 +376,16 @@ def i_delete(request):
             # Delete the incident
             Event.objects.filter(id=id).delete()
 
-            # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
-            cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
+            # Clear the cache - don't discriminate and just clear everything that impacts events
+            cache.delete_many(['timeline','events_ns','event_count_ns'])
 
             # Set a message that the delete was successful
-            messages.add_message(request, messages.SUCCESS, 'Message id:%s successfully deleted' % id)
+            messages.add_message(request, messages.SUCCESS, 'Incident id:%s successfully deleted' % id)
 
         # Invalid form submit
         else:
             # Set a message that the delete was not successful
-            messages.add_message(request, messages.ERROR, 'Message id:%s not deleted' % id)
+            messages.add_message(request, messages.ERROR, 'Incident id:%s not deleted' % id)
             
         # Redirect to the open incidents page
         return HttpResponseRedirect('/admin/i_list')
@@ -567,8 +565,8 @@ def i_update_delete(request):
             # Delete the event update
             Event_Update.objects.filter(id=id).delete()
 
-            # Clear the cache - don't discriminate and just clear everything that impacts events or incidents
-            cache.delete_many(['active_incidents','events','incident_count','incident_timeline'])
+            # Clear the cache 
+            cache.delete('timeline')
 
             # Set a message that the delete was successful
             messages.add_message(request, messages.SUCCESS, 'Incident update id:%s successfully deleted' % id)

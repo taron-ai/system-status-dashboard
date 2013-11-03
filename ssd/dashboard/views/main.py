@@ -14,9 +14,7 @@
 # limitations under the License.
 
 
-"""This module contains all of the basic user facing views for SSD
-
-"""
+"""This module the main dashboard for SSD."""
 
 
 import logging
@@ -31,6 +29,7 @@ from django.contrib import messages
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from ssd.dashboard.models import Event, Event_Update, Service, Config_Message
+from ssd.dashboard import functions
 
 
 # Get an instance of the ssd logger
@@ -43,7 +42,8 @@ def index(request):
     The main dashboard view
 
     """
-    
+
+
     logger.debug('%s view being executed.' % 'main.index')
 
     # -------------------------------------------------------- #
@@ -120,102 +120,109 @@ def index(request):
     #
     # We'll use the following data structure
     # timeline = {
-    #              'incident':{
-    #                          '1': {
-    #                                'start':'2013-01-01 10:28:25 PDT',
-    #                                'description':'We are having an issue with the exchange server',
-    #                                'services':['service1','service2'],                                
-    #                                'updates': [
-    #                                            ['2013-01-01 10:29:25 PDT','We are having an issue'],
-    #                                            ['2013-01-01 10:30:25 PDT','Resolved now']
-    #                                           ]
-    #                                }
-    #                          }
-    #             }
+    #              'events': {
+    #                            incident':{
+    #                                        '1': {
+    #                                               'start':'2013-01-01 10:28:25 PDT',
+    #                                               'description':'We are having an issue with the exchange server',
+    #                                               'services':['service1','service2'],                                
+    #                                               'updates': [
+    #                                                            ['2013-01-01 10:29:25 PDT','We are having an issue'],
+    #                                                            ['2013-01-01 10:30:25 PDT','Resolved now']
+    #                                                           ]
+    #                                              }
+    #                                       },
+    #                            
+    #                            maintenance':{
+    #                                           '5': {
+    #                                                  'start':'2013-01-01 10:28:25 PDT',
+    #                                                  'description':'We are having an issue with the exchange server',
+    #                                                  'services':['service1','service2'],                                
+    #                                                  'updates': [
+    #                                                               ['2013-01-01 10:29:25 PDT','We are having an issue'],
+    #                                                               ['2013-01-01 10:30:25 PDT','Resolved now']
+    #                                                             ]
+    #                                                 }
+    #                                         }
+    #
+    #
+    #                        },
+    #               'lookup': {
+    #                           'incident': {
+    #                                           'service1': '',
+    #                                           'service2': ''
+    #                                       },
+    #                           'maintenance': {
+    #                                                'service3': '',
+    #                                                'service4': ''
+    #                                            }
+    #                         }
+    #            }
     #          
-    # We'll also create a lookup table so we can easily determine if a service
-    # has an active event and set it's color (e.g. if service1 in events_lookup['incident'])
-    # events_lookup = {
-    #                   'incident':{
-    #                                  'service1' = '',
-    #                                  'service2' = ''
-    #                              },
-    #                   'maintenance':{
-    #                                    'service3' = '',
-    #                                    'service4' = ''
-    #                                  }
-    #                  }
+    timeline = cache.get('timeline')
+    if timeline == None:
+        logger.debug('cache miss: %s' % 'timeline')
 
-    # The timeline we'll pass to the template
-    timeline = {}
+        # Create the timeline structure
+        timeline = {
+                    'events': {},
+                    'lookup': {
+                                'incident': {},
+                                'maintenance': {}
+                    }
+        }
 
-    # The events lookup table 
-    events_lookup = {'incident':{},'maintenance':{}}
-    
-    # Get the events
-    timeline_events = cache.get('timeline_events')
-    if timeline_events == None:
-        logger.debug('cache miss: %s' % 'timeline_events')
-        timeline_events = Event.objects.filter(Q(status__status='open') | Q(status__status='started')).values('id','start','type__type','description').order_by('start')
-        cache.set('timeline_events', timeline_events)
-    else:
-        logger.debug('cache hit: %s' % 'timeline_events')
-
-    # Build the timeline data structure
-    for event in timeline_events:
-
-        # Add the type to the timeline if not there
-        if not event['type__type'] in timeline:
-            timeline[event['type__type']] = {}
         
-        # Add the event id to the timeline if not there
-        if not event['id'] in timeline[event['type__type']]:
-            timeline[event['type__type']][event['id']] = {}
+        # Get the events
+        timeline_events = Event.objects.filter(Q(status__status='open') | Q(status__status='started')).values('id','start','type__type','description').order_by('start')
 
-        # Add the event data to the timeline
-        timeline[event['type__type']][event['id']]['start'] = event['start']
-        timeline[event['type__type']][event['id']]['description'] = event['description']
+        # Build the timeline data structure
+        for event in timeline_events:
 
-        # Find out which services this event impacts and add to the timeline
-        # These will be stored in cache by the event id
-        services_impacted = cache.get('services_impacted_%s' % event['id'])
-        if services_impacted == None:
-            logger.debug('cache miss: %s_%s' % ('services_impacted',event['id']))
-            services_impacted = Event.objects.filter(id=event['id']).values('event_service__service__service_name')
-            cache.set('services_impacted_%s' % event['id'], list(services_impacted))
-        else:
-            logger.debug('cache hit: %s_%s' % ('services_impacted',event['id']))
-        # Add the services to the timeline
-        timeline[event['type__type']][event['id']]['services'] = services_impacted
+            # Add the type to the timeline if not there
+            if not event['type__type'] in timeline['events']:
+                timeline['events'][event['type__type']] = {}
+            
+            # Add the event id to the timeline if not there
+            if not event['id'] in timeline['events'][event['type__type']]:
+                timeline['events'][event['type__type']][event['id']] = {}
 
-        # Check each service impacted and add to the events_lookup table
-        for service in services_impacted:
+            # Add the event data to the timeline
+            timeline['events'][event['type__type']][event['id']]['start'] = event['start']
+            timeline['events'][event['type__type']][event['id']]['description'] = event['description']
 
-            if not service['event_service__service__service_name'] in events_lookup[event['type__type']]:
-                events_lookup[event['type__type']][service['event_service__service__service_name']] = ''            
+            # Find out which services this event impacts and add to the timeline
+            # We need to cast this to a list so that it's evaluated and caching works properly
+            services_impacted = list(Event.objects.filter(id=event['id']).values('event_service__service__service_name'))
 
-    # Now get the updates
-    timeline_updates = cache.get('timeline_updates')
-    if timeline_updates == None:
-        logger.debug('cache miss: %s', 'timeline_updates')
+            # Add the services to the timeline
+            timeline['events'][event['type__type']][event['id']]['services'] = services_impacted
+
+            # Check each service impacted and add to the events_lookup table
+            for service in services_impacted:
+
+                if not service['event_service__service__service_name'] in timeline['lookup'][event['type__type']]:
+                    timeline['lookup'][event['type__type']][service['event_service__service__service_name']] = ''            
+
+        # Now get the updates
         timeline_updates = Event_Update.objects.filter(Q(event_id__status__status='open') | Q(event_id__status__status='started')).values('event_id','event_id__type__type','date','update').order_by('id')
-        cache.set('timeline_updates', list(timeline_updates))
+
+        for update in timeline_updates:
+
+            # Add the updates array to the timeline if not there
+            if not 'updates' in timeline['events'][update['event_id__type__type']][update['event_id']]:
+                timeline['events'][update['event_id__type__type']][update['event_id']]['updates'] = []
+
+            # Add the update to the timeline
+            timeline['events'][update['event_id__type__type']][update['event_id']]['updates'].append([update['date'],update['update']])
+
+        # Put in cache
+        cache.set('timeline', timeline)
     else:
-        logger.debug('cache hit: %s' % 'timeline_updates')
-
-    for update in timeline_updates:
-
-        # Add the updates array to the timeline if not there
-        if not 'updates' in timeline[update['event_id__type__type']][update['event_id']]:
-            timeline[update['event_id__type__type']][update['event_id']]['updates'] = []
-
-        # Add the update to the timeline
-        timeline[update['event_id__type__type']][update['event_id']]['updates'].append([update['date'],update['update']])
-
+        logger.debug('cache hit: %s' % 'timeline')
+    
     # END ACTIVE INCIDENT INFORMATION
     # -------------------------------------------------------- #
-
-
 
 
 
@@ -248,21 +255,33 @@ def index(request):
         logger.debug('cache hit: %s' % 'services')
 
 
-    # Grab all events within the time range requested
-    events = cache.get('events')
+    # Grab all events within the time range requested (for the specific time range):
+    # 
+    # The memcache key will be:
+    # events_[ns]_[from]_[to]
+    #
+
+    # Obtain the memcached namespace for the key events_
+    events_ns = functions.namespace_get(logger, 'events_ns')
+    events_key = 'events_%s_%s_%s' % (events_ns,dates[0].strftime('%Y%m%d%Z'),ref.strftime('%Y%m%d%Z'))
+    logger.debug('events key: %s' % events_key)
+    
+    events = cache.get(events_key)
     if events == None:
-        logger.debug('cache miss: %s' % 'events')
-        events = Event.objects.filter(start__range=[dates[0],ref_q]).values('id',
-                                                                            'type__type',
-                                                                            'description',
-                                                                            'start',
-                                                                            'end',
-                                                                            'event_service__service__service_name',
-                                                                            'status__status'
-                                                                            ).order_by('id')
-        cache.set('events', list(events))
+        logger.debug('cache miss: %s' % events_key)
+        # The only thing we don't want shown here are maintenances that are in the planning stage
+        events = Event.objects.filter(start__range=[dates[0],ref_q]).exclude(status__status='planning').values(
+                                                                                                              'id',
+                                                                                                              'type__type',
+                                                                                                              'description',
+                                                                                                              'start',
+                                                                                                              'end',
+                                                                                                              'event_service__service__service_name',
+                                                                                                              'status__status'
+                                                                                                              ).order_by('id')
+        cache.set(events_key, list(events))
     else:
-        logger.debug('cache hit: %s' % 'events')
+        logger.debug('cache hit: %s' % events_key)
 
 
     # Run through each service and see if it had an incident during the time range
@@ -278,9 +297,9 @@ def index(request):
 
         # Set the status from our lookup table first
         # Incidents over-ride everything for setting the status of the service
-        if service['service_name'] in events_lookup['incident']:
+        if service['service_name'] in timeline['lookup']['incident']:
             row[0]['status'] = 1
-        elif service['service_name'] in events_lookup['maintenance']:
+        elif service['service_name'] in timeline['lookup']['maintenance']:
             row[0]['status'] = 2
 
         # Run through each date for each service
@@ -365,15 +384,20 @@ def index(request):
     back_date = ref - back
     forward = datetime.timedelta(days=day_range)
     forward_date = ref_q + forward
-    
-    # Obtain the events during the time range
-    event_count = cache.get('event_count')
+
+    # Obtain the memcached namespace for the key event_count_
+    event_count_ns = functions.namespace_get(logger, 'event_count_ns')
+    event_count_key = 'event_count_%s_%s_%s' % (event_count_ns,back_date.strftime('%Y%m%d%Z'),forward_date.strftime('%Y%m%d%Z'))
+    logger.debug('event_count key: %s' % event_count_key)
+
+    # Check the cache
+    event_count = cache.get(event_count_key)
     if event_count == None:
-        logger.debug('cache miss: %s ' % 'event_count')
+        logger.debug('cache miss: %s ' % event_count_key)
         event_count = Event.objects.filter(start__range=[back_date,forward_date]).values('type__type','start')
-        cache.set('event_count', event_count)
+        cache.set(event_count_key, event_count)
     else:
-        logger.debug('cache hit: %s ' % 'event_count')
+        logger.debug('cache hit: %s ' % event_count_key)
 
     # Iterate through the graph_dates and find matching events
     # This data structure will look like this:

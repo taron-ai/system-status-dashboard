@@ -58,6 +58,13 @@ p.small{
 
 
 
+/* HEADINGS */
+h1 {
+   font-size: 21px;
+}
+
+
+
 /* LABELS */
 label {
 	font-weight: bold;

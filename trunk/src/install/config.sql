@@ -82,7 +82,7 @@ CREATE TABLE `dashboard_config_ireport` (
 -- ----------------------------
 -- Records of dashboard_config_ireport
 -- ----------------------------
-INSERT INTO `dashboard_config_ireport` VALUES ('1', '0', '0', 'Please be as descriptive as possible', 'Thank you for your support!\r\n\r\nWe\'ll be in touch!', '0', '', '1024');
+INSERT INTO `dashboard_config_ireport` VALUES ('1', '0', '0', 'When reporting an incident, please be as descriptive as possible about the issue you are experiencing.', 'Thank you, your incident report has been received.', '0', '', '1024');
 
 
 
@@ -120,7 +120,7 @@ CREATE TABLE `dashboard_config_message` (
 -- ----------------------------
 -- Records of dashboard_config_message
 -- ----------------------------
-INSERT INTO `dashboard_config_message` VALUES ('1', 'This dashboard displays status information for all critical services. The dashboard will be updated whenever status information for any service changes. Please check back here at any time to obtain current status information.<br><br>To report a problem with a service, please use the <a href=\"/report\">report incident</a> link. If you have reported an incident and have not received a response, please <a href=\"/escalation\">escalate</a> the issue.', '1', 'We are currently experiencing a level 1 issue.  Baten down the hatches.', '0');
+INSERT INTO `dashboard_config_message` VALUES ('1', 'This dashboard displays status information for all critical services. The dashboard will be updated whenever status information for any service changes.', '1', '', '0');
 
 
 

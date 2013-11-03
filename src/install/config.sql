@@ -9,7 +9,7 @@ CREATE TABLE `dashboard_config_admin` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `link_enabled` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of dashboard_config_admin
@@ -34,7 +34,7 @@ CREATE TABLE `dashboard_config_email` (
   `maintenance_update` varchar(1000) NOT NULL,
   `email_footer` varchar(250) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -54,7 +54,7 @@ CREATE TABLE `dashboard_config_escalation` (
   `enabled` tinyint(1) NOT NULL,
   `instructions` varchar(1000) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of dashboard_config_escalation
@@ -77,7 +77,7 @@ CREATE TABLE `dashboard_config_ireport` (
   `upload_path` varchar(1000) NOT NULL,
   `file_size` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of dashboard_config_ireport
@@ -95,7 +95,7 @@ CREATE TABLE `dashboard_config_logo` (
   `url` varchar(1000) NOT NULL,
   `logo_enabled` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of dashboard_config_logo
@@ -115,7 +115,7 @@ CREATE TABLE `dashboard_config_message` (
   `alert` varchar(1000) NOT NULL,
   `alert_enabled` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of dashboard_config_message
@@ -133,7 +133,7 @@ CREATE TABLE `dashboard_config_systemurl` (
   `url` varchar(250) NOT NULL,
   `url_enabled` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of dashboard_config_systemurl
@@ -151,7 +151,7 @@ CREATE TABLE `dashboard_status` (
   `status` varchar(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `status` (`status`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of dashboard_status
@@ -173,7 +173,7 @@ CREATE TABLE `dashboard_type` (
   `type` varchar(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `type` (`type`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of dashboard_type

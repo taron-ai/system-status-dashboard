@@ -20,9 +20,6 @@
 
 {% block content %}
 
-<form method="POST" name="incident" action="/admin/incident">
-{% csrf_token %}
-
 <div class="row">
   {# This is a large-3 side nav #}
   {% include "admin/side_nav.html" %}
@@ -95,8 +92,6 @@
   </div>
 
 </div>
-
-</form>
 
 {% endblock %}
 

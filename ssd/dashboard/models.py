@@ -32,7 +32,6 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
-from datetime import datetime
 
 
 class Service(models.Model):
@@ -80,7 +79,7 @@ class Event(models.Model):
     date = models.DateTimeField(blank=False, auto_now=True)
     description = models.CharField(blank=False, max_length=1000)
     start = models.DateTimeField(blank=False)
-    end = models.DateTimeField(null=True, blank=True)
+    end = models.DateTimeField(null=False, blank=True)
     status = models.ForeignKey(Status)
     user = models.ForeignKey(User)
 
@@ -99,7 +98,7 @@ class Event_Impact(models.Model):
     """
 
     event = models.ForeignKey(Event, unique=True)
-    impact = models.CharField(null=False, blank=False, max_length=1000)
+    impact = models.CharField(blank=False, max_length=1000)
 
 
 class Event_Coordinator(models.Model):
@@ -109,7 +108,7 @@ class Event_Coordinator(models.Model):
     """
 
     event = models.ForeignKey(Event, unique=True)
-    coordinator = models.CharField(null=False, blank=False, max_length=250)
+    coordinator = models.CharField(blank=False, max_length=250)
 
 
 class Event_Email(models.Model):

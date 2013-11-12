@@ -93,7 +93,7 @@ def maintenance(request):
                                      status_id=Status.objects.filter(status='planning').values('id')[0]['id'],
                                      start=start,
                                      end=end,
-                                     user_id=User.objects.filter(username=request.user.username).values('id')[0]['id'])
+                                     user_id=User.objects.filter(username=request.user.username)
             event_id = e.pk
 
             # Save the impact analysis

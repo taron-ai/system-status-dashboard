@@ -26,7 +26,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from ssd.dashboard.models import Event
-from ssd.dashboard.forms import SearchForm, GSearchForm, SearchForm
+from ssd.dashboard.forms import SearchForm, GSearchForm
 
 
 # Get an instance of the ssd logger

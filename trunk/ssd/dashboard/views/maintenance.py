@@ -154,7 +154,6 @@ def maintenance(request):
        {
           'title':'System Status Dashboard | Scheduled Maintenance',
           'form':form,
-          'help':help,
           'services':services,
           'affected_svcs':tuple(affected_svcs),
           'emails':emails,
@@ -414,7 +413,8 @@ def m_detail(request):
 
     # Bad form
     else:
-        return system_message(request,True,'Improperly formatted id: %s' % (request.GET['id']))
+        messages.add_message(request, messages.ERROR, 'Improperly formatted maintenance ID, cannot display maintenance detail') 
+        return HttpResponseRedirect('/')
 
     # Obain the maintenance detail (and make sure it's a maintenance)
     details = Event.objects.filter(id=id,type__type='maintenance').values(
@@ -525,7 +525,7 @@ def m_delete(request):
             # Obtain the cleaned data
             id = form.cleaned_data['id']
 
-            # Delete the incident
+            # Delete the maintenance
             Event.objects.filter(id=id).delete()
 
             # Clear the cache - don't discriminate and just clear everything that impacts events

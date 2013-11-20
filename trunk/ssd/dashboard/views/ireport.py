@@ -352,6 +352,8 @@ def ireport_delete(request):
         return HttpResponseRedirect('/admin/ireport_list')
 
 
+@login_required
+@staff_member_required
 def ireport_detail(request):
     """Incident Report Detail View
 

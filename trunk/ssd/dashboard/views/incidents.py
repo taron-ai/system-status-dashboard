@@ -29,8 +29,7 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from ssd.dashboard.decorators import staff_member_required_sd
 from ssd.dashboard.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email, Config_Email
 from ssd.dashboard.forms import DeleteUpdateForm, AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm, ListForm
 from ssd.dashboard import notify
@@ -40,8 +39,7 @@ from ssd.dashboard import notify
 logger = logging.getLogger(__name__)
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def incident(request):
     """Create Incident Page
 
@@ -163,8 +161,7 @@ def incident(request):
     )
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def i_update(request):
     """Update Incident Page
 
@@ -350,8 +347,7 @@ def i_update(request):
     )
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def i_delete(request):
     """Delete Incident Page
 
@@ -485,8 +481,7 @@ def i_detail(request):
     )
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def i_list(request):
     """Incident List View
 
@@ -538,8 +533,7 @@ def i_list(request):
         return HttpResponseRedirect('/admin/i_list')
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def i_update_delete(request):
     """Delete Incident Update Page
 

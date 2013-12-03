@@ -18,8 +18,7 @@
 
 
 import logging
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from ssd.dashboard.decorators import staff_member_required_sd
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -32,8 +31,7 @@ from ssd.dashboard.forms import SystemurlConfigForm
 logger = logging.getLogger(__name__)
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def systemurl_config(request):
     """Main system url view
  

@@ -20,8 +20,7 @@
 import logging
 from django.conf import settings
 from django.core.cache import cache, get_cache
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from ssd.dashboard.decorators import staff_member_required_sd
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import messages
@@ -34,8 +33,7 @@ from ssd.dashboard.forms import AdminConfigForm
 logger = logging.getLogger(__name__)
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def main(request):
     """Main admin index view
  
@@ -54,8 +52,7 @@ def main(request):
     )
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def cache_status(request):
     """Display cache settings
  
@@ -120,8 +117,7 @@ def cache_status(request):
     )
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def admin_config(request):
     """SSD Admin Configuration View
  

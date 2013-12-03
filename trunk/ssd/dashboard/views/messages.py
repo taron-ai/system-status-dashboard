@@ -18,8 +18,7 @@
 
 
 import logging
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from ssd.dashboard.decorators import staff_member_required_sd
 from django.shortcuts import render_to_response
 from django.core.cache import cache
 from django.template import RequestContext
@@ -33,8 +32,7 @@ from ssd.dashboard.forms import MessagesConfigForm
 logger = logging.getLogger(__name__)
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def messages_config(request):
     """Main messages view
  

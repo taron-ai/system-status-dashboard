@@ -103,27 +103,22 @@ class EmailConfigForm(forms.Form):
 
         # Cannot enabled email functionality without defining all values
         if enabled and not from_address:
-            # Make sure its an integer
             self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
             self._errors["from_address"] = self.error_class(['This field is required.'])
 
         if enabled and not incident_greeting:
-            # Make sure its an integer
             self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
             self._errors["incident_greeting"] = self.error_class(['This field is required.'])
 
         if enabled and not incident_update:
-            # Make sure its an integer
             self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
             self._errors["incident_update"] = self.error_class(['This field is required.'])
 
         if enabled and not maintenance_greeting:
-            # Make sure its an integer
             self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
             self._errors["maintenance_greeting"] = self.error_class(['This field is required.'])
 
         if enabled and not maintenance_update:
-            # Make sure its an integer
             self._errors["enabled"] = self.error_class(['Cannot enable email functionality without defining all options.'])
             self._errors["maintenance_update"] = self.error_class(['This field is required.'])
 
@@ -164,12 +159,10 @@ class MessagesConfigForm(forms.Form):
 
         # Cannot enabled messages if there is no text
         if main_enabled and not main:
-            # Make sure its an integer
             self._errors["main"] = self.error_class(['Please enter a system message'])
             self._errors["main_enabled"] = self.error_class(['Cannot enable the system message without defining one'])
 
         if alert_enabled and not alert:
-            # Make sure its an integer
             self._errors["alert"] = self.error_class(['Please enter a system alert'])
             self._errors["alert_enabled"] = self.error_class(['Cannot enable the system alert without defining one'])
      
@@ -192,7 +185,6 @@ class LogoConfigForm(forms.Form):
 
         # Cannot enabled the logo if there is no url
         if logo_enabled and not url:
-            # Make sure its an integer
             self._errors["url"] = self.error_class(['Please enter a logo url'])
             self._errors["logo_enabled"] = self.error_class(['Cannot enable the logo without a logo defined'])
      
@@ -215,7 +207,6 @@ class SystemurlConfigForm(forms.Form):
 
         # Cannot enabled the logo if there is no url
         if url_enabled and not url:
-            # Make sure its an integer
             self._errors["url"] = self.error_class(['Please enter a valid URL'])
             self._errors["url_enabled"] = self.error_class(['Cannot enable the system url without a url defined'])
      
@@ -253,7 +244,6 @@ class IreportConfigForm(forms.Form):
             self._errors["file_size"] = self.error_class(['Please enter a file size of at least 1.'])
 
         if file_size and file_size < 0:
-            # Make sure its a positive integer
             self._errors["file_size"] = self.error_class(['Please enter a positive integer.'])
 
         # If the upload path is defined and does not exist or is not writable, that's an error

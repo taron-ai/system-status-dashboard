@@ -30,8 +30,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from ssd.dashboard.decorators import staff_member_required_sd
 from ssd.dashboard.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email,Config_Email
 from ssd.dashboard.forms import DeleteUpdateForm, DetailForm, DeleteEventForm,UpdateMaintenanceForm, EmailMaintenanceForm, AddMaintenanceForm, ListForm
 from ssd.dashboard import notify
@@ -41,8 +40,7 @@ from ssd.dashboard import notify
 logger = logging.getLogger(__name__)
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def maintenance(request):
     """Schedule maintenance page
 
@@ -165,8 +163,7 @@ def maintenance(request):
     )
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def m_update(request):
     """Update Maintenance Page
 
@@ -462,8 +459,7 @@ def m_detail(request):
     )
     
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def m_email(request):
     """Send an Email Notification about a Maintenance"""
 
@@ -501,8 +497,7 @@ def m_email(request):
     return HttpResponseRedirect('/admin/m_list')
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def m_delete(request):
     """Delete Maintenance Page
 
@@ -573,8 +568,7 @@ def m_delete(request):
         return HttpResponseRedirect('/admin/m_list')
    
 
-@login_required
-@staff_member_required   
+@staff_member_required_sd   
 def m_list(request):
     """Maintenance List View
 
@@ -628,8 +622,7 @@ def m_list(request):
         return HttpResponseRedirect('/admin/m_list')
 
 
-@login_required
-@staff_member_required
+@staff_member_required_sd
 def m_update_delete(request):
     """Delete Maintenance Update Page
 

@@ -244,7 +244,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <label><input type="checkbox" name="started" {% if form.started.data %}checked="on"{% else %}{% if details.0.status__status == 'started' %}checked="on"{% endif %}{% endif %}/>
+        <label><input type="checkbox" name="started" {% if form.started.data %}checked="on"{% else %}{% if details.0.status__status == 'started' %}checked="on"{% else %}{% if details.0.status__status == 'completed' %}checked="on"{% endif %}{% endif %}{% endif %}/>
         Started</label>
         {% if form.started.errors %}
         <span class="err">{% for error in form.started.errors %}{{error}}<br>{% endfor %}<br></span>
@@ -254,7 +254,7 @@
 
     <div class="row">
       <div class="large-12 columns">
-        <label><input type="checkbox" name="completed" {% if form.completed.data %}checked="on"{% else %}{% if details.0.status__status == 4 %}checked="on"{% endif %}{% endif %}/>
+        <label><input type="checkbox" name="completed" {% if form.completed.data %}checked="on"{% else %}{% if details.0.status__status == 'completed' %}checked="on"{% endif %}{% endif %}/>
         Completed</label>
         {% if form.completed.errors %}
         <span class="err">{% for error in form.completed.errors %}{{error}}<br>{% endfor %}<br></span>

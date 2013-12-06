@@ -59,7 +59,7 @@ CREATE TABLE `dashboard_config_escalation` (
 -- ----------------------------
 -- Records of dashboard_config_escalation
 -- ----------------------------
-INSERT INTO `dashboard_config_escalation` VALUES ('1', '1', 'If you reported an incident and have not received confirmation that our engineers are investigating the problem, please use the below contacts to escalate the issue. If you are unable to reach a contact, please leave a voice message, wait 5 minutes for a response, and escalate to the next contact on the list.');
+INSERT INTO `dashboard_config_escalation` VALUES ('1', '0', 'If you reported an incident and have not received confirmation that our engineers are investigating the problem, please use the below contacts to escalate the issue. If you are unable to reach a contact, please leave a voice message, wait 5 minutes for a response, and escalate to the next contact on the list.');
 
 
 

@@ -18,7 +18,7 @@
 
 import logging
 from django.db import IntegrityError
-from ssd.dashboard.decorators import staff_member_required_sd
+from ssd.dashboard.decorators import staff_member_required_ssd
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
@@ -33,7 +33,7 @@ from ssd.dashboard.forms import AddRecipientForm, DeleteRecipientForm, EmailConf
 logger = logging.getLogger(__name__)
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def email_config(request):
     """Main admin index view
  
@@ -112,7 +112,7 @@ def email_config(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def email_recipients(request):
     """Manage Recipient Email Addresses
  
@@ -166,7 +166,7 @@ def email_recipients(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def recipient_delete(request):
     """Remove Email Recipients"""
 
@@ -243,7 +243,7 @@ def recipient_delete(request):
         return HttpResponseRedirect('/admin/email_recipients')
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def recipient_modify(request):
     """Modify an email recipient
         - This occurs only via AJAX from the manage recipients view (it's a POST)

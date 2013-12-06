@@ -18,8 +18,9 @@
 
 
 import logging
+from django.core.cache import cache
 from django.contrib.auth.models import User
-from ssd.dashboard.decorators import staff_member_required_sd
+from ssd.dashboard.decorators import staff_member_required_ssd
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from ssd.dashboard.models import Event_Update
@@ -30,7 +31,7 @@ from ssd.dashboard.forms import XEditableModifyForm
 logger = logging.getLogger(__name__)
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def update_modify(request):
     """Modify event update
         - This occurs only via AJAX from the i_update or m_update views (it's a POST)

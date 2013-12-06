@@ -20,7 +20,7 @@
 import logging
 from django.db import IntegrityError
 from django.core.cache import cache
-from ssd.dashboard.decorators import staff_member_required_sd
+from ssd.dashboard.decorators import staff_member_required_ssd
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
@@ -33,7 +33,7 @@ from ssd.dashboard.forms import AddServiceForm, RemoveServiceForm, XEditableModi
 logger = logging.getLogger(__name__)
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def services(request):
     """View and Add Services
  
@@ -91,7 +91,7 @@ def services(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def service_delete(request):
     """Remove Service"""
 
@@ -171,7 +171,7 @@ def service_delete(request):
         return HttpResponseRedirect('/admin/services')
   
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def service_modify(request):
     """Modify the name of Services
         - This occurs only via AJAX from the services view (it's a POST)

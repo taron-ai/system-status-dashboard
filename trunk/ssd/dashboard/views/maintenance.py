@@ -30,7 +30,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.models import User
-from ssd.dashboard.decorators import staff_member_required_sd
+from ssd.dashboard.decorators import staff_member_required_ssd
 from ssd.dashboard.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email,Config_Email
 from ssd.dashboard.forms import DeleteUpdateForm, DetailForm, DeleteEventForm,UpdateMaintenanceForm, EmailMaintenanceForm, AddMaintenanceForm, ListForm
 from ssd.dashboard import notify
@@ -40,7 +40,7 @@ from ssd.dashboard import notify
 logger = logging.getLogger(__name__)
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def maintenance(request):
     """Schedule maintenance page
 
@@ -82,16 +82,14 @@ def maintenance(request):
             start = tz.localize(start)
             end = tz.localize(end)
             
-            # Get the user's ID
-            user_id = User.objects.filter(username=request.user.username).values('id')[0]['id']
-
             # Create the event and obtain the ID                                     
             e = Event.objects.create(type_id=Type.objects.filter(type='maintenance').values('id')[0]['id'],
                                      description=description,
                                      status_id=Status.objects.filter(status='planning').values('id')[0]['id'],
                                      start=start,
                                      end=end,
-                                     user_id=User.objects.filter(username=request.user.username))
+                                     user_id=request.user.id
+                                    )
             event_id = e.pk
 
             # Save the impact analysis
@@ -163,7 +161,7 @@ def maintenance(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def m_update(request):
     """Update Maintenance Page
 
@@ -245,12 +243,7 @@ def m_update(request):
                 # Create a datetime object for right now and add the server's timezone (whatever DJango has)
                 time_now = datetime.datetime.now()
                 time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-                Event_Update(
-                    event_id=id,
-                    date=time_now,
-                    update=update,
-                    user_id=User.objects.filter(username=request.user.username).values('id')[0]['id']
-                ).save()
+                Event_Update(event_id=id, date=time_now, update=update, user_id=request.user.id).save()
 
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
             # In both cases, delete the existing email (because it will be re-added)
@@ -459,7 +452,7 @@ def m_detail(request):
     )
     
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def m_email(request):
     """Send an Email Notification about a Maintenance"""
 
@@ -480,6 +473,7 @@ def m_email(request):
         if not recipient_id:
             messages.add_message(request, messages.ERROR, 'There is no recipient defined for maintenance id:%s.  Please add one before sending email notifications.' % id)
 
+        # Only send the email if email functionality is enabled.
         if Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('enabled')[0]['enabled'] == 1:
             email = notify.email()
             email_status = email.email_event(id,recipient_id,request.timezone,False)
@@ -497,7 +491,7 @@ def m_email(request):
     return HttpResponseRedirect('/admin/m_list')
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def m_delete(request):
     """Delete Maintenance Page
 
@@ -568,7 +562,7 @@ def m_delete(request):
         return HttpResponseRedirect('/admin/m_list')
    
 
-@staff_member_required_sd   
+@staff_member_required_ssd   
 def m_list(request):
     """Maintenance List View
 
@@ -622,7 +616,7 @@ def m_list(request):
         return HttpResponseRedirect('/admin/m_list')
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def m_update_delete(request):
     """Delete Maintenance Update Page
 

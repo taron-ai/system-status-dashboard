@@ -29,7 +29,7 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.contrib.auth.models import User
-from ssd.dashboard.decorators import staff_member_required_sd
+from ssd.dashboard.decorators import staff_member_required_ssd
 from ssd.dashboard.models import Event, Type, Status, Event_Service, Event_Update, Event_Email, Event_Impact, Event_Coordinator, Service, Email, Config_Email
 from ssd.dashboard.forms import DeleteUpdateForm, AddIncidentForm, DeleteEventForm, UpdateIncidentForm, DetailForm, ListForm
 from ssd.dashboard import notify
@@ -39,7 +39,7 @@ from ssd.dashboard import notify
 logger = logging.getLogger(__name__)
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def incident(request):
     """Create Incident Page
 
@@ -88,12 +88,14 @@ def incident(request):
                 status='open'
 
             # Create the event and obtain the ID                                     
-            e = Event.objects.create(type_id=Type.objects.filter(type='incident').values('id')[0]['id'],
+            e = Event.objects.create(
+                                     type_id=Type.objects.filter(type='incident').values('id')[0]['id'],
                                      description=description,
                                      status_id=Status.objects.filter(status=status).values('id')[0]['id'],
                                      start=start,
                                      end=end,
-                                     user_id=User.objects.filter(username=request.user.username))
+                                     user_id=request.user.id
+                                    )
             event_id = e.pk
 
             # Add the email recipient, if requested.
@@ -161,7 +163,7 @@ def incident(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def i_update(request):
     """Update Incident Page
 
@@ -224,12 +226,7 @@ def i_update(request):
                 # Create a datetime object for right now and add the server's timezone (whatever DJango has)
                 time_now = datetime.datetime.now()
                 time_now = pytz.timezone(settings.TIME_ZONE).localize(time_now)
-                Event_Update(
-                    event_id=id,
-                    date=time_now,
-                    update=update,
-                    user_id=User.objects.filter(username=request.user.username).values('id')[0]['id']
-                ).save()
+                Event_Update(event_id=id, date=time_now, update=update, user_id=request.user.id).save()
 
             # Add the email recipient.  If an email recipient is missing, then the broadcast email will not be checked.
             # In both cases, delete the existing email (because it will be re-added)
@@ -347,7 +344,7 @@ def i_update(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def i_delete(request):
     """Delete Incident Page
 
@@ -481,7 +478,7 @@ def i_detail(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def i_list(request):
     """Incident List View
 
@@ -533,7 +530,7 @@ def i_list(request):
         return HttpResponseRedirect('/admin/i_list')
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def i_update_delete(request):
     """Delete Incident Update Page
 

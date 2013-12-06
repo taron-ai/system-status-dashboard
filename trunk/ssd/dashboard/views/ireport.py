@@ -22,7 +22,7 @@ import datetime
 import pytz
 from django.conf import settings
 from django.core.cache import cache
-from ssd.dashboard.decorators import staff_member_required_sd
+from ssd.dashboard.decorators import staff_member_required_ssd
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -143,7 +143,7 @@ def ireport(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def ireport_config(request):
     """Main system url view
  
@@ -210,7 +210,7 @@ def ireport_config(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def ireport_list(request):
     """Incident Report List View
 
@@ -262,7 +262,7 @@ def ireport_list(request):
         return HttpResponseRedirect('/admin/ireport_list')
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def ireport_delete(request):
     """Delete Incident Report Page
 
@@ -348,7 +348,7 @@ def ireport_delete(request):
         return HttpResponseRedirect('/admin/ireport_list')
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def ireport_detail(request):
     """Incident Report Detail View
 

@@ -20,7 +20,7 @@
 import logging
 from django.core.cache import cache
 from django.db import IntegrityError
-from ssd.dashboard.decorators import staff_member_required_sd
+from ssd.dashboard.decorators import staff_member_required_ssd
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import RequestContext
@@ -69,7 +69,7 @@ def escalation(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def escalation_config(request):
     """Main admin index view
  
@@ -123,7 +123,7 @@ def escalation_config(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def escalation_contacts(request):
     """View and Add Escalation Contacts
  
@@ -188,7 +188,7 @@ def escalation_contacts(request):
     )
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def contact_switch(request):
     """Switch Contacts Around or Hide Them"""
 
@@ -285,7 +285,7 @@ def contact_switch(request):
     return HttpResponseRedirect('/admin/escalation_contacts')
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def contact_delete(request):
     """Remove Contact"""
 
@@ -364,7 +364,7 @@ def contact_delete(request):
         return HttpResponseRedirect('/admin/escalation_contacts')
 
 
-@staff_member_required_sd
+@staff_member_required_ssd
 def contact_modify(request):
     """Modify contact properties
         - This occurs only via AJAX from the escalation_contacts view (it's a POST)

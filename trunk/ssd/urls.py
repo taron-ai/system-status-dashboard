@@ -16,7 +16,6 @@
 
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from ssd.dashboard.views import main
 admin.autodiscover()
 
 urlpatterns = patterns('',

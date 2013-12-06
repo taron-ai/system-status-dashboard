@@ -37,7 +37,7 @@ DATABASES = {
 }
 SECRET_KEY = '$__secret_key__$'
 TEMPLATE_DIRS = ( 
-    '$__app_dir__$/templates'
+    '$__app_dir__$/templates',
 )
 
 # Set the timezone to match the server's timezone
@@ -56,7 +56,7 @@ CACHES = {
             'localhost:11211'
         ],
         'TIMEOUT': 300,
-        'KEY_PREFIX':' ssd'
+        'KEY_PREFIX':'ssd'
 
     }
 }

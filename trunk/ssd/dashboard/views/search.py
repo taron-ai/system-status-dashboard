@@ -120,7 +120,7 @@ def events(request):
         text = form.cleaned_data['text']
         type = form.cleaned_data['type']
 
-        # Build the filter for the search query
+        # Build the filter for the search query and the query params for the forward/back links
         filter = {}
 
         # Start/End
@@ -135,14 +135,23 @@ def events(request):
             end_tmp = tz.localize(end_tmp)
 
             filter['start__range'] = [start_tmp,end_tmp] 
+            query_params = 'start=%s&end=%s' % (start,end)
 
         # Type
         if type:
             filter['type__type'] = '%s' % type
+            if query_params:
+                query_params += '&type=%s' % type
+            else:
+                query_params = 'type=%s' % type
         
         # Text
         if text:
             filter['description__contains'] = '%s' % text
+            if query_params:
+                query_params += '&text=%s' % text
+            else:
+                query_params = 'text=%s' % text
 
         # Obtain filtered incidents
         if filter:
@@ -164,23 +173,6 @@ def events(request):
         except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
             events = paginator.page(paginator.num_pages)
-
-        # Put together the query params
-        query_params = None
-        if start and end:
-            query_params = 'start=%s&end=%s' % (start,end)
-
-        if text:
-            if query_params:
-                query_params += '&text=%s' % text
-            else:
-                query_params = 'text=%s' % text
-
-        if type:
-            if query_params:
-                query_params += '&type=%s' % type
-            else:
-                query_params = 'type=%s' % type
 
         # Print the page
         return render_to_response(

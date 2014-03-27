@@ -92,15 +92,15 @@ def graph(request):
            },
            context_instance=RequestContext(request)
         )
-    
+
     # Invalid form
     else:
         messages.add_message(request, messages.ERROR, 'Invalid graph search query')
-        return HttpResponseRedirect('/') 
+        return HttpResponseRedirect('/')
 
 
 def events(request):
-    """Event List View 
+    """Event List View
 
     Show a listing of all events
 
@@ -122,6 +122,7 @@ def events(request):
 
         # Build the filter for the search query and the query params for the forward/back links
         filter = {}
+        query_params = None
 
         # Start/End
         if start and end:
@@ -134,7 +135,7 @@ def events(request):
             start_tmp = tz.localize(start_tmp)
             end_tmp = tz.localize(end_tmp)
 
-            filter['start__range'] = [start_tmp,end_tmp] 
+            filter['start__range'] = [start_tmp,end_tmp]
             query_params = 'start=%s&end=%s' % (start,end)
 
         # Type
@@ -144,7 +145,7 @@ def events(request):
                 query_params += '&type=%s' % type
             else:
                 query_params = 'type=%s' % type
-        
+
         # Text
         if text:
             filter['description__contains'] = '%s' % text

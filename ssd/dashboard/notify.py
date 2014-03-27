@@ -52,7 +52,7 @@ class email:
         The required format of EmailMessage is as follows:
           - EmailMessage(subject,body,from_email,[to_email],[bcc_email],headers,[cc_email]
           - If there is an error, the user will be notified and an Apache error log will be generated
-          
+
         """
 
         # Obtain the recipient email address
@@ -68,8 +68,8 @@ class email:
         except Exception, e:
             # Log to the error log and return the error to the caller
             logger.error('Error sending text page: %s' % e)
-        
-    
+
+
     def email_event(self,id,email_id,set_timezone,new):
         """
         Send an email message in HTML or TEXT format about a new or existing incident
@@ -121,27 +121,27 @@ class email:
         if new == True:
             if details[0]['type__type'] == 'incident':
                 greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('incident_greeting')[0]['incident_greeting']
-                email_subject = 'Incident Notification'
+                email_subject = 'Incident Notification - ID:%s' % id
             elif details[0]['type__type'] == 'maintenance':
                 greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_greeting')[0]['maintenance_greeting']
-                email_subject = 'Maintenance Notification'
+                email_subject = 'Maintenance Notification - ID:%s' % id
             else:
                 logger.error('Unknown event type, exiting')
                 return
         else:
             if details[0]['type__type'] == 'incident':
                 greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('incident_update')[0]['incident_update']
-                email_subject = 'Incident Update'
+                email_subject = 'Incident Update - ID:%s' % id
             elif details[0]['type__type'] == 'maintenance':
                 greeting = Config_Email.objects.filter(id=Config_Email.objects.values('id')[0]['id']).values('maintenance_update')[0]['maintenance_update']
-                email_subject = 'Maintenance Update'
+                email_subject = 'Maintenance Update - ID:%s' % id
             else:
                 logger.error('Unknown event type, exiting')
                 return
 
 
         # Setup the context and interpolate the values in the template
-        d = Context({ 
+        d = Context({
                      'details':details,
                      'greeting':greeting,
                      'services':services,
@@ -156,11 +156,11 @@ class email:
             # Render the text template
             # If html formatting is requested, we'll render that one later
             rendered_template_txt = get_template('email/email.txt').render(d)
-           
+
             msg = EmailMultiAlternatives(
-                                            email_subject, 
-                                            rendered_template_txt, 
-                                            email_from, 
+                                            email_subject,
+                                            rendered_template_txt,
+                                            email_from,
                                             [recipient]
                                         )
 
@@ -169,7 +169,7 @@ class email:
                 # Render the html template and attach it
                 rendered_template_html = get_template('email/email.html').render(d)
                 msg.attach_alternative(rendered_template_html, "text/html")
-            
+
             # Send the message
             msg.send()
         except Exception, e:
@@ -180,4 +180,3 @@ class email:
         return 'success'
 
 
-    
